@@ -48,7 +48,7 @@ PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWi
     PXWindowDrawText(pxButton, pxWindowDrawInfo, PXNull);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXButtonCreate(PXButton** pxButtonREF, PXButtonCreateInfo PXREF pxButtonCreateInfo)
@@ -65,7 +65,7 @@ PXResult PXAPI PXButtonCreate(PXButton** pxButtonREF, PXButtonCreateInfo PXREF p
     pxWindowCreateInfo->WindowClassName.A = WC_BUTTON;
    // pxWindowCreateInfo->WindowText.A = pxWindowCreateInfo->Button.TextInfo.Content;
 #endif
-    pxWindowCreateInfo->DrawFunctionEngine = PXButtonDraw;
+    pxWindowCreateInfo->EventList.CallBackDraw = PXButtonDraw;
 
     pxWindowCreateInfo->WindowClassName.A = WC_BUTTON;
     pxWindowCreateInfo->StyleFlags |= BS_AUTORADIOBUTTON;
@@ -77,5 +77,5 @@ PXResult PXAPI PXButtonCreate(PXButton** pxButtonREF, PXButtonCreateInfo PXREF p
 
    // PXWindowCreate(, );
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

@@ -25,7 +25,7 @@ PXResult PXAPI PXSoundCreate(PXSound PXREF pxSound, PXSoundCreateInfo PXREF pxSo
 
     const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxSoundCreateInfo->Info.FilePath);
 
-    if(PXActionSuccessful != loadResult)
+    if(PXResultOK != loadResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -52,5 +52,5 @@ PXResult PXAPI PXSoundCreate(PXSound PXREF pxSound, PXSoundCreateInfo PXREF pxSo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

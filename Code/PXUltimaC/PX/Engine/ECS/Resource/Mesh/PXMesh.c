@@ -109,7 +109,7 @@ PXResult PXAPI PXMeshRegisterToECS()
 {
     PXECSRegister(&PXMeshRegisterInfoStatic, &PXMeshRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCreateInfo)
@@ -148,7 +148,7 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
             pxResourceLoadInfo.ResourceType = PXResourceTypeModel;
 
             const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxMeshCreateInfo->Info.FilePath);
-            const PXBool success = PXActionSuccessful == loadResult;
+            const PXBool success = PXResultOK == loadResult;
 
             if(!success)
             {
@@ -449,7 +449,7 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
 
     //pxModel->Info.Behaviour |= PXECSInfoRender;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh)
@@ -503,7 +503,7 @@ PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh)
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMeshVertexLayout(PXMesh PXREF pxMesh, const PXSize index, PXBufferLayout PXREF pxVertexBufferLayoutList, const PXSize amount)
@@ -554,7 +554,7 @@ PXResult PXAPI PXMeshIndexLayout(PXMesh PXREF pxMesh, const PXSize primitveAmoun
     pxMesh->MaterialContaierListAmount = segmentAmount;
     pxMesh->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, segmentAmount);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh PXREF pxMesh, const PXI8U type)
@@ -1149,7 +1149,7 @@ PXResult PXAPI PXMeshNormalDataGenerate(PXMesh PXREF pxMesh)
 {
     // ...
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMeshVertexArrayAdd
@@ -1221,7 +1221,7 @@ PXResult PXAPI PXMeshVertexArrayAdd
 
     // Attach to model...
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXMeshTriangleAmount(PXMesh PXREF pxMesh)

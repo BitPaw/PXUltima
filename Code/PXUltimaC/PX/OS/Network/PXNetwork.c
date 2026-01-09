@@ -218,7 +218,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
                 PXTextFromAdressA(&pxText, PXWindowsWinSockDLL, sizeof(PXWindowsWinSockDLL), sizeof(PXWindowsWinSockDLL));
                 const PXResult openResult = PXLibraryOpen(&_pxNetwork.NetworkLibrary, &pxText);
 
-                if(PXActionSuccessful != openResult)
+                if(PXResultOK != openResult)
                 {
 #if PXLogEnable
                     PXLogPrint
@@ -299,7 +299,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
 
                 if(!successful)
                 {
-                    return PXActionInvalid;
+                    return PXResultInvalid;
                 }
             }
 #endif
@@ -325,7 +325,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
 
             if(!successful)
             {
-                return PXActionSuccessful;
+                return PXResultOK;
             }
 #endif
 
@@ -335,11 +335,11 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
         }
         default:
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo PXREF pxSocketCreateInfo)
@@ -355,7 +355,7 @@ PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo PXREF pxSocketCreateInfo
         const PXSocketID socketIDResult = _pxNetwork.SocketCreate(ipAdressFamilyID, socketTypeID, protocolModeID);
         const PXResult createResult = PXErrorCurrent(-1 != socketIDResult); // PXWindowsSocketAgentErrorFetch
 
-        if(PXActionSuccessful != createResult)
+        if(PXResultOK != createResult)
         {
 #if PXLogEnable
             PXLogPrint
@@ -410,7 +410,7 @@ PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo PXREF pxSocketCreateInfo
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkIPLocate(const PXIPAdress PXREF pxIPAdress)
@@ -426,9 +426,9 @@ PXResult PXAPI PXNetworkSocketPeerGet(PXNetwork PXREF pxNetwork, PXSocketConnect
 
     const int resultID = 0;// getpeername(socketID, &socketAdress, &socketAdressSize);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 #else
-    return PXActionInvalid;
+    return PXResultInvalid;
 #endif
 }
 
@@ -574,7 +574,7 @@ PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo PXREF pxSocketConnectI
 
     const PXResult connectResult = PXErrorCurrent(-1 != connectResult);
 
-    if(PXActionSuccessful != connectResult)
+    if(PXResultOK != connectResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -603,7 +603,7 @@ PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo PXREF pxSocketConnectI
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo PXREF pxSocketListenInfo)
@@ -612,7 +612,7 @@ PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo PXREF pxSocketListenInfo
     const int listeningResult = _pxNetwork.SocketListen(pxSocket->ID, pxSocketListenInfo->ClientInQueueMaximal);
     const PXResult listenResult = PXErrorCurrent(0 == listeningResult);
 
-    if(PXActionSuccessful != listenResult)
+    if(PXResultOK != listenResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -639,7 +639,7 @@ PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo PXREF pxSocketListenInfo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo PXREF pxSocketAcceptInfo)
@@ -677,7 +677,7 @@ PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo PXREF pxSocketAcceptInfo
     pxSocketClient->ID = _pxNetwork.SocketAccept(pxSocketServer->ID, &socketAdressInfo.SocketAdressInfo, &socketAdressInfoSize);
     const PXResult acceptResult = PXErrorCurrent(-1 != pxSocketClient->ID);
 
-    if(PXActionSuccessful != acceptResult)
+    if(PXResultOK != acceptResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -778,14 +778,14 @@ PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo PXREF pxSocketAcceptInfo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
 {
     if(!pxSocketBindInfo)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXSocket PXREF pxSocket = pxSocketBindInfo->SocketReference;
@@ -801,7 +801,7 @@ PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
     const int bindingResultID = _pxNetwork.SocketBind(pxSocket->ID, &bindAdressInfo, bindAdressInfoSize);
     const PXResult bindingResult = PXErrorCurrent(-1 != bindingResultID);
 
-    if(PXActionSuccessful != bindingResult)
+    if(PXResultOK != bindingResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -832,16 +832,16 @@ PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
     if(!(pxSocketDataInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const SOCKET socketID = pxSocketDataInfo->SocketIDCurrent;
@@ -971,7 +971,7 @@ PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
         }
     }
     
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataInfo)
@@ -1035,7 +1035,7 @@ PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataInfo)
 
         const PXResult sendResult = PXErrorCurrent(-1 != writtenBytes);
 
-        if(PXActionSuccessful != sendResult)
+        if(PXResultOK != sendResult)
         {
             return sendResult;
         }
@@ -1112,7 +1112,7 @@ PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataInfo)
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketPoll()
@@ -1329,7 +1329,7 @@ PXResult PXAPI PXNetworkSocketPoll()
     PXSocketStateChange(pxSocket, SocketIDLE);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket)
@@ -1340,12 +1340,12 @@ PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket)
 
     int x = getpeername(pxSocket->ID, &socketAdress, &length);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite)
 {
-    PXActionResult error = PXActionInvalid;
+    PXActionResult error = PXResultInvalid;
 
     if(doWrite)
     {
@@ -1376,7 +1376,7 @@ PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, 
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketName(const PXSocket PXREF pxSocket, char* name)
@@ -1386,7 +1386,7 @@ PXResult PXAPI PXNetworkSocketName(const PXSocket PXREF pxSocket, char* name)
 
     const int res = getsockname(pxSocket->ID, (struct sockaddr*)&adressInfo, &addr_len);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket PXREF pxSocket, char* name, const PXSize nameSize)
@@ -1430,7 +1430,7 @@ PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket PXREF pxSocket, char*
 #elif OSWindows
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNetworkMACFromIPv4A(PXMAC PXREF pxMAC, char PXREF ipv4Text)
@@ -1517,7 +1517,7 @@ PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4)
 #else
 #endif
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkMACFromIPv6A(PXMAC PXREF pxMAC, char PXREF ipv6Text)
@@ -1545,7 +1545,7 @@ PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6)
 
     if(NO_ERROR != result)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     PXMemoryCopyX(ipList.PhysicalAddress, ipList.PhysicalAddressLength, pxMAC->Data, 6);
@@ -1579,7 +1579,7 @@ PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6)
 #endif
 
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkNameFromIPv4A(char PXREF name, char PXREF ipv4Text)
@@ -1591,7 +1591,7 @@ PXResult PXAPI PXNetworkNameFromIPv4A(char PXREF name, char PXREF ipv4Text)
     char hostname[NI_MAXHOST];
     INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkNameFromIPv4(char PXREF name, PXIPv4 PXREF pxIPv4)
@@ -1603,7 +1603,7 @@ PXResult PXAPI PXNetworkNameFromIPv4(char PXREF name, PXIPv4 PXREF pxIPv4)
     char hostname[NI_MAXHOST];
     INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkAdapterFetch()
@@ -1874,7 +1874,7 @@ PXResult PXAPI PXNetworkAdapterFetch()
         //FREE(pAddresses);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -2497,7 +2497,7 @@ PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID)
             // case WSA_QOS_RESERVED_PETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
 
         default:
-            return PXActionInvalid;
+            return PXResultInvalid;
     }
 }
 #endif

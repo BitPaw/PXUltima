@@ -248,7 +248,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
     }
     //-----------------------------------------------------------
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
@@ -326,7 +326,7 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         PXMathShuffleI8(data, data, imageDataLayout.RowImageDataSize, shuffleData, shuffleSize);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBitmapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
@@ -452,7 +452,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXBitmapDestruct(PXBitmap PXREF bmp)

@@ -79,7 +79,7 @@ PXResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
     if (!CloseHandle(hToken))
         return PXErrorCurrent(); // CloseHandle
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }*/
 
 
@@ -174,7 +174,7 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
 
     PXClear(PXSymbol, pxSymbol);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         return pxResult;
     }
@@ -194,7 +194,7 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
     PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);
     // PXTextCopyA(symbolMemory->N, 64, pxSymbol->Name, 64);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBool PXAPI PXMemoryDoAdressesOverlap(void PXREF adressA, const PXSize adressALengh, void PXREF adressB, const PXSize adressBLengh)
@@ -1010,11 +1010,11 @@ PXResult PXAPI PXMemoryStackAllocate(PXMemoryInfo PXREF pxMemoryInfo)
 
 #else
 
-    return PXActionSuccessful; // PXMemoryHeapAllocate(pxMemoryInfo);
+    return PXResultOK; // PXMemoryHeapAllocate(pxMemoryInfo);
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
@@ -1058,7 +1058,7 @@ PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
 
 #else
 
-    return PXActionSuccessful; // PXMemoryHeapDeallocate(pxMemoryInfo);
+    return PXResultOK; // PXMemoryHeapDeallocate(pxMemoryInfo);
 
 #endif
 

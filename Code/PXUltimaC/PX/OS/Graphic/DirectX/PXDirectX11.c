@@ -60,7 +60,7 @@ PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicIni
 
         const PXResult pxActionResult = PXLibraryOpen(&pxDirectX11->DirectX11Library, &pxText);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
 #if PXLogEnable
             PXLogPrint
@@ -501,7 +501,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
 
                         break;
                     }
-                case PXTextureTypeCubeContainer:
+                case PXTextureTypeCube:
                 {
                     PXTexture PXREF pxTexture = pxGraphicTexturInfo->TextureReference;
 
@@ -536,7 +536,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
 
 #endif
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
 #include <PX/OS/File/PXFile.h>
@@ -555,7 +555,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
             pxDirectX11->RenderTargetView,
             rgba
         );
-        return PXActionSuccessful;
+        return PXResultOK;
 
 #endif
     }
@@ -592,7 +592,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
 
 #endif
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount)
@@ -649,7 +649,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
     {
         //*value = pxDirectX->DX11->lpVtbl->GetAvailableTextureMem(pxDirectX->DX9);
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXResult PXAPI PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11 PXREF pxDirectX, PXI32U PXREF amountOfAdapters)

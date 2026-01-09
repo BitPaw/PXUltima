@@ -274,7 +274,7 @@ PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText PXREF pxT
             commandText = PXFTPNoOperation;
             break;
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
 
     }
 

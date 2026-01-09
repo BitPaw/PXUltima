@@ -38,7 +38,7 @@ PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread 
         {
             PXCopy(PXThread, pxThreadTarget, pxThread);
 
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
 
@@ -88,7 +88,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
     }
 
 
-    if(PXActionSuccessful != pxTask->FunctionReturnCode)
+    if(PXResultOK != pxTask->FunctionReturnCode)
     {
 #if PXLogEnable
         PXLogPrint
@@ -123,7 +123,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
 
     PXThreadYieldToOtherThreads();
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
@@ -425,7 +425,7 @@ PXResult PXAPI PXThreadPoolWaitForSpesific(PXThreadPool* pxThreadPool, PXI32U* l
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool PXREF pxThreadPool)
@@ -444,7 +444,7 @@ PXResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool PXREF pxThreadPool)
         PXThreadPoolTaskInvoke(pxThreadPool, pxTask);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 #if OSWindows && !PXThreadPoolUsePXIMPL
@@ -731,7 +731,7 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
     pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON
     const PXResult pxActionResult = PXErrorCurrent(PXNull != pxThreadPool->Work);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -752,7 +752,7 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
 
 PXResult PXAPI PXThreadPoolQueueTask(PXThreadPool PXREF pxThreadPool, PXTask PXREF pxTask)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** listIDs, const PXSize amount)
@@ -802,5 +802,5 @@ PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** lis
 
     PXLockRelease(&pxThreadPool->TaskLock);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

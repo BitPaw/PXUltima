@@ -35,8 +35,6 @@ const char WindowsLibraryDWMAPISET[] = "DwmSetWindowAttribute";
 #include <gl/GL.h>
 
 
-//static HWND gMain = NULL;
-
 ATOM _pxEngineBaseClassID = 0;
 
 // Atomic UI-Element
@@ -67,9 +65,7 @@ typedef struct PXWindow_
 #endif
 
 
-    void* InteractOwner; // Object that is the owner of given callbacks
-    PXWindowEventFunction InteractCallBack; // Callback function for all events
-    PXWindowDrawFunction DrawFunction; // If this is set, override OS-drawing and use this function instead
+    PXWindowEventList EventList;
 
 
     PXUIElementPosition Position;
@@ -90,13 +86,6 @@ typedef struct PXWindow_
     PXUIElementType Type;
     void* ExtendedData; // Extra data that will be allocated seperatly for additional use
     //---------------------------------------
-
-    // Change this to something better
-    char* NameContent;
-    PXSize NameContentSize;
-
-
-
 
     PXWindowDockSide  dockSide;
     COLORREF  color;
@@ -204,6 +193,10 @@ PXWindow* PXAPI PXWindowRootGet(const PXWindow PXREF pxWindow)
 
 PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow)
 {
+    if(!pxWindow)
+    {
+        return PXFalse;
+    }
   
     LONG style = GetWindowLong(pxWindow->WindowHandle, GWL_STYLE);
 
@@ -216,7 +209,12 @@ PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow)
 
 PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow)
 {
-    PXResult pxResult = PXActionInvalid;
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXResult pxResult = PXResultInvalid;
     BOOL isOK = PXFalse;
 
     pxWindow->GraphicSystem = PXGraphicSystemOpenGL;
@@ -253,7 +251,7 @@ PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow)
 
     //isOK = wglMakeCurrent(pxWindow->DeviceContextHandle, 0);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 static void LayoutDockedAA(HWND hMain)
@@ -620,17 +618,22 @@ static RECT InsetRectBy(RECT r, BoxInsets in)
 // -----------------------------
 // Main layout (multi-pass)
 // -----------------------------
-void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
+void LayoutDockedEx(PXWindow PXREF pxWindow, const DockLayoutConfig* pCfg)
 {
+    if(!(pxWindow && pCfg))
+    {
+        return;
+    }
+
     DockLayoutConfig cfg = pCfg ? *pCfg : DockDefaultConfig();
 
-    RECT rc = PXWindowRectOf(hMain->WindowHandle);
+    RECT rc = PXWindowRectOf(pxWindow->WindowHandle);
     int leftX = rc.left;
     int rightX = rc.right;
     int topY = rc.top;
     int bottomY = rc.bottom;
 
-    int total = CountVisiblePanes(hMain->WindowHandle);
+    int total = CountVisiblePanes(pxWindow->WindowHandle);
     if(total <= 0) return;
 
     HDWP hdwp = BeginDeferWindowPos(total);
@@ -643,7 +646,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
     // PASS 1: LEFT band(s)
     // -----------------------------
     {
-        int n = CollectSide(hMain->WindowHandle, PXWindowDockSideLeft, buf, total);
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideLeft, buf, total);
         if(n > 0) {
             int bandW = cfg.defaultBandW;
             for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
@@ -654,7 +657,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
 
             leftX += bandW; // consume thickness regardless of inner padding
 
-            ApplyStackWithBox(hMain->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
         }
     }
 
@@ -662,7 +665,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
     // PASS 1: RIGHT band(s)
     // -----------------------------
     {
-        int n = CollectSide(hMain->WindowHandle, PXWindowDockSideRight, buf, total);
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideRight, buf, total);
         if(n > 0) {
             int bandW = cfg.defaultBandW;
             for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
@@ -672,7 +675,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
 
             rightX -= bandW;
 
-            ApplyStackWithBox(hMain->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
         }
     }
 
@@ -680,7 +683,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
     // PASS 2: TOP band(s) — use remaining width
     // -----------------------------
     {
-        int n = CollectSide(hMain->WindowHandle, PXWindowDockSideTop, buf, total);
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideTop, buf, total);
         if(n > 0) {
             int bandH = cfg.defaultBandH;
             for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
@@ -690,7 +693,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
 
             topY += bandH;
 
-            ApplyStackWithBox(hMain->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
         }
     }
 
@@ -698,7 +701,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
     // PASS 2: BOTTOM band(s)
     // -----------------------------
     {
-        int n = CollectSide(hMain->WindowHandle, PXWindowDockSideBottom, buf, total);
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideBottom, buf, total);
         if(n > 0) {
             int bandH = cfg.defaultBandH;
             for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
@@ -708,7 +711,7 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
 
             bottomY -= bandH;
 
-            ApplyStackWithBox(hMain->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
         }
     }
 
@@ -716,12 +719,12 @@ void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg)
     // PASS 3: CENTER / FILL (DOCK_NONE)
     // -----------------------------
     {
-        int n = CollectSide(hMain->WindowHandle, PXWindowDockSideNone, buf, total);
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideNone, buf, total);
         RECT remain = (RECT){ leftX, topY, rightX, bottomY };
         remain = InsetRectBy(remain, cfg.padCenter);
 
         if(n > 0) {
-            ApplyStackWithBox(hMain->WindowHandle, &hdwp, remain, cfg.centerVertical /* orientation */, buf, n, spacingDefault);
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, remain, cfg.centerVertical /* orientation */, buf, n, spacingDefault);
         }
     }
 
@@ -893,10 +896,14 @@ static void TearOffToFloating(PXWindow* p, POINT startScreen)
 
     PXWindowDestroy(p);
 
+    PXWindowCreateInfo pxWindowCreateInfo;
+    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+    pxWindowCreateInfo.floating = TRUE;
+    pxWindowCreateInfo.dockSide = PXWindowDockSideNone;
+    pxWindowCreateInfo.WindowParent = PXNull;
+    pxWindowCreateInfo.isChild = FALSE;
 
-    p->floating = TRUE;
-    p->dockSide = PXWindowDockSideNone;
-    CreatePaneWindow(&p, 0, FALSE);
+    PXWindowCreate(&p, &pxWindowCreateInfo);
 
 
     if(reactGL)
@@ -913,16 +920,23 @@ static void TearOffToFloating(PXWindow* p, POINT startScreen)
     SendMessageW(p->WindowHandle, WM_SYSCOMMAND, SC_MOVE | 0x0002, 0); // start system drag
 }
 
-static void DockBackToChild(PXWindow* p, PXWindowDockSide side) {
-    if(!p->floating) return;
+static void DockBackToChild(PXWindow* p, PXWindowDockSide side) 
+{
+    if(!p->floating) 
+        return;
 
     PXBool reactGL = p->RenderContext > 0;
 
     PXWindowDestroy(p);
 
-    p->floating = FALSE;
-    p->dockSide = side;
-    CreatePaneWindow(&p, p->WindowParent, TRUE);
+    PXWindowCreateInfo pxWindowCreateInfo;
+    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+    pxWindowCreateInfo.WindowParent = p->WindowParent;
+    pxWindowCreateInfo.floating = FALSE;
+    pxWindowCreateInfo.dockSide = side;
+    pxWindowCreateInfo.isChild = PXTrue;
+
+    PXWindowCreate(&p, &pxWindowCreateInfo);
 
     if(reactGL)
     {
@@ -1113,7 +1127,7 @@ PXResult PXAPI PXWindowDrawGDI(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF p
     SelectObject(hdc, oldPen);
     DeleteObject(pen);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
@@ -1208,7 +1222,7 @@ PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF px
     glEnd();
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
@@ -1216,7 +1230,7 @@ void PaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
     const HDC hdc = PXWindowDCGet(pxWindow);
 
-    PXWindowDrawFunction drawFunciton = PXNull;
+    PXECSDrawFunction drawFunciton = PXNull;
 
     // PreRender
     switch(pxWindow->GraphicSystem)
@@ -1265,12 +1279,19 @@ void PaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
             return;
     }
 
-    if(pxWindow->DrawFunction)
-    {
-        drawFunciton = pxWindow->DrawFunction;
-    }
+    PXECSInfo* pxECSInfo = pxWindow->EventList.CallBackOwner;
+    PXECSDrawFunction pxECSDrawFunction = pxWindow->EventList.CallBackDraw;
 
-    PXResult pxResult = drawFunciton(pxWindow, pxWindowDrawInfo);
+    if(pxECSDrawFunction && pxECSInfo)
+    {
+        drawFunciton = pxECSDrawFunction;
+
+        PXResult pxResult = drawFunciton(pxECSInfo, pxWindowDrawInfo);
+    }
+    else
+    {
+        drawFunciton(pxWindow, pxWindowDrawInfo);
+    }  
 
     // Post render update
     switch(pxWindow->GraphicSystem)
@@ -2939,7 +2960,7 @@ PXResult PXAPI PXWindowRegisterToECS()
 {
     PXECSRegister(&PXWindowRegisterInfoStatic, &PXWindowRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow)
@@ -3118,7 +3139,7 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
         }
     }*/
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowEventPendingAmount(PXSize PXREF amount)
@@ -3127,7 +3148,7 @@ PXResult PXAPI PXWindowEventPendingAmount(PXSize PXREF amount)
 
     * amount = XPending(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle); // X11
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
 
@@ -3135,7 +3156,7 @@ PXResult PXAPI PXWindowEventPendingAmount(PXSize PXREF amount)
 
     *amount = inputAmount;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     * amount = 0;
@@ -3148,12 +3169,12 @@ PXResult PXAPI PXWindowEventPoll(const PXWindow PXREF pxWindow)
 {
     if(!pxWindow)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(!pxWindow->WindowHandle)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     // pxWindow->MouseCurrentInput.ButtonsDelta = 0; // Reset mouse data
@@ -3247,16 +3268,16 @@ PXResult PXAPI PXWindowEventPoll(const PXWindow PXREF pxWindow)
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowBufferSwap(const PXWindow PXREF pxWindow)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix
     glXSwapBuffers(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxWindow->WindowHandle);
-    pxActionResult = PXActionSuccessful; // TODO: Do we have error checking?
+    pxActionResult = PXResultOK; // TODO: Do we have error checking?
 
 #elif OSWindows
     const BOOL result = SwapBuffers(pxWindow->DeviceContextHandle);
@@ -3281,18 +3302,29 @@ PXResult PXAPI PXWindowBufferSwap(const PXWindow PXREF pxWindow)
 
 PXResult PXAPI PXWindowDestroy(PXWindow PXREF pxWindow)
 {
-    PXActionResult result = PXActionInvalid;
+    PXResult result = PXResultInvalid;
 
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    // Step 1) Disconnect OpenGL possible connection
     if(pxWindow->RenderContext)
     {
+#if OSUnix
+        glXMakeCurrent(window->DisplayCurrent, None, NULL);
+        //glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
+#elif OSWindows
         wglMakeCurrent(pxWindow->DeviceContextHandle, PXNull);
         wglDeleteContext(pxWindow->RenderContext);
+#endif
 
         pxWindow->RenderContext = PXNull;
     }
 
 #if OSUnix
-    const int resultID = XDestroyWindow(_pxGUIManager.DisplayCurrent.DisplayHandle, pxWindow->Info.Handle.WindowHandle);
+    const int resultID = XDestroyWindow(_pxGUIManager.DisplayCurrent.DisplayHandle, pxWindow->WindowHandle);
     result = PXWindowErrorFromXSystem(resultID);
 #elif OSWindows
     const BOOL success = DestroyWindow(pxWindow->WindowHandle);
@@ -3301,45 +3333,25 @@ PXResult PXAPI PXWindowDestroy(PXWindow PXREF pxWindow)
     result PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    if(PXActionSuccessful == result)
+    if(PXResultOK != result)
     {
-        pxWindow->WindowHandle = PXNull;
-        pxWindow->DeviceContextHandle = PXNull;
+        return result;
     }
 
-#if 0
-
-#if OSUnix
-    glXMakeCurrent(window->DisplayCurrent, None, NULL);
-    //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
-    XDestroyWindow(window->DisplayCurrent, window->ID);
-    XCloseDisplay(window->DisplayCurrent);
-
-    window->ID = PXNull;
-
-#elif PXOSWindowsDestop
-
-    // Minimizes but does not destroy the specified window.
-    CloseWindow(window->ID); // Windows 2000, User32.dll, winuser.h
-
-    // Finally destroy the window
-    DestroyWindow(window->ID); // Windows 2000, User32.dll, winuser.h
-
-    window->ID = PXNull;
-
-#else
-    return; // Not supported on this OS
-#endif
-
-#endif
-
-    // return PXActionSuccessful;
+    // Step 4, reset handles
+    pxWindow->WindowHandle = PXNull;
+    pxWindow->DeviceContextHandle = PXNull;
 
     return result;
 }
 
 PXResult PXAPI PXWindowFindViaTitle(PXWindow PXREF pxWindow, const PXText PXREF pxText)
 {
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     HWND windowHandle = PXNull;
 
     switch(pxText->Format)
@@ -3355,14 +3367,19 @@ PXResult PXAPI PXWindowFindViaTitle(PXWindow PXREF pxWindow, const PXText PXREF 
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDragStart(PXWindow PXREF pxWindow)
 {
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
 #elif OSWindows
     HWND hwndParent = PXNull;
@@ -3385,7 +3402,7 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
 {
     if(!(pxWindow && pxWindowPixelSystemInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if PXLogEnable
@@ -3401,7 +3418,7 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
 #if OSUnix
     // TODO: implement?
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
 
@@ -3467,7 +3484,7 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
     const BOOL successul = SetPixelFormat(windowDeviceHandle, pixelFormatIndex, &pixelFormatDescriptor);
     const PXResult pxActionResult = PXErrorCurrent(successul);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -3491,6 +3508,11 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
 
 PXBool PXAPI PXWindowIsInFocus(const PXWindow PXREF pxWindow)
 {
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
@@ -3503,6 +3525,11 @@ PXBool PXAPI PXWindowIsInFocus(const PXWindow PXREF pxWindow)
 
 PXResult PXAPI PXWindowShow(const PXWindow PXREF pxWindow)
 {    
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     // EnableWindow(pxWindow->ID, show);
     HWND windowHandle = pxWindow->WindowHandle;
 
@@ -3511,20 +3538,30 @@ PXResult PXAPI PXWindowShow(const PXWindow PXREF pxWindow)
     BOOL res = ShowWindow(windowHandle, SW_SHOW); // Twice to prevent some errors
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowHide(const PXWindow PXREF pxWindow)
 {
-    return PXActionSuccessful;
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowRedraw(const PXWindow PXREF pxWindow)
 {
+    if(!pxWindow)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     InvalidateRect(pxWindow->WindowHandle, 0, PXFalse);
     UpdateWindow(pxWindow->WindowHandle);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowRedrawEnable(PXWindow PXREF pxWindow, const PXBool enable)
@@ -3541,7 +3578,7 @@ PXResult PXAPI PXWindowRedrawEnable(PXWindow PXREF pxWindow, const PXBool enable
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDragAndDropBegin(PXWindow PXREF pxWindow)
@@ -3551,12 +3588,12 @@ PXResult PXAPI PXWindowDragAndDropBegin(PXWindow PXREF pxWindow)
 
     const HRESULT dragResult = RegisterDragDrop(pxWindow->WindowHandle, &dropTarget); // Windows 2000, Ole32.dll, ole2.h
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDragAndDropEnd(PXWindow PXREF pxWindow)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDrawBegin(PXWindow PXREF pxWindow)
@@ -3647,7 +3684,7 @@ PXResult PXAPI PXWindowScrollbarUpdate(PXWindow PXREF pxWindow, PXScollbar PXREF
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowTitleBarColor(PXWindow PXREF pxWindow)
@@ -3664,7 +3701,7 @@ PXResult PXAPI PXWindowTitleBarColor(PXWindow PXREF pxWindow)
         PXTextFromAdressA(&pxText, WindowsLibraryDWMAPI, sizeof(WindowsLibraryDWMAPI), sizeof(WindowsLibraryDWMAPI));
         const PXResult libOpenResult = PXLibraryOpen(&pxLibrary, &pxText);
 
-        if(PXActionSuccessful != libOpenResult)
+        if(PXResultOK != libOpenResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -3690,7 +3727,7 @@ PXResult PXAPI PXWindowTitleBarColor(PXWindow PXREF pxWindow)
 
     PXLibraryClose(&pxLibrary);
 
-    if(PXActionSuccessful != setResult)
+    if(PXResultOK != setResult)
     {
         return setResult;
     }
@@ -3719,12 +3756,12 @@ PXResult PXAPI PXWindowForegroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF
     const COLORREF colorPrevious = SetTextColor(pxWindow->DeviceContextHandle, colorNew);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowBackgroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF pxColorRGBI8)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix
     const PXI32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
@@ -3754,19 +3791,19 @@ PXResult PXAPI PXWindowBackgroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF
         );
 #endif
 
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowFontSet(PXWindow PXREF pxWindow, PXFont PXREF pxFont)
 {
     if(!(pxWindow && pxFont))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if PXLogEnable && 0
@@ -3794,7 +3831,7 @@ PXResult PXAPI PXWindowFontSet(PXWindow PXREF pxWindow, PXFont PXREF pxFont)
 
     if(!pxFont->FontHandle)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     const HFONT fontHandleOld = (HFONT)SelectObject(pxWindow->DeviceContextHandle, pxFont->FontHandle);
@@ -3804,14 +3841,14 @@ PXResult PXAPI PXWindowFontSet(PXWindow PXREF pxWindow, PXFont PXREF pxFont)
 
     _lastFont = pxFont;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowBrushSet(PXWindow PXREF pxWindow, PXBrush PXREF pxBrush, const PXI8U mode)
 {
     if(!(pxWindow && pxBrush))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXColorRGBI8* colorRef = PXNull;
@@ -3847,12 +3884,12 @@ PXResult PXAPI PXWindowBrushSet(PXWindow PXREF pxWindow, PXBrush PXREF pxBrush, 
         PXWindowBackgroundSet(pxWindow, colorRef);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowTextGet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix
     pxActionResult = PXActionRefusedNotImplemented;
@@ -3895,7 +3932,7 @@ PXResult PXAPI PXWindowTextGet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 
 PXResult PXAPI PXWindowTextSet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix
     pxActionResult = PXActionRefusedNotImplemented;
@@ -3938,7 +3975,7 @@ PXResult PXAPI PXWindowTextSet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 
 PXResult PXAPI PXWindowStyleUpdate(PXWindow PXREF pxWindow)
 {
-    PXActionResult result = PXActionInvalid;
+    PXActionResult result = PXResultInvalid;
 
 #if OSUnix
     result = PXActionRefusedNotImplemented;
@@ -3975,7 +4012,7 @@ PXResult PXAPI PXWindowRectangleXYWH(PXWindow PXREF pxWindow, PXRectangleXYWHI32
     pxRectangleXYWHI32->Height = rectangle.bottom;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowRectangleLTRB(PXWindow PXREF pxWindow, PXRectangleLTRBI32 PXREF pxRectangleLTRBI32)
@@ -3983,7 +4020,7 @@ PXResult PXAPI PXWindowRectangleLTRB(PXWindow PXREF pxWindow, PXRectangleLTRBI32
     RECT rectangle;
     BOOL result = GetClientRect(pxWindow->WindowHandle, &rectangle);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBool PXAPI PXWindowIsValid(const PXWindow PXREF pxWindow)
@@ -4024,12 +4061,12 @@ PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo
 {
     PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
         PXWindowTextText,
-        "Rectangle2D",
+        PXRectangle2DText,
         "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
         pxWindow->Info.ID,
         pxWindowDrawRectangleInfo->RectangleXYWH.X,
@@ -4147,7 +4184,7 @@ PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXWindowDrawInfo
 
             if(penSize == 0)
             {
-                return PXActionSuccessful;
+                return PXResultOK;
             }
 
             const HPEN penLight = CreatePen(penStyle, penSize, highColorWIN);
@@ -4269,7 +4306,7 @@ PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXWindowDrawInfo
             break;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow)
@@ -4293,7 +4330,7 @@ PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow)
     //GetUpdateRect();
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 const char PXTextFailsafe[] = "<missing text>";
@@ -4341,7 +4378,7 @@ void PXAPI PXTextDraw(PXOpenGL PXREF pxOpenGL, PXFont PXREF pxFont, PXText PXREF
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 }
 
@@ -4359,7 +4396,7 @@ PXResult PXAPI PXWindowDrawText
 
     if(!(pxWindow && pxWindowDrawInfo && pxText))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXOpenGL PXREF pxOpenGL = &pxGraphic->OpenGLInstance;
@@ -4667,7 +4704,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo P
     PXBrush* brushMainPrimary = pxGUITheme->BrushMainPrimary;
     PXBrush* brushMainSecoundary = pxGUITheme->BrushMainSecoundary;
 
-    PXResult pxResult = PXActionInvalid;
+    PXResult pxResult = PXResultInvalid;
 
     switch(pxWindow->GraphicSystem)
     {
@@ -4684,7 +4721,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo P
                 width,
                 height
             );
-            pxResult = PXActionSuccessful;// PXWindowErrorFromXSystem(resultID);
+            pxResult = PXResultOK;// PXWindowErrorFromXSystem(resultID);
 #elif OSWindows
 
             PXResult pxResult;
@@ -4772,7 +4809,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo P
             pxOpenGL->Binding.LineWidth(1);
 
 
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -4790,7 +4827,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo P
             break;
         }
         default:
-            return PXActionInvalid;
+            return PXResultInvalid;
     }
 
     return pxResult;
@@ -4800,7 +4837,7 @@ PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, co
 {
     if(!(pxWindow && pxIcon))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -4819,7 +4856,7 @@ PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, co
         DI_NORMAL
     );
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
@@ -4838,7 +4875,7 @@ PXResult PXAPI PXWindowMouseTrack(PXWindow PXREF window)
     const PXBool rs = TrackMouseEvent(&trackMouseEvent);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow)
@@ -4865,7 +4902,7 @@ PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow)
     const BOOL regsiterRawImputSuccess = RegisterRawInputDevices(rawInputDeviceList, 2, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
     const PXResult pxActionResult = PXErrorCurrent(regsiterRawImputSuccess);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -4892,7 +4929,7 @@ PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupported;
@@ -4982,7 +5019,7 @@ PXResult PXAPI PXWindowCursorCaptureMode(PXWindow PXREF pxWindow, const PXWindow
 
 PXResult PXAPI PXWindowCursorPositionGet(PXWindow PXREF pxWindow, PXVector2I32S PXREF position)
 {
-    PXResult pxResult = PXActionInvalid;
+    PXResult pxResult = PXResultInvalid;
 
     if(pxWindow->WindowHandle)
     {
@@ -5073,7 +5110,7 @@ PXResult PXAPI PXWindowCursorPositionGet(PXWindow PXREF pxWindow, PXVector2I32S 
 
 PXResult PXAPI PXWindowText(PXWindow PXREF pxWindow, PXText PXREF pxText, const PXBool doWrite)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix
     pxActionResult = PXActionRefusedNotImplemented;
@@ -5139,15 +5176,32 @@ PXResult PXAPI PXWindowText(PXWindow PXREF pxWindow, PXText PXREF pxText, const 
 
 PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF pxWindowCreateInfo)
 {
-    PXActionResult result = PXActionInvalid;
+    /*
+        PXWindowCreateInfo pxWindowCreateInfo;
+    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+    pxWindowCreateInfo.StyleFlags = 
+        asChild ? (WS_CHILD | WS_VISIBLE | CS_OWNDC | WS_CLIPSIBLINGS | WS_CLIPCHILDREN)
+        : (WS_OVERLAPPEDWINDOW);
+     // p->ownerMain; // parent for child; owner for top-level
+
+    pxWindowCreateInfo.WindowParent = pxWindowParant;
+    pxWindowCreateInfo.WindowClassName.A = PXWindowClassName;
+    pxWindowCreateInfo.Position.Form.X = CW_USEDEFAULT;
+    pxWindowCreateInfo.Position.Form.Y = CW_USEDEFAULT;
+    pxWindowCreateInfo.Position.Form.Width = 320;
+    pxWindowCreateInfo.Position.Form.Height = 320;
+    
+    */
+
+    PXResult result = PXResultInvalid;
 
     if(!(pxWindowREF && pxWindowCreateInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXWindow* pxWindow = *pxWindowREF;
-    PXWindow* pxWindowParent = pxWindowCreateInfo->WindowParent;    
+    PXWindow* pxWindowParent = pxWindowCreateInfo->WindowParent;
 
     if(!pxWindow)
     {
@@ -5164,18 +5218,34 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
         }
     }
 
+    pxWindowCreateInfo->WindowClassName.A = PXWindowClassName;
+
     pxWindow->Type = pxWindowCreateInfo->Type;
-    pxWindow->InteractCallBack = pxWindowCreateInfo->InteractCallBack;
-    pxWindow->InteractOwner = pxWindowCreateInfo->InteractOwner;
+    pxWindow->EventList = pxWindowCreateInfo->EventList;
     pxWindow->Info.Behaviour |= pxWindowCreateInfo->Behaviour;
     pxWindow->Info.Setting |= pxWindowCreateInfo->Setting;
+    pxWindow->color = RGB(pxWindowCreateInfo->Color.Red, pxWindowCreateInfo->Color.Green, pxWindowCreateInfo->Color.Blue);
+    pxWindow->floating = pxWindowCreateInfo->floating;
+    pxWindow->dockSide = pxWindowCreateInfo->dockSide;
+    pxWindow->headerH = 28;
 
     PXTextPrint(&pxWindowCreateInfo->WindowText, "PX-Window_%i", pxWindow->Info.ID);
 
-#if 0
-    pxWindowParent = PXNull;
-    pxWindowCreateInfo->WindowParent = PXNull;
+
+    if(!pxWindow->EventList.CallBackOwner && pxWindow->EventList.CallBackDraw)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            PXWindowTextText,
+            "Create",
+            "PXID:%i, %s, Custom draw set but no event callback owner! Invalid call!",
+            pxWindow->Info.ID,
+            pxWindowCreateInfo->Info.Static->NameOfType.A
+        );
 #endif
+    }
 
     pxWindowCreateInfo->StyleFlagsExtended |= WS_EX_WINDOWEDGE | WS_EX_COMPOSITED;
 
@@ -5190,7 +5260,6 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
 
         pxWindowCreateInfo->StyleFlags |=
             WS_CHILD |
-            WS_VISIBLE |
             CS_OWNDC |
             WS_CLIPSIBLINGS |
             WS_CLIPCHILDREN;
@@ -5297,7 +5366,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
             pxWindowParent->Position.Form.Y,
             pxWindowParent->Position.Form.Width,
             pxWindowParent->Position.Form.Height,
-            pxWindowParent->NameContent,
+            "---",
             validResult ? "OK" : "INVALID"
         );
 #endif
@@ -5347,7 +5416,11 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
 #if OSWindows
     pxWindowCreateInfo->StyleFlags |= WS_CLIPCHILDREN | SS_NOTIFY; // WS_CLIPSIBLINGS
 
-    if(!pxWindowCreateInfo->Invisible)
+    if(pxWindowCreateInfo->Invisible)
+    {
+        pxWindowCreateInfo->StyleFlags &= ~WS_VISIBLE;
+    }
+    else
     {
         pxWindowCreateInfo->StyleFlags |= WS_VISIBLE;
     }
@@ -5508,20 +5581,11 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
 
     // If we hav
     {
-        if(pxWindowCreateInfo->DrawFunctionEngine)
-        {
-            pxWindow->DrawFunction = pxWindowCreateInfo->DrawFunctionEngine;
-        }
-        else
-        {
-            //pxWindowCurrent->DrawFunction = PXWindowDrawCustomFailback;
-        }
-
         pxWindow->Info.Behaviour &= ~PXECSInfoUseByMask;
         pxWindow->Info.Behaviour |= PXECSInfoUseByEngine;
 
 #if OSWindows
-        if(pxWindow->DrawFunction)
+        if(pxWindow->EventList.CallBackDraw)
         {
             DWORD magicID = 0;
 
@@ -5686,7 +5750,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
                 );
 #endif
 
-                return PXActionSuccessful; // no appropriate visual found
+                return PXResultOK; // no appropriate visual found
             }
 
 
@@ -5786,7 +5850,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
                 );
 #endif
 
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
 #if PXLogEnable
@@ -5875,7 +5939,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
                 );
 #endif
 
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
 #if PXLogEnable
@@ -5921,7 +5985,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
         );
         const PXResult createResult = PXErrorCurrent(PXNull != pxWindow->WindowHandle);
 
-        if(PXActionSuccessful != createResult)
+        if(PXResultOK != createResult)
         {
             return createResult;
         }
@@ -5980,6 +6044,11 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
 
 
         PXWindowTitleBarColor(pxWindow);
+
+
+        UpdateWindow(pxWindow->WindowHandle);
+        ShowWindow(pxWindow->WindowHandle, SW_SHOWNORMAL);
+
 
 #if 0
         PXWindowOpenGLEnable(pxWindow);
@@ -6739,7 +6808,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
             if(info)
             {
                 const PXResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowMessageLoop, window);
-                const PXBool sucessful = PXActionSuccessful == actionResult;
+                const PXBool sucessful = PXResultOK == actionResult;
 
                 if(!sucessful)
                 {
@@ -6760,11 +6829,11 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 
     /*
@@ -6782,7 +6851,7 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
         }
         default:
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }*/
 
@@ -6793,7 +6862,7 @@ PXResult PXAPI PXWindowPositionCalculcate(PXWindow PXREF pxWindow, PXWindowPosit
 {
     if(!(pxWindow && pxUIElementPositionCalulcateInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(!((PXWindowAllignIgnoreParentMargin & pxWindow->Info.Setting) > 0))
@@ -6971,47 +7040,6 @@ PXResult PXAPI PXWindowPositionCalculcate(PXWindow PXREF pxWindow, PXWindowPosit
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-PXWindow* PXWindowCreateEE
-(
-    PXWindow PXREF pxWindowParent,
-    int r,
-    int g,
-    int b,
-    BOOL aa, 
-    PXWindowDockSide pxWindowDockSide,
-    BOOL isChild,
-    PXWindowDrawFunction drawfun
-)
-{
-    PXWindow* pane = 0;
-
-    CreatePaneWindow(&pane, pxWindowParent, isChild);
-    pane->color = RGB(r, g, b);
-    pane->floating = aa;
-    pane->dockSide = pxWindowDockSide;
-    pane->headerH = 28;
-    pane->DrawFunction = drawfun;
-
-    UpdateWindow(pane->WindowHandle);
-    ShowWindow(pane->WindowHandle, SW_SHOWNORMAL);
-
-    return pane;
-}
-
 const char* PXWindowDockSideString[] =
 {
     "None",
@@ -7037,62 +7065,6 @@ RECT PXWindowRectOf(HWND h)
 PXWindow* PaneFromHwnd(HWND h)
 {
     return (PXWindow*)GetWindowLongPtrW(h, GWLP_USERDATA);
-}
-
-void CreatePaneWindow(PXWindow** pxWindowREF, PXWindow* pxWindowParant, BOOL asChild)
-{
-    PXWindow* pxWindow = PXNull;
-
-    PXWindowCreateInfo pxWindowCreateInfo;
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
-    pxWindowCreateInfo.StyleFlags = 
-        asChild ? (WS_CHILD | WS_VISIBLE | CS_OWNDC | WS_CLIPSIBLINGS | WS_CLIPCHILDREN)
-        : (WS_OVERLAPPEDWINDOW);
-     // p->ownerMain; // parent for child; owner for top-level
-
-    pxWindowCreateInfo.WindowParent = pxWindowParant;
-    pxWindowCreateInfo.WindowClassName.A = PXWindowClassName;
-    pxWindowCreateInfo.Position.Form.X = CW_USEDEFAULT;
-    pxWindowCreateInfo.Position.Form.Y = CW_USEDEFAULT;
-    pxWindowCreateInfo.Position.Form.Width = 320;
-    pxWindowCreateInfo.Position.Form.Height = 320;
-
-    PXResult pxResult = PXWindowCreate(pxWindowREF, &pxWindowCreateInfo);
-
-    pxWindow = *pxWindowREF;
-
-
-    //pxWindow->DeviceContextHandle = GetDC(hwnd);
-
-
-    //p->isopengltest = 1;
-
-    InvalidateRect(pxWindow->WindowHandle, 0, 1);
-    UpdateWindow(pxWindow->WindowHandle);
-    /*
-    if(pxWindow->isopengltest)
-    {
-        PIXELFORMATDESCRIPTOR pfd = { 0 };
-        pfd.nSize = sizeof(pfd);
-        pfd.nVersion = 1;
-        pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-        pfd.iPixelType = PFD_TYPE_RGBA;
-        pfd.cColorBits = 24;     // 24-bit color
-        pfd.cAlphaBits = 8;      // alpha channel (optional for GL 1.1)
-        pfd.cDepthBits = 24;      // no depth for 2D; set 24 if you need depth testing
-        pfd.iLayerType = PFD_MAIN_PLANE;
-
-        int pixelFormat = ChoosePixelFormat(pxWindow->DeviceContextHandle, &pfd);
-
-        if(pixelFormat == 0)
-            return FALSE;
-
-        if(!SetPixelFormat(pxWindow->DeviceContextHandle, pixelFormat, &pfd)) 
-            return FALSE;
-
-        pxWindow->RenderContext = wglCreateContext(pxWindow->DeviceContextHandle);
-    }
-    */
 }
 
 void SubSegment(RECT* m, RECT* r, PXWindowDockSide side)

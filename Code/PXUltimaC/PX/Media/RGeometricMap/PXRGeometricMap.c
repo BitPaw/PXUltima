@@ -313,7 +313,7 @@ void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeo
 
         PXRGeometricMapMeshEnvironmentAssetChannel(&pxRGeometricMapMesh->BakedLight, pxFile);
 
-        return; // DONE, PXActionSuccessful
+        return; // DONE, PXResultOK
     }
 
     PXRGeometricMapMeshEnvironmentAssetChannel(&pxRGeometricMapMesh->BakedLight, pxFile);
@@ -360,7 +360,7 @@ PXResult PXAPI PXRGeometricMapLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
     PXRGeometricMap pxRGeometricMap;
     PXClear(PXRGeometricMap, &pxRGeometricMap);
@@ -621,7 +621,7 @@ PXResult PXAPI PXRGeometricMapLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
     // DONE, now translate! 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRGeometricMapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

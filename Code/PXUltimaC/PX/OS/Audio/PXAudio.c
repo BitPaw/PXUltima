@@ -71,7 +71,7 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
                 "There is no audio system"
             );
 #endif
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
 
         }
     }
@@ -84,7 +84,7 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
 
         const PXResult initializeResult = pxAudio->Initialize(pxAudio->SystemReference, &pxAudioInitializeInfo);
 
-        if(PXActionSuccessful != initializeResult)
+        if(PXResultOK != initializeResult)
         {
 #if PXLogEnable
             PXLogPrint
@@ -122,12 +122,12 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXAudioRelease(PXAudio PXREF pxAudio)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXAudioSpeakerBeep(const PXI32U hz, const PXI32U time)

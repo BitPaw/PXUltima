@@ -4,12 +4,33 @@
 #include <PX/Math/PXMath.h>
 
 #include <gl/GL.h>
+#include <PX/Math/PXTriangle.h>
 
 #define PXColorPickerDebug 0
 
 int colorTemp;
 
 const char PXColorPickerName[] = "ColorPicker";
+const PXI8U PXColorPickerNameLength = sizeof(PXColorPickerName);
+const PXECSRegisterInfoStatic PXColorPickerInfoStatic =
+{
+    {sizeof(PXColorPickerName), sizeof(PXColorPickerName), PXColorPickerName, TextFormatASCII},
+    sizeof(PXColorPicker),
+    __alignof(PXColorPicker),
+    PXECSTypeEntity,
+    PXColorPickerCreate,
+    PXNull,
+    PXColorPickerDraw
+};
+PXECSRegisterInfoDynamic PXColorPickerInfoDynamic;
+
+PXResult PXAPI PXColorPickerRegisterToECS()
+{
+    PXECSRegister(&PXColorPickerInfoStatic, &PXColorPickerInfoDynamic);
+
+    return PXResultOK;
+}
+
 
 PXColorHSV currentHSV;
 PXColorRGBAF currentRGBA;
@@ -261,6 +282,8 @@ void drawFilledCircle(float cx, float cy, float r, int segments)
 
 PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo)
 {
+    PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
+
     float x = pxWindowDrawInfo->RectangleXYWH.X;
     float y = pxWindowDrawInfo->RectangleXYWH.Y;
     float width = pxWindowDrawInfo->RectangleXYWH.Width;
@@ -819,14 +842,13 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXWindowDr
         );
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
-
-
-
 
 PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo)
 {
+    PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
+
 #if PXLogEnable && PXColorPickerDebug
     PXLogPrint
     (
@@ -838,7 +860,7 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDraw
 #endif
     PXWindowDrawRectangle2D
     (
-        pxColorPicker,
+        pxWindow,
         pxWindowDrawInfo
     );
 
@@ -1030,7 +1052,20 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDraw
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPicker, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo)
+PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPickerREF, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo)
 {
-    return PXActionSuccessful;
+    PXColorPicker* pxColorPicker = PXNull;
+
+    pxColorPickerCreateInfo->Info.Static = &PXColorPickerInfoStatic;
+    pxColorPickerCreateInfo->Info.Dynamic = &PXColorPickerInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxColorPickerREF, pxColorPickerCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxColorPicker = *pxColorPickerREF;
+
+    return PXResultOK;
 }

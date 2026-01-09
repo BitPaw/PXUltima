@@ -41,14 +41,14 @@ PXResult PXAPI PXFontRegisterToECS()
 {
     PXECSRegister(&PXFontRegisterInfoStatic, &PXFontRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXFontPage* PXAPI PXFontPageGet(PXFont PXREF pxFont, const PXSize index)
 {
     if(!pxFont)
     {
-        return PXNull; // PXActionRefusedArgumentNull
+        return PXNull; // PXResultRefusedParameterNull
     }
 
     const PXBool isInRange = index <= pxFont->PageListAmount;
@@ -80,7 +80,7 @@ PXResult PXAPI PXFontPageCreate(PXFont PXREF pxFont, const PXSize amount)
         pxFont->PageListAmount = amount;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF pxFontPage, const PXI32U characterID)
@@ -219,7 +219,7 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
             default:
             {
                 // ToDO: ??
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
             }             
         }
 
@@ -267,12 +267,12 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
 
             const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, 0);
 
-            if(PXActionSuccessful != loadResult)
+            if(PXResultOK != loadResult)
                 return loadResult;
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFontRelease(PXFont PXREF pxFont)

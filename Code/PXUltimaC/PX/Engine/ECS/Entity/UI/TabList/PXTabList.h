@@ -7,6 +7,8 @@
 
 typedef struct PXTabList_
 {
+    PXECSInfo Info;
+
     PXWindow* WindowBase;
 }
 PXTabList;
@@ -14,7 +16,9 @@ PXTabList;
 
 typedef struct PXTabListCreateInfo_
 {
-    PXWindowCreateInfo* WindowInfo;
+    PXECSCreateInfo Info;
+
+    PXWindowCreateInfo Window;
 }
 PXTabListCreateInfo;
 
@@ -75,8 +79,10 @@ typedef struct PXWindowExtendedBehaviourResourceView_
 PXWindowExtendedBehaviourResourceView;
 //-----------------------------------------------------
 
-PXPublic PXResult PXAPI PXTabListDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXTabListRegisterToECS();
 
-PXPublic PXResult PXAPI PXTabListCreate(PXTabList** pxTabList, PXTabListCreateInfo PXREF pxTabListCreateInfo);
+PXPublic PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+
+PXPublic PXResult PXAPI PXTabListCreate(PXTabList** pxTabListREF, PXTabListCreateInfo PXREF pxTabListCreateInfo);
 
 #endif

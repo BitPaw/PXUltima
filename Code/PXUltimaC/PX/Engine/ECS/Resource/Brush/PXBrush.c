@@ -21,7 +21,7 @@ PXResult PXAPI PXBrushRegisterToECS()
 {
     PXECSRegister(&PXBrushRegisterInfo, &PXBrushRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBrushCreateInfo)
@@ -50,7 +50,7 @@ PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBru
 
     pxBrush->Info.Behaviour |= PXECSInfoExist;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBrushColorSet(PXBrush PXREF pxWindowBrush, const PXByte red, const PXByte green, const PXByte blue)
@@ -74,5 +74,5 @@ PXResult PXAPI PXBrushColorSet(PXBrush PXREF pxWindowBrush, const PXByte red, co
     );
 #endif 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

@@ -7,10 +7,19 @@
 
 typedef struct PXECSEntityList_
 {
-    int x;
+    PXECSInfo Info;
 }
 PXECSEntityList;
 
-PXPublic PXResult PXAPI PXECSEntityListDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+typedef struct PXECSEntityListCreateInfo_
+{
+    PXECSCreateInfo Info;
+}
+PXECSEntityListCreateInfo;
+
+PXPublic PXResult PXAPI PXECSEntityListRegisterToECS();
+
+PXPublic PXResult PXAPI PXECSEntityListCreate(PXECSEntityList** pxECSEntityListREF, PXECSEntityListCreateInfo PXREF pxECSEntityListCreateInfo);
+PXPublic PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 #endif

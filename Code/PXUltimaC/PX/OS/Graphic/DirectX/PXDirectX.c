@@ -94,7 +94,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
 
             const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
 
-            if(PXActionSuccessful == initializeResult)
+            if(PXResultOK == initializeResult)
             {
 #if PXLogEnable
                 PXLogPrint
@@ -110,7 +110,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
 
                 directXCreated = PXTrue;
 
-                return PXActionSuccessful;
+                return PXResultOK;
             }
 
             PXLogPrint
@@ -257,7 +257,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
 
 PXResult PXAPI PXDirectXRelease(PXDirectX PXREF pxDirectX)
 {
-    return PXActionInvalid;
+    return PXResultInvalid;
 
     // return  pxDirectX->Release(pxDirectX->DXTargetAPI);
 }

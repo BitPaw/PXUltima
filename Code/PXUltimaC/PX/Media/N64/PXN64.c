@@ -156,7 +156,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         if(!readByteEnough)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
         void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
 
@@ -329,7 +329,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXN64SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

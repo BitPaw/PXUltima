@@ -78,7 +78,7 @@ void PXAPI PXTimeNow(PXTime PXREF pxTime)
     const int getTimeResultID = clock_gettime(CLOCK_REALTIME, &ts);
     const PXResult getTimeResult = PXErrorCurrent(0 == getTimeResultID);
 
-    if(PXActionSuccessful != getTimeResult)
+    if(PXResultOK != getTimeResult)
     {
         return getTimeResult;
     }

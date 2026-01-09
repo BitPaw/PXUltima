@@ -4,14 +4,14 @@ PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode PXREF pxHierarchica
 {
 	pxHierarchicalNode->Yourself = entry;
 
-	return PXActionSuccessful;
+	return PXResultOK;
 }
 
 PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF pxHierarchicalNodeParent)
 {
 	if(!(pxHierarchicalNode && pxHierarchicalNodeParent))
 	{
-		return PXActionRefusedArgumentNull;
+		return PXResultRefusedParameterNull;
 	}
 
 	// We want to register a parent, we let the parent register us as a child
@@ -20,7 +20,7 @@ PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode PXREF pxHierarchicalN
 	// Let parent know, i am a child now
 	PXHierarchicalNodeChild(pxHierarchicalNodeParent, pxHierarchicalNode);
 
-	return PXActionSuccessful;
+	return PXResultOK;
 }
 
 PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry)
@@ -33,7 +33,7 @@ PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode PXREF pxHierarchical
 	// Add new sibling
 	nodeCurrent->Sibling = entry;
 
-	return PXActionSuccessful;
+	return PXResultOK;
 }
 
 PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry)
@@ -45,5 +45,5 @@ PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode PXREF pxHierarchicalNo
 
 	PXHierarchicalNodeSibling(nodeCurrent, entry);
 
-	return PXActionSuccessful;
+	return PXResultOK;
 }

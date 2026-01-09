@@ -68,5 +68,5 @@ PXResult PXAPI PXXingInfoParse(PXXingInfo PXREF xingInfo, PXFile PXREF PXFile)
         PXFileReadI32UE(PXFile, &xingInfo->VBRScale, PXEndianBig);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

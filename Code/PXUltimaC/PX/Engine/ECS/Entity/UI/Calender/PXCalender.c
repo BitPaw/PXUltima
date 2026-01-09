@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXCalenderDraw(PXCalender PXREF pxCalender, PXCalenderCreateInfo PXREF pxCalenderCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCalenderCreate(PXCalender** pxCalender, PXCalenderCreateInfo PXREF pxCalenderCreateInfo)
@@ -12,5 +12,5 @@ PXResult PXAPI PXCalenderCreate(PXCalender** pxCalender, PXCalenderCreateInfo PX
     pxCalenderCreateInfo->WindowInfo.WindowClassName.A = MONTHCAL_CLASS;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

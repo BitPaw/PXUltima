@@ -33,18 +33,23 @@ PXColorCircle;
 
 typedef struct PXColorPicker_
 {
+    PXECSInfo Info;
+
     PXWindow* WindowBase;
 }
 PXColorPicker;
 
 typedef struct PXColorPickerCreateInfo_
 {
-    PXWindowCreateInfo Info;
+    PXECSCreateInfo Info;
+
+    PXWindowCreateInfo Window;
 }
 PXColorPickerCreateInfo;
 
+PXPublic PXResult PXAPI PXColorPickerRegisterToECS();
 
 PXPublic PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo);
-PXPublic PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPicker, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo);
+PXPublic PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPickerREF, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo);
 
 #endif

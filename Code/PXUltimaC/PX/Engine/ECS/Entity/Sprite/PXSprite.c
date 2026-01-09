@@ -148,5 +148,5 @@ PXResult PXAPI PXSpriteCreate(PXSprite PXREF pxSprite, PXSpriteCreateInfo PXREF 
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

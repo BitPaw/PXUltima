@@ -62,10 +62,10 @@ PXResult PXAPI PXZIPLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXZIPSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }

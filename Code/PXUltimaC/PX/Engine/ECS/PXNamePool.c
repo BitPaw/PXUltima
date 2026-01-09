@@ -15,21 +15,21 @@ PXResult PXAPI PXNamePoolInit()
 {
     PXDictionaryConstruct(&_pxNamePool.NameLookup, sizeof(PXID), PXNull, PXDictionaryValueLocalityInternalEmbedded);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
-PXResult PXAPI PXNamePoolStore(const PXID pxID, PXText PXREF pxText, PXText PXREF pxTextResult)
+PXResult PXAPI PXNamePoolStore(const PXID pxID, PXText* pxText, PXText* pxTextResult)
 {
    // PXDictionaryEntryAddRange();
 
     PXResult pxResult = PXDictionaryEntryAdd(&_pxNamePool.NameLookup, pxText->A, pxText->SizeUsed);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         return pxResult;
     }
 
     
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

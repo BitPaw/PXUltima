@@ -12,6 +12,14 @@
 
 
 // Resources
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
+#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
+#include <PX/Engine/ECS/Entity/SpaceGrid/PXSpaceGrid.h>
+#include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
+#include <PX/Engine/ECS/Entity/UI/TabList/PXTabList.h>
+#include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
+#include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
 #include <PX/Engine/ECS/Resource/Display/PXDisplay.h>
 #include <PX/Engine/ECS/Resource/Font/PXFont.h>
@@ -82,6 +90,14 @@ PXECS _pxECS;
 
 const PXECSRegisterFunction pxECSRegisterList[] =
 {
+    PXCameraRegisterToECS,
+    PXModelRegisterToECS,
+    PXColorPickerRegisterToECS,
+    PXTabListRegisterToECS,
+    PXSkyBoxRegisterToECS,
+    PXECSEntityInfoRegisterToECS,
+    PXSpaceGridRegisterToECS,
+    PXFileDirectoryRegisterToECS,
     PXLockRegisterToECS,
     PXThreadRegisterToECS,
     PXBrushRegisterToECS,
@@ -120,9 +136,23 @@ PXResult PXAPI PXECSRegister
 
     // We cant trust the pointer from beeing safe to store
     // It must be stored seperately
-    PXNamePoolStore(pxECSRegisterInfoDynamic->ID, &pxECSRegisterInfoStatic->NameOfType, &pxECSRegisterInfoStatic->NameOfType);
+    PXNamePoolStore
+    (
+        pxECSRegisterInfoDynamic->ID, 
+        &pxECSRegisterInfoStatic->NameOfType,
+        &pxECSRegisterInfoStatic->NameOfType
+    );
+
+    PXAssert(pxECSRegisterInfoStatic->TypeSize > sizeof(PXECSInfo), "Used ECS object is missing info");
+
 
 #if PXLogEnable
+    char buffer[128];
+    PXText pxTextModule;
+    PXTextFromAdressA(&pxTextModule, buffer, 0, sizeof(buffer));
+
+    PXLibraryNameFromAdress(PXNull, &pxTextModule, pxECSRegisterInfoStatic->CreateCallback);
+
     const char* typeName = PXECSTypeToString(pxECSRegisterInfoStatic->Type);
 
     PXLogPrint
@@ -130,21 +160,16 @@ PXResult PXAPI PXECSRegister
         PXLoggingAllocation,
         PXECSText,
         "Register",
-        "Type registering..\n"
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %s\n"
-        "%20s : %s",
-        "PX-ID", pxECSRegisterInfoDynamic->ID,
-        "Size", pxECSRegisterInfoStatic->TypeSize,
-        "Allignment", pxECSRegisterInfoStatic->TypeSize,
-        "Name", pxECSRegisterInfoStatic->NameOfType.A,
-        "Type", typeName
+        "0d%4.4i_%s:%s_%i, %s",
+        pxECSRegisterInfoDynamic->ID,
+        pxTextModule.A,
+        pxECSRegisterInfoStatic->NameOfType.A,
+        pxECSRegisterInfoStatic->TypeSize,
+        typeName
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXECSElementToString
@@ -176,7 +201,7 @@ PXResult PXAPI PXECSElementToString
     // PXID_Module:TypeName_Size_Elements?
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXECSInit(void)
@@ -218,7 +243,7 @@ PXResult PXAPI PXECSInit(void)
 
         PXResult pxResult = pxECSRegisterList[i]();
 
-        if(PXActionSuccessful != pxResult)
+        if(PXResultOK != pxResult)
         {
             ++failCounter;
 
@@ -258,7 +283,7 @@ PXResult PXAPI PXECSInit(void)
 
     PXLockCreate(&_pxECS.ResourceLock, &pxLockCreateInfo);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
@@ -266,7 +291,7 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
     // NULL Check
     if(!pxECSProperty)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(pxECSProperty->DoWrite)
@@ -286,7 +311,7 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
             );
 #endif
 
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
 
 
@@ -318,17 +343,17 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
 
        // PXECSInfo->Behaviour |= PXECSInfoHasName;
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElementRef PXREF pxECSElementRef)
 {
     if(!(pxDictionary && pxECSElementRef)) // Is this NULL?
     {
-        return PXActionRefusedArgumentNull; // Illegal call
+        return PXResultRefusedParameterNull; // Illegal call
     }
 
     // Is adress in data range?
@@ -344,7 +369,7 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
         if(isDirectMatch)
         {
             // Pointer is valid as expected and does not need to be updated
-            return PXActionSuccessful;
+            return PXResultOK;
         }
 
         // Pointer is in a valid range but seems to be moved, we need to search..
@@ -356,7 +381,7 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
 
     PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxECSElementRef->ExpectedID, &pxECSElementRef->Element);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         // Not found, object was deleted
 
@@ -387,7 +412,7 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo)
@@ -395,12 +420,14 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
     // NULL Parameter safequard 
     if(!(pxECSInfoREF && pxECSCreateInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
-    // Is the size of the object valid? A size of 0 is not possible
+    // Is the size of the object valid? 
+    // A size of 0 is not possible.
+    // Also a size smaler then "PXECSInfo" means the dev forgot to add the base object.
     const PXSize typeSize = pxECSCreateInfo->Static->TypeSize;
-    const PXBool hasValidSize = 0 < typeSize;
+    const PXBool hasValidSize = sizeof(PXECSInfo) < typeSize;
 
     if(!hasValidSize)
     {
@@ -444,7 +471,7 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
     );
 #endif 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 /*
@@ -452,7 +479,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
 {
     if(!pxResourceCreateInfo)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     //-----------------------------------------------------
@@ -464,7 +491,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
 
     if(!pxResourceEntry)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     // fixing text
@@ -593,7 +620,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
                 PXTaskParameterRelease | PXTaskExecuteASYNC
             );
 
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
     //-----------------------------------------------------
@@ -620,7 +647,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
 
     const PXResult pxActionCreate = pxResourceEntry->CreateFunction(pxResourceCreateInfo, *pxResourceCreateInfo->ObjectReference);
 
-    if(PXActionSuccessful != pxActionCreate)
+    if(PXResultOK != pxActionCreate)
     {
 #if PXLogEnable
         PXLogPrint
@@ -635,7 +662,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI //PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount)
@@ -647,5 +674,5 @@ PXResult PXAPI //PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCrea
         //PXResourceManagerAdd(pxResourceCreateInfo);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }*/

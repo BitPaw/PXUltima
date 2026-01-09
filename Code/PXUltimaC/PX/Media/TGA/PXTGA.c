@@ -235,7 +235,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         if(!isPXTGAVersionTwo) // Is this a PXTGA v.1.0 pxFile?
         {
-            return PXActionSuccessful; // Parsing finished. There should be no more data to parse. End of pxFile.
+            return PXResultOK; // Parsing finished. There should be no more data to parse. End of pxFile.
         }
     }
 
@@ -312,7 +312,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTGASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

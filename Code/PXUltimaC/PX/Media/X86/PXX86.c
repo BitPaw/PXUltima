@@ -653,7 +653,7 @@ PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator PXREF pxX86Iterator)
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -678,5 +678,5 @@ PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF px
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

@@ -41,7 +41,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
     if(!pxBinaryWindows)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
@@ -103,7 +103,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
       //  if(!validSize)
       //  {
-      //      return PXActionInvalid;
+      //      return PXResultInvalid;
      //   }
 
 
@@ -275,7 +275,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
         const PXResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxFile);
 
-        if(PXActionSuccessful != coffLoadResult) 
+        if(PXResultOK != coffLoadResult) 
             return coffLoadResult;
     }
 

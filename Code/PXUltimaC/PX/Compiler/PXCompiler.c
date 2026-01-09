@@ -266,7 +266,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompil
 
     PXCompilerSymbolEntryPeek(pxCompiler);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler PXREF pxCompiler, PXCompilerSymbolEntry PXREF compilerSymbolEntry)
@@ -913,7 +913,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 {
     if(!pxCompiler)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXFile PXREF pxFileInput = pxCompiler->ReadInfo.FileInput;
@@ -930,7 +930,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
         );
 #endif
 
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     const PXI64U timeCounter = PXTimeCounterStampGet();
@@ -956,7 +956,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 
         if(!isValidCall)
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
@@ -1142,7 +1142,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
                 {
                     // Error, we have a multiline comment without an end.
                     // printf("Errr\n");
-                    return PXActionInvalid;
+                    return PXResultInvalid;
                 }
 
                 compilerSymbolEntry.ID = PXCompilerSymbolLexerComment;
@@ -1241,7 +1241,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 
     PXFileCursorToBeginning(pxCompiler->ReadInfo.FileCache);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler PXREF pxCompiler, PXText PXREF pxText)

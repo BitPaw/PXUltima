@@ -221,7 +221,7 @@ PXGUIManager* PXAPI PXGUIInitialize(void)
 
 PXResult PXAPI PXGUIShutdown(void)
 {
-    PXActionResult result = PXActionInvalid;
+    PXActionResult result = PXResultInvalid;
 
 #if OSUnix
     const int resultID = XCloseDisplay(_pxGUIManager.DisplayCurrent.DisplayHandle);
@@ -261,7 +261,7 @@ PXResult PXAPI PXGUIPropertyFetch(PXWindow PXREF pxWindow, PXGUIProperty PXREF p
                 {
                     PXNativDrawScreenSizeGet(pxRectangleXYWH);
 
-                    return PXActionSuccessful;
+                    return PXResultOK;
                 }
 
                 // We want to get the parrents size here, so we dont get the screen size
@@ -288,7 +288,7 @@ PXResult PXAPI PXGUIPropertyFetch(PXWindow PXREF pxWindow, PXGUIProperty PXREF p
         }
     }
     */
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXMathCircle(PXColorCircle PXREF pxColorCircle)
@@ -473,7 +473,7 @@ PXResult PXAPI PXWindowTabListSwapPage(PXWindow PXREF pxWindow)
 
       //InvalidateRect(pxWindow->Info.Handle.WindowHandle, 0, TRUE);
 #endif
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -548,7 +548,7 @@ PXResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo PXREF
 
     // Get Last Error
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 */
@@ -611,22 +611,22 @@ PXResult PXAPI PXWindowErrorFromXSystem(const int xSysstemErrorID)
     switch(xSysstemErrorID)
     {
         case BadValue:
-            return PXActionRefusedArgumentInvalid; // input is not valid
+            return PXResultRefusedParameterInvalid; // input is not valid
         case BadWindow:
             return PXActionRefusedNotFound; // object id invalid
         case BadAlloc:
             return PXActionFailedMemoryAllocation;
         case BadColor:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         case BadCursor:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         case BadMatch:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         case BadPixmap:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
 
         default:
-            return PXActionInvalid;
+            return PXResultInvalid;
     }
 }
 #endif

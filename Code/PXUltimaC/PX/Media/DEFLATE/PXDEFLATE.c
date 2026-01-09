@@ -154,7 +154,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
 
         if(!readBytes)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         switch(pxDeflateBlock.EncodingMethod)
@@ -193,7 +193,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
             {
                 const PXResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
 
-                if(PXActionSuccessful != result)
+                if(PXResultOK != result)
                 {
                     return result;
                 }
@@ -319,7 +319,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
 
     //(PXAdress)pxOutputStream->Data -= 2;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -469,7 +469,7 @@ PXResult PXAPI hash_init(Hash PXREF hash, const PXSize windowsize)
     for(PXSize i = 0; i != windowsize; ++i) 
         hash->chainz[i] = i; /*same value as index indicates uninitialized*/
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI hash_cleanup(Hash PXREF hash)
@@ -694,7 +694,7 @@ PXResult PXAPI deflateFixed
     PXFileCursorAdvance(pxFile, aaucvector.size);
 
     //return error;
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -1553,7 +1553,7 @@ PXResult PXAPI deflateDynamic
     PXFileCursorAdvance(pxFile, aaucvector.size);
 
   //  return error;
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 #define DEFAULT_WINDOWSIZE 2048
@@ -1672,7 +1672,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
             return PXActionRefusedFormatSettingNotAllowed;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

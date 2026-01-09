@@ -47,7 +47,7 @@ PXResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSig
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
 
@@ -58,10 +58,10 @@ PXResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSig
 
     if (!validLinkage)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }    
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #elif OSWindows
 
     SetUnhandledExceptionFilter(PXSignalFilter);
@@ -78,7 +78,7 @@ PXResult PXAPI PXRecoveryPointSet(PXRecoveryPoint PXREF pxRecoveryPoint)
     const int resultID = setjmp(pxRecoveryPoint->Enviroment); 
     const PXBool success = 0 == resultID;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -89,7 +89,7 @@ PXResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint PXREF pxRecoveryPoint)
 
     longjmp(pxRecoveryPoint->Enviroment, returnValue); // Jump to the saved state
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupportedByLibrary;
 #endif

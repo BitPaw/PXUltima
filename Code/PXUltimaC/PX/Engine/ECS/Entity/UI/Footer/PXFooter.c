@@ -6,9 +6,52 @@
 #define PXFooterDebug 0
 
 const char PXFooterText[] = "Footer";
-
-PXResult PXAPI PXFooterDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+const PXI8U PXFooterTextLength = sizeof(PXFooterText);
+const PXECSRegisterInfoStatic PXFooterInfoStatic =
 {
+    {sizeof(PXFooterText), sizeof(PXFooterText), PXFooterText, TextFormatASCII},
+    sizeof(PXFooter),
+    __alignof(PXFooter),
+    PXECSTypeEntity,
+    PXFooterCreate,
+    PXNull,
+    PXFooterDraw
+};
+PXECSRegisterInfoDynamic PXFooterInfoDynamic;
+
+PXResult PXAPI PXFooterRegisterToECS()
+{
+    PXECSRegister(&PXFooterInfoStatic, &PXFooterInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXFooterCreate(PXFooter** pxFooterREF, PXFooterCreateInfo PXREF pxFooterCreateInfo)
+{
+    PXFooter* pxFooter = PXNull;
+
+    pxFooterCreateInfo->Info.Static = &PXFooterInfoStatic;
+    pxFooterCreateInfo->Info.Dynamic = &PXFooterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxFooterREF, pxFooterCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxFooter = *pxFooterREF;
+
+    pxFooterCreateInfo->Window.EventList.CallBackOwner = pxFooter;
+    pxFooterCreateInfo->Window.EventList.CallBackDraw = PXFooterDraw;
+
+    PXWindowCreate(&pxFooter->WindowBase, &pxFooterCreateInfo->Window);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+{
+    PXWindow PXREF pxWindow = pxFooter->WindowBase;
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
 
 #if PXLogEnable && PXFooterDebug
@@ -71,5 +114,5 @@ PXResult PXAPI PXFooterDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWi
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

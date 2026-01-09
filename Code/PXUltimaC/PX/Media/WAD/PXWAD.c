@@ -201,7 +201,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 
     if(PXWADEntryDataTypeZstandard != pxWADEntry->DataType)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     if(1)

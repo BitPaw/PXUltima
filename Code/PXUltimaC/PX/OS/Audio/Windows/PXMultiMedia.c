@@ -121,7 +121,7 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia
 
         const PXResult loadLibResult = PXLibraryOpen(&_pxAudioMultiMedia.MultiMediaLibrary, &pxText);
 
-        if(PXActionSuccessful != loadLibResult)
+        if(PXResultOK != loadLibResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -258,7 +258,7 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia
        // pxAudio->DeviceReset = PXMultiMediaDeviceReset;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -269,7 +269,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
 {
     if(!(pxAudioDevice && pxSoundDeviceProperty))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);
@@ -328,7 +328,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                     break;
                 }
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
             break;
@@ -356,7 +356,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 #endif       
         
@@ -380,7 +380,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
             break;
@@ -402,7 +402,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
 
@@ -440,7 +440,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 #endif
 
@@ -478,7 +478,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
 
@@ -538,21 +538,21 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
         }
         default:
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
 #if OSUnix
 #elif OSWindows
     const PXResult audioResult = PXWindowsMMAudioConvertFromID(resultID);
-    const PXBool successful = PXActionSuccessful == audioResult;
+    const PXBool successful = PXResultOK == audioResult;
 
-    if(PXActionSuccessful != audioResult)
+    if(PXResultOK != audioResult)
         return audioResult;
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -611,13 +611,13 @@ PXResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia PXREF pxAudioMultiMedia
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     {
         const PXResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
-        if(PXActionSuccessful != audioResult) 
+        if(PXResultOK != audioResult) 
             return audioResult;
     }
 
@@ -632,7 +632,7 @@ PXResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia PXREF pxAudioMultiMedia
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia PXREF pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount)
@@ -641,11 +641,11 @@ PXResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia PXREF pxAudioMultiMe
     {
         const PXResult fetchResult = PXMultiMediaDeviceFetch(pxAudioMultiMedia, pxAudioDeviceType, i, &pxAudioDevice[i]);
 
-        if(PXActionSuccessful != fetchResult) 
+        if(PXResultOK != fetchResult) 
             return fetchResult;;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia PXREF pxAudioMultiMedia, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
@@ -720,7 +720,7 @@ PXResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia PXREF pxAudioMultiMedia,
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     const PXResult audioResult = PXWindowsMMAudioConvertFromID(result);
@@ -768,7 +768,7 @@ PXResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia PXREF pxAudioMultiMedia
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     const PXResult audioResult = PXWindowsMMAudioConvertFromID(result);
@@ -819,13 +819,13 @@ PXResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia PXREF pxAudioMultiMedia,
                 const MMRESULT prepareResultID = pxWaveInPrepareHeader(handleWaveOut, &waveHeader, waveHeaderSize);
                 const PXResult prepareResult = PXWindowsMMAudioConvertFromID(prepareResultID);
 
-                if(PXActionSuccessful != prepareResult) 
+                if(PXResultOK != prepareResult) 
                     return prepareResult;
             }
 
             // Write Data
             {
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
             break;
@@ -840,7 +840,7 @@ PXResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia PXREF pxAudioMultiMedia,
                 const MMRESULT prepareResultID = pxWaveOutPrepareHeader(handleWaveOut, &waveHeader, waveHeaderSize);
                 const PXResult prepareResult = PXWindowsMMAudioConvertFromID(prepareResultID);
 
-                if(PXActionSuccessful != prepareResult) 
+                if(PXResultOK != prepareResult) 
                     return prepareResult;
             }
 
@@ -850,16 +850,16 @@ PXResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia PXREF pxAudioMultiMedia,
                 const MMRESULT writeResultID = pxWaveOutWrite(handleWaveOut, &waveHeader, waveHeaderSize);
                 const PXResult writeResult = PXWindowsMMAudioConvertFromID(writeResultID);
 
-                if(PXActionSuccessful != writeResult) 
+                if(PXResultOK != writeResult) 
                     return writeResult;
             }
             break;
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

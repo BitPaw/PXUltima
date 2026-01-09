@@ -30,7 +30,7 @@ typedef struct PXECSInfo_ PXECSInfo;
 typedef PXResult(PXAPI* PXECSRegisterFunction)();
 typedef PXResult(PXAPI* PXECSCreateFunction)(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
 typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo PXREF pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
-typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxWindow, struct PXWindowDrawInfo_ PXREF pxWindowDrawInfo);
 
 // Object data used for compile time info
 // Storeing reflecting like data that does not change

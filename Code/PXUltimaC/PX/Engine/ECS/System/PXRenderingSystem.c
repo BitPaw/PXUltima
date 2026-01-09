@@ -14,5 +14,5 @@ PXResult PXAPI PXViewPortSetXYWH(PXViewPort PXREF pxViewPort, const PXI32S x, co
     pxViewPort->ClippingMinimum = 0;
     pxViewPort->ClippingMaximum = 1;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

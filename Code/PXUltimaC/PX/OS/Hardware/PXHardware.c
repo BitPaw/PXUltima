@@ -190,7 +190,7 @@ PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
         PXFileClose(pxFile);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI32U fetchFlags)
@@ -238,7 +238,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -317,7 +317,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -421,7 +421,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -478,7 +478,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -574,7 +574,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -664,7 +664,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -741,7 +741,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -817,7 +817,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!success)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         ULONG u_return = 0;
@@ -878,7 +878,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -893,7 +893,7 @@ PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery)
     const BOOL resultGetID = GetSystemPowerStatus(&systemPowerStatus); // Windows XP (+UWP), Kernel32.dll, winbase.h
     const PXResult resultGet = PXErrorCurrent(resultGetID);
 
-    if(PXActionSuccessful != resultGet)
+    if(PXResultOK != resultGet)
     {
         return resultGet;
     }
@@ -961,7 +961,7 @@ PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery)
     pxBattery->LifeTime = systemPowerStatus.BatteryLifeTime;
     pxBattery->FullLifeTime = systemPowerStatus.BatteryFullLifeTime;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupportedByLibrary;

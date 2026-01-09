@@ -7,19 +7,19 @@ PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
     pxBuffer->SizeAllocated = size;
     pxBuffer->Adress = PXMemoryHeapCalloc(PXNull, 1, size);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer)
@@ -28,7 +28,7 @@ PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer)
 
     PXClear(PXBuffer, pxBuffer);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size)
@@ -37,12 +37,12 @@ PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize siz
     pxBuffer->SizeAllocated = size;
     pxBuffer->SizeAllowedToUse = size;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXBufferCopy(PXBuffer PXREF pxBuffer, void* data, const PXSize size)
 {
     PXCopyList(PXByte, size, data, pxBuffer->Adress);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

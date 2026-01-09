@@ -97,7 +97,7 @@ PXResult PXAPI PXLAMELoadFromFile(PXLAME PXREF lame, PXFile PXREF pxFile)
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLAMESaveToFile(const PXLAME PXREF lame, PXFile PXREF pxFile)

@@ -46,7 +46,7 @@ PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF
 
         const PXResult pxActionResult = PXLibraryOpen(&pxMod.Library, &pyText);
 
-        if (pxActionResult != PXActionSuccessful)
+        if (pxActionResult != PXResultOK)
         {
             PXLogPrint
             (
@@ -104,7 +104,7 @@ PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXModLoaderAdd(PXModLoader PXREF pxModLoader, PXMod PXREF pxMod)

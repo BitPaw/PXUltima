@@ -2,10 +2,10 @@
 
 PXResult PXAPI PXMenuStripDraw(PXMenuStrip PXREF pxMenuStrip, PXMenuStripCreateInfo PXREF pxMenuStripCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMenuStripCreate(PXMenuStrip** pxMenuStrip, PXMenuStripCreateInfo PXREF pxMenuStripCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }

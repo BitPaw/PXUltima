@@ -4,19 +4,19 @@
 
 PXResult PXAPI PXHTTPRequestParse(PXHTTPRequest PXREF pxHTTPRequest, PXFile PXREF PXFile)
 {
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXHTTPRequestSerialize(PXHTTPRequest PXREF pxHTTPRequest, PXFile PXREF PXFile)
 {
 
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXHTTPResponseParse(PXHTTPResponse PXREF pxHTTPResponse, PXFile PXREF PXFile)
 {
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse PXREF pxHTTPResponse, PXFile PXREF PXFile)
@@ -25,5 +25,5 @@ PXResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse PXREF pxHTTPResponse, PXFi
 
 
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }

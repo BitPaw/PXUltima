@@ -64,7 +64,7 @@ PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF list
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedTypeNotSupported;

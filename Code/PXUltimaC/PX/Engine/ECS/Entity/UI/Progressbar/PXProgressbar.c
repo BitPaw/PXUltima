@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXProgressbarDraw(PXProgressbar PXREF pxProgressbar, PXProgressbarCreateInfo PXREF pxProgressbarCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXProgressbarCreate(PXProgressbar** pxProgressbar, PXProgressbarCreateInfo PXREF pxProgressbarCreateInfo)
@@ -14,5 +14,5 @@ PXResult PXAPI PXProgressbarCreate(PXProgressbar** pxProgressbar, PXProgressbarC
     pxWindowCreateInfo->WindowClassName.A = PROGRESS_CLASS;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

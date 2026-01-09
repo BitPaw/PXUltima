@@ -49,7 +49,7 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
 
         const PXResult pxActionResult = PXLibraryOpen(&pxDialogSystem->CommonDialogLibrary, &pxText);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -78,7 +78,7 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDialogSystemRelease(PXDialogSystem PXREF pxDialogSystem)
@@ -87,7 +87,7 @@ PXResult PXAPI PXDialogSystemRelease(PXDialogSystem PXREF pxDialogSystem)
 
     PXClear(PXDialogSystem, pxDialogSystem);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath)
@@ -132,7 +132,7 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 
     fileDialog->lpVtbl->Release(fileDialog);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 
 #elif WindowsAtleast2000
@@ -161,13 +161,13 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
             const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
             const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
         }
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
     case TextFormatUNICODE:
     {
@@ -189,16 +189,16 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
         const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
         const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 
 #else
     return PXActionRefusedNotSupported;
@@ -235,12 +235,12 @@ PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
         const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
         const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
     case TextFormatUNICODE:
     {
@@ -262,16 +262,16 @@ PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
         const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
         const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 #else
     return PXFalse;
 #endif

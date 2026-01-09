@@ -398,7 +398,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
         );
 #endif
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
 
@@ -440,7 +440,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo PXREF pxFileFormatInfo, PXFile PXREF pxFile)
@@ -491,14 +491,14 @@ PXResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo PXREF pxFileFormatInf
         if(isMatch)
         {
             PXCopy(PXFileFormatInfo, pxFileFormatInfoComp, pxFileFormatInfo);
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
 
     PXClear(PXFileFormatInfo, pxFileFormatInfo);
     pxFileFormatInfo->Flags = PXFileFormatUnkown;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, const PXText PXREF pxText)
@@ -998,5 +998,5 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             break;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

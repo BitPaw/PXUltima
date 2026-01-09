@@ -85,7 +85,7 @@ PXResult PXAPI PXMTLPeekFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     // We dont want to compile, as this can impact performance
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
@@ -391,7 +391,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMTLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
@@ -578,7 +578,7 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
     }
     while(PXFileSkipLine(&pxFile));
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

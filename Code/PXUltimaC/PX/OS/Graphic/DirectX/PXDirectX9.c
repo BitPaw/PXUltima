@@ -104,7 +104,7 @@ PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitia
 
         const PXResult pxActionResult = PXLibraryOpen(&pxDirectX9->LibraryDirect3D, &pxText);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
@@ -116,7 +116,7 @@ PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitia
 
         const PXResult pxActionResult = PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3D, &pxDirect3DCreate, PXDirectX9Created, PXTrue);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             PXLibraryClose(&pxDirectX9->LibraryDirect3D);
 
@@ -266,7 +266,7 @@ PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitia
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9Release(PXDirectX9 PXREF pxDirectX9)
@@ -299,7 +299,7 @@ PXResult PXAPI PXDirectX9Release(PXDirectX9 PXREF pxDirectX9)
     PXClear(PXDirectX9, pxDirectX9);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXDirectX9Select(PXDirectX9 PXREF pxDirectX9)
@@ -395,7 +395,7 @@ PXResult PXAPI PXDirectX9TextureAction(PXDirectX9 PXREF pxDirectX9, PXTextureInf
 
                     break;
                 }
-                case PXTextureTypeCubeContainer:
+                case PXTextureTypeCube:
                 {
                     const D3DFORMAT format = PXDirectXColorFormatFromID(pxTexture->Format);
                     const UINT edgeLength = 0;
@@ -440,12 +440,12 @@ PXResult PXAPI PXDirectX9TextureAction(PXDirectX9 PXREF pxDirectX9, PXTextureInf
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount)
@@ -494,7 +494,7 @@ PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShad
                 break;
             }
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
 
         PXD3DCompile pxD3DCompile = (PXD3DCompile)pxDirectX9->ShaderCompile;
@@ -730,7 +730,7 @@ PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShad
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 
 #if 0
@@ -813,7 +813,7 @@ PXResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9 PXREF pxDirectX9, PXShad
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram)
@@ -825,7 +825,7 @@ PXResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9 PXREF pxDirectX9, const PX
 {
     if(!(pxDirectX9 && pxShaderProgram && pxShaderVariable))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -876,7 +876,7 @@ PXResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9 PXREF pxDirectX9, const PX
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
             break;
@@ -920,23 +920,23 @@ PXResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9 PXREF pxDirectX9, const PX
                 }
 
                 default:
-                    return PXActionRefusedArgumentInvalid;
+                    return PXResultRefusedParameterInvalid;
             }
 
             break;
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     // Handle result, exit on success
     {
         const PXResult shaderConstantResult = PXErrorFromHRESULT(setShaderConstantID);
 
-        if(PXActionSuccessful == shaderConstantResult)
+        if(PXResultOK == shaderConstantResult)
         {
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
 
@@ -1033,7 +1033,7 @@ PXResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9 PXREF pxDirectX9, const PX
             }
 
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
 
         // Hanle erturn code
@@ -1046,7 +1046,7 @@ PXResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9 PXREF pxDirectX9, const PX
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9SceneBegin(PXDirectX9 PXREF pxDirectX9)
@@ -1056,7 +1056,7 @@ PXResult PXAPI PXDirectX9SceneBegin(PXDirectX9 PXREF pxDirectX9)
     const HRESULT result = pxDirectX9->Device->lpVtbl->BeginScene(pxDirectX9->Device);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9SceneEnd(PXDirectX9 PXREF pxDirectX9)
@@ -1069,7 +1069,7 @@ PXResult PXAPI PXDirectX9SceneEnd(PXDirectX9 PXREF pxDirectX9)
     return PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9 PXREF pxDirectX9, PXDrawScript PXREF pxDrawScript, const PXDrawScriptType pxDrawScriptType)
@@ -1103,7 +1103,7 @@ PXResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9 PXREF pxDirectX9, PXDrawScr
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DrawScriptBegin(PXDirectX9 PXREF pxDirectX9, PXDrawScript PXREF pxDrawScript)
@@ -1113,7 +1113,7 @@ PXResult PXAPI PXDirectX9DrawScriptBegin(PXDirectX9 PXREF pxDirectX9, PXDrawScri
     const HRESULT result = pxDirectX9->Device->lpVtbl->BeginStateBlock(pxDirectX9->Device);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DrawScriptEnd(PXDirectX9 PXREF pxDirectX9, PXDrawScript PXREF pxDrawScript)
@@ -1127,7 +1127,7 @@ PXResult PXAPI PXDirectX9DrawScriptEnd(PXDirectX9 PXREF pxDirectX9, PXDrawScript
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DrawScriptDelete(PXDirectX9 PXREF pxDirectX9, PXDrawScript PXREF pxDrawScript)
@@ -1140,7 +1140,7 @@ PXResult PXAPI PXDirectX9DrawScriptDelete(PXDirectX9 PXREF pxDirectX9, PXDrawScr
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DrawScriptExecute(PXDirectX9 PXREF pxDirectX9, PXDrawScript PXREF pxDrawScript)
@@ -1171,7 +1171,7 @@ PXResult PXAPI PXDirectX9ViewportSet(PXDirectX9 PXREF pxDirectX9, const PXViewPo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9ViewportGet(PXDirectX9 PXREF pxDirectX9, PXViewPort PXREF pxViewPort)
@@ -1197,7 +1197,7 @@ PXResult PXAPI PXDirectX9ViewportGet(PXDirectX9 PXREF pxDirectX9, PXViewPort PXR
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9MaterialSet(PXDirectX9 PXREF pxDirectX9, const PXMaterial PXREF pxMaterial)
@@ -1291,7 +1291,7 @@ PXResult PXAPI PXDirectX9SwapIntervalSet(PXDirectX9 PXREF pxDirectX9, const PXI3
         );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9SwapIntervalGet(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF interval)
@@ -1308,7 +1308,7 @@ PXResult PXAPI PXDirectX9TextureMemoryAvailable(PXDirectX9 PXREF pxDirectX9, PXI
     * value = pxDirectX9->Device->lpVtbl->GetAvailableTextureMem(pxDirectX9->Device);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF amountOfAdapters)
@@ -1320,7 +1320,7 @@ PXResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9 PXREF pxDir
     * amountOfAdapters = pxDirectX9->Context->lpVtbl->GetAdapterCount(pxDirectX9->Context);
 #endif
 
-    return PXActionSuccessful;;
+    return PXResultOK;;
 }
 
 PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGPUPhysical PXREF pxGraphicDevicePhysicalList)
@@ -1356,7 +1356,7 @@ PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDire
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9Clear(PXDirectX9 PXREF pxDirectX9, const PXColorRGBAF PXREF pxColorRGBAF)
@@ -1385,7 +1385,7 @@ PXResult PXAPI PXDirectX9Clear(PXDirectX9 PXREF pxDirectX9, const PXColorRGBAF P
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9SceneDeploy(PXDirectX9 PXREF pxDirectX9)
@@ -1402,7 +1402,7 @@ PXResult PXAPI PXDirectX9SceneDeploy(PXDirectX9 PXREF pxDirectX9)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9PrimitiveDraw(PXDirectX9 PXREF pxDirectX9, const PXDrawMode PXGraphicDrawMode, const PXI32U startVertex, const PXI32U primitiveCount)
@@ -1420,7 +1420,7 @@ PXResult PXAPI PXDirectX9PrimitiveDraw(PXDirectX9 PXREF pxDirectX9, const PXDraw
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9 PXREF pxDirectX9, const void* pxVertexBufferFormat)
@@ -1436,7 +1436,7 @@ PXResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9 PXREF pxDirectX9, con
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9VertexFixedFunctionGet(PXDirectX9 PXREF pxDirectX9, void* PXREF pxVertexBufferFormat)
@@ -1452,7 +1452,7 @@ PXResult PXAPI PXDirectX9VertexFixedFunctionGet(PXDirectX9 PXREF pxDirectX9, voi
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9 PXREF pxDirectX9, const PXI32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXI32U OffsetInBytes, const PXI32U Stride)
@@ -1469,7 +1469,7 @@ PXResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9 PXREF pxDirectX9, const PXI3
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9StreamSourceGet(PXDirectX9 PXREF pxDirectX9, const PXI32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXI32U* pOffsetInBytes, PXI32U* pStride)
@@ -1485,7 +1485,7 @@ PXResult PXAPI PXDirectX9ModelDraw(PXDirectX9 PXREF pxDirectX9, PXModel PXREF px
    // PXDirectX9VertexFixedFunctionSet(pxDirectX9, pxModel->Mesh.VertexBuffer.Format);
     PXDirectX9PrimitiveDraw(pxDirectX9, PXDrawModeTriangle, 0, 1);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9LightSet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxLight, const PXI32U index)
@@ -1534,14 +1534,14 @@ PXResult PXAPI PXDirectX9LightSet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxL
             break;
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetLight(pxDirectX9->Device, index, &d3dLight9);
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9LightGet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxLight, const PXI32U index)
@@ -1556,7 +1556,7 @@ PXResult PXAPI PXDirectX9LightGet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxL
     // *enable = enableBool;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9LightEnableSet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxLight, const PXI32U index, const PXBool enable)
@@ -1568,7 +1568,7 @@ PXResult PXAPI PXDirectX9LightEnableSet(PXDirectX9 PXREF pxDirectX9, PXLight PXR
     pxLight->Enabled = enable;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9LightEnableGet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxLight, const PXI32U index, PXBool PXREF enable)
@@ -1626,7 +1626,7 @@ PXResult PXAPI PXDirectX9LightEnableGet(PXDirectX9 PXREF pxDirectX9, PXLight PXR
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9ShaderProgramCreateFromFileVF(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram, PXText PXREF vertexShaderFilePath, PXText PXREF fragmentShaderFilePath)
@@ -1687,7 +1687,7 @@ PXResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXVerte
 
     if(!hasData)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 #if PXLogEnable
@@ -1711,7 +1711,7 @@ PXResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXVerte
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXIndexBuffer PXREF pxIndexBuffer)
@@ -1762,7 +1762,7 @@ PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXIndexB
 
     // Fill data
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectX9RenderTargetCreate(PXDirectX9 PXREF pxDirectX9, PXRenderTarget PXREF pxRenderTarget)
@@ -1780,7 +1780,7 @@ PXResult PXAPI PXDirectX9ModelRegister(PXDirectX9 PXREF pxDirectX9, PXModel PXRE
    // PXDirectX9VertexBufferCreate(pxDirectX9, &pxModel->Mesh.VertexBuffer);
     //PXDirectX9IndexBufferCreate(pxDirectX9, &pxModel->Mesh.IndexBuffer);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

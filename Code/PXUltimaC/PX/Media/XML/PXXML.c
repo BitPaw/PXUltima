@@ -226,7 +226,7 @@ PXResult PXAPI PXXMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     PXFileCursorPositionTerminate(0);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXXMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

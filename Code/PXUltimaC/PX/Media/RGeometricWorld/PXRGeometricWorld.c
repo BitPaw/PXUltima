@@ -155,7 +155,7 @@ PXResult PXAPI PXRGeometricWorldLoadFromFile(PXResourceMoveInfo PXREF pxResource
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRGeometricWorldSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

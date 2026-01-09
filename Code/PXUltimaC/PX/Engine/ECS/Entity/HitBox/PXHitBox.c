@@ -27,5 +27,5 @@ PXResult PXAPI PXHitBoxCreate(PXHitBox** pxHitBoxREF, PXHitboxCreateInfo PXREF p
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

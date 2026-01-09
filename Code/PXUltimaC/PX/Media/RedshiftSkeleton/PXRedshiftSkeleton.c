@@ -2,7 +2,7 @@
 
 PXResult PXAPI PXRedshiftSkeletonLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRedshiftSkeletonSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

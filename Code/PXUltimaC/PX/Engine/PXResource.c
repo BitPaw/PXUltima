@@ -231,7 +231,7 @@ PXResult PXAPI PXResourcePropertyIO
             return;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath)
@@ -240,7 +240,7 @@ PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const
     {
         if(!(pxResourceLoadInfo && filePath))
         {
-            return PXActionRefusedArgumentNull;
+            return PXResultRefusedParameterNull;
         }
     }
     // parameter valid check
@@ -249,7 +249,7 @@ PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const
 
         if(!textValid)
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
@@ -317,7 +317,7 @@ PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const
 
         const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileOpenInfo);
 
-        if(PXActionSuccessful != fileLoadingResult) 
+        if(PXResultOK != fileLoadingResult) 
             return fileLoadingResult;;
     }
 
@@ -339,7 +339,7 @@ PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const
 
         PXPerformanceInfoGet(&pxPerformanceInfo);
         const PXResult pxPeekResult = pxResourceLoadInfo->FormatInfo.ResourcePeek(pxResourceLoadInfo);
-        const PXBool success = PXActionSuccessful == pxPeekResult;
+        const PXBool success = PXResultOK == pxPeekResult;
 
         if(!success)
         {
@@ -442,7 +442,7 @@ PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const
 
         PXFileClose(pxFile);
 
-        if(PXActionSuccessful != fileParsingResult)
+        if(PXResultOK != fileParsingResult)
         {
 #if PXLogEnable
             PXLogPrint
@@ -505,7 +505,7 @@ PXResult PXAPI PXResourceSave(PXResourceMoveInfo PXREF pxResourceSaveInfo, const
 
         const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileIOInfo);
 
-        if(PXActionSuccessful != fileLoadingResult) 
+        if(PXResultOK != fileLoadingResult) 
             return fileLoadingResult;
     }
 
@@ -580,7 +580,7 @@ PXResult PXAPI PXResourceSave(PXResourceMoveInfo PXREF pxResourceSaveInfo, const
 
     pxResourceSaveInfo->FileReference = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXResourceSaveA(PXResourceMoveInfo PXREF pxResourceSaveInfo, const char PXREF filePath)

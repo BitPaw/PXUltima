@@ -29,10 +29,10 @@ PXResult PXAPI PXTranslatorEnglishToGerman(PXFile PXREF inputStreamEnglish, PXFi
         PXTextCopyA(text, textSize, buffer, 1024u);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTranslatorGermanToEnglish(PXFile PXREF inputStreamGerman, PXFile PXREF outputStreamEnglish)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }

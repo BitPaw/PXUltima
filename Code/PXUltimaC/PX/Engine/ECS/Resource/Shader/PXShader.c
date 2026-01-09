@@ -95,14 +95,14 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
 
         const PXResult vertexLoadResult = PXFileOpen(pxShaderProgramCreateInfo->ShaderVertexFile, &pxFileOpenFromPathInfo);
 
-        if(PXActionSuccessful != vertexLoadResult)
+        if(PXResultOK != vertexLoadResult)
             return vertexLoadResult;
 
         pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateInfo->ShaderPixelFilePath;
 
         const PXResult fragmentLoadResult = PXFileOpen(pxShaderProgramCreateInfo->ShaderPixelFile, &pxFileOpenFromPathInfo);
 
-        if(PXActionSuccessful != fragmentLoadResult)
+        if(PXResultOK != fragmentLoadResult)
             return fragmentLoadResult;;
 
         pxShaderProgram->Info.Behaviour |= PXECSInfoStorageMemory;
@@ -128,5 +128,5 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

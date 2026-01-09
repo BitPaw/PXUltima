@@ -80,7 +80,7 @@ PXResult PXAPI PXTextureProperty(PXTexture PXREF pxTexture, PXECSProperty PXREF 
             break;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXTextureHeight(PXTexture PXREF pxTexture)
@@ -117,14 +117,14 @@ PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture)
 {
     PXBufferRelese(&pxTexture->PixelData);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
 {
     //  PXCopy(PXTexture, pxTexture, pxTextureSource);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
@@ -137,7 +137,7 @@ PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXR
     pxTexture->Depth = pxTextureSource->Depth;
     pxTexture->Format = pxTextureSource->Format;
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height)
@@ -152,7 +152,7 @@ PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat fo
 
         if(isSizeAlreadyOK)
         {
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
 
@@ -203,7 +203,7 @@ PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat fo
 
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture)
@@ -230,7 +230,7 @@ PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture)
         }
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
@@ -257,7 +257,7 @@ PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
 
     PXMemoryHeapFree(PXNull, copyBufferRow);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue)
@@ -284,7 +284,7 @@ PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red,
         newData[3] = !(oldData[0] == red) && (oldData[1] == green) && (oldData[2] == blue);
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXTextureFillColorRGBA8(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
@@ -299,7 +299,7 @@ PXResult PXAPI PXTextureFillColorRGBA8(PXTexture PXREF pxTexture, const PXByte r
         data[3] = alpha;
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 void* PXAPI PXTextureDataPoint(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y)
@@ -330,10 +330,11 @@ void PXAPI PXTexturePixelSetRGB8(PXTexture PXREF pxTexture, const PXSize x, cons
 
 PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo)
 {
-    // Constuct
-    PXClear(PXTexture, pxTexture);
+    if(!(pxTexture && pxTextureCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
 
-    pxTexture->OpenGLID = -1;
     pxTexture->Filter = PXRenderFilterNoFilter;
     pxTexture->LayoutNear = PXTextureLayoutNearest;
     pxTexture->LayoutFar = PXTextureLayoutNearest;
@@ -341,33 +342,22 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
     pxTexture->WrapWidth = PXTextureWrapRepeat;
 
 
-    switch(0)
+    switch(pxTextureCreateInfo->Type)
     {
-        case 0:
+        case PXTextureType2D:
         {
-            //PXTextureCreateInfo PXREF PXTextureCreateInfo = &pxResourceCreateInfo->Image;
-
-
-            //  PXTexture->Info.ID = resourceID;
-
-            PXText pxText;
-            PXTextFromAdressA(&pxText, pxTextureCreateInfo->Info.FilePath.A, PXTextLengthUnkown, PXTextLengthUnkown);
-            const PXBool hasFilePath = PXNull != pxTextureCreateInfo->Info.FilePath.A;
-            PXI32U checkSum = 0;
-
-
             // Load texture
-            if(hasFilePath)
+            if(pxTextureCreateInfo->Info.FilePath.Data)
             {
                 PXResourceMoveInfo pxResourceLoadInfo;
                 PXClear(PXResourceMoveInfo, &pxResourceLoadInfo);
                 pxResourceLoadInfo.ResourceTarget = pxTexture;
                 pxResourceLoadInfo.ResourceType = PXResourceTypeTexture;
 
-                const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
+                const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxTextureCreateInfo->Info.FilePath);
 
 
-                if(PXActionSuccessful != loadResult)
+                if(PXResultOK != loadResult)
                 {
 #if PXLogEnable
                     PXLogPrint
@@ -376,7 +366,7 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
                         PXTextureText,
                         "Create",
                         "Failed <%s>!",
-                        pxText.A
+                        pxTextureCreateInfo->Info.FilePath.A
                     );
 #endif
 
@@ -390,18 +380,17 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
                     PXTextureText,
                     "Create",
                     "Successful <%s>.",
-                    pxText.A
+                    pxTextureCreateInfo->Info.FilePath.A
                 );
 #endif
             }
             else
             {
                 // PXTextureCopyAsNew(PXTexture, &PXTextureCreateInfo->Image);
-
-                checkSum = 0;
             }
+            break;
         }
-        case 1:
+        case PXTextureTypeCube:
         {
             // pxTexture->Format = PXColorFormatRGBI8;
 
@@ -431,6 +420,9 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
             pxResourceCreateInfoList[5].Type = PXResourceTypeTexture;
             // pxResourceCreateInfoList[5].ObjectReference = (void**)&pxTexture->ImageF;
             pxResourceCreateInfoList[5].FilePath = pxTextureCreateInfo->Cube.Front;
+
+
+            //const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxTextureCreateInfo->Info.FilePath);
 
           //  //PXResourceManagerAddV(pxResourceCreateInfoList, 6);
 
@@ -465,7 +457,7 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
                 // Load failback texture
                 *pxResourceCreateInfo->ObjectReference = _GLOBALResourceManager.Texture2DFailBack;
 
-                return PXActionSuccessful;
+                return PXResultOK;
             }
         }
     }
@@ -500,7 +492,7 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
      //   //PXResourceManagerAdd(&pxResourceCreateInfoSub);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

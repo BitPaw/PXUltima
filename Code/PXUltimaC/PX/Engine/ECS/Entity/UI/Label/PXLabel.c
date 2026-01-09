@@ -111,7 +111,7 @@ PXResult PXAPI PXLabelDraw(PXLabel PXREF pxLabel, PXLabelCreateInfo PXREF pxLabe
         );
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

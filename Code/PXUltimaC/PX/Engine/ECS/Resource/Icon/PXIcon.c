@@ -21,7 +21,7 @@ PXResult PXAPI PXIconRegisterToECS()
 {
     PXECSRegister(&PXIconRegisterInfoStatic, &PXIconRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXGUIIconLoad(PXIcon PXREF pxIcon)
@@ -39,7 +39,7 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
 {
     if(!pxIcon)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -106,11 +106,11 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
         }
         default:
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
@@ -120,7 +120,7 @@ PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
 {
     if(!(pxIcon && pxTexture))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(!pxTexture->PixelData.Adress)
@@ -228,7 +228,7 @@ PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreateInfo)
@@ -264,14 +264,14 @@ PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreate
 
     //PXNativDrawIconFromImage(PXNativDrawInstantance(), pxIcon, pxIconCreateInfo->IconImage);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXGUIIconGetViaFilePath(PXIcon PXREF pxIcon, const char* fileName)
 {
     if(!(pxIcon && fileName))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -292,7 +292,7 @@ PXResult PXAPI PXGUIIconGetViaFilePath(PXIcon PXREF pxIcon, const char* fileName
 
     pxIcon->Info.Handle.IconHandle = shFileInfo.hIcon;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 
     /*

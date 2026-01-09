@@ -16,7 +16,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     switch (vkResultID)
     {
     case VK_SUCCESS:
-        return PXActionSuccessful;
+        return PXResultOK;
     case VK_NOT_READY:
         return PXActionFailedResourceUnavailableTryAgain;
 
@@ -123,7 +123,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 #endif
 
     default:
-        return PXActionInvalid;
+        return PXResultInvalid;
     };
 }
 
@@ -502,7 +502,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
 
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXVulcanRelease(PXVulcan PXREF pxVulcan)

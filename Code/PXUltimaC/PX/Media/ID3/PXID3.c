@@ -601,7 +601,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXID3SaveToFile(const PXID3 PXREF id3, PXFile PXREF pxFile)

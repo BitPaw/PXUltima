@@ -53,7 +53,7 @@ PXResult PXAPI PXHardDriveFetchAll(PXHardDrive PXREF hardDriveList, const PXSize
     }
 
 #if OSUnix
-    return PXActionInvalid;
+    return PXResultInvalid;
 
 #elif PXOSWindowsDestop
 
@@ -92,5 +92,5 @@ PXResult PXAPI PXHardDriveFetchAll(PXHardDrive PXREF hardDriveList, const PXSize
 
     *hardDriveListSize = (numberOfDrives);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

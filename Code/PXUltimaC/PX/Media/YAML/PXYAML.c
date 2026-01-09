@@ -316,7 +316,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXYAMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

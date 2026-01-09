@@ -834,7 +834,7 @@ PXResult PXAPI PXMIPSTranslate(PXMIPSProcessor PXREF pxMIPSProcessor, const PXBy
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)

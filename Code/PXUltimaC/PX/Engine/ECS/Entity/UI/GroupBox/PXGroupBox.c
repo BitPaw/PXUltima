@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXGroupBoxDraw(PXGroupBox PXREF pxGroupBox, PXGroupBoxCreateInfo PXREF pxGroupBoxCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXGroupBoxCreate(PXGroupBox** pxGroupBox, PXGroupBoxCreateInfo PXREF pxGroupBoxCreateInfo)
@@ -15,5 +15,5 @@ PXResult PXAPI PXGroupBoxCreate(PXGroupBox** pxGroupBox, PXGroupBoxCreateInfo PX
     pxWindowCreateInfo->StyleFlags |= BS_GROUPBOX;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

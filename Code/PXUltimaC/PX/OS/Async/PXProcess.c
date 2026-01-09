@@ -62,7 +62,7 @@ PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handle
 
     if(!handlesAmount)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     *handlesAmount = 0;
@@ -88,14 +88,14 @@ PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handle
     );
     const PXResult pxActionResult = PXErrorCurrent(successful);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
     *handlesAmount = handleCount;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -349,7 +349,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
 
                 PXActionResult result = PXFilePath(pxFile, &buffer, PXFalse);
 
-                if(PXActionSuccessful == result)
+                if(PXResultOK == result)
                 {
                     PXTextCopyA(buffer.A, buffer.SizeUsed, pxHandleInfo.Description, 256);
                 }
@@ -450,7 +450,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
     PXLibraryClose(&pxLibraryNTDLL);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF programmPath, const PXProcessCreationMode mode)
@@ -495,7 +495,7 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
             );
             const PXResult pxActionResult = PXErrorCurrent(successful);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -538,7 +538,7 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
             );
             const PXResult pxActionResult = PXErrorCurrent(successful);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -554,7 +554,7 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
@@ -573,7 +573,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     const PXBool successful = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
     const PXResult pxActionResult = PXErrorCurrent(successful);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -586,7 +586,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 
     if(!successfulFetch)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     for(; successfulFetch; )
@@ -608,7 +608,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
         successfulFetch = Process32Next(snapshotHandle, &processEntryW);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -632,7 +632,7 @@ PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxT
 
     if(!isValid)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 
@@ -703,7 +703,7 @@ PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID p
     const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxActionResult = PXErrorCurrent(processHandle != PXNull);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -711,7 +711,7 @@ PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID p
     pxProcess->ProcessID = pxProcessID;
     pxProcess->ProcessHandle = processHandle;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -725,14 +725,14 @@ PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess)
     const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
     const PXResult pxActionResult = PXErrorCurrent(successful);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
     pxProcess->ProcessHandle = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -748,7 +748,7 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
     const int usageResultID = getrusage(who, &rusageData);
     const PXResult usageResult = PXErrorCurrent(0 != usageResultID);
 
-    if(PXActionSuccessful != usageResult)
+    if(PXResultOK != usageResult)
     {
         return usageResult;
     }
@@ -796,7 +796,7 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
         );
         const PXResult pxActionResult = PXErrorCurrent(successful);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
@@ -832,7 +832,7 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
         );
         const PXResult pxActionResult = PXErrorCurrent(successful);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
@@ -888,5 +888,5 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

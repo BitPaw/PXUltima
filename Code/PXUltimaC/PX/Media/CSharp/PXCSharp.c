@@ -572,12 +572,12 @@ PXResult PXAPI PXCSharpSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 
     if(!pxResourceSaveInfo)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     PXCompiler pxCompiler;

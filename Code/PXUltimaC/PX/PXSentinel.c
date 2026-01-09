@@ -78,5 +78,5 @@ void PXAPI PXSentinelInit()
 
     PXConsoleWrite(PXSentineEndMessageLength, PXSentineEndMessage);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

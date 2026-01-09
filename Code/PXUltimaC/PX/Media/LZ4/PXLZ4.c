@@ -305,7 +305,7 @@ PXResult PXAPI PXLZ4DecompressChunk(PXFile PXREF pxFileInput, PXFile PXREF pxFil
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLZ4Compress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
@@ -319,20 +319,20 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
 
     if(!(pxFileInput && pxFileOutput))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     // Check size
     if(PXFileDataPosition(pxFileInput) <= 1)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     PXFileReadI8U(pxFileInput, &nChunks);
 
     if(PXLZ4ChunksMaxAmount <= nChunks)
     {
-        return PXActionInvalid; // Too many chunks
+        return PXResultInvalid; // Too many chunks
     }
 
 #if PXLogEnable
@@ -358,7 +358,7 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
         // nChunks must be 0 for < LZ4_MAX_INPUT_SIZE
         if(nChunks != 0) 
         {
-            return PXActionInvalid; // Corrupted LZ4 compressed data.
+            return PXResultInvalid; // Corrupted LZ4 compressed data.
         }
     }
 
@@ -379,16 +379,16 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
 
         if(LZ4_MAX_INPUT_SIZE < chunkSize) 
         {
-            return PXActionInvalid; // ChunkSize too big
+            return PXResultInvalid; // ChunkSize too big
         }
 
         const PXResult decompessionResult = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
 
-        if(PXActionSuccessful != decompessionResult)
+        if(PXResultOK != decompessionResult)
         {
             return decompessionResult;
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

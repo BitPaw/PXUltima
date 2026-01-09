@@ -877,7 +877,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCOFFSaveToFile(const PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)

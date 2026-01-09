@@ -13,6 +13,7 @@
 #include <PX/Engine/ECS/Resource/Cursor/PXCursor.h>
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
+#include <PX/Media/PXColor.h>
 
 
 
@@ -21,8 +22,19 @@
 // Only Text can be text
 // Only image can be image
 typedef struct PXWindow_ PXWindow;
+typedef struct PXWindowEvent_ PXWindowEvent;
 
 
+
+typedef void (PXAPI* PXWindowEventFunction)(void PXREF owner, PXWindowEvent PXREF pxWindowEvent);
+
+typedef struct PXWindowEventList_
+{
+    PXECSInfo* CallBackOwner; // Object to reley back
+    PXECSDrawFunction CallBackDraw; // Windows:WM_PAINT event
+    PXWindowEventFunction CallBackEvent; // Different I/O Events
+}
+PXWindowEventList;
 
 
 
@@ -87,8 +99,6 @@ typedef struct DockLayoutConfig {
 RECT PXWindowRectOf(HWND h);
 PXWindow* PaneFromHwnd(HWND h);
 
-
-void CreatePaneWindow(PXWindow** pxWindow, PXWindow* pxWindowParant, BOOL asChild);
 
 void SubSegment(RECT* m, RECT* r, PXWindowDockSide side);
 void PaintPattern(HWND hwnd, HDC hdc, RECT* rect, int r, int g, int b);
@@ -787,7 +797,6 @@ PXScollbar;
 
 
 
-typedef void (PXAPI* PXWindowEventFunction)(void PXREF owner, PXWindowEvent PXREF pxWindowEvent);
 
 
 
@@ -803,7 +812,7 @@ typedef struct PXWindowCreateInfo_ PXWindowCreateInfo;
 typedef PXResult(PXAPI* PXWindowCreateHelper)(PXWindowCreateInfo PXREF pxWindowCreateInfo);
 
 typedef PXResult(PXAPI* PXWindowCreateFunction)(PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo);
-typedef PXResult(PXAPI* PXWindowDrawFunction)(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+
 
 
 
@@ -910,6 +919,13 @@ typedef struct PXWindowCreateInfo_
     // Style
     PXI8U BorderWidth;
     PXI8U Border;
+    PXColorRGBI8 Color;
+
+    PXWindowDockSide  dockSide;
+    BOOL isChild;
+    COLORREF  WindowsColor;
+    BOOL      floating;   // if TRUE, excluded from docking layout
+
 
     // Setings
     PXBool Simple;
@@ -920,18 +936,15 @@ typedef struct PXWindowCreateInfo_
     PXBool MaximizeOnStart;
 
 
-    //void* EventFunction;
-    void* EventOwner;
-
     PXWindow* UIElementReference;
 
     PXColorRGBAI8 BackGroundColor;
 
 
-    // CallBack on event
-    void* InteractOwner;
-    PXWindowEventFunction InteractCallBack;
 
+    PXWindowEventList EventList;
+
+   
 
     //PXI32U FlagList;
 
@@ -940,11 +953,8 @@ typedef struct PXWindowCreateInfo_
     PXI32U Setting;
     PXColorRGBAF* ColorTintReference;
 
-    PXColorRGBAF Color;
 
 
-    PXBool UseCustomDraw;
-    void* CustomDrawFunction;
 
     PXUIElementPosition Position;
 
@@ -962,9 +972,6 @@ typedef struct PXWindowCreateInfo_
 
     PXWindowCreateFunction CreatePre; // Function is called before the physical creation
     PXWindowCreateFunction CreatePost; // Function is called after physical creation
-
-    PXWindowDrawFunction DrawFunctionEngine; // default rendering of the engine
-    PXWindowDrawFunction DrawFunctionOverride; // user defined rendering to overruide default
 
 #define PXWindowCreateVirtual   1
 #define PXWindowCreatePhysical  2
@@ -1096,20 +1103,5 @@ PXPublic PXResult PXAPI PXWindowMouseTrack(PXWindow PXREF window);
 PXPublic PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowCursorCaptureMode(PXWindow PXREF pxWindow, const PXWindowCursorMode cursorMode);
 PXPublic PXResult PXAPI PXWindowCursorPositionGet(PXWindow PXREF pxWindow, PXVector2I32S PXREF position);
-
-
-
-
-PXWindow* PXWindowCreateEE
-(
-    PXWindow PXREF pxWindowParent,
-    int r,
-    int g,
-    int b,
-    BOOL aa,
-    PXWindowDockSide pxWindowDockSide,
-    BOOL isChild,
-    PXWindowDrawFunction drawfun
-);
 
 #endif

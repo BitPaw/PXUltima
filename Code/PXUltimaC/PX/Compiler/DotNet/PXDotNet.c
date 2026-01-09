@@ -206,7 +206,7 @@ PXResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
     {
         const PXResult pxActionResult = PXLibraryOpenA(&pxDotNetMSCoree->Library, CSharpMSCoree);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult;
         }
@@ -401,7 +401,7 @@ PXResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
     */
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
@@ -646,7 +646,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
 // ???
@@ -689,14 +689,14 @@ PXResult PXAPI PXGetloc(char* buffer)
 
     PXLibraryClose(&pxLibrary);
 
-    if(PXActionSuccessful != resultGet)
+    if(PXResultOK != resultGet)
     {
         return resultGet;
     }
 
     PXTextCopyWA(hostfxrPathW, bufferSize, buffer, MAX_PATH);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 
 #else
@@ -712,7 +712,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 
         const PXResult result = PXGetloc(hostfxrPath);
 
-        if(PXActionSuccessful != result)
+        if(PXResultOK != result)
         {
 #if PXLogEnable
             PXLogPrint
@@ -724,7 +724,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
             );
 #endif
 
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
 
@@ -813,7 +813,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
         {
             //printf("Failed to initialize .NET runtime\n");
             //  FreeLibrary(hostfxr);
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         // Add error callback to find problems instandly
@@ -899,7 +899,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree, PXDelegate PXREF pxDelegate)
@@ -961,7 +961,7 @@ PXResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCore
     );
     const PXResult exeResult = PXErrorFromHRESULT(execResultID);
 
-    if(PXActionSuccessful != exeResult)
+    if(PXResultOK != exeResult)
     {
         return exeResult;
     }
@@ -978,7 +978,7 @@ PXResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCore
 #endif
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXPathCurrentAndAddFileA(char* buffer, char* fileName)
@@ -1063,7 +1063,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, PXDelegate PXREF pxDelegate)
@@ -1207,7 +1207,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
     //0x80131509
     // 0x80131621
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
     /*
 
@@ -1259,7 +1259,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
@@ -1280,7 +1280,7 @@ PXResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetExecuteCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
@@ -1302,19 +1302,19 @@ PXResult PXAPI PXDotNetExecuteCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDotNetExecuteHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 #endif
 
 PXResult PXAPI PXDotNetCompile(PXDotNet PXREF pxDotNet)
 {
 #if OSUnix
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
     char command[1024];
@@ -1368,7 +1368,7 @@ PXResult PXAPI PXDotNetCompile(PXDotNet PXREF pxDotNet)
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -1437,9 +1437,9 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
     pxDotNet->Execute = PXDotNetExecuteHostFX;
     PXActionResult resultA = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
 
-    if(PXActionSuccessful == resultA)
+    if(PXResultOK == resultA)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 #endif
 
@@ -1449,9 +1449,9 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
     pxDotNet->Execute = PXDotNetExecuteCoreCLR;
     PXActionResult resultB = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
 
-    if(PXActionSuccessful == resultB)
+    if(PXResultOK == resultB)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 #endif
 
@@ -1459,9 +1459,9 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
     pxDotNet->Execute = PXDotNetExecuteMSCoree;
     PXActionResult resultC = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
 
-    if(PXActionSuccessful == resultC)
+    if(PXResultOK == resultC)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXClear(PXDotNet, pxDotNet);

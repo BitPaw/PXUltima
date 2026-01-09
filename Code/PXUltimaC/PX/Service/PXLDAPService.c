@@ -262,7 +262,7 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
 
         const PXResult pxActionResult = PXLibraryOpen(&pxLDAPClient->LDAPLibrary, &pxText);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -513,7 +513,7 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
     }
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLDAPClienRelease(PXLDAPClient PXREF pxLDAPClient)
@@ -524,7 +524,7 @@ PXResult PXAPI PXLDAPClienRelease(PXLDAPClient PXREF pxLDAPClient)
 
     PXClear(PXLDAPClient, pxLDAPClient);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPConnectionInfo PXREF pxLDAPInfo)
@@ -553,7 +553,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
             const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult; // LdapGetLastError()
             }
@@ -584,7 +584,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
             const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult; // LdapGetLastError()
             }
@@ -614,7 +614,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
         const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult; // LdapGetLastError()
         }
@@ -631,7 +631,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
         const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult; // LdapGetLastError()
         }
@@ -651,13 +651,13 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
         const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return pxActionResult; // LdapGetLastError()
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -679,14 +679,14 @@ PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient)
 
     const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult; // LdapGetLastError()
     }
 
     pxLDAPClient->ID = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -758,7 +758,7 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
                 const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-                if(PXActionSuccessful != pxActionResult)
+                if(PXResultOK != pxActionResult)
                 {
                     return pxActionResult; // LdapGetLastError()
                 }
@@ -782,13 +782,13 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
                 const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-                if(PXActionSuccessful != pxActionResult)
+                if(PXResultOK != pxActionResult)
                 {
                     return pxActionResult; // LdapGetLastError()
                 }
             }
 
-            return PXActionSuccessful;
+            return PXResultOK;
 #else
             return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -813,12 +813,12 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
             const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult; // LdapGetLastError()
             }
 
-            return PXActionSuccessful;
+            return PXResultOK;
 #else
             return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -828,5 +828,5 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
             return PXActionRefusedFormatNotSupported;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

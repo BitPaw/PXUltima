@@ -57,7 +57,7 @@ PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSiz
     SetupDiDestroyDeviceInfoList(hDevInfo);
     ///return name;
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHandle)
@@ -161,14 +161,14 @@ PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo PXREF pxDeviceInputUp
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXREF amount)
 {
     if(!amount)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     UINT numDevices = 0;
@@ -178,7 +178,7 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
         UINT numDevicesRes = GetRawInputDeviceList(NULL, &numDevices, sizeof(RAWINPUTDEVICELIST)); // Windows XP, User32.dll, winuser.h
         PXResult pxResult = PXErrorCurrent(-1 == numDevicesRes);
 
-        if(PXActionSuccessful != pxResult)
+        if(PXResultOK != pxResult)
         {
             *amount = 0;
             return pxResult;
@@ -190,7 +190,7 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
     // if we dont have an array, quit now
     if(!pxDeviceInput)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXDeviceInput* pxDeviceInputList = PXMemoryHeapCallocT(PXDeviceInput, numDevices);
@@ -244,5 +244,5 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
 
     free(deviceList);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

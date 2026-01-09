@@ -248,7 +248,7 @@ PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI3
     }
     //----------------------------
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffmanTree PXREF treeLength, PXHuffmanTree PXREF treeDistance)
@@ -256,7 +256,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
     PXClear(PXHuffmanTree, treeLength);
 
     // make sure that length values that aren't filled in will be 0, or a wrong tree will be generated
-    //PXActionResult actionError = PXActionInvalid;
+    //PXActionResult actionError = PXResultInvalid;
     unsigned n;
 
     /*see comments in deflateDynamic for explanation of the context and these variables, it is analogous*/
@@ -324,7 +324,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
     {
         const PXResult generateError = PXGenerateFromLengths(&tree_cl, bitlen_codeLength, NUM_CODE_LENGTH_CODES, 7);
 
-        if(PXActionSuccessful != generateError)
+        if(PXResultOK != generateError)
             return generateError;;
     }
 
@@ -452,7 +452,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
     {
         const PXResult generateError = PXGenerateFromLengths(treeLength, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS, 15); // treeLength
 
-        if(PXActionSuccessful != generateError)
+        if(PXResultOK != generateError)
             return generateError;
     }
 
@@ -460,14 +460,14 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
     {
         const PXResult generateError = PXGenerateFromLengths(treeDistance, bitlen_distance, NUM_DISTANCE_SYMBOLS, 15); // treeDistance
 
-        if(PXActionSuccessful != generateError) 
+        if(PXResultOK != generateError) 
             return generateError;
     }
 
     //break; /*end of error-while*/
     //}
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_ PXREF pxFile, const PXHuffmanTree PXREF huffmanTree)

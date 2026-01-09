@@ -12,5 +12,5 @@ PXResult PXAPI PXCheckBoxDraw(PXCheckBox PXREF pxCheckBox, PXCheckBoxCreateInfo 
     //CheckDlgButton(uiCheckBox->ID, 1, BST_CHECKED); // BST_UNCHECKED
 #endif
     
-    return PXActionSuccessful;
+    return PXResultOK;
 }

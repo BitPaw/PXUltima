@@ -13,7 +13,8 @@ const PXECSRegisterInfoStatic PXSkyBoxRegisterInfoStatic =
     {sizeof(PXSkyBoxNameLength), sizeof(PXSkyBoxNameLength), PXSkyBoxName, TextFormatASCII},
     sizeof(PXSkyBox),
     __alignof(PXSkyBox),
-    PXECSTypeResource
+    PXECSTypeEntity,
+    PXSkyboxCreate
 };
 PXECSRegisterInfoDynamic PXSkyBoxRegisterInfoDynamic;
 
@@ -21,11 +22,19 @@ PXResult PXAPI PXSkyBoxRegisterToECS()
 {
     PXECSRegister(&PXSkyBoxRegisterInfoStatic, &PXSkyBoxRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
-PXResult PXAPI PXSkyboxCreate(PXSkyBox PXREF pxSkyBox, PXSkyBoxCreateInfo PXREF pxSkyBoxCreateInfo)
+PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBoxREF, PXSkyBoxCreateInfo PXREF pxSkyBoxCreateInfo)
 {
+    PXSkyBox* pxSkyBox = PXNull;
+
+    pxSkyBoxCreateInfo->Info.Static = &PXSkyBoxRegisterInfoStatic;
+    pxSkyBoxCreateInfo->Info.Dynamic = &PXSkyBoxRegisterInfoDynamic;
+    PXECSCreate(pxSkyBoxREF, pxSkyBoxCreateInfo);
+
+    pxSkyBox = *pxSkyBoxREF;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -53,34 +62,11 @@ PXResult PXAPI PXSkyboxCreate(PXSkyBox PXREF pxSkyBox, PXSkyBoxCreateInfo PXREF 
     );
 #endif
 
-    // Load Textures
-    {
-        PXECSCreateInfo pxECSCreateInfoList[2];
-        PXClearList(PXECSCreateInfo, &pxECSCreateInfoList, 2);
+    PXTextureCreate(&pxSkyBox->TextureCube, &pxSkyBoxCreateInfo->TextureCube);
+  
+    PXShaderProgramCreate(&pxSkyBox->ShaderProgramReference, &pxSkyBoxCreateInfo->ShaderProgram);
 
-        // Skybox CubeTexture
-        pxECSCreateInfoList[0].Type = PXResourceTypeTextureCube;
-        pxECSCreateInfoList[0].Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
-        pxECSCreateInfoList[0].ObjectReference = (PXECSInfo**)&pxSkyBox->TextureCube; // Request object
-       // pxECSCreateInfoList[0].Texture = pxSkyBoxCreateEventData->TextureCube;
+    PXModelCreate(&pxSkyBox->Model, &pxSkyBoxCreateInfo->Model);
 
-        // Skybox Shader
-        pxECSCreateInfoList[1].Type = PXResourceTypeShaderProgram;
-        pxECSCreateInfoList[1].ObjectReference = (PXECSInfo**)&pxSkyBox->ShaderProgramReference; // Request object
-
-       // PXCopy(PXShaderProgramCreateInfo, pxSkyBoxCreateEventData, &pxECSCreateInfoList[1].ShaderProgram);
-
-        // Skybox model
-        //pxEngineResourceActionInfoList[1].Type = PXEngineResourceActionTypeCreate;
-        //pxEngineResourceActionInfoList[1].Create.CreateType = PXEngineCreateTypeModel;
-        //pxEngineResourceActionInfoList[1].Create.SpawnEnabled = PXTrue;
-        //pxEngineResourceActionInfoList[1].Create.Model.ModelReference = &pxSkyBox->Model; // Request object
-        //pxEngineResourceActionInfoList[1].Create.Model.ModelFilePath = pxSkyBoxCreateEventData->;
-
-       // //PXResourceManagerAddV(pxECSCreateInfoList, 2);
-
-        //PXCopy(PXShaderProgramCreateInfo, &pxECSCreateInfoList[1].ShaderProgram, pxSkyBoxCreateEventData);
-    }
-
-    return PXActionSuccessful;
+    return PXResultOK;
 }

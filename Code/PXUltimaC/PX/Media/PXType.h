@@ -605,9 +605,9 @@ PXTypeBinding;
     ((PXI32U)c << 16u))
 
 #define PXI24MakeEndianBig(a, b, c) (\
-    ((PXI32U)b << 16u) | \
-    ((PXI32U)c << 8u) | \
-    ((PXI32U)d))
+    ((PXI32U)c << 16u) | \
+    ((PXI32U)b << 8u) | \
+    ((PXI32U)a))
 
 
 #define PXI24FromAdressEndianLittle(list) PXI24MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
@@ -778,9 +778,9 @@ PXTypeBinding;
 a = SplittIntLEA(i);\
 b = SplittIntLEB(i);\
 c = SplittIntLEC(i);\
-d = SplittIntLED(i);
+_pxFooter = SplittIntLED(i);
 
-#define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
+#define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, _pxFooter)
 
 typedef struct PXI16SCluster
 {

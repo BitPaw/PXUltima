@@ -6,33 +6,34 @@
 #include <PX/Media/PXType.h>
 
 // Refused => User error
-// Invalid => State error
+// Invalid => State errorPXActionRefusedArgumentInvalid
 // Failed => Fundamental error
-typedef enum PXActionResult_
+typedef enum PXResult_
 {
     //---<General>-----------------------
-    PXActionInvalid, // Default iniitlialisation value, do not use.
-    PXActionSuccessful, // Action finished successful
+    PXResultInvalid, // Default iniitlialisation value, do not use.
+    PXResultOK, // Action finished successful
     PXActionSuccessWithSubstitution,
     PXActionCancelled, // Action was canceled early.
     PXActionDidNothing, // if the function did nothing
     PXActionFailedUnkownError, // [OTHER] Undefined error
     //-----------------------------------
 
-    // Exceptions
-    //STATUS_PENDING,
+    // Functions
+    PXResultRefusedParameterNull, // Some needed Parameter is null
+    PXResultRefusedParameterInvalid, // [INVAL] Any given argument is invalid
+
+    // Soft-Exceptions
+    PXResultRefusedNotEnoughMemory,
+
+    // Hard-Exceptions
     PXResultExceptionAccessViolation, // [SIGSEGV] Read or write from invalid adress, EXCEPTION_ACCESS_VIOLATION
     PXResultExceptionIndexOutOfBounds, // Index of an array is invalid
     PXResultExceptionDataMisalignment,
-
-
     PXResultExceptionIllegalInstruction, // [SIGILL] Invalid or unsupported insruction executed by CPU.
-
     PXResultExceptionPageLost, // STATUS_IN_PAGE_ERROR
 
-    // Debugging
-    PXResultDebugEventBreakPoint, // [SIGBREAK]
-    PXResultDebugEventSingleStep,
+
 
     PXResultExceptionFloatDENORMAL_OPERAND,
     PXResultExceptionFloatDIVIDE_BY_ZERO,
@@ -53,8 +54,11 @@ typedef enum PXActionResult_
     //STATUS_POSSIBLE_DEADLOCK,
     PXResultExceptionControlCExit, // [SIGABRT]
 
+    // Debugging
+    PXResultDebugEventBreakPoint, // [SIGBREAK]
+    PXResultDebugEventSingleStep,
 
-    PXActionRefusedNotEnoughMemory,
+
 
     PXActionWaitOnResult, // The result is yet to be recieved
 
@@ -195,11 +199,7 @@ typedef enum PXActionResult_
     PXActionRefusedConnectionClosed,
 
 
-    //-------------------------------------------------------
-    // Functions
-    //-------------------------------------------------------
-    PXActionRefusedArgumentNull, // Some needed Parameter is null
-    PXActionRefusedArgumentInvalid, // [INVAL] Any given argument is invalid
+  
 
     //-------------------------------------------------------
     // Library
@@ -441,9 +441,9 @@ PXExecutionSnapshot;
 
 
 
-#define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
-//#define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
-//#define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
+#define PXActionReturnOnSuccess(actionResult) if (PXResultOK == actionResult) return PXResultOK;
+//#define PXActionReturnOnError(actionResult) if (PXResultOK != actionResult) return actionResult;
+//#define PXActionContinueOnError(actionResult) if (PXResultOK != actionResult) continue;
 //#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 PXPublic PXResult PXAPI PXErrorCodeFromID(const int errorCode);

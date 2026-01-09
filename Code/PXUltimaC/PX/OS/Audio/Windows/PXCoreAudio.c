@@ -70,7 +70,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
         resultID = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
         const PXResult initializeResult = PXErrorFromHRESULT(resultID);
 
-        if(PXActionSuccessful != initializeResult) 
+        if(PXResultOK != initializeResult) 
             return initializeResult;
     }
 
@@ -106,7 +106,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
         resultID = XAudio2Create(&_pxCoreAudio.XAudio2API, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
         const PXResult createResult = PXErrorFromHRESULT(resultID);
 
-        if(PXActionSuccessful != createResult) 
+        if(PXResultOK != createResult) 
             return createResult;
     }
  
@@ -263,7 +263,7 @@ PXResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem PXREF pxAudioXSystem, PXAudio
 {
     if(!(pxAudioXSystem && pxAudioDeviceAmountInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     pxAudioDeviceAmountInfo->DeviceInput = 0;
@@ -277,7 +277,7 @@ PXResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem PXREF pxAudioXSystem, PXAudio
     const HRESULT getCountResult = pxAudioXSystem->XAudioInterface->lpVtbl->GetDeviceCount(pxAudioXSystem->XAudioInterface, &pxAudioDeviceAmountInfo->DeviceOutput);
 
 
-    return PXActionSuccessful;;
+    return PXResultOK;;
 }
 
 PXResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)

@@ -84,7 +84,7 @@ PXResult PXAPI PXDebugDebuggerInitialize(PXDebug PXREF pxDebug)
       
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #endif
 }
@@ -105,14 +105,14 @@ PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF app
         const PXResult result = PXThreadCreate(&pxDebug->EventListenLoop, &pxThreadCreateInfo);
 
         // If thread cannot be started, stop.
-        if(PXActionSuccessful != result)
+        if(PXResultOK != result)
             return result;
     }
 
     // Start process
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
@@ -137,12 +137,12 @@ PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
     const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
     const PXResult pxActionResult = PXErrorCurrent(result);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -175,7 +175,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
         const long result = ptrace(PTRACE_GETEVENTMSG, processID, 0); // since Linux 2.5.46
         const PXResult tranceResult = PXErrorCurrent(-1 != result);
 
-        if(PXActionSuccessful != tranceResult)
+        if(PXResultOK != tranceResult)
         {
             return tranceResult;
         }
@@ -187,13 +187,13 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
         pid_t waitedProcessID = waitpid(processID, &waitStatus, __WALL);
         const PXResult waitResult = PXErrorCurrent(-1 != waitedProcessID);
 
-        if(PXActionSuccessful != waitResult)
+        if(PXResultOK != waitResult)
         {
             return waitResult;
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif PXOSWindowsDestop 
 
@@ -203,7 +203,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
     const DWORD dwMilliseconds = 0;
     const PXResult pxActionResult = PXDebugEventWait(&debugEvent, dwMilliseconds);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -524,12 +524,12 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
 
     const PXResult pxContinueActionResult = PXDebugEventContinue(0, 0);
 
-    if(PXActionSuccessful != pxContinueActionResult)
+    if(PXResultOK != pxContinueActionResult)
     {
         return pxContinueActionResult;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #endif
 }
@@ -555,7 +555,7 @@ PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PX
     {
         const PXResult initializeResult = PXSymbolServerInitialize();
 
-        if(PXActionSuccessful != initializeResult)
+        if(PXResultOK != initializeResult)
         {
             return initializeResult;
         }
@@ -573,7 +573,7 @@ PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PX
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -707,7 +707,7 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
             PXSymbol pxSymbol;
 
             const PXResult symbolFetchResult = PXMemorySymbolFetch(target, &pxSymbol);
-            const PXBool success = PXActionSuccessful == symbolFetchResult;
+            const PXBool success = PXResultOK == symbolFetchResult;
 
             char symbolInfo[128];
 
@@ -773,7 +773,7 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
     {
         // GetLastError())
 
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 
@@ -783,7 +783,7 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 
         if(!firstFetch)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
     }
 
@@ -830,7 +830,7 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, PXThread* pxThread)
@@ -846,7 +846,7 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
 
     if(!hasAtlestOne)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 
@@ -971,7 +971,7 @@ PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol
     PXSymbolFromAddress(pxSymbol, adress);
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
     /*
 
@@ -1035,10 +1035,10 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug)
     {
         PXResult pxActionResult = PXDebugWaitForEvent(pxDebug);
 
-        pxActionResult = PXActionInvalid;
+        pxActionResult = PXResultInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
@@ -1050,7 +1050,7 @@ PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
     const HANDLE hFile = CreateFileA("minidump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     const PXResult pxActionResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }

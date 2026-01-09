@@ -174,5 +174,5 @@ PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWi
 
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

@@ -105,7 +105,7 @@ PXResult PXAPI PXSBPServerSendToAll(PXSBPServer PXREF pxSBPServer, const void PX
         PXBufferDestruct(&serverSubSocket->BufferOutput);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXSBPClientConstruct(PXSBPClient PXREF pxSBPClient)
@@ -529,7 +529,7 @@ void PXAPI PXSBPEmitterConstruct(PXSBPEmitter PXREF pxSBPEmitter)
 
 PXResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter PXREF pxSBPEmitter, const void PXREF message, const PXSize messageSize)
 {
-    PXActionResult sendResult = PXActionInvalid;
+    PXActionResult sendResult = PXResultInvalid;
 
     // How many packages do we have?
     const PXSize numberOfPackages = (messageSize / pxSBPEmitter->PackageSizeMaximal) + 1;

@@ -64,7 +64,7 @@ PXResult PXAPI PXLockRegisterToECS()
 {
     PXECSRegister(&PXLockRegisterInfoStatic, &PXLockRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreateInfo)
@@ -73,7 +73,7 @@ PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreat
 
     if(!lockREF)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     pxLockCreateInfo->Info.Static = &PXLockRegisterInfoStatic;
@@ -103,7 +103,7 @@ PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreat
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     PXResult pxResult = pxLock->Create(pxLock);
@@ -115,7 +115,7 @@ PXResult PXAPI PXLockDelete(PXLock PXREF pxLock)
 {
     if(!pxLock)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXResult pxResult = pxLock->Release(pxLock);
@@ -127,7 +127,7 @@ PXResult PXAPI PXLockEngage(PXLock PXREF pxLock, const PXBool forceEnter)
 {
     if(!pxLock)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     ++pxLock->LockCounter;
@@ -141,7 +141,7 @@ PXResult PXAPI PXLockRelease(PXLock PXREF pxLock)
 {
     if(!pxLock)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXResult pxResult = pxLock->Leave(pxLock);
@@ -225,7 +225,7 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
     );
 #endif
 
-    PXActionResult waitResult = PXActionInvalid;
+    PXActionResult waitResult = PXResultInvalid;
 
 #if OSUnix
     const int waitResultID = sem_wait(&lock->SemaphoreHandle);
@@ -241,7 +241,7 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
 
         if(WAIT_OBJECT_0 == result)
         {
-            waitResult = PXActionSuccessful;
+            waitResult = PXResultOK;
             // We got runtime
             break;
         }
@@ -292,12 +292,12 @@ PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
 {
     if(!pxLock)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     if(0 == pxLock->SemaphoreHandle)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 #if PXLogEnable  && 0
@@ -419,7 +419,7 @@ PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEnt
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock)
@@ -442,5 +442,5 @@ PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock)
     LeaveCriticalSection(criticalSectionCast);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

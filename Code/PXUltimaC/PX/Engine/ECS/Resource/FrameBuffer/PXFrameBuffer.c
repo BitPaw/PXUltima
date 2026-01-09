@@ -16,7 +16,7 @@ PXResult PXAPI PXFrameBufferRegisterToECS()
 {
     PXECSRegister(&PXFrameBufferRegisterInfoStatic, &PXFrameBufferRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer** pxFrameBufferREF, PXFrameBufferCreateInfo PXREF pxFrameBufferCreateInfo)
@@ -52,5 +52,5 @@ PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer** pxFrameBufferREF, PXFrameBuff
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

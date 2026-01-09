@@ -2,7 +2,26 @@
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
 #include <CommCtrl.h>
 
-PXResult PXAPI PXTabListDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+
+const char PXTabListName[] = "PXTabList";
+const PXI8U PXTabListNameLength = sizeof(PXTabListName);
+const PXECSRegisterInfoStatic PXTabListRegisterInfoStatic =
+{
+    {sizeof(PXTabListName), sizeof(PXTabListName), PXTabListName, TextFormatASCII},
+    sizeof(PXTabList),
+    __alignof(PXTabList),
+    PXECSTypeEntity
+};
+PXECSRegisterInfoDynamic PXTabListRegisterInfoDynamic;
+
+PXResult PXAPI PXTabListRegisterToECS()
+{
+    PXECSRegister(&PXTabListRegisterInfoStatic, &PXTabListRegisterInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXWindowDrawInfo PXREF pxWindowDrawInfo)
 {
     /*
     PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxWindow->ExtendedData;
@@ -31,7 +50,7 @@ PXResult PXAPI PXTabListDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxW
         );
 #endif
 
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     // int size = 110;
@@ -138,12 +157,27 @@ PXResult PXAPI PXTabListDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxW
 
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
-PXResult PXAPI PXTabListCreate(PXTabList** pxTabList, PXTabListCreateInfo PXREF pxTabListCreateInfo)
+PXResult PXAPI PXTabListCreate(PXTabList** pxTabListREF, PXTabListCreateInfo PXREF pxTabListCreateInfo)
 {
-    PXWindowCreateInfo* pxWindowCreateInfo = &pxTabListCreateInfo->WindowInfo;
+    PXWindowCreateInfo* pxWindowCreateInfo = &pxTabListCreateInfo->Window;
+
+    PXTabList* pxTabList = PXNull;
+
+    pxTabListCreateInfo->Info.Static = &PXTabListRegisterInfoStatic;
+    pxTabListCreateInfo->Info.Dynamic = &PXTabListRegisterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxTabListREF, pxTabListCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxTabList = *pxTabListREF;
+
+
 
 #if OSWindows
     pxWindowCreateInfo->WindowClassName.A = WC_TABCONTROL;
@@ -151,7 +185,9 @@ PXResult PXAPI PXTabListCreate(PXTabList** pxTabList, PXTabListCreateInfo PXREF 
 
     pxWindowCreateInfo->WindowClassName.A = WC_STATIC;
 #endif
-    pxWindowCreateInfo->DrawFunctionEngine = PXTabListDraw;
 
-    return PXActionSuccessful;
+    pxWindowCreateInfo->EventList.CallBackOwner = pxTabList;
+    pxWindowCreateInfo->EventList.CallBackDraw = PXTabListDraw;
+
+    return PXResultOK;
 }

@@ -400,7 +400,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         }
     }
 
-    return (PXResult)PXActionSuccessful;
+    return (PXResult)PXResultOK;
 }
 
 PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
@@ -512,7 +512,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         }
 
         const PXResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
-        const PXBool success = PXActionSuccessful == actionResult;
+        const PXBool success = PXResultOK == actionResult;
 
         if(!success)
         {
@@ -584,7 +584,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     PXPNGDestruct(png);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -1143,7 +1143,7 @@ PXSize PXAPI preProcessScanlines
             const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
             const PXResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
 
-            if(PXActionSuccessful != allocationResult) 
+            if(PXResultOK != allocationResult) 
                 return allocationResult;
 
             // non multiple of 8 bits per scanline, padding bits needed per scanline
@@ -1185,7 +1185,7 @@ PXSize PXAPI preProcessScanlines
             const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
             const PXResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
 
-            if(PXActionSuccessful != allocationResult) 
+            if(PXResultOK != allocationResult) 
                 return allocationResult;
 
             PXByte* adam7 = PXMemoryHeapCallocT(PXByte, passstart[7]);
@@ -1312,7 +1312,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         {
             default:
             case PXPNGColorInvalid:
-                return PXActionInvalid;
+                return PXResultInvalid;
 
             case PXPNGColorGrayscale: // ColorType = 0
             case PXPNGColorGrayscaleAlpha:  // ColorType = 4
@@ -1500,7 +1500,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         PXFileWriteMultible(PXResourceMoveInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -1603,7 +1603,7 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
     {
         default:
         case PXPNGColorInvalid:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
 
         case PXPNGColorGrayscale:
             colorModeIn.colortype = LCT_GREY;
@@ -1643,14 +1643,14 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
 
     if(colorModeIn.colortype == LCT_PALETTE && !colorModeIn.palette)
     {
-        return PXActionRefusedArgumentInvalid; /* error: must provide palette if input mode is palette */
+        return PXResultRefusedParameterInvalid; /* error: must provide palette if input mode is palette */
     }
 
     if(lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
     {
         PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
         PXMemoryCopy(pixelDataIn, pixelDataOut, numbytes);
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     if(colorModeOut.colortype == LCT_PALETTE)
@@ -1674,7 +1674,7 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
 
                 PXMemoryCopy(pixelDataIn, pixelDataOut, numbytes);
 
-                return PXActionSuccessful;
+                return PXResultOK;
             }
         }
         if(palettesize < palsize)
@@ -1719,7 +1719,7 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
 
                 const PXResult result = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, &color);
 
-                if(PXActionSuccessful != result)
+                if(PXResultOK != result)
                     return result;;
             }
         }
@@ -2273,7 +2273,7 @@ PXResult PXAPI rgba8ToPixel
             int index = color_tree_get(tree, color);
 
             if(index < 0)
-                return PXActionInvalid; // color not in palette
+                return PXResultInvalid; // color not in palette
 
             if(mode->bitdepth == 8)
                 out[i] = index;
@@ -2317,10 +2317,10 @@ PXResult PXAPI rgba8ToPixel
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth)
@@ -2456,7 +2456,7 @@ PXResult PXAPI PXPNGChunkReadPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, con
         paletteInsertion[3] = 0xFF; // Add alpha
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
@@ -2484,7 +2484,7 @@ void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, co
         {
             // error: this chunk must be 2 bytes for grayscale image
           //  if(chunk.Header.Size != 2)
-           //     return PXActionInvalid;
+           //     return PXResultInvalid;
 
             unsigned short value;
 
@@ -2499,7 +2499,7 @@ void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, co
         {
             /*error: this chunk must be 6 bytes for RGB image*/
             //if(chunk.Header.Size != 6)
-            //    return PXActionInvalid;
+            //    return PXResultInvalid;
 
             unsigned short red;
             unsigned short green;

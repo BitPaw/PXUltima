@@ -15,7 +15,7 @@ PXResult PXAPI PXLevelLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     // container
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLevelSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

@@ -33,12 +33,12 @@ PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, char* versioNStrin
     pxVersion->Build = versionBuild;
     pxVersion->Patch = versionPatch;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXVersionToString(PXVersion PXREF pxVersion, char* versioNString)
 {
     PXTextPrintA(versioNString, 64, "%i.%i.%i", pxVersion->Major, pxVersion->Minor, pxVersion->Build);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

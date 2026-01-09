@@ -78,7 +78,7 @@ typedef enum PXTextureType_
     PXTextureType2DProxy,
     PXTextureType3D,
 
-    PXTextureTypeCubeContainer,
+    PXTextureTypeCube,
     PXTextureTypeCubeProxy,
     PXTextureTypeCubeArray,
     PXTextureTypeCubeRight,
@@ -193,6 +193,8 @@ typedef struct PXTextureCreateInfo_
     PXECSCreateInfo Info;
 
     PXTexture* Texture;
+
+    PXTextureType Type;
 
     union
     {

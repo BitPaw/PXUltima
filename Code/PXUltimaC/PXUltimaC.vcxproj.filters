@@ -288,6 +288,9 @@
     <ClCompile Include="PX\Engine\ECS\Entity\UI\TreeView\PXTreeView.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.c" />
     <ClCompile Include="PX\PXSentinel.c" />
+    <ClCompile Include="PX\Math\PXTriangle.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\SceneView\PXSceneView.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -578,5 +581,8 @@
     <ClInclude Include="PX\Engine\ECS\Entity\UI\TreeView\PXTreeView.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.h" />
     <ClInclude Include="PX\PXSentinel.h" />
+    <ClInclude Include="PX\Math\PXTriangle.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\SceneView\PXSceneView.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.h" />
   </ItemGroup>
 </Project>

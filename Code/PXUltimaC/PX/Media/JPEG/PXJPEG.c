@@ -412,7 +412,7 @@ PXResult PXAPI PXJPEGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXFileCursorMoveTo(pxFile, expectedOffset); // Allign
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -985,7 +985,7 @@ PXResult PXAPI PXJPEGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckEndOfImage, PXEndianLittle);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 

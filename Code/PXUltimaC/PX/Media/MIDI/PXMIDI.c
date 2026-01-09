@@ -36,7 +36,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     if (!pxMIDI->TrackListSize)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     pxMIDI->TrackListSize = pxMIDI->TrackListAmount;
@@ -66,7 +66,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXFileReadB(pxResourceLoadInfo->FileReference, track->EventData, chunkLength);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
@@ -96,5 +96,5 @@ PXResult PXAPI PXMIDISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         PXFileWriteB(pxResourceSaveInfo->FileReference, track->EventData, track->EventDataSize);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

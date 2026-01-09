@@ -6,10 +6,19 @@
 #include <PX/Media/PXType.h>
 #include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
+#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
 
+
+// A Model is a renderable entity.
+// Has a mesh as a base structure
+// Matrix for where it is
+// Render information
+typedef struct PXModel_ PXModel;
 
 typedef struct PXModelCreateInfo_
 {
+    PXECSCreateInfo Info;
+
     PXShaderProgram* ShaderProgramReference;
     PXF32 Scale;
 
@@ -23,15 +32,8 @@ typedef struct PXModelCreateInfo_
 }
 PXModelCreateInfo;
 
-
-// A Model is a renderable entity.
-// Has a mesh as a base structure
-// Matrix for where it is
-// Render information
-typedef struct PXModel_ PXModel;
-
 PXPublic PXResult PXAPI PXModelRegisterToECS();
-
-PXPublic void PXAPI PXModelConstruct(PXModel PXREF pxModel);
+PXPublic PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PXREF pxModelCreateInfo);
+PXPublic PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 #endif

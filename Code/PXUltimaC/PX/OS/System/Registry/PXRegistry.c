@@ -75,7 +75,7 @@ PXResult PXAPI PXRegistryInitialize(PXRegistry PXREF registry)
         PXLibraryGetSymbolListA(&registry->Library, pxLibraryFuntionEntry, amount);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupported;
@@ -128,7 +128,7 @@ PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText P
             const LSTATUS statusID = pxRegistryConnectRegistryA(computerName->A, hKey, registryKeyResult);  // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -141,7 +141,7 @@ PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText P
             const LSTATUS statusID = pxRegistryConnectRegistryW(computerName->W, hKey, registryKeyResult); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -153,7 +153,7 @@ PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText P
             return PXActionRefuedTextFormatUnsupported;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -169,14 +169,14 @@ PXResult PXAPI PXRegistryClose(PXRegistry PXREF registry)
     const LSTATUS statusID = pxRegCloseKey(registryKey);
     const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
     registry->ID = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -221,7 +221,7 @@ PXResult PXAPI PXRegistryKeyListAll(PXRegistry PXREF registry)
         repeat = ERROR_NO_MORE_ITEMS != statusID;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -264,7 +264,7 @@ PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF
             );
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -288,7 +288,7 @@ PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF
             );
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -304,7 +304,7 @@ PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF
     return PXActionNotSupportedByOperatingSystem;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName, const PXText PXREF pxTextFile)
@@ -326,7 +326,7 @@ PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF p
             const LSTATUS statusID = pxRegLoadKeyA((HKEY)registry->ID, pxTextKeyName->A, pxTextFile->A); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -339,7 +339,7 @@ PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF p
             const LSTATUS statusID = pxRegLoadKeyW((HKEY)registry->ID, pxTextKeyName->W, pxTextFile->W); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -355,7 +355,7 @@ PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF p
     return PXActionNotSupportedByOperatingSystem;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName)
@@ -379,7 +379,7 @@ PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF p
             const LSTATUS statusID = pxRegSaveKeyA(registryKey, pxTextKeyName->A, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -392,7 +392,7 @@ PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF p
             const LSTATUS statusID = pxRegSaveKeyw(registryKey, pxTextKeyName->W, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -404,7 +404,7 @@ PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF p
             return PXActionRefuedTextFormatUnsupported;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -428,7 +428,7 @@ PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF
             const LSTATUS statusID = pxRegDeleteKeyA(registryKey, pxTextKeyName->A); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -441,7 +441,7 @@ PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF
             const LSTATUS statusID = pxRegDeleteKeyW(registryKey, pxTextKeyName->W); // Windows 2000, Advapi32.dll, winreg.h
             const PXResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -453,7 +453,7 @@ PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF
             return PXActionRefuedTextFormatUnsupported;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionNotSupportedByOperatingSystem;

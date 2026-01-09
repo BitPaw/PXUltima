@@ -163,7 +163,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 
         const PXResult pxActionResult = PXLibraryOpen(&pxDataBase->ODBCLibrary, &pxText);
 
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -373,7 +373,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDataBaseRelease(PXDataBase PXREF pxDataBase)
@@ -384,7 +384,7 @@ PXResult PXAPI PXDataBaseRelease(PXDataBase PXREF pxDataBase)
 
     PXClear(PXDataBase, pxDataBase);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSQLType PXAPI PXSQLTypeFromID(const PXI32U sqlTypeID)
@@ -589,7 +589,7 @@ PXResult PXAPI PXDataBaseConnect
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
     /*
     PXSQLWCHAR* serverNameS = (wchar_t*)serverName;
@@ -1020,7 +1020,7 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 

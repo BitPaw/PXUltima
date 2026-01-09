@@ -450,7 +450,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     if(!pxTexture)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXDirectDrawTexture pxDirectDrawTexture;
@@ -539,7 +539,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             // D3DX writes 1D textures with a fixed Height of 1.
             if((pxDirectDrawTexture.Flags & DDS_HEIGHT) && pxDirectDrawTexture.Height != 1)
             {
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
             break;
@@ -548,7 +548,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             if(pxDirectDrawTexture.miscFlag & 4) // D3D11_RESOURCE_MISC_TEXTURECUBE
             {
-                pxTexture->Type = PXTextureTypeCubeContainer;
+                pxTexture->Type = PXTextureTypeCube;
                 // arraySize *= 6;
                 // isCubeMap = true;
             }
@@ -563,17 +563,17 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             if(!(pxDirectDrawTexture.Flags & DDS_HEADER_FLAGS_VOLUME))
             {
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
             if(pxDirectDrawTexture.arraySize > 1)
             {
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
             break;
         }
         default:
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
     }
     else
@@ -589,9 +589,9 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 // We require all six faces to be defined.
                 if((pxDirectDrawTexture.caps2 & DDS_CUBEMAP_ALLFACES) != DDS_CUBEMAP_ALLFACES)
                 {
-                    return PXActionInvalid;
+                    return PXResultInvalid;
                 }
-                pxTexture->Type = PXTextureTypeCubeContainer;
+                pxTexture->Type = PXTextureTypeCube;
 
                 //arraySize = 6;
                 //isCubeMap = true;
@@ -702,7 +702,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDDSSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

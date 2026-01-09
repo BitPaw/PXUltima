@@ -32,32 +32,57 @@ typedef struct PXCamera_
 }
 PXCamera;
 
+const char PXCameraName[] = "Camera";
+const PXI8U PXCameraNameLength = sizeof(PXCameraName);
+const PXECSRegisterInfoStatic PXCameraRegisterInfoStatic =
+{
+    {sizeof(PXCameraName), sizeof(PXCameraName), PXCameraName, TextFormatASCII},
+    sizeof(PXCamera),
+    __alignof(PXCamera),
+    PXECSTypeEntity
+};
+PXECSRegisterInfoDynamic PXCameraRegisterInfoDynamic;
+
 PXResult PXAPI PXCameraRegisterToECS()
 {
-    return PXActionSuccessful;
+    PXECSRegister(&PXCameraRegisterInfoStatic, &PXCameraRegisterInfoDynamic);
+
+    return PXResultOK;
 }
 
-void PXAPI PXCameraConstruct(PXCamera PXREF camera)
+PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo)
 {
-    PXClear(PXCamera, camera);
+    PXCamera* pxCamera = PXNull;
 
-    camera->WalkSpeed = 2;
-    camera->ViewSpeed = 1;
-    camera->FollowSpeed = 0.98f;
-    camera->FieldOfView = 90;
-    camera->Height = 1;
-    camera->Width = 1;
-    camera->Near = -0.001;
-    camera->Far = 100000;
+    pxCameraCreateInfo->Info.Static = &PXCameraRegisterInfoStatic;
+    pxCameraCreateInfo->Info.Dynamic = &PXCameraRegisterInfoDynamic;
+    PXResult pxResult =  PXECSCreate(pxCameraREF, pxCameraCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxCamera = *pxCameraREF;
+    pxCamera->WalkSpeed = 2;
+    pxCamera->ViewSpeed = 1;
+    pxCamera->FollowSpeed = 0.98f;
+    pxCamera->FieldOfView = 90;
+    pxCamera->Height = 1;
+    pxCamera->Width = 1;
+    pxCamera->Near = -0.001;
+    pxCamera->Far = 100000;
 
     //PXMatrix4x4FIdentity(&camera->MatrixModel);
     //PXMatrix4x4FIdentity(&camera->MatrixView);
     //PXMatrix4x4FIdentity(&camera->MatrixProjection);
 
-    PXCameraViewChange(camera, PXCameraPerspective3D);
+    PXCameraViewChange(pxCamera, pxCameraCreateInfo->Perspective);
 
     const PXVector3F32 position = { 0,0,0 };
-    PXCameraRotate(camera, &position);
+    PXCameraRotate(pxCamera, &position);
+
+    return PXResultOK;
 }
 
 void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)

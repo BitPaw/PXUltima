@@ -13,7 +13,7 @@ PXResult PXAPI PXBashExecute(const PXText PXREF programPath, const PXBool syncro
     PXSize dataLength = 0;
     unsigned char* data = 0;
 
-    if(result != PXActionSuccessful)
+    if(result != PXResultOK)
     {
         return result;
     }
@@ -42,7 +42,7 @@ PXResult PXAPI PXBashExecuteA
 {
     if(!commandText)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if 0
@@ -101,14 +101,14 @@ PXResult PXAPI PXBashExecuteA
     {
         const int resultID = system(commandText); // [POSIX]  stdlib.h
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     // Execute the command and get the output
     FILE PXREF pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
     const PXResult openError = PXErrorCurrent(pipeHandle>0);
 
-    if(PXActionSuccessful != openError)
+    if(PXResultOK != openError)
     {
         return openError;
     }
@@ -124,7 +124,7 @@ PXResult PXAPI PXBashExecuteA
     char* res = fgets(*outBuffer, outBufferSizeMax, pipeHandle);
     const PXResult getError = PXErrorCurrent(!res);
 
-    if(PXActionSuccessful != getError)
+    if(PXResultOK != getError)
     {
         return openError;
     }
@@ -148,5 +148,5 @@ PXResult PXAPI PXBashExecuteA
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

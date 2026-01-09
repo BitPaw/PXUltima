@@ -41,7 +41,7 @@ PXResult PXAPI PXGraphicUIRectangleCreate(PXGraphic PXREF pxGraphic, PXRenderabl
 
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 /*
@@ -111,7 +111,7 @@ PXResult PXAPI PXGraphicUIElementCreate(PXGraphic PXREF pxGraphic, PXWindow* PXR
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 */
 
@@ -254,7 +254,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
 
         const PXResult pixelSystem = PXWindowPixelSystemSet(pxWindow, &pxWindowPixelSystemInfo);
 
-        if(PXActionSuccessful != pixelSystem)
+        if(PXResultOK != pixelSystem)
         {
             return pixelSystem;
         }
@@ -320,7 +320,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     // Graphic initialize
@@ -335,7 +335,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
 
         PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
-        if(PXActionSuccessful != pxActionResult) // if loading targeted API failed, load plan B
+        if(PXResultOK != pxActionResult) // if loading targeted API failed, load plan B
         {
             PXLogPrint
             (
@@ -360,7 +360,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
 
             pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 PXClear(PXGraphic, pxGraphic);
 
@@ -446,7 +446,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXGraphicRelease(PXGraphic PXREF pxGraphic)

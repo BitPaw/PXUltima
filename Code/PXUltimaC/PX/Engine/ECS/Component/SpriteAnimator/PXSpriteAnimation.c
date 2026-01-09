@@ -29,5 +29,5 @@ PXResult PXAPI PXSpriteAnimatorCreate(PXSpriteAnimator PXREF pxSpriteAnimator, P
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

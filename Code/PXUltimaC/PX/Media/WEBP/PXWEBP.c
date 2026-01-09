@@ -17,7 +17,7 @@ PXResult PXAPI PXWEBPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         const PXResult riffResult = PXRIFFLoadFromFile(&pxRiff, pxFile);
 
-        if(PXActionSuccessful != riffResult) 
+        if(PXResultOK != riffResult) 
             return riffResult;
 
         if (PXRIFFWebPicture != pxRiff.Format)

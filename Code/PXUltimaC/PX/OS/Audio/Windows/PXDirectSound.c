@@ -127,7 +127,7 @@ PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSo
 
         const PXResult libraryOpenResult = PXLibraryOpen(&_pxAudioDirectSound.DirectSoundLibrary, &pxText);
 
-        if(PXActionSuccessful != libraryOpenResult)
+        if(PXResultOK != libraryOpenResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -185,7 +185,7 @@ PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDeviceAmountInfo PXREF pxAudioDeviceAmountInfo)
@@ -222,11 +222,11 @@ PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound PXREF pxAudioDirectS
 
     const PXResult enumResult = PXErrorFromHRESULT(enumResultID);
 
-    if(PXActionSuccessful != enumResult) 
+    if(PXResultOK != enumResult) 
         return enumResult;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound PXREF pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice)
@@ -265,16 +265,16 @@ PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound PXREF pxAudioDirectSo
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     const PXResult enumResult = PXErrorFromHRESULT(enumResultID);
 
-    if(PXActionSuccessful != enumResult)
+    if(PXResultOK != enumResult)
         return enumResult;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound PXREF pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount)
@@ -315,7 +315,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
 
             const PXResult crateResult = PXErrorFromHRESULT(crateResultID);
 
-            if(PXActionSuccessful != crateResult) 
+            if(PXResultOK != crateResult) 
                 return crateResult;
 
             directSoundCapture = (IDirectSoundCapture8*)_pxAudioDirectSound.DirectSoundInterface;
@@ -354,7 +354,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
 
                 const PXResult crateResult = PXErrorFromHRESULT(crateResultID);
 
-                if(PXActionSuccessful != crateResult) 
+                if(PXResultOK != crateResult) 
                     return crateResult;
 
                 directSound = (PXDirectSoundOutputInterface*)_pxAudioDirectSound.DirectSoundInterface;
@@ -369,7 +369,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
                 const HRESULT capResultID = directSound->lpVtbl->GetCaps(directSound, &capabiltys);
                 const PXResult initResult = PXErrorFromHRESULT(capResultID);
 
-                if(PXActionSuccessful != initResult) 
+                if(PXResultOK != initResult) 
                     return initResult;
 
                 pxAudioDevice->SupportFlags = capabiltys.dwFlags;
@@ -406,11 +406,11 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice PXREF pxAudioDevice)
@@ -422,7 +422,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
 {
     if(!(pxAudioDevice && pxSound))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -489,7 +489,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
         );
         const PXResult createResult = PXErrorFromHRESULT(createResultID);
 
-        if(PXActionSuccessful != createResult) 
+        if(PXResultOK != createResult) 
             return createResult;
 
         soundBuffer = pxAudioDevice->SoundBuffer;
@@ -506,7 +506,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
         const HRESULT lockResultID = soundBuffer->lpVtbl->Lock(soundBuffer, dataOffset, pxSound->DataSize, &dataBlockAdressA, &dataBlockSizeA, &dataBlockAdressB, dataBlockSizeB, flags);
         const PXResult lockResult = PXErrorFromHRESULT(lockResultID);
 
-        if(PXActionSuccessful != lockResult) 
+        if(PXResultOK != lockResult) 
             return lockResult;
     }
 
@@ -525,7 +525,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
         const HRESULT lockResultID = soundBuffer->lpVtbl->Unlock(soundBuffer, dataBlockAdressA, dataBlockSizeA, dataBlockAdressB, dataBlockSizeB);
         const PXResult lockResult = PXErrorFromHRESULT(lockResultID);
 
-        if(PXActionSuccessful != lockResult) 
+        if(PXResultOK != lockResult) 
             return lockResult;
     }
 
@@ -551,14 +551,14 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty)
 {
     if(!(pxAudioDevice && pxSoundDeviceProperty))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);   
@@ -572,7 +572,7 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
 
     if(!soundBuffer)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     IDirectSound3DBuffer8 PXREF directSound3DBuffer = (IDirectSound3DBuffer8*)pxAudioDevice->Buffer3DInterface;
@@ -713,7 +713,7 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
         }
         default:
         {
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
@@ -721,12 +721,12 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
 #elif OSWindows
     const PXResult setResult = PXErrorFromHRESULT(resultID);
 
-    if(PXActionSuccessful != setResult) 
+    if(PXResultOK != setResult) 
         return setResult;
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDevice PXREF pxAudioDevice)
@@ -811,7 +811,7 @@ PXResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound PXREF pxAudioDirectS
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDevice PXREF pxAudioDevice, PXAudioEffect PXREF pxAudioEffect)
@@ -874,7 +874,7 @@ PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound PXREF pxAudioDirectS
             }
 
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
 
 
@@ -903,7 +903,7 @@ PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound PXREF pxAudioDirectS
         // quit if we dont process anything
         if(!pxAudioEffect->Enable)
         {
-            return PXActionSuccessful;
+            return PXResultOK;
         }
     }
 
@@ -1288,10 +1288,10 @@ PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound PXREF pxAudioDirectS
             }
 
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

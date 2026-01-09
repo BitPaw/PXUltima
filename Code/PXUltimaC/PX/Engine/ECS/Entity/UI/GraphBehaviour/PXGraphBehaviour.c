@@ -63,5 +63,5 @@ PXResult PXAPI PXGraphBehaviourDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PX
 
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

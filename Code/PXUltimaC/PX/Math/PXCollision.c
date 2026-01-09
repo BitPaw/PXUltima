@@ -1,6 +1,7 @@
 #include "PXCollision.h"
 
 #include <PX/Math/PXMath.h>
+#include "PXTriangle.h"
 
 PXBool PXAPI PXCollisionAABB(PXF32 ax, PXF32 ay, PXF32 bx, PXF32 by, PXF32 cx, PXF32 cy, PXF32 dx, PXF32 dy)
 {

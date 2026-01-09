@@ -2148,7 +2148,7 @@ PXI32U PXAPI PXOpenGLTextureTypeToID(const PXTextureType pxGraphicTextureType)
             return GL_TEXTURE_RECTANGLE;
         case PXTextureTypeRectangleProxy:
             return GL_PROXY_TEXTURE_RECTANGLE;
-        case PXTextureTypeCubeContainer:
+        case PXTextureTypeCube:
             return  GL_TEXTURE_CUBE_MAP;
         case PXTextureTypeCubeProxy:
             return GL_PROXY_TEXTURE_CUBE_MAP;
@@ -2272,7 +2272,7 @@ void PXAPI PXOpenGLDestruct(PXOpenGL PXREF pxOpenGL)
 
 PXResult PXAPI PXOpenGLErrorCurrent(PXOpenGL PXREF pxOpenGL, PXBool wasSuccessultCall)
 {
-    PXActionResult openGLError = PXActionSuccessful;
+    PXActionResult openGLError = PXResultOK;
 
     for(;;)
     {
@@ -2287,12 +2287,12 @@ PXResult PXAPI PXOpenGLErrorCurrent(PXOpenGL PXREF pxOpenGL, PXBool wasSuccessul
                     return openGLError;
 
                 case GL_INVALID_ENUM:
-                    openGLError = PXActionRefusedArgumentInvalid;
+                    openGLError = PXResultRefusedParameterInvalid;
                     errorText = "GL_INVALID_ENUM";
                     break;
 
                 case GL_INVALID_VALUE:
-                    openGLError = PXActionRefusedArgumentInvalid;
+                    openGLError = PXResultRefusedParameterInvalid;
                     errorText = "GL_INVALID_VALUE";
                     break;
 
@@ -2323,7 +2323,7 @@ PXResult PXAPI PXOpenGLErrorCurrent(PXOpenGL PXREF pxOpenGL, PXBool wasSuccessul
                     */
 
                 default:
-                    openGLError = PXActionInvalid;
+                    openGLError = PXResultInvalid;
                     errorText = "Invalid/Unkown";
                     break;
             }
@@ -2475,7 +2475,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
     {
         if(!(pxOpenGL && pxGraphicInitializeInfo))
         {
-            return PXActionRefusedArgumentNull;
+            return PXResultRefusedParameterNull;
         }
     }
 
@@ -2533,7 +2533,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
 
         const PXResult libOpenResult = PXLibraryOpen(&pxOpenGL->LibraryOpenGL, &pxText);
 
-        if(PXActionSuccessful != libOpenResult)
+        if(PXResultOK != libOpenResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -2897,7 +2897,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
 
         PXActionResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, pxGraphicDevicePhysical);
 
-        if(PXActionSuccessful != fetchResult)
+        if(PXResultOK != fetchResult)
         {
             devices = 0;
         }
@@ -2967,7 +2967,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
@@ -3003,7 +3003,7 @@ PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
 
     if(!pxOpenGL)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -3041,7 +3041,7 @@ PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDeselect(PXOpenGL PXREF pxOpenGL)
@@ -3058,7 +3058,7 @@ PXResult PXAPI PXOpenGLDeselect(PXOpenGL PXREF pxOpenGL)
 
     if(!pxOpenGL)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const PXBool successful =
@@ -3076,7 +3076,7 @@ PXResult PXAPI PXOpenGLDeselect(PXOpenGL PXREF pxOpenGL)
 
     pxOpenGL->Flags &= ~PXOpenGLStateIsBoundToThread;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXI64S PXAPI PXOpenGLIntergetGet(PXOpenGL PXREF pxOpenGL, const GLenum enumID)
@@ -3126,7 +3126,7 @@ PXResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL PXREF pxOpenGL, PXI32U 
 {
     if(!(pxOpenGL && amount))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     *amount = 0;
@@ -3182,7 +3182,7 @@ PXResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL PXREF pxOpenGL, PXI32U 
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -3190,12 +3190,12 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
 {
     if(!(pxOpenGL && pxGraphicDevicePhysicalList))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     //if(amount == 0)
    // {
-    //    return PXActionSuccessful;
+    //    return PXResultOK;
    // }
 
     if(!(PXOpenGLStateIsBoundToThread & pxOpenGL->Flags))
@@ -3231,7 +3231,7 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
         PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Renderer, PXDeviceOpenGLRendererSize);
         PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Shader, PXDeviceOpenGLShaderSize);
 
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     // Returns the company responsible for this GL implementation.
@@ -3270,7 +3270,7 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
     // Nvidea gives us the free memory, not the used one
     pxGraphicDevicePhysicalList->VideoMemoryCurrent = pxGraphicDevicePhysicalList->VideoMemoryTotal - pxGraphicDevicePhysicalList->VideoMemoryCurrent;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF pxTexture)
@@ -3307,7 +3307,7 @@ PXResult PXAPI PXOpenGLRelease(PXOpenGL PXREF pxOpenGL)
 {
     if(!pxOpenGL)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -3323,7 +3323,7 @@ PXResult PXAPI PXOpenGLRelease(PXOpenGL PXREF pxOpenGL)
 
     const PXResult result = PXOpenGLErrorCurrent(pxOpenGL, resultID);
 
-    if(PXActionSuccessful != result)
+    if(PXResultOK != result)
     {
 #if PXLogEnable
         PXLogPrint
@@ -3352,7 +3352,7 @@ PXResult PXAPI PXOpenGLRelease(PXOpenGL PXREF pxOpenGL)
     pxOpenGL->ContextHandle = PXNull;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXOpenGLFlush(PXOpenGL PXREF pxOpenGL)
@@ -3443,7 +3443,7 @@ PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL PXREF pxOpenGL)
 
     // SwapBuffers(pxOpenGL->Binding.WindowDeviceContextHandle);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXOpenGLDrawScaleF(PXOpenGL PXREF pxOpenGL, const PXF32 x, const PXF32 y, const PXF32 z)
@@ -3484,7 +3484,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 {
     if(!(pxOpenGL && pxRenderEntity))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 
@@ -3503,7 +3503,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
  //   if(!pxVertexBuffer->VertexData) // Has data?
   //  {
-   //     return PXActionRefusedArgumentInvalid;
+   //     return PXResultRefusedParameterInvalid;
   //  }
 
     const PXBool canUseShader = pxShaderProgram && pxOpenGL->Binding.ShaderProgramUse;
@@ -3982,7 +3982,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXOpenGLTextureParameter(PXOpenGL PXREF pxOpenGL, const PXTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue)
@@ -4404,7 +4404,7 @@ PXOpenGLID PXOpenGLToImageType(const PXTextureType imageType)
     //case PXTextureType3D:
    //     return GL_TEXTURE_3D;
 
-    case PXTextureTypeCubeContainer:
+    case PXTextureTypeCube:
         return GL_TEXTURE_CUBE_MAP;
 
     case PXTextureTypeCubeRight:
@@ -4902,7 +4902,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                 );
 #endif
 
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
             }
         }
     }
@@ -5235,7 +5235,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 #endif
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProgram PXREF pxShaderProgram)
@@ -5248,7 +5248,7 @@ PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProg
     if(!pxShaderProgram)
     {
         pxOpenGL->Binding.ShaderProgramUse(0); // unbind shader
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     // if (PXResourceIDIsUnused(&pxShaderProgram->Info))
@@ -5271,7 +5271,7 @@ PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
     const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
-    if(PXActionSuccessful != createResult)
+    if(PXResultOK != createResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -5295,7 +5295,7 @@ PXResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
     const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
-    if(PXActionSuccessful == createResult)
+    if(PXResultOK == createResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -5384,7 +5384,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
         {
             if(pxGraphicTexturInfo->Amount == 0)
             {
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
             }
 
             // Batch create textures
@@ -5396,7 +5396,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
 
             const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, wasSuccess);
 
-            if(createResult != PXActionSuccessful)
+            if(createResult != PXResultOK)
             {
 #if PXLogEnable
                 PXLogPrint
@@ -5443,7 +5443,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
 
                             const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
-                            if(PXActionSuccessful != createResult)
+                            if(PXResultOK != createResult)
                             {
                                 return createResult;
                             }
@@ -5471,12 +5471,12 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
 
                             if(!pxTexture)
                             {
-                                return PXActionSuccessful; // No image
+                                return PXResultOK; // No image
                             }
 
                             if(!pxTexture->PixelData.Adress)
                             {
-                                return PXActionSuccessful; // No image data
+                                return PXResultOK; // No image data
                             }
 
                             // image data upload
@@ -5500,7 +5500,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
 
                         break;
                     }
-                    case PXTextureTypeCubeContainer:
+                    case PXTextureTypeCube:
                     {
                         PXTexture PXREF pxTexture = (PXTexture*)textureAdress;
                         pxTexture->OpenGLID = textureID;
@@ -5630,7 +5630,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
 
                     break;
                 }
-                case PXTextureTypeCubeContainer:
+                case PXTextureTypeCube:
                 {
                     PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
 
@@ -5666,7 +5666,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
             break;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXOpenGLTextureActivate(PXOpenGL PXREF pxOpenGL, const unsigned int index)
@@ -5975,12 +5975,12 @@ PXResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL PXREF pxOpenGL, const PXShader
 {
     if(!(pxOpenGL && pxShaderProgram && pxShaderVariableList))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     if(amount == 0)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     for(PXSize i = 0; i < amount; ++i)
@@ -6041,7 +6041,7 @@ PXResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL PXREF pxOpenGL, const PXShader
 
         if(!pxShaderVariable->Data) // If we dont have data, we can't do more.
         {
-            //return PXActionSuccessful;
+            //return PXResultOK;
             continue;
         }
 
@@ -6332,7 +6332,7 @@ PXResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL PXREF pxOpenGL, const PXShader
                 break;
             }
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
 
         // Fetch error
@@ -6343,7 +6343,7 @@ PXResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL PXREF pxOpenGL, const PXShader
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXOpenGLVertexArrayGenerate(PXOpenGL PXREF pxOpenGL, const unsigned int amount, unsigned int PXREF vaoList)
@@ -6762,7 +6762,7 @@ PXResult PXAPI PXOpenGLSpriteRegister(PXOpenGL PXREF pxOpenGL, PXSprite PXREF px
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
@@ -6770,21 +6770,21 @@ PXResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL PXREF pxOpenGL, PXDrawScript PX
     // Create one display list
     pxDrawScript->OpenGLID = pxOpenGL->Binding.GenLists(1);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptBegin(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
     pxOpenGL->Binding.NewList(pxDrawScript->OpenGLID, GL_COMPILE);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptEnd(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
     pxOpenGL->Binding.EndList();
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
@@ -6793,14 +6793,14 @@ PXResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL PXREF pxOpenGL, PXDrawScript PX
 
     pxDrawScript->OpenGLID = -1;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptExecute(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
     pxOpenGL->Binding.CallList(pxDrawScript->OpenGLID);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLLightSet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, const PXI32U index)
@@ -6811,7 +6811,7 @@ PXResult PXAPI PXOpenGLLightSet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, 
     pxOpenGL->Binding.Lightf(index, GL_LINEAR_ATTENUATION, pxLight->AttenuationLinear);
     pxOpenGL->Binding.Lightf(index, GL_QUADRATIC_ATTENUATION, pxLight->AttenuationQuadratic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 PXResult PXAPI PXOpenGLLightGet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, const PXI32U index)
 {
@@ -6821,15 +6821,15 @@ PXResult PXAPI PXOpenGLLightGet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, 
     pxOpenGL->Binding.GetLightfv(index, GL_LINEAR_ATTENUATION, &pxLight->AttenuationLinear);
     pxOpenGL->Binding.GetLightfv(index, GL_QUADRATIC_ATTENUATION, &pxLight->AttenuationQuadratic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 PXResult PXAPI PXOpenGLLightEnableSet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, const PXI32U index, const PXBool enable)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 PXResult PXAPI PXOpenGLLightEnableGet(PXOpenGL PXREF pxOpenGL, PXLight PXREF pxLight, const PXI32U index, PXBool PXREF enable)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -6942,7 +6942,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
 {
     if(!(pxOpenGL && pxMesh))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
@@ -6962,7 +6962,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
             pxMesh->VAO
         );
 #endif
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 
@@ -7028,7 +7028,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
         );
 #endif
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     const PXBool hasIndexData = 
@@ -7357,7 +7357,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLModelDeregister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxModel)
@@ -7390,7 +7390,7 @@ PXResult PXAPI PXOpenGLRectangleDraw(PXOpenGL PXREF pxOpenGL, const PXF32 xA, co
             return PXActionRefusedNotSupportedByLibrary;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL PXREF pxOpenGL, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const PXF32 txA, const PXF32 tyA, const PXF32 txB, const PXF32 tyB, const PXI8U mode)
@@ -7428,5 +7428,5 @@ PXResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL PXREF pxOpenGL, const PXF32 xA, 
             return PXActionRefusedNotSupportedByLibrary;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

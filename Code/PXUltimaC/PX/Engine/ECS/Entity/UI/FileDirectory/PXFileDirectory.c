@@ -5,7 +5,27 @@
 #include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
 #include <PX/Engine/PXGUI.h>
 
+
+
+
 const char PXFileDirectoryName[] = "FileDirectory";
+const PXI8U PXFileDirectoryNameLength = sizeof(PXFileDirectoryName);
+const PXECSRegisterInfoStatic PXFileDirectoryInfoStatic =
+{
+    {sizeof(PXFileDirectoryName), sizeof(PXFileDirectoryName), PXFileDirectoryName, TextFormatASCII},
+    sizeof(PXFileDirectory),
+    __alignof(PXFileDirectory),
+    PXECSTypeEntity
+};
+PXECSRegisterInfoDynamic PXFileDirectoryInfoDynamic;
+
+PXResult PXAPI PXFileDirectoryRegisterToECS()
+{
+    PXECSRegister(&PXFileDirectoryInfoStatic, &PXFileDirectoryInfoDynamic);
+
+    return PXResultOK;
+}
+
 const char PXFileNone[] = "<**No files**>";
 const PXI8U PXFileNoneLength = sizeof(PXFileNone);
 
@@ -151,23 +171,42 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
         PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, PXNull);
     }  
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
-PXResult PXAPI PXFileDirectoryCreate(PXFileDirectory** pxFileDirectory, PXWindowCreateInfo PXREF pxWindowCreateInfo)
+PXResult PXAPI PXFileDirectoryCreate(PXFileDirectory** pxFileDirectoryREF, PXFileDirectoryCreateInfo PXREF pxFileDirectoryCreateInfo)
 {
+    PXFileDirectory* pxFileDirectory = PXNull;
+
+    pxFileDirectoryCreateInfo->Info.Static = &PXFileDirectoryInfoStatic;
+    pxFileDirectoryCreateInfo->Info.Dynamic = &PXFileDirectoryInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxFileDirectoryREF, pxFileDirectoryCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxFileDirectory = *pxFileDirectoryREF;
+
 #if OSWindows
-    pxWindowCreateInfo->WindowClassName.A = WC_STATIC;
-    pxWindowCreateInfo->DrawFunctionEngine = PXFileDirectoryDraw;
+    pxFileDirectoryCreateInfo->Window.WindowClassName.A = WC_STATIC;
+   
 #endif
+
+    pxFileDirectoryCreateInfo->Window.EventList.CallBackOwner = pxFileDirectory;
+    pxFileDirectoryCreateInfo->Window.EventList.CallBackDraw = PXFileDirectoryDraw;
+
+    PXWindowCreate(&pxFileDirectory->WindowBase, &pxFileDirectoryCreateInfo->Window);
+
 
    // pxWindow->Info.Behaviour |= PXECSInfoUseByEngine;
 
 
-    pxWindowCreateInfo->WindowClassName.A = WC_NATIVEFONTCTL;
+    //pxWindowCreateInfo->WindowClassName.A = WC_NATIVEFONTCTL;
     // NFS_USEFONTASSOC
-    pxWindowCreateInfo->WindowClassName.A = WC_PAGESCROLLER;
-    pxWindowCreateInfo->StyleFlags |= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    //pxWindowCreateInfo->WindowClassName.A = WC_PAGESCROLLER;
+    //pxWindowCreateInfo->StyleFlags |= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

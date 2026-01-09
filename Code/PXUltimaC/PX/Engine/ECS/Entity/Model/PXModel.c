@@ -37,16 +37,42 @@ typedef struct PXModel_
 PXModel;
 
 
+const char PXModelName[] = "Model";
+const PXI8U PXModelNameLength = sizeof(PXModelName);
+const PXECSRegisterInfoStatic PXModelRegisterInfoStatic =
+{
+    {sizeof(PXModelName), sizeof(PXModelName), PXModelName, TextFormatASCII},
+    sizeof(PXModel),
+    __alignof(PXModel),
+    PXECSTypeEntity
+};
+PXECSRegisterInfoDynamic PXModelRegisterInfoDynamic;
+
+
+
 PXResult PXAPI PXModelRegisterToECS()
 {
-    return PXActionSuccessful;
+    PXECSRegister(&PXModelRegisterInfoStatic, &PXModelRegisterInfoDynamic);
+
+    return PXResultOK;
 }
 
-void PXAPI PXModelConstruct(PXModel PXREF pxModel)
+PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PXREF pxModelCreateInfo)
 {
-    PXClear(PXModel, pxModel);
+    PXModel* pxModel = PXNull;
+
+    pxModelCreateInfo->Info.Static = &PXModelRegisterInfoStatic;
+    pxModelCreateInfo->Info.Dynamic = &PXModelRegisterInfoDynamic;
+    PXECSCreate(pxModelREF, pxModelCreateInfo);
+
+    pxModel = *pxModelREF;
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
 
-    // PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
+    return PXResultOK;
+}
+
+PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+{
+    return PXResultOK;
 }

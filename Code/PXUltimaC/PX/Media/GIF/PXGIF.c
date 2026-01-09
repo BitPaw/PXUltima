@@ -112,7 +112,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     //-----------------------------------------------------------------
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXGIFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

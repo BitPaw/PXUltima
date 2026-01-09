@@ -72,5 +72,5 @@ PXResult PXAPI PXSpriteMapCreate(PXSpriteMap PXREF pxSpriteMap, PXSpriteMapInfo 
         // amountOfLevelCells
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

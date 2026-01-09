@@ -42,5 +42,5 @@ PXResult PXAPI PXTimerCreate(PXTimer PXREF pxTimer, PXTimerCreateInfo PXREF pxTi
     }
     //---------------------------------------------
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

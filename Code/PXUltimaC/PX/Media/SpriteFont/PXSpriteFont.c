@@ -171,7 +171,7 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler P
 
         if(!isEqual)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         PXCompilerSymbolEntryForward(pxCompiler);
@@ -249,7 +249,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXR
 
         if(!isEqual)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         PXCompilerSymbolEntryForward(pxCompiler);
@@ -331,7 +331,7 @@ void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont PXREF pxSpriteFont, PXCom
 
         if(!isEqual)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         PXCompilerSymbolEntryForward(pxCompiler);
@@ -397,7 +397,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont PXREF pxSpriteFont,
 
         if(!isEqual)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         PXCompilerSymbolEntryForward(pxCompiler);
@@ -546,7 +546,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadI
 
     PXFileClose(&tokenStream);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSpriteFontSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

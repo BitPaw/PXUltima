@@ -62,7 +62,7 @@ PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreat
 
     if(!pxIconAtlas->IconList)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     // Register icons
@@ -93,5 +93,5 @@ PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreat
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

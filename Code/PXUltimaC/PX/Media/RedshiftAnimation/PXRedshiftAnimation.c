@@ -2,7 +2,7 @@
 
 PXResult PXAPI PXRedshiftAnimationLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRedshiftAnimationSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

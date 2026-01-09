@@ -778,13 +778,13 @@ PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcess
 
 #elif OSWindows
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 
     {
         const HRESULT initializeResultID = CoInitialize(NULL);
         const PXResult initializeResult = PXErrorFromHRESULT(initializeResultID);
 
-        if(PXActionSuccessful != initializeResult)
+        if(PXResultOK != initializeResult)
             return initializeResult;;
     }
 
@@ -862,7 +862,7 @@ PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcess
         );
         const PXResult instaceResult = PXErrorFromHRESULT(instaceResultID);
 
-        if(PXActionSuccessful != instaceResult) 
+        if(PXResultOK != instaceResult) 
             return instaceResult;;
     }
 
@@ -887,7 +887,7 @@ PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcess
         //locator->lpVtbl->Release(locator);
         SysFreeString(ns);
 
-        if(PXActionSuccessful != connectResult) 
+        if(PXResultOK != connectResult) 
             return connectResult;;
     }
 
@@ -1088,7 +1088,7 @@ PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcess
 
         classObject->lpVtbl->Release(classObject);
         SysFreeString(temp);
-        if(PXActionSuccessful == getResult)
+        if(PXResultOK == getResult)
         {
             cpuTemperature = V_I4(&v);
         }
@@ -1117,7 +1117,7 @@ PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcess
     } 
     //-----------------------------------------------------
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXProcessorNoOperation()

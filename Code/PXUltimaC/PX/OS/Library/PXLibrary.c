@@ -114,7 +114,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 
     if(!(pxLibrary && filePath))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXClear(PXLibrary, pxLibrary);
@@ -180,7 +180,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 
     const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ModuleHandle);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         // Library couln't be opened
 
@@ -217,7 +217,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
@@ -248,14 +248,14 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
 
     const PXResult pxActionResult = PXErrorCurrent(result);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
     pxLibrary->ModuleHandle = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bindingObject, const char PXREF symbolList, const PXSize amount, const PXBool areAllImportant)
@@ -302,7 +302,7 @@ PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF 
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount)
@@ -325,7 +325,7 @@ PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFunti
         PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName, PXTrue);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const char PXREF symbolName, const PXBool isImportant)
@@ -348,7 +348,7 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
 
     // If the fetch is not important, we dont want to trigger a failure.
     {
-        if(PXActionSuccessful != pxActionResult)
+        if(PXResultOK != pxActionResult)
         {
             if(isImportant) // If it is not importendt, aka not an important/optional function/feature, we we dont send an error
             {
@@ -382,7 +382,7 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXLibraryGetSymbol(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const PXText* symbolName)
@@ -460,7 +460,7 @@ PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibra
         *amount = pxWindowsEnumCallBackRope.Amount;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupportedByLibrary;
@@ -494,12 +494,12 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
             break;
         }
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
     PXResult pxResult = PXErrorCurrent(0 < pxTextLibraryName->SizeUsed);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         PXTextPrint(pxTextLibraryName, "???");
         return pxResult;
@@ -515,7 +515,7 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
         pxTextLibraryName->SizeUsed = PXTextCopyA(source, sourceSize, pxTextLibraryName->A, sourceSize);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -536,7 +536,7 @@ PXResult PXAPI PXLibraryNameFromAdress
 
     PXResult pxResult = PXLibraryFromAdress(pxLibraryREF, adress);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         return pxResult;
     }
@@ -619,7 +619,7 @@ return PXActionRefusedNotSupportedByLibrary;
 #endif
 
 
-if(PXActionSuccessful != moduleFetchResult)
+if(PXResultOK != moduleFetchResult)
 {
     moduleName[0] = '?';
     moduleName[1] = '?';
@@ -647,7 +647,7 @@ if(!(PXDebugModuleNameShort & flags))
         *sizeWritten = moduleNameLength;
     }
 
-    return PXActionSuccessful; // We dont do any further processing
+    return PXResultOK; // We dont do any further processing
 }
 
 
@@ -738,7 +738,7 @@ if(sizeWritten)
     *sizeWritten = moduleNameLength;
 }
 
-return PXActionSuccessful;
+return PXResultOK;
 
 
 

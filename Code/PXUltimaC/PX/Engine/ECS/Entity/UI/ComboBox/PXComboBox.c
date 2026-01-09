@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXComboBoxDraw(PXComboBox PXREF pxComboBox, PXComboBoxCreateInfo PXREF pxComboBoxCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXComboBoxCreate(PXComboBox** pxComboBox, PXComboBoxCreateInfo PXREF pxComboBoxCreateInfo)
@@ -16,5 +16,5 @@ PXResult PXAPI PXComboBoxCreate(PXComboBox** pxComboBox, PXComboBoxCreateInfo PX
     pxWindowCreateInfo->StyleFlags |= CBS_HASSTRINGS | CBS_DROPDOWNLIST | WS_OVERLAPPED;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

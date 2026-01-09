@@ -50,7 +50,7 @@ PXResult PXAPI PXThreadRegisterToECS()
 {
     PXECSRegister(&PXThreadRegisterInfoStatic, &PXThreadRegisterInfoDynamic);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 // Note, TerminateThread() should not be used, it can lead to a memory leak in Windows-XP
@@ -104,7 +104,7 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
 
     if(!(pxThreadREF && pxThreadCreateInfo))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     pxThreadCreateInfo->Info.Static = &PXThreadRegisterInfoStatic;
@@ -173,7 +173,7 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
     const PXResult threadCreateResult = PXActionRefusedNotSupported;
 #endif
 
-    if(PXActionSuccessful != threadCreateResult)
+    if(PXResultOK != threadCreateResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -205,7 +205,7 @@ PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode)
 #elif OSWindows
     ExitThread(exitCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupported;
 #endif
@@ -224,12 +224,12 @@ PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread)
     const HANDLE threadID = OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -713,24 +713,24 @@ PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMod
     const int newPriority = setpriority(0, pxThread->ThreadHandle, threadPriority);
     const PXResult pxActionResult = PXErrorCurrent(-1 != newPriority);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
     // SetPriorityClass() also exists, but is it needed?
     const BOOL success = SetThreadPriority(pxThread->ThreadHandle, threadPriority);
     const PXResult pxActionResult = PXErrorCurrent(FALSE != success);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -755,14 +755,14 @@ PXResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode PXRE
     priorityID = GetThreadPriority(pxThread->ThreadHandle);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThreadState)
 {
     if(!pxThread)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     PXProcessThreadHandle threadHandle = pxThread->ThreadHandle;
@@ -796,10 +796,10 @@ PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThrea
         }
 
         default:
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXThreadSleep(PXThread PXREF pxThread, const PXSize sleepTime)
@@ -824,7 +824,7 @@ PXResult PXAPI PXThreadSleep(PXThread PXREF pxThread, const PXSize sleepTime)
 #elif OSWindows
         Sleep(sleepTime); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 
-        return PXActionSuccessful;
+        return PXResultOK;
 #else
         return PXActionRefusedNotImplemented;
 #endif
@@ -843,7 +843,7 @@ PXResult PXAPI PXThreadCurrentProcessorID(PXI32U PXREF processorID)
 #if WindowsAtleastVista
     *processorID = GetCurrentProcessorNumber(); // Windows Vista (+UWP), Kernel32.dll, processthreadsapi.h
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
@@ -959,7 +959,7 @@ PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug,PXThread PXREF pxThread, PX
         CloseHandle(pxThread->ThreadHandle);
         pxThread->ThreadHandle = PXNull;
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
 #else
@@ -1028,7 +1028,7 @@ PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug,PXThread PXREF pxThread, PX
     CloseHandle(pxThread->ThreadHandle);
     pxThread->ThreadHandle = PXNull;*/
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupported;
@@ -1077,7 +1077,7 @@ PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const P
     const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h    
     const PXResult getResult = PXErrorCurrent(getResultID);
 
-    if(PXActionSuccessful != getResult)
+    if(PXResultOK != getResult)
     {
         return getResult;
     }
@@ -1142,7 +1142,7 @@ PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread)
     pxThread->ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXI32U PXAPI PXThreadCurrentID()
@@ -1169,7 +1169,7 @@ PXResult PXAPI PXThreadResume(PXThread PXREF pxThread)
     const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -1202,7 +1202,7 @@ PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
     const DWORD result = SuspendThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxActionResult = PXErrorCurrent(-1 != result);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -1237,7 +1237,7 @@ PXResult PXAPI PXThreadWait(PXThread PXREF pxThread)
         return PXErrorCodeFromID(resultID);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
 
@@ -1312,10 +1312,10 @@ PXResult PXAPI PXThreadYieldToOtherThreads()
 
 #if 0
     Sleep(0);
-    pxActionResult = PXActionSuccessful;
+    pxActionResult = PXResultOK;
 #else
     const BOOL switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-    pxActionResult = PXActionSuccessful; // cant fail
+    pxActionResult = PXResultOK; // cant fail
 #endif
 
 #else

@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXDateTimeEditDraw(PXDateTimeEdit PXREF pxDateTimeEdit, PXDateTimeEditCreateInfo PXREF pxDateTimeEditCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDateTimeEditCreate(PXDateTimeEdit** pxDateTimeEdit, PXDateTimeEditCreateInfo PXREF pxDateTimeEditCreateInfo)
@@ -14,5 +14,5 @@ PXResult PXAPI PXDateTimeEditCreate(PXDateTimeEdit** pxDateTimeEdit, PXDateTimeE
     pxWindowCreateInfo->WindowClassName.A = DATETIMEPICK_CLASS;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

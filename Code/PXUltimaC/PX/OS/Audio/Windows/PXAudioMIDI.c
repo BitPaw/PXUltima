@@ -104,7 +104,7 @@ PXResult PXAPI PXMIDIInitialize(PXAudio PXREF pxAudio)
     {
         const PXResult loadLibResult = PXLibraryOpenA(&pxAudio->Library, "winmm.dll");
 
-        if (PXActionSuccessful != loadLibResult)
+        if (PXResultOK != loadLibResult)
         {
             return PXActionLibraryNotFound;
         }
@@ -197,10 +197,10 @@ PXResult PXAPI PXMIDIDeviceAmount(PXAudio PXREF pxAudio, const PXAudioDeviceType
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceFetch(PXAudio PXREF pxAudio, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice)
@@ -256,10 +256,10 @@ PXResult PXAPI PXMIDIDeviceFetch(PXAudio PXREF pxAudio, const PXAudioDeviceType 
         break;
     }
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceFetchAll(PXAudio PXREF pxAudio, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount)
@@ -269,7 +269,7 @@ PXResult PXAPI PXMIDIDeviceFetchAll(PXAudio PXREF pxAudio, const PXAudioDeviceTy
         PXMIDIDeviceFetch(pxAudio, pxAudioDeviceType, i, &pxAudioDevice[i]);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceOpen(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
@@ -306,13 +306,13 @@ PXResult PXAPI PXMIDIDeviceOpen(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAud
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
     PXActionReturnOnError(result);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceClose(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice)
@@ -332,7 +332,7 @@ PXResult PXAPI PXMIDIDeviceClose(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -340,7 +340,7 @@ PXResult PXAPI PXMIDIDeviceClose(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
 
     pxAudio->DirectSoundInterface = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceLoad(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
@@ -531,7 +531,7 @@ PXResult PXAPI PXMIDIDeviceVolumeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF 
         break;
     }
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -539,7 +539,7 @@ PXResult PXAPI PXMIDIDeviceVolumeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF 
 
     pxAudio->DirectSoundInterface = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const unsigned int volume)
@@ -559,7 +559,7 @@ PXResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio PXREF pxAudio, PXAudioDevice P
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -567,7 +567,7 @@ PXResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio PXREF pxAudio, PXAudioDevice P
 
     pxAudio->DirectSoundInterface = PXNull;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceVolumeSetIndividual(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
@@ -592,14 +592,14 @@ PXResult PXAPI PXMIDIDeviceStart(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
     //    break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
     PXActionReturnOnError(result);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDeviceStop(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice)
@@ -619,14 +619,14 @@ PXResult PXAPI PXMIDIDeviceStop(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAud
     //    break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
     PXActionReturnOnError(result);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMIDIDevicePause(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice)
@@ -646,14 +646,14 @@ PXResult PXAPI PXMIDIDevicePause(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
         break;
 
     default:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
     }
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
     PXActionReturnOnError(result);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 #endif
 #endif

@@ -60,5 +60,5 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
    // PXLockRelease(&pxLockTest);
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

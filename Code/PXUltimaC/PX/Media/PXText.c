@@ -1508,7 +1508,7 @@ PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize
                 break;
             }
             default:
-                return PXActionRefusedArgumentInvalid;
+                return PXResultRefusedParameterInvalid;
         }
       
         pxText->SizeUsed = pxText->SizeAllocated;
@@ -1525,7 +1525,7 @@ PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated)
@@ -1545,7 +1545,7 @@ PXResult PXAPI PXTextCreateCopy(PXText PXREF pxText, const PXText PXREF pxTextSo
     pxText->Data = PXMemoryHeapCallocT(PXByte, pxTextSource->SizeUsed+1);
     PXTextCopy(pxTextSource, pxText);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTextDestroy(PXText PXREF pxText)
@@ -1553,7 +1553,7 @@ PXResult PXAPI PXTextDestroy(PXText PXREF pxText)
     PXMemoryHeapFree(PXNull, pxText->A);
     PXClear(PXText, pxText);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXTextFromInt(PXText PXREF pxText, int number)

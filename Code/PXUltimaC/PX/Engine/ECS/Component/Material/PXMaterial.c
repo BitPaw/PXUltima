@@ -69,5 +69,5 @@ PXResult PXAPI PXMaterialCreate(PXMaterial PXREF pxMaterial, PXMaterialCreateInf
         keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

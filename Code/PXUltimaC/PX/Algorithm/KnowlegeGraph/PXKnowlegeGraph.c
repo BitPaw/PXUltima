@@ -8,7 +8,7 @@ PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph PXREF pxKnowlegeGraph, 
 {
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXDrawTriangle(PXOpenGL* pxOpenGL)
@@ -237,5 +237,5 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
     //  PXWindowDestruct(&pxWindow);
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

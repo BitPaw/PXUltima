@@ -207,17 +207,17 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
 
 PXResult PXAPI PXDocumentElementRoot(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDocumentElementChildGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
@@ -663,7 +663,7 @@ PXResult PXAPI PXDocumentElementWrite(PXCodeDocument PXREF pxDocument, PXCodeDoc
 
     return 0;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDocumentElementRead(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
@@ -710,7 +710,7 @@ PXResult PXAPI PXDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocum
     }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement)
@@ -829,5 +829,5 @@ PXResult PXAPI PXDocumentPrint(PXCodeDocument PXREF pxDocument)
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

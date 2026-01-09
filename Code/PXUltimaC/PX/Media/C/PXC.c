@@ -45,7 +45,7 @@ PXResult PXAPI PXCParsePreprocessorCondition(PXCompiler PXREF pxCompiler, PXCode
     );
 #endif
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
@@ -175,7 +175,7 @@ PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDoc
         }
     }
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
@@ -345,7 +345,7 @@ PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeD
     }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
@@ -378,7 +378,7 @@ PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDoc
     // PXConsoleWrite(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXCParseTypeDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
@@ -535,7 +535,7 @@ PXResult PXAPI PXCParseEndOfCommand(PXCompiler PXREF pxCompiler)
 
     PXCompilerSymbolEntryForward(pxCompiler);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCParseTypeParameterList(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
@@ -645,7 +645,7 @@ PXResult PXAPI PXCParseFunctionDefinition(PXCompiler PXREF pxCompiler, PXCodeDoc
     // ALL OK, update entry
     PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parent)
@@ -815,7 +815,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
 
                 // break;
 
-                return PXActionSuccessful;
+                return PXResultOK;
 
 
             }
@@ -892,7 +892,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
 
         if(!isInt)
         {
-            return PXActionInvalid;
+            return PXResultInvalid;
         }
 
         PXCompilerSymbolEntryForward(pxCompiler); // Consume
@@ -963,7 +963,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
 
     PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement)
@@ -1068,7 +1068,7 @@ PXResult PXAPI PXCParseEnumMember(PXCompiler PXREF pxCompiler, PXCodeDocumentEle
 
     if(!isValidText)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXCompilerSymbolEntryExtract(pxCompiler);
@@ -1106,7 +1106,7 @@ PXResult PXAPI PXCParseEnumMember(PXCompiler PXREF pxCompiler, PXCodeDocumentEle
 
     PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCParseTypeContainer(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement)
@@ -1123,7 +1123,7 @@ PXResult PXAPI PXCParseTypeContainer(PXCompiler PXREF pxCompiler, PXCodeDocument
 
         if(!isValidToken)
         {
-            return PXActionSuccessful;
+            return PXResultOK;
         }
 
         const PXBool isName = PXCompilerSymbolLexerGeneric ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
@@ -1582,7 +1582,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     PXCodeDocumentElementPrintAll(pxDocument);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

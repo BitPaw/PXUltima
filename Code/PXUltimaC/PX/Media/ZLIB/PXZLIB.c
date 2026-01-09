@@ -164,7 +164,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
         {
             const PXResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
 
-            if(PXActionSuccessful != deflateResult)
+            if(PXResultOK != deflateResult)
                 return deflateResult;
 
             break;
@@ -179,7 +179,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
 
     PXFileReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, PXEndianBig);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam)
@@ -221,7 +221,7 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
     {
         const PXResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        if(PXActionSuccessful != delfateResult) 
+        if(PXResultOK != delfateResult) 
             return delfateResult;;
     }
 
@@ -237,7 +237,7 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
         PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod)

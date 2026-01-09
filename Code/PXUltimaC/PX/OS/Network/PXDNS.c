@@ -25,7 +25,7 @@ PXResult PXAPI PXDNSFetch(const char* name)
         NULL
     ); // Windows 2000, Dnsapi.dll, windns.h
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif

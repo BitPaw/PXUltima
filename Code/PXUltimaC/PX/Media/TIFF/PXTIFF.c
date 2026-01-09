@@ -495,7 +495,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     }
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTIFFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

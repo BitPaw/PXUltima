@@ -143,7 +143,7 @@ PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine PXREF pxEngine, PXTimerEve
 {
     if (!(pxEngine && pxEngineTimerEventInfo && pxEngineDialogBox))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     // Check state. If we already done, stop the timer from triggering.
@@ -163,7 +163,7 @@ PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine PXREF pxEngine, PXTimerEve
         {
             PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
 
-            return PXActionSuccessful;
+            return PXResultOK;
         }
 
         dialogBoxText->Text = pxTextDialog;
@@ -280,5 +280,5 @@ PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine PXREF pxEngine, PXTimerEve
         return PXActionRefusedStateInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

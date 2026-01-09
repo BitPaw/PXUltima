@@ -105,11 +105,11 @@ PXResult PXAPI PXNativeDrawErrorFetch(const PXBool condition)
 {
     if(condition)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 #endif
 
@@ -147,7 +147,7 @@ PXResult PXAPI PXNativDrawWindowPrintHirachy(PXNativDraw PXREF pxNativDraw, PXWi
         PXNativDrawWindowPrintHirachy(pxNativDraw, sibling, depth + 1);
     }
 #endif
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw PXREF pxNativDraw)
@@ -250,7 +250,7 @@ PXResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw PXREF pxNativDraw)
             );
 #endif
 
-            return PXActionSuccessful;
+            return PXResultOK;
         }
 
 
@@ -368,7 +368,7 @@ PXResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw PXREF pxNativDraw)
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNativDrawDisplayOpen(PXNativDraw PXREF pxNativDraw, PXDisplay PXREF pxDisplay, const char PXREF displayName)
@@ -391,7 +391,7 @@ PXResult PXAPI PXNativDrawDisplayOpen(PXNativDraw PXREF pxNativDraw, PXDisplay P
         );
 #endif
 
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     // Attach error callback
@@ -478,13 +478,13 @@ PXResult PXAPI PXNativDrawDisplayOpen(PXNativDraw PXREF pxNativDraw, PXDisplay P
 
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
 
     // Does not exists?
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -513,7 +513,7 @@ PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow
 
                 if(!pxWindow)
                 {
-                    return PXActionInvalid;
+                    return PXResultInvalid;
                 }
 
 #if PXLogEnable && 0
@@ -867,7 +867,7 @@ PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXBool doWrite)
@@ -1000,7 +1000,7 @@ PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXR
 
 PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int width, const int height)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if 0
 
@@ -1031,7 +1031,7 @@ PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow P
 
 PXResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height)
 {
-    PXActionResult pxActionResult = PXActionInvalid;
+    PXActionResult pxActionResult = PXResultInvalid;
 
 #if OSUnix && 0
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
@@ -1157,7 +1157,7 @@ PXResult PXAPI PXNativDrawCursorCollisionCheck(PXNativDraw PXREF pxNativDraw)
          #endif // OSWindows
     }
 #endif
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXNativDraw* PXAPI PXNativDrawInstantance(void)
@@ -1169,7 +1169,7 @@ PXResult PXAPI PXNativDrawWindowIDValid(PXNativDraw PXREF pxNativDraw, const PXW
 {
     if(!(pxNativDraw && pxNativDrawWindowHandle))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -1194,7 +1194,7 @@ PXResult PXAPI PXNativDrawWindowIDValid(PXNativDraw PXREF pxNativDraw, const PXW
         return PXActionRefusedObjectIDInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #else
     return PXActionRefusedNotSupportedByLibrary;
@@ -1215,7 +1215,7 @@ PXResult PXAPI PXNativDrawWindowFetch(PXNativDraw PXREF pxNativDraw, PXWindow PX
         return PXActionRefusedObjectIDInvalid;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 
 #elif OSWindows
 
@@ -1957,7 +1957,7 @@ PXResult PXAPI PXNativeWindowListUpdate(const PXWindowHandle pxWindowHandle)
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 BOOL CALLBACK PXNativeDrawRefreshSizeAllChildrenEEEEE(HWND windowHandle, PXNativDraw PXREF pxNativDraw)
@@ -2013,7 +2013,7 @@ PXResult PXAPI PXNativeDrawChildrenReDraw(PXNativDraw PXREF pxNativDraw, PXWindo
 #if 0
     if(!pxWindow)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     const BOOL success = EnumChildWindows
@@ -2024,7 +2024,7 @@ PXResult PXAPI PXNativeDrawChildrenReDraw(PXNativDraw PXREF pxNativDraw, PXWindo
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXNativeDrawRefreshSizeAllChildren(PXNativDraw PXREF pxNativDraw, PXWindow PXREF window)

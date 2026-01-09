@@ -288,5 +288,5 @@ PXResult PXAPI PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12 PXREF pxD
                            );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

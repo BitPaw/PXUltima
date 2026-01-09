@@ -31,14 +31,14 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
         const PXBool isValidInput = pxADAM7->DataInput && pxADAM7->DataOutput && pxADAM7->Width && pxADAM7->Height && pxADAM7->BitsPerPixel;
 
         if(!isValidInput)
-            return PXActionRefusedArgumentInvalid; // error: invalid colortype
+            return PXResultRefusedParameterInvalid; // error: invalid colortype
     }
 
     switch(pxADAM7->InterlaceMethod)
     {
     default:
     case PXPNGInterlaceInvalid:
-        return PXActionRefusedArgumentInvalid;
+        return PXResultRefusedParameterInvalid;
 
     case PXPNGInterlaceNone:
     {
@@ -127,7 +127,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
     }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXADAM7ScanlinesEncode(PXADAM7 PXREF pxADAM7)
@@ -315,9 +315,9 @@ PXResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char
         }
         break;
     default:
-        return PXActionInvalid; /*error: invalid filter type given*/
+        return PXResultInvalid; /*error: invalid filter type given*/
     }
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
@@ -365,7 +365,7 @@ PXResult PXAPI PXADAM7unfilter(PXADAM7 PXREF pxADAM7)
         prevline = &pxADAM7->DataOutput[outindex];
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)

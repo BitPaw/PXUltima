@@ -890,7 +890,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWavefrontSaveFromFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

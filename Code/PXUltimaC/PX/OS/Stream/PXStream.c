@@ -146,7 +146,7 @@ PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PX
 
     if(!isValidWindowIndex)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
@@ -204,7 +204,7 @@ PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo P
 
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
     */
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -398,7 +398,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
   
 
     HRESULT resultID = 0;
-    PXResult pxResult = PXActionInvalid;
+    PXResult pxResult = PXResultInvalid;
 
    // IMFMediaSource* pSource = NULL; 
    // IMFMediaBuffer* pBuffer = NULL;
@@ -409,7 +409,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
     resultID = MFStartup(MF_VERSION, MFSTARTUP_FULL);
     pxResult = PXErrorFromHRESULT(resultID);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
         return pxResult;
 
     // Activate webcam
@@ -546,13 +546,13 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
     // Maybe there is a way to add a callback..?
     // IMFSourceReaderCallback
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     HRESULT resultHandle = S_OK;
-    PXResult pxActionResult = PXActionInvalid;
+    PXResult pxActionResult = PXResultInvalid;
 
     IMFActivate** ppDevices = NULL;
     UINT32 count = 0;
@@ -620,7 +620,7 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXColorRGBAI8 buffer[3840 *1080];
@@ -635,7 +635,7 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
 
     if(!validCall)
     {
-        return  PXActionInvalid;
+        return  PXResultInvalid;
     }
 
     const BOOL result = BitBlt
@@ -696,7 +696,7 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
 
     pxStream->OnFrame(pxStream, &pxStreamOnFrameInfo);
     */
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -774,7 +774,7 @@ PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 
     if(!success)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     IMFSample* sample = pxStreamCamera->Sample;
@@ -782,7 +782,7 @@ PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
     // if no data
     if(!sample)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
 
@@ -812,7 +812,7 @@ PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 
     resultID = mediaBuffer->lpVtbl->Unlock(mediaBuffer);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream)
@@ -850,7 +850,7 @@ PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream)
     }*/
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamReleaseWindow(PXStream PXREF pxStream)
@@ -858,12 +858,12 @@ PXResult PXAPI PXStreamReleaseWindow(PXStream PXREF pxStream)
     //DeleteDC(hMemoryDC);
     //ReleaseDC(hwnd, hWindowDC);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamReleaseMonitor(PXStream PXREF pxStream)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamReleaseCamera(PXStream PXREF pxStream)
@@ -871,7 +871,7 @@ PXResult PXAPI PXStreamReleaseCamera(PXStream PXREF pxStream)
     IMFMediaBuffer PXREF mediaBuffer = pxStream->Camera.MediaBuffer;
     mediaBuffer->lpVtbl->Release(mediaBuffer);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
@@ -912,7 +912,7 @@ PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxSt
         }
 		default:
 		{
-            return PXActionRefusedArgumentInvalid;
+            return PXResultRefusedParameterInvalid;
 		}
 	}
 
@@ -924,5 +924,5 @@ PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxSt
 
 PXResult PXAPI PXStreamClose(PXStream PXREF pxStream)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }

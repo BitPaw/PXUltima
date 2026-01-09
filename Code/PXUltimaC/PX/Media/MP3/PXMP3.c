@@ -799,7 +799,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         const PXResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxResourceLoadInfo->FileReference);
 
-        if(PXActionSuccessful != actionResult) 
+        if(PXResultOK != actionResult) 
             return actionResult;
     }
 
@@ -1057,7 +1057,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const PXResult actionResult = PXXingInfoParse(&xingInfo, pxResourceLoadInfo->FileReference);
 
-            if(PXActionSuccessful != actionResult) 
+            if(PXResultOK != actionResult) 
                 return actionResult;
 
 #if PXMP3Debug
@@ -1095,7 +1095,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
             const PXResult actionResult = PXLAMELoadFromFile(&lame, pxResourceLoadInfo->FileReference);
 
-            if(PXActionSuccessful != actionResult)
+            if(PXResultOK != actionResult)
                 return actionResult;
 
 #if PXMP3Debug

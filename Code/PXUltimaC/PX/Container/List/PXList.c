@@ -30,7 +30,7 @@ PXBool PXAPI PXListReserve(PXList PXREF pxList, const PXSize amountOfElements)
 
     if(isEnoughSpace)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     // If new list
@@ -108,7 +108,7 @@ void* PXAPI PXListItemAtIndexGet(PXList PXREF pxList, const PXSize index)
 
 PXBool PXAPI PXListItemFromStartGet(PXList PXREF queue, void PXREF dataElement)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBool PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize)

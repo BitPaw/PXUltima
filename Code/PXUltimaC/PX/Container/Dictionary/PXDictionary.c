@@ -55,7 +55,7 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const vo
 {
     if(!(pxDictionary && key))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const PXBool hasEnoughSpace = (pxDictionary->List.EntryAmountUsed + 1) < pxDictionary->List.EntryAmountAllocated;
@@ -110,11 +110,11 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const vo
 
         *value = target.Value; 
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
     else
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     } 
 }
 
@@ -122,7 +122,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
 {
     if(!(pxDictionary && key && value))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const void* valueSourceAdress = 0;
@@ -131,7 +131,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
 
     const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAdress);
 
-    if(PXActionSuccessful != pxResult)
+    if(PXResultOK != pxResult)
     {
         return pxResult;
     }
@@ -141,7 +141,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
         default:
         case PXDictionaryValueLocalityInvalid:
         {
-            return PXActionInvalid; // Illegal call
+            return PXResultInvalid; // Illegal call
         }
         case PXDictionaryValueLocalityInternalEmbedded:
         {
@@ -200,7 +200,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
 
 PXResult PXAPI PXDictionaryEntryAddRange(PXDictionary PXREF pxDictionary, const void* key, const void* value, const PXSize valueSize)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** keyList, const void** valueList, const PXSize amount)
@@ -313,7 +313,7 @@ PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void
             default:
             case PXDictionaryValueLocalityInvalid:
             {
-                return PXActionInvalid; // Illegal call
+                return PXResultInvalid; // Illegal call
             }
             case PXDictionaryValueLocalityInternalEmbedded:
             {
@@ -327,7 +327,7 @@ PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void
             }
         }
 
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     *valueResult = PXNull;

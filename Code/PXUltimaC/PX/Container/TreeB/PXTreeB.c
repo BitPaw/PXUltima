@@ -27,7 +27,7 @@ PXResult PXAPI PXTreeBResize(PXTreeB PXREF pxTreeB, const PXSize amount)
        // PXMemoryHeapReallocate(rowSize, &pxTreeB->KeyDataAdress, &pxTreeB->KeyAmount, amount);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTreeBInsert(PXTreeB PXREF pxTreeB, const void PXREF key, const void PXREF value)
@@ -41,7 +41,7 @@ PXResult PXAPI PXTreeBInsert(PXTreeB PXREF pxTreeB, const void PXREF key, const 
     {
         const PXResult actionResult = PXTreeBNodeInsert(pxTreeB, &pxTreeBNode, key, value); // Add to node and be done.
 
-        if(PXActionSuccessful == actionResult) 
+        if(PXResultOK == actionResult) 
             return actionResult;
     }
 
@@ -90,7 +90,7 @@ PXResult PXAPI PXTreeBInsert(PXTreeB PXREF pxTreeB, const void PXREF key, const 
 
     // 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTreeBFindIndexed(PXTreeB PXREF pxTreeB, const void PXREF key, void* PXREF value)
@@ -116,7 +116,7 @@ PXResult PXAPI PXTreeBFindUnindexed(PXTreeB PXREF pxTreeB, const void PXREF key,
 
        *value = valueCurrent;
 
-       return PXActionSuccessful;
+       return PXResultOK;
     }
 
     return PXActionFailedElementNotFound;
@@ -146,7 +146,7 @@ PXResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB PXREF pxTreeB, PXTreeBNode P
 
     pxTreeBNode->NodeListAmount = pxTreeBNode->KeyListAmount + 1;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTreeBNodeInsert(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, const void PXREF key, const void PXREF value)
@@ -207,5 +207,5 @@ PXResult PXAPI PXTreeBNodeInsert(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTree
 
     ++pxTreeBNode->NodeListAmount;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

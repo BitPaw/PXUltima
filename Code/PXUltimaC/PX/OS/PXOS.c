@@ -137,7 +137,7 @@ PXResult PXAPI PXSystemPrelude()
 {
     if(_PXOS.Init)
     {
-        return PXActionSuccessful;
+        return PXResultOK;
     }
 
     PXClear(PXOS, &_PXOS);
@@ -333,7 +333,7 @@ PXResult PXAPI PXSystemPrelude()
 
     if(!result)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     _PXOS.PageSizeNormal = perfInfo.PageSize;
@@ -378,7 +378,7 @@ PXResult PXAPI PXSystemPrelude()
 
     //VirtualQueryEx();
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXOS* PXAPI PXSystemGet()
@@ -451,7 +451,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
 
     if(ERROR_SUCCESS != resultStatus)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
 
@@ -513,7 +513,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
 
 PXResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion PXREF pxOSVersion)
 {
-    return PXActionInvalid;
+    return PXResultInvalid;
 }
 
 void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
@@ -949,7 +949,7 @@ PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap)
     pxMemoryHeap->HeapHandle = HeapCreate(NULL, 0, 0); // Windows XP, Kernel32.dll, heapapi.h
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap)
@@ -959,7 +959,7 @@ PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap)
     const BOOL result = HeapDestroy(pxMemoryHeap->HeapHandle); // Windows XP, Kernel32.dll, heapapi.h
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap PXREF pxMemoryHeap)
@@ -1488,7 +1488,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
         pxFile->Buffer.Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
         const PXResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Buffer.Data);
 
-        if(PXActionSuccessful == allocResult)
+        if(PXResultOK == allocResult)
         {
             break;
         }
@@ -1599,7 +1599,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
 
                 allocResult = PXErrorCurrent(NULL != allocatedData);
 
-                if(PXActionSuccessful != allocResult)
+                if(PXResultOK != allocResult)
                 {
                     pxFilePageFileInfo.Affinity = PXMemoryPageNormal; // Demote
 
@@ -1638,7 +1638,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
 
                 allocResult = PXErrorCurrent(NULL != allocatedData);
 
-                if(PXActionSuccessful != allocResult)
+                if(PXResultOK != allocResult)
                 {
                     pxFilePageFileInfo.Affinity = PXMemoryPagePhysical; // Demote
 
@@ -1680,7 +1680,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
 
                 allocResult = PXErrorCurrent(NULL != allocatedData);
 
-                if(PXActionSuccessful != allocResult)
+                if(PXResultOK != allocResult)
                 {
                     pxFilePageFileInfo.Affinity = PXMemoryPageLarge; // Demote
 
@@ -1706,7 +1706,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
         }
     }
    
-    if(PXActionSuccessful != allocResult)
+    if(PXResultOK != allocResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -1816,7 +1816,7 @@ PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
     if(!(adress && size))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if PXLogEnable && PXMemoryDebug
@@ -1974,7 +1974,7 @@ PXResult PXAPI PXSymbolServerInitialize()
 
     if(!initializeSuccessful)
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
    // const HANDLE processHandle = GetCurrentProcess();
@@ -1984,7 +1984,7 @@ PXResult PXAPI PXSymbolServerInitialize()
 
    // const PXBool initRes = SymInitialize(processHandle, PXNull, PXTrue);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolServerCleanup()
@@ -2005,7 +2005,7 @@ PXResult PXAPI PXSymbolServerOptionsSet()
 {
    // DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
@@ -2056,7 +2056,7 @@ PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const cha
 
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo)
@@ -2078,7 +2078,7 @@ PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkIn
     );
     const PXBool sucessfull = result != 0;
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
@@ -2157,7 +2157,7 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
 
     const PXResult initializeResult = PXSymbolServerInitialize();
 
-    if(PXActionSuccessful != initializeResult)
+    if(PXResultOK != initializeResult)
     {
         for(size_t i = 0; i < pxSymbolListAmount; i++)
         {
@@ -2169,7 +2169,7 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
             PXTextCopyA("???.dll", 3, pxSymbol->NameModule, 64);
         }
 
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     const DWORD optionsMask = SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
@@ -2212,7 +2212,7 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
     {
         const PXResult result = PXSymbolStackWalk(&pxSymbolStackWalkInfo);
 
-        if(PXActionSuccessful != result)
+        if(PXResultOK != result)
         {
             break;
         }
@@ -2331,14 +2331,14 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
 
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
 {
     if(!(inputName && name && nameLengthMax))
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
     const PXUnDecorateSymbolNameFunction pxUnDecorateSymbolName = (PXUnDecorateSymbolNameFunction)_PXOS.SymbolUnDecorateName;
@@ -2419,7 +2419,7 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
 
             const PXBool symbolFetchSuccessB = SymGetSymFromAddr64(processHandle, adress, &displacement, imageHelpSYMBOL);
 
-            return PXActionInvalid;
+            return PXResultInvalid;
         }*/
 
 
@@ -2533,7 +2533,7 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
     );
     const PXResult pxActionResult = PXErrorCurrent(processMemoryInfo);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -2619,7 +2619,7 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
         const BOOL pageWatchUpdate = GetWsChanges(processHandle, watchInformationList, sizeOfList);
         const PXResult pageWatchUpdateResult = PXErrorCurrent(pageWatchUpdate);
 
-        if(PXActionSuccessful != pageWatchUpdateResult)
+        if(PXResultOK != pageWatchUpdateResult)
         {
             // handle..??
         }
@@ -2681,7 +2681,7 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
     return pxActionResult;
 
 #else
-    return PXActionInvalid;
+    return PXResultInvalid;
 #endif
 }
 
@@ -2722,7 +2722,7 @@ PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxG
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadID)
@@ -2777,7 +2777,7 @@ PXResult PXAPI PXDebugBreak()
 
     PXDebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 
-    return PXActionSuccessful; // We dont have any other result
+    return PXResultOK; // We dont have any other result
 #else
     return PXActionRefusedNotImplemented;
 #endif
@@ -2820,7 +2820,7 @@ PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent)
         *isPresent = result;
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #endif
 }
 
@@ -2828,7 +2828,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
 {
     if(!isPresent)
     {
-        return PXActionRefusedArgumentNull;
+        return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
@@ -2839,7 +2839,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
     const BOOL result = pxCheckRemoteDebuggerPresent(processHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
     const PXResult pxActionResult = PXErrorCurrent(result);
 
-    if(PXActionSuccessful != pxActionResult)
+    if(PXResultOK != pxActionResult)
     {
         return pxActionResult;
     }
@@ -2849,7 +2849,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
     return PXActionNotSupportedByOperatingSystem;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)

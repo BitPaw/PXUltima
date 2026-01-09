@@ -36,7 +36,7 @@ PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxController
 
         const PXResult loadLibResult = PXLibraryOpen(&pxControllerSystem->InputLibrary, &pxText);
 
-        if(PXActionSuccessful != loadLibResult)
+        if(PXResultOK != loadLibResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -56,7 +56,7 @@ PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxController
         PXLibraryGetSymbolListA(&pxControllerSystem->InputLibrary, pxLibraryFuntionEntryList, amount);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXControllerSystemShutdown(PXControllerSystem PXREF pxControllerSystem)
@@ -97,7 +97,7 @@ PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem PXREF pxC
             const MMRESULT devResult = pxjoyGetDevCapsA(i, &pjc, size);
             const PXResult pxActionResult = PXErrorCurrent(JOYERR_NOERROR == devResult);
 
-            if(PXActionSuccessful != pxActionResult)
+            if(PXResultOK != pxActionResult)
             {
                 return pxActionResult;
             }
@@ -124,7 +124,7 @@ PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem PXREF pxC
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem PXREF pxControllerSystem)
@@ -194,7 +194,7 @@ PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem PXREF pxCo
 #endif
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXControllerSystemDebugPrint(PXController PXREF pxController)

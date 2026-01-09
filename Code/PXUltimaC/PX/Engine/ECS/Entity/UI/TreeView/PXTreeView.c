@@ -3,7 +3,7 @@
 
 PXResult PXAPI PXTreeViewDraw(PXTreeView PXREF pxTreeView, PXTreeViewCreateInfo PXREF pxTreeViewCreateInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTreeViewCreate(PXTreeView** pxTreeView, PXTreeViewCreateInfo PXREF pxTreeViewCreateInfo)
@@ -22,5 +22,5 @@ PXResult PXAPI PXTreeViewCreate(PXTreeView** pxTreeView, PXTreeViewCreateInfo PX
         TVS_LINESATROOT;
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

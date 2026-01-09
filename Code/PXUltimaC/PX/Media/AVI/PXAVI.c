@@ -12,7 +12,7 @@ PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         const PXResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
-        if(PXActionSuccessful != riffResult)
+        if(PXResultOK != riffResult)
             return riffResult;
 
         // Valid RIFF
@@ -26,7 +26,7 @@ PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         }
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXAVISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

@@ -2,7 +2,7 @@
 
 PXResult PXAPI PXRSkinLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRSkinSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

@@ -283,7 +283,7 @@ PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor
 
 
 
-        //return PXActionRefusedArgumentInvalid;
+        //return PXResultRefusedParameterInvalid;
     }
  
     const BOOL result = SetConsoleTextAttribute(consoleHandle, colorID);

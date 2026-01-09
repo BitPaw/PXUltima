@@ -111,7 +111,7 @@ PXResult PXAPI PXRIFFLoadFromFile(PXRIFF PXREF riff, PXFile PXREF pxFile)
     riff->Format = PXRIFFFormatFromID(formatID.Value);
     riff->Valid = (riff->EndianFormat != PXEndianInvalid) && (riff->Format != PXRIFFInvalid);
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRIFFSaveToFile(const PXRIFF PXREF riff, PXFile PXREF pxFile)
@@ -128,5 +128,5 @@ PXResult PXAPI PXRIFFSaveToFile(const PXRIFF PXREF riff, PXFile PXREF pxFile)
 
     PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

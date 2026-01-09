@@ -330,7 +330,7 @@ done:
     }
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 #else
     return ..;
 #endif

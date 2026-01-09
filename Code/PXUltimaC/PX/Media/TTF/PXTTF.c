@@ -774,7 +774,7 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, sourcePosition);
     }
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXTTFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

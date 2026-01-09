@@ -5,11 +5,35 @@
 #include <PX/Engine/ECS/Resource/Font/PXFont.h>
 
 const char PXECSEntityInfoText[] = "ECS-EntityInfo";
+const PXI8U PXECSEntityInfoTextLength = sizeof(PXECSEntityInfoText);
+const PXECSRegisterInfoStatic PXECSEntityInfoInfoStatic =
+{
+    {sizeof(PXECSEntityInfoText), sizeof(PXECSEntityInfoText), PXECSEntityInfoText, TextFormatASCII},
+    sizeof(PXECSEntityInfo),
+    __alignof(PXECSEntityInfo),
+    PXECSTypeEntity,
+    PXECSEntityInfoCreate,
+    PXNull,
+    PXECSEntityInfoDraw
+};
+PXECSRegisterInfoDynamic PXECSEntityInfoInfoDynamic;
 
-PXResult PXAPI PXECSEntityInfoDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXECSEntityInfoRegisterToECS()
+{
+    PXECSRegister(&PXECSEntityInfoInfoStatic, &PXECSEntityInfoInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXECSEntityInfoCreate(PXECSEntityInfo** pxECSEntityInfo, PXECSEntityInfoCreateInfo PXREF pxECSEntityInfoCreateInfo)
+{
+    return PXResultOK;
+}
+
+PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXWindowDrawInfo PXREF pxWindowDrawInfo)
 {
        PXGUITheme* pxGUITheme = PXGUIThemeGet();
-
+       PXWindow PXREF pxWindow = pxECSEntityInfo->WindowBase;
        PXECSInfo* pxECSInfo = (PXECSInfo*)pxWindow;
 
    #if PXLogEnable
@@ -201,5 +225,5 @@ PXLogPrint
 );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

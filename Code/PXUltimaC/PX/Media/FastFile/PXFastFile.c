@@ -126,7 +126,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInf
 
             if(!equal)
             {
-                return PXActionInvalid;
+                return PXResultInvalid;
             }
 
 
@@ -249,7 +249,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInf
         Strings.Add(ReadASCIIZString(_reader));
 
     */
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFastFileSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

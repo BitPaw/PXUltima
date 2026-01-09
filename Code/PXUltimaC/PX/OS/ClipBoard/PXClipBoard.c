@@ -155,7 +155,7 @@ PXI32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXI32U clipBoardFormat)
 {
 #if OSUnix
-    return PXActionInvalid;
+    return PXResultInvalid;
 
 #elif OSWindows
     switch (clipBoardFormat)

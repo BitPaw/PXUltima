@@ -83,7 +83,7 @@ PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     PXFileReadB(pxResourceLoadInfo->FileReference, pxSound->Data, pxSound->DataSize);
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -163,5 +163,5 @@ PXResult PXAPI PXWaveSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
     }
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

@@ -50,10 +50,10 @@ PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             break;
         }
         default:
-            return PXActionInvalid;
+            return PXResultInvalid;
     }
 
-    if(PXActionSuccessful != pxLoadResult)
+    if(PXResultOK != pxLoadResult)
     {
         return pxLoadResult;
     }
@@ -140,7 +140,7 @@ PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     fclose(file);
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxResourceLoadInfo)
@@ -249,7 +249,7 @@ PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF p
     // Do a check for index data. This is found to be NULL of all bytes!
     // A triangle of 0,0,0 is invalid.
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 const char PXR3D2ObjectBegin[11] = "ObjectBegin";
@@ -504,7 +504,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxR
     );
 #endif
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXR3D2SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)

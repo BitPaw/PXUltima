@@ -34,7 +34,7 @@ PXResult PXAPI PXFMTLoadFromFile(PXFMT PXREF fmt, PXFile PXREF pxFile, const PXE
 
     PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXFMTSaveToFile(const PXFMT PXREF fmt, PXFile PXREF pxFile, const PXEndian endian)
@@ -56,5 +56,5 @@ PXResult PXAPI PXFMTSaveToFile(const PXFMT PXREF fmt, PXFile PXREF pxFile, const
 
     PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }

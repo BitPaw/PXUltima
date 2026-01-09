@@ -3,9 +3,8 @@
 #ifndef PXCameraIncluded
 #define PXCameraIncluded
 
-#include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
 #include <PX/Math/PXVector.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 #define PXCameraFollowPosition 0
 #define PXCameraFollowRotation 0
@@ -21,9 +20,19 @@ PXCameraPerspective;
 
 typedef struct PXCamera_ PXCamera;
 
+typedef struct PXCameraCreateInfo_ 
+{
+    PXECSCreateInfo Info;
+
+    PXCameraPerspective Perspective;
+}
+PXCameraCreateInfo;
+
+
 PXPublic PXResult PXAPI PXCameraRegisterToECS();
 
-PXPublic void PXAPI PXCameraConstruct(PXCamera PXREF camera);
+PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo);
+
 
 //-----------
 PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);

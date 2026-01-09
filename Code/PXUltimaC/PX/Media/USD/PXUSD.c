@@ -401,7 +401,7 @@ PXResult PXAPI PXUSDCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     PXSize TOCSectionCounterSpecs;
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -489,7 +489,7 @@ PXResult PXAPI PXUSDCReadCompressedInts(PXFile PXREF input,  PXFile PXREF output
     // Check for max size
     if(num_ints > 0xFFFFFFFF) 
     {
-        return PXActionInvalid;
+        return PXResultInvalid;
     }
 
     PXI64U compSize;
@@ -514,7 +514,7 @@ PXResult PXAPI PXUSDCReadCompressedInts(PXFile PXREF input,  PXFile PXREF output
     REDUCE_MEMORY_USAGE(compBufferSize);
     */
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXUSDCSectionStringsLoad(PXFile PXREF pxFile, PXTOCSectionStrings PXREF pxTOCSectionStrings)
@@ -794,7 +794,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 void PXAPI PXUSDParsePropertysScene(PXUSDA PXREF pxUSDA, PXCompiler PXREF pxCompiler)

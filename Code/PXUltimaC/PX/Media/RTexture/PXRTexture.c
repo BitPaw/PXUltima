@@ -289,7 +289,7 @@ PXResult PXAPI PXRTextureLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInf
 
 
 
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXRTextureSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
