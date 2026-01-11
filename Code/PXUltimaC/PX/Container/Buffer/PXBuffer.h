@@ -3,7 +3,7 @@
 #ifndef PXBufferDEFINED
 #define PXBufferDEFINED
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 // Container to store data.
 // Basically just an array with combined length
