@@ -69,7 +69,7 @@ PXECSRegisterInfo;
 // them as or add them as components to entities
 PXPublic PXResult PXAPI PXECSRegister
 (
-    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
     PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
 );
 
@@ -106,9 +106,9 @@ PXECSInfo;
 PXPublic PXResult PXAPI PXECSElementToString
 (
     PXText PXREF pxText, 
-    PXECSInfo PXREF pxECSInfo,
-    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
-    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+    const PXECSInfo PXREF pxECSInfo,
+    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    const PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
 );
 
 
@@ -418,7 +418,7 @@ typedef struct PXECSCreateInfo_
     PXI32U Type;
     PXI32U Flags;
 
-    PXECSRegisterInfoStatic* Static;
+    const PXECSRegisterInfoStatic* Static;
     PXECSRegisterInfoDynamic* Dynamic;
 }
 PXECSCreateInfo;

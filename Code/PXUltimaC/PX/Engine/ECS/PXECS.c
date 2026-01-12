@@ -127,7 +127,7 @@ const char* PXECSTypeToString(const PXECSType pxECSType)
 
 PXResult PXAPI PXECSRegister
 (
-    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
     PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
 )
 {
@@ -175,9 +175,9 @@ PXResult PXAPI PXECSRegister
 PXResult PXAPI PXECSElementToString
 (
     PXText PXREF pxText,
-    PXECSInfo PXREF pxECSInfo,
-    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
-    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+    const PXECSInfo PXREF pxECSInfo,
+    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    const PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
 )
 {
     char buffer[260];
@@ -379,7 +379,12 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
     // Search to detect valid object
 
 
-    PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxECSElementRef->ExpectedID, &pxECSElementRef->Element);
+    PXResult pxResult = PXDictionaryEntryFind
+    (
+        pxDictionary, 
+        &pxECSElementRef->ExpectedID, 
+        &pxECSElementRef->Element
+    );
 
     if(PXResultOK != pxResult)
     {
