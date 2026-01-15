@@ -356,11 +356,11 @@ PXPublic PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF p
 //---------------------------------------------------------
 PXPublic PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadID);
 PXPublic PXResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time);
-PXPublic PXResult PXAPI PXDebugProcessActive();
-PXPublic PXResult PXAPI PXDebugBreak();
+PXPublic PXResult PXAPI PXDebugProcessActive(void);
+PXPublic PXResult PXAPI PXDebugBreak(void);
 PXPublic PXResult PXAPI PXDebugOutputDebugStringA(const char* text);
 PXPublic PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text);
-PXPublic PXResult PXAPI PXDebugProcessBreak();
+PXPublic PXResult PXAPI PXDebugProcessBreak(void);
 PXPublic PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent);
 PXPublic PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool PXREF isPresent);
 PXPublic PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID);
@@ -370,9 +370,9 @@ PXPublic PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID);
 //---------------------------------------------------------
 // Debug - Symbol
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXSymbolServerInitialize(); // SymInitialize
-PXPublic PXResult PXAPI PXSymbolServerCleanup();
-PXPublic PXResult PXAPI PXSymbolServerOptionsSet();
+PXPublic PXResult PXAPI PXSymbolServerInitialize(void); // SymInitialize
+PXPublic PXResult PXAPI PXSymbolServerCleanup(void);
+PXPublic PXResult PXAPI PXSymbolServerOptionsSet(void);
 PXPublic PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress);
 PXPublic PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress); // SymLoadModuleEx
 PXPublic PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo);
@@ -382,21 +382,6 @@ PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void 
 //---------------------------------------------------------
 
 
-
-
-//---------------------------------------------------------
-// Thread - 
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock);
-
-PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEntering);
-PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock);
-//---------------------------------------------------------
 
 
 

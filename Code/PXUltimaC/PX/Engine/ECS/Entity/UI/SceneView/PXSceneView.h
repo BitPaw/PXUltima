@@ -4,6 +4,7 @@
 #define PXSceneViewIncluded
 
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
 
 typedef struct PXSceneView_
 {

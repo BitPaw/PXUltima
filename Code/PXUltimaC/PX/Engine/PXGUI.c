@@ -221,7 +221,7 @@ PXGUIManager* PXAPI PXGUIInitialize(void)
 
 PXResult PXAPI PXGUIShutdown(void)
 {
-    PXActionResult result = PXResultInvalid;
+    PXResult result = PXResultInvalid;
 
 #if OSUnix
     const int resultID = XCloseDisplay(_pxGUIManager.DisplayCurrent.DisplayHandle);

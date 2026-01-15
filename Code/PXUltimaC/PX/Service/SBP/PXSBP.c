@@ -529,7 +529,7 @@ void PXAPI PXSBPEmitterConstruct(PXSBPEmitter PXREF pxSBPEmitter)
 
 PXResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter PXREF pxSBPEmitter, const void PXREF message, const PXSize messageSize)
 {
-    PXActionResult sendResult = PXResultInvalid;
+    PXResult sendResult = PXResultInvalid;
 
     // How many packages do we have?
     const PXSize numberOfPackages = (messageSize / pxSBPEmitter->PackageSizeMaximal) + 1;

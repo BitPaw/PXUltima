@@ -194,8 +194,8 @@ const char PXUSDBinarFIELDSETSy[9] = "FIELDSETS";
 const char PXUSDBinarySPECS[5] = "SPECS";
 const char PXUSDBinaryPATHS[5] = "PATHS";
 
-typedef PXActionResult(PXAPI* PXUSDLoadFunction)(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-typedef PXActionResult(PXAPI* PXUSDSegmentLoadFunction)(PXFile PXREF pxFile, void* object);
+typedef PXResult(PXAPI* PXUSDLoadFunction)(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+typedef PXResult(PXAPI* PXUSDSegmentLoadFunction)(PXFile PXREF pxFile, void* object);
 
 const char* PXUSDBinaryTokenListData[6] =
 {
@@ -454,7 +454,7 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
         PXFileOpen(pxFileUncompressed, &pxFileCompressedInfo);
     }
 
-    PXActionResult uncompressResult = PXLZ4Decompress(pxFileCompressed, pxFileUncompressed);
+    PXResult uncompressResult = PXLZ4Decompress(pxFileCompressed, pxFileUncompressed);
 
 #if PXLogEnable
     PXSize offset = 0;

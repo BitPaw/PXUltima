@@ -253,7 +253,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
             PXSensorTemperature PXREF pxSensorTemperature = &xxxSensorTemperature;
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
-            PXActionResult xx = PXErrorFromHRESULT(EJIE);
+            PXResult xx = PXErrorFromHRESULT(EJIE);
 
             if(!u_return)
             {

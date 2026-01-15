@@ -2,7 +2,7 @@
 #define PXMemoryIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Container/Dictionary/PXDictionary.h>
 
 typedef struct PXSymbol_ PXSymbol;

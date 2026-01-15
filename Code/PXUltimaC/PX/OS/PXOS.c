@@ -761,7 +761,7 @@ PXI8U PXAPI PXBitsCount(const PXSize bitMask)
 
 PXResult PXAPI PXUserNameGet(PXText PXREF pxText)
 {
-    PXActionResult result;
+    PXResult result;
 
 #if OSUnix
     const int userID = getuid();
@@ -820,7 +820,7 @@ PXResult PXAPI PXComputerNameGet(char PXREF text, const PXSize textSizeMax, PXSi
 
 PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, const PXSize pathOutputSizeMAX, PXSize PXREF pathOutputSizeWritten)
 {
-    PXActionResult pxActionResult;
+    PXResult pxActionResult;
 
 #if OSUnix
     realpath()
@@ -893,7 +893,7 @@ PXResult PXAPI PXProcessMemoryWrite
     PXSize PXREF bufferSizeWritten
 )
 {
-    PXActionResult pxActionResult;
+    PXResult pxActionResult;
 
 #if OSUnix
 #elif OSWindows
@@ -922,7 +922,7 @@ PXResult PXAPI PXProcessMemoryRead
     PXSize PXREF bufferSizeWritten
 )
 {
-    PXActionResult pxActionResult;
+    PXResult pxActionResult;
 
 #if OSUnix
 #elif OSWindows
@@ -1556,7 +1556,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
 
     void* allocatedData = PXNull;
     void* baseAdress = PXNull;
-    PXActionResult allocResult;
+    PXResult allocResult;
     PXBool done = PXFalse;
 
     while(!done)
@@ -1987,7 +1987,7 @@ PXResult PXAPI PXSymbolServerInitialize()
     return PXResultOK;
 }
 
-PXResult PXAPI PXSymbolServerCleanup()
+PXResult PXAPI PXSymbolServerCleanup(void)
 {
     HANDLE processID = GetCurrentProcess();
     const PXSymCleanupFunction pxSymCleanup = (PXSymCleanupFunction)_PXOS.SymbolServerCleanup;
@@ -2001,11 +2001,11 @@ PXResult PXAPI PXSymbolServerCleanup()
     return PXActionFailedLoad;
 }
 
-PXResult PXAPI PXSymbolServerOptionsSet()
+PXResult PXAPI PXSymbolServerOptionsSet(void)
 {
    // DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
-    return PXResultOK;
+    return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
@@ -2034,6 +2034,8 @@ PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void*
 #else
 
 #endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
@@ -2490,6 +2492,8 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 
@@ -2763,12 +2767,12 @@ PXResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
     return pxActionResult;
 }
 
-PXResult PXAPI PXDebugProcessActive()
+PXResult PXAPI PXDebugProcessActive(void)
 {
-    
+    return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXDebugBreak()
+PXResult PXAPI PXDebugBreak(void)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -2791,6 +2795,8 @@ PXResult PXAPI PXDebugOutputDebugStringA(const char* text)
 
     pxOutputDebugStringA(text); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
@@ -2801,11 +2807,13 @@ PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
 
     pxOutputDebugStringW(text); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
+
+    return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXDebugProcessBreak()
+PXResult PXAPI PXDebugProcessBreak(void)
 {
- 
+    return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent)
@@ -2837,11 +2845,11 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
 
     BOOL debuggerPresent = 0;
     const BOOL result = pxCheckRemoteDebuggerPresent(processHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
-    const PXResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxResult = PXErrorCurrent(result);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     *isPresent = debuggerPresent;

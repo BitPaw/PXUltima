@@ -1,6 +1,6 @@
 #include "PXSalsa20.h"
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
 

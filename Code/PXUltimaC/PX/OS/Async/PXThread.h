@@ -112,8 +112,8 @@ PXThreadPriorityMode;
 #define PXTaskDepended         (1 <<  9) // Task depends on other resources, wait for them to finish
 #define PXTaskTimeDecay        (1 << 10) // Is a given Task can't be executed until a spesific time, mark it s failed and dont try again.
 
-typedef PXActionResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
-typedef PXActionResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
+typedef PXResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
+typedef PXResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
 
 typedef struct PXTask_
 {

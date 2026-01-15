@@ -326,7 +326,7 @@ PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInf
         pxStreamOnFrameInfo->BitPerPixel
     );
 #endif
-    return PXActionSuccessful;
+    return PXResultOK;
 }
 
 
@@ -2435,7 +2435,7 @@ while(1)
     pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
 
     const PXResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
-    const PXBool successful = PXActionSuccessful == searchResult;
+    const PXBool successful = PXResultOK == searchResult;
 
     if (successful)
     {

@@ -1,6 +1,6 @@
 #include "PXHTML.h"
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 PXResult PXAPI PXHTMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {

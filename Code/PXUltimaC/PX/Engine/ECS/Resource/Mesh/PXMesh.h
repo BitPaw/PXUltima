@@ -4,7 +4,7 @@
 #define PXMeshIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/ECS/Component/Material/PXMaterial.h>
 #include "PXVertexBuffer.h"
 #include "PXBufferLayout.h"

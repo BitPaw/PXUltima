@@ -164,7 +164,7 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
 
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
-        pxGraphicInitializeInfo.WindowReference = &pxWindow;
+        pxGraphicInitializeInfo.WindowReference = pxWindow;
         pxGraphicInitializeInfo.Width = imageWidth;
         pxGraphicInitializeInfo.Height = imageHeight;
         pxGraphicInitializeInfo.GraphicSystem = PXGraphicSystemOpenGL;

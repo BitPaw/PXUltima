@@ -837,7 +837,7 @@ PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
 
 PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
 {
-    PXActionResult pxActionResult = PXResultInvalid;
+    PXResult pxActionResult = PXResultInvalid;
 
     if(!(pxSocketDataInfo))
     {
@@ -1282,9 +1282,9 @@ PXResult PXAPI PXNetworkSocketPoll()
         if(!success)
         {
 #if OSUnix
-            PXActionResult selectResult = PXErrorCurrent();
+            PXResult selectResult = PXErrorCurrent();
 #elif OSWindows
-            PXActionResult selectResult = PXWindowsSocketAgentErrorFetch();
+            PXResult selectResult = PXWindowsSocketAgentErrorFetch();
 #endif
 
             numberOfSocketEvents = 0;
@@ -1345,7 +1345,7 @@ PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket)
 
 PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite)
 {
-    PXActionResult error = PXResultInvalid;
+    PXResult error = PXResultInvalid;
 
     if(doWrite)
     {

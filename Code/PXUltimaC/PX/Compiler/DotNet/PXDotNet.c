@@ -1435,7 +1435,7 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 #if 0
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchHostFX;
     pxDotNet->Execute = PXDotNetExecuteHostFX;
-    PXActionResult resultA = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
+    PXResult resultA = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
 
     if(PXResultOK == resultA)
     {
@@ -1447,7 +1447,7 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchCoreCLR;
     pxDotNet->Execute = PXDotNetExecuteCoreCLR;
-    PXActionResult resultB = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
+    PXResult resultB = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
 
     if(PXResultOK == resultB)
     {
@@ -1457,7 +1457,7 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchMSCoree;
     pxDotNet->Execute = PXDotNetExecuteMSCoree;
-    PXActionResult resultC = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
+    PXResult resultC = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
 
     if(PXResultOK == resultC)
     {

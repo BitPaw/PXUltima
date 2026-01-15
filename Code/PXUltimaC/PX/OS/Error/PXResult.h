@@ -1,13 +1,16 @@
 #pragma once
 
-#ifndef PXActionResultIncluded
-#define PXActionResultIncluded
+#ifndef PXResultIncluded
+#define PXResultIncluded
 
 #include <PX/Media/PXType.h>
 
 // Refused => User error
 // Invalid => State errorPXActionRefusedArgumentInvalid
 // Failed => Fundamental error
+// [Note]
+// enum by defined API forced to be 32-bit.
+// Reducing this type yields no actual smaler code.
 typedef enum PXResult_
 {
     //---<General>-----------------------
@@ -422,16 +425,8 @@ typedef enum PXResult_
     OperationWouldBlock, // WOULDBLOCK
     CrossDeviceLink // XDEV
 }
-PXActionResult;
+PXResult;
 
-
-// We use this as an enum is most often forced to be 32-bit.
-// This allows assembly code to be smaler.
-#if PXDEBUG
-typedef PXActionResult PXResult;
-#else
-typedef PXI16U PXResult;
-#endif
 
 typedef struct PXExecutionSnapshot_
 {
@@ -440,15 +435,8 @@ typedef struct PXExecutionSnapshot_
 PXExecutionSnapshot;
 
 
-
-#define PXActionReturnOnSuccess(actionResult) if (PXResultOK == actionResult) return PXResultOK;
-//#define PXActionReturnOnError(actionResult) if (PXResultOK != actionResult) return actionResult;
-//#define PXActionContinueOnError(actionResult) if (PXResultOK != actionResult) continue;
-//#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
-
 PXPublic PXResult PXAPI PXErrorCodeFromID(const int errorCode);
 PXPublic PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
-
 
 #if PXOSWindowsDestop
 
@@ -462,7 +450,6 @@ PXPublic PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID);
 typedef PXResult(PXAPI* PXCallX1)(void PXREF pxCallX1);
 
 PXPublic PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1);
-
 
 
 typedef struct PXException_

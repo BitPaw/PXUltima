@@ -55,40 +55,51 @@ PXResult PXAPI PXSpaceGridCreate(PXSpaceGrid** pxSpaceGridREF, PXSpaceGridCreate
 
     PXCameraCreate(&pxSpaceGrid->CameraView, &pxSpaceGridCreateInfo->Camera);
 
+    pxSpaceGrid->CameraView->Position.Y += 10;
+
     return PXResultOK;
 }
+
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
 
 PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo PXREF pxWindowDrawInfo)
 {
     PXWindow PXREF pxWindowBase = pxSpaceGrid->WindowBase;
     PXCamera PXREF pxCamera = pxSpaceGrid->CameraView;
 
-    float camX = 0;
-    float camZ = 0;
-
     const float GRID_SIZE = 200.0f; // half-extent (so 400x400 total)
-    const float GRID_STEP = 1.0f;   // minor grid spacing
+    const float GRID_STEP = 0.5f;   // minor grid spacing
     const int   MAJOR_EVERY = 10;   // major line every 10 units
 
-    glClearColor(0.6, 0.6, 0.6, 1.0);
+    PXColorRGBF ClearColor = { 0.2, 0.2, 0.4 };
+
+    glClearColor(ClearColor.Red, ClearColor.Green, ClearColor.Blue, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float aspectRatio = pxWindowDrawInfo->RectangleXYWH.Height / pxWindowDrawInfo->RectangleXYWH.Width;    
+    double aspectRatio = (double)pxWindowDrawInfo->RectangleXYWH.Height / (double)pxWindowDrawInfo->RectangleXYWH.Width;
 
     glMatrixMode(GL_PROJECTION); 
     glLoadIdentity();
-    gluPerspective(60.0, aspectRatio, 0.1, 5000.0);
+    gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity(); // Camera transform
-    glTranslatef(0.0f, -5.0f, -10.0f);
-    glRotatef(45.0f, 1.0f, 0.0f, 0.0f); // tilt downward 
-    glRotatef(45.0f, 0.0f, 1.0f, 0.0f); // rotate around Y
+    glLoadIdentity(); 
+    glRotatef(pxCamera->CurrentRotation.X, 1.0f, 0.0f, 0.0f);
+    glRotatef(pxCamera->CurrentRotation.Y, 0.0f, 1.0f, 0.0f);
+    glRotatef(pxCamera->CurrentRotation.Z, 0.0f, 0.0f, 1.0f);
+    glTranslatef(pxCamera->Position.X, pxCamera->Position.Y, pxCamera->Position.Z);
 
+
+    glEnable(GL_FOG);
+    glFogf(GL_FOG_MODE, GL_LINEAR);
+    glFogf(GL_FOG_START, 5.0f);
+    glFogf(GL_FOG_END, 100.0f);
+    GLfloat fogColor[] = { ClearColor.Red, ClearColor.Green, ClearColor.Blue, 1.0f };
+    glFogfv(GL_FOG_COLOR, fogColor);
 
 
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
-    glLineWidth(1.0f);
+    glLineWidth(1.5f);
 
     glBegin(GL_LINES);
 
@@ -96,9 +107,10 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
     {
         int isMajor = ((int)x % MAJOR_EVERY == 0);
 
-        float dist = fabsf(x - camX);
+        float dist = fabsf(x - pxCamera->Position.X);
         float fade = 1.0f - (dist / GRID_SIZE);
-        if(fade < 0.0f) fade = 0.0f;
+        if(fade < 0.0f)
+            fade = 0.0f;
 
         if(isMajor)
             glColor4f(0.25f, 0.25f, 0.25f, fade);
@@ -113,7 +125,7 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
     {
         int isMajor = ((int)z % MAJOR_EVERY == 0);
 
-        float dist = fabsf(z - camZ);
+        float dist = fabsf(z - pxCamera->Position.Z);
         float fade = 1.0f - (dist / GRID_SIZE);
         if(fade < 0.0f) fade = 0.0f;
 
@@ -128,7 +140,25 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
 
     glEnd();
 
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
+
+    glDisable(GL_FOG);
+
+
+    char buffer[64];
+    PXText pxText;
+    PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
+    PXTextPrint(&pxText, "CAM:%4.2f, %4.2f, %4.2f\nTest", pxCamera->Position.X, pxCamera->Position.Y, pxCamera->Position.Z);
+
+
+    PXTextDrawInfo pxTextDrawInfo;
+    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.Text = &pxText;
+    pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
+    pxTextDrawInfo.X = 0;
+    pxTextDrawInfo.Y = 0;
+
+    PXWindowDrawText(pxWindowBase, &pxTextDrawInfo);
 
     return PXResultOK;
 }

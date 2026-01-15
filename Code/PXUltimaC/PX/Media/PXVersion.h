@@ -1,6 +1,6 @@
 #pragma once
 #include "PXType.h"
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 // Version holder
 typedef struct PXVersion_
@@ -12,7 +12,7 @@ typedef struct PXVersion_
 }
 PXVersion;
 
-PXPublic PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, char* versioNString);
+PXPublic PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, const char* versioNString);
 PXPublic PXResult PXAPI PXVersionToString(PXVersion PXREF pxVersion, char* versioNString);
 
 

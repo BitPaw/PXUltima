@@ -1,36 +1,9 @@
 #include "PXCamera.h"
 #include <PX/Math/PXVector.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Engine/PXResource.h>
 
-typedef struct PXCamera_
-{
-    PXVector3F32 LookAtPosition;
-    PXVector3F32 CurrentRotation;
-
-    //---<Follow>---
-    PXVector3F32 Offset;
-    PXVector3F32 DeadZone;
-    //PXI8U TargetFollowFlag;
-    PXMatrix4x4F* Target;
-    PXF32 FollowSpeed; // Ranges from 0 to 1 .. FollowSpeed; = 0.98f
-
-    PXCameraPerspective Perspective;
-
-    PXF32 FieldOfView;
-    PXI32S Height;
-    PXI32S Width;
-    PXF32 Near;
-    PXF32 Far;
-
-    PXF32 WalkSpeed;
-    PXF32 ViewSpeed;
-
-    PXBool LockMovement;
-    PXBool LockView;
-}
-PXCamera;
 
 const char PXCameraName[] = "Camera";
 const PXI8U PXCameraNameLength = sizeof(PXCameraName);
@@ -39,11 +12,14 @@ const PXECSRegisterInfoStatic PXCameraRegisterInfoStatic =
     {sizeof(PXCameraName), sizeof(PXCameraName), PXCameraName, TextFormatASCII},
     sizeof(PXCamera),
     __alignof(PXCamera),
-    PXECSTypeEntity
+    PXECSTypeEntity,
+    PXCameraCreate,
+    PXCameraRelease,
+    PXCameraDraw
 };
 PXECSRegisterInfoDynamic PXCameraRegisterInfoDynamic;
 
-PXResult PXAPI PXCameraRegisterToECS()
+PXResult PXAPI PXCameraRegisterToECS(void)
 {
     PXECSRegister(&PXCameraRegisterInfoStatic, &PXCameraRegisterInfoDynamic);
 
@@ -56,7 +32,7 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
 
     pxCameraCreateInfo->Info.Static = &PXCameraRegisterInfoStatic;
     pxCameraCreateInfo->Info.Dynamic = &PXCameraRegisterInfoDynamic;
-    PXResult pxResult =  PXECSCreate(pxCameraREF, pxCameraCreateInfo);
+    const PXResult pxResult = PXECSCreate(pxCameraREF, pxCameraCreateInfo);
 
     if(PXResultOK != pxResult)
     {
@@ -70,7 +46,7 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     pxCamera->FieldOfView = 90;
     pxCamera->Height = 1;
     pxCamera->Width = 1;
-    pxCamera->Near = -0.001;
+    pxCamera->Near = 0.1;
     pxCamera->Far = 100000;
 
     //PXMatrix4x4FIdentity(&camera->MatrixModel);
@@ -83,6 +59,16 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     PXCameraRotate(pxCamera, &position);
 
     return PXResultOK;
+}
+
+PXResult PXAPI PXCameraRelease(const PXCamera PXREF pxCamera)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXResult PXAPI PXCameraDraw(const PXCamera PXREF pxCamera, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)
@@ -246,6 +232,8 @@ void PXAPI PXCameraMove(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F
         PXVector3F32Add(&targetedMovement, &zAxis);
         PXVector3F32MultiplyS(&targetedMovement, camera->WalkSpeed);
 
+        PXVector3F32Add(&camera->Position, &targetedMovement);
+
        // PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement);
     }
 }
@@ -358,7 +346,7 @@ void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
 
    // PXMatrix4x4FPositionGet(&camera->MatrixModel, &currentPosition);
     centerPosition = currentPosition;
-    PXVector3F32Add(&centerPosition, &camera->LookAtPosition);
+   // PXVector3F32Add(&centerPosition, &camera->LookAtPosition);
 
    // PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up);
 }

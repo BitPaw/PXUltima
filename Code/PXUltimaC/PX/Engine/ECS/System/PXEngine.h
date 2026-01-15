@@ -86,6 +86,8 @@ typedef void (PXAPI* PXEngineRenderUpdateEvent)(void PXREF owner, PXEngine PXREF
 
 typedef struct PXEngineTimeData_
 {
+    PXI64U TimeNow;
+
     PXI32U CounterTimeLast;
     PXI32U CounterTimeDelta;
 
@@ -141,6 +143,12 @@ PXPublic PXResult PXAPI PXEngineCreate(PXEngine** pxEngine, PXEngineCreateInfo P
 PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine);
 PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
 PXPublic void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
+
+PXPrivate void PXAPI PXEngineUpdateTimers(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine);
+
+PXPrivate void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventInputMouseMove PXREF pxWindowEventInputMouseMove);
+PXPrivate void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKeyboard PXREF pxWindowEventInputKeyboard);
 
 PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine PXREF pxEngine);
 

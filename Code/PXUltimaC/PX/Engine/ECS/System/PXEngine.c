@@ -29,6 +29,7 @@
 #include <PX/Engine/ECS/Entity/UI/SceneView/PXSceneView.h>
 #include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
 #include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
+#include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
 
 
 
@@ -39,7 +40,7 @@ PXFooter* _pxFooter = 0;
 PXWindow* e = 0;
 PXWindow* f = 0;
 PXSpaceGrid* _pxSpaceGrid = 0;
-PXWindow* h = 0;
+PXTransformView* _pxTransformView = 0;
 PXWindow* i = 0;
 
 
@@ -52,13 +53,12 @@ typedef struct PXEngine_
     PXGraphic Graphic;
     PXWindow* Window; // PXWindow
     PXModLoader ModLoader;
-    //PXCamera CameraDefault;
     PXAudio Audio;
     PXControllerSystem ControllerSystem;
     PXDataBase DataBase;
 
-    PXKeyBoard KeyBoardCurrentInput;
-    PXMouse MouseCurrentInput;
+    //PXKeyBoard KeyBoardCurrentInput;
+    //PXMouse MouseCurrentInput;
 
     PXAudioDevice AudioStandardOutDevice;
 
@@ -105,7 +105,9 @@ const PXECSRegisterInfoStatic PXEngineRegisterInfoStatic =
     sizeof(PXEngine),
     __alignof(PXEngine),
     PXECSTypeSystem,
-    PXEngineCreate
+    PXEngineCreate,
+    PXNull,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXEngineRegisterInfoDynamic;
 
@@ -204,6 +206,9 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
         {
             PXWindowEventInputMouseButton PXREF inputMouseButton = &pxWindowEvent->InputMouseButton;
 
+
+
+#if 0
             PXMouse PXREF mouse = &pxEngine->MouseCurrentInput;
 
             switch(inputMouseButton->PressState)
@@ -280,7 +285,6 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
                     break;
             }
 
-#if 0
             const char* buttonStateText = 0;
             const char* mouseButtonText = 0;
 
@@ -353,57 +357,8 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
         case PXWindowEventTypeInputMouseMove:
         {
             PXWindowEventInputMouseMove PXREF inputMouseMove = &pxWindowEvent->InputMouseMove;
-            PXMouse PXREF mouse = &pxEngine->MouseCurrentInput;
 
-            const PXI32S mousePositionOld[2] =
-            {
-                mouse->Position[0],
-                mouse->Position[1]
-            };
-            const PXI32S mousePositionNew[2] =
-            {
-    #if UseOSDelta
-                mousePositionOld + deltaX,
-                mousePositionOld - deltaY
-    #else
-                // PXMathLimit(inputMouseMove->AxisX, 0, window->Width),
-                // window->Height - PXMathLimit(inputMouseMove->AxisY, 0, window->Height)
-                0,
-                0
-    #endif
-            };
-
-            const PXI32S mousePositionDeltaNew[2] =
-            {
-    #if UseOSDelta
-                mousePositionNew[0] - mousePositionOld[0],
-                mousePositionNew[1] - mousePositionOld[1]
-    #else
-                inputMouseMove->Delta.X,
-                inputMouseMove->Delta.Y
-    #endif
-            };
-
-            const PXBool hasDelta = (mousePositionDeltaNew[0] != 0 && mousePositionDeltaNew[1] != 0) || 1;
-
-            if(hasDelta)
-            {
-                // mouse->Delta[0] = mousePositionDeltaNew[0];
-                // mouse->Delta[1] = mousePositionDeltaNew[1];
-                mouse->Delta[0] += inputMouseMove->Delta.X;
-                mouse->Delta[1] += inputMouseMove->Delta.Y;
-                // mouse->DeltaNormalisized[0] = (mousePositionDeltaNew[0] / ((PXF32)window->Width / 2.0f)) - 1.0f;
-                // mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
-                mouse->Position[0] = mousePositionNew[0];
-                mouse->Position[1] = mousePositionNew[1];
-                // mouse->PositionNormalisized[0] = (mousePositionNew[0] / ((PXF32)window->Width / 2.0f)) - 1.0f;
-                // mouse->PositionNormalisized[1] = (mousePositionNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
-            }
-            else
-            {
-                mouse->Delta[0] = 0;
-                mouse->Delta[1] = 0;
-            }
+            PXEngineUpdateMouse(pxEngine, inputMouseMove);
 
             PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, PXNull);
 
@@ -412,13 +367,16 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
         case PXWindowEventTypeInputKeyboard:
         {
             PXWindowEventInputKeyboard PXREF inputKeyboard = &pxWindowEvent->InputKeyboard;
-            PXKeyBoard PXREF keyBoard = &pxEngine->KeyBoardCurrentInput;
 
-            PXI32U mask = 0;
-            PXI32U data = 0;
+            PXEngineUpdateKeyBoard(pxEngine, inputKeyboard);
 
 
             // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
+#if 0
+            //PXKeyBoard PXREF keyBoard = &pxEngine->KeyBoardCurrentInput;
+
+            PXI32U mask = 0;
+            PXI32U data = 0;
 
             if(PXKeyPressStateDown == inputKeyboard->PressState)
             {
@@ -1152,7 +1110,7 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
                         break;
                 }
             }
-
+#endif
             PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, PXNull);
 
             break;
@@ -1170,17 +1128,12 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
         return; // Engine is not running, we dont release
     }
 
-    const PXI64U timeNow = PXTimeCounterStampGet();
+    PXEngineUpdateTimers(pxEngine);
 
-    pxEngine->TimeData.CounterTimeDelta = timeNow - pxEngine->TimeData.CounterTimeLast;
-    pxEngine->TimeData.CounterTimeLast = timeNow;
-    pxEngine->TimeData.TimeFrequency = PXTimeCounterFrequencyGet();
-    pxEngine->TimeData.FramesPerSecound = PXMathFloor(pxEngine->TimeData.TimeFrequency / (PXF32)pxEngine->TimeData.CounterTimeDelta);
-    pxEngine->TimeData.FrameTime = PXMathCeilingF((1000000 * pxEngine->TimeData.CounterTimeDelta) / (PXF32)pxEngine->TimeData.TimeFrequency);
+    PXEngineUpdateInput(pxEngine);
 
-    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet();
-    //PXWindowUpdate(&pxEngine->Window);
-    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeWindow;
+
+
 
 
     // Fetch Window input if SYNC
@@ -1212,28 +1165,20 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
 
     PXWindowRedraw(_pxColorPicker->WindowBase);
     PXWindowRedraw(_pxFooter->WindowBase);
+    PXWindowRedraw(_pxTransformView->WindowBase);
     PXWindowRedraw(_pxSpaceGrid->WindowBase);
 
-    Sleep(1);
+    //Sleep(1);
 
     // LockWindowUpdate(e);
     // PXWindowOpenGLEnable(e);
 
+#if 0
      // User input
     {
         PXWindow* pxWindow = pxEngine->Window;
-        PXKeyBoard* keyboard = &pxEngine->KeyBoardCurrentInput;
-        PXMouse* mouse = &pxEngine->MouseCurrentInput;
 
         pxEngine->TimeData.CounterTimeUser = PXTimeCounterStampGet();
-
-
-        PXPlayerMoveInfo pxPlayerMoveInfo;
-        PXClear(PXPlayerMoveInfo, &pxPlayerMoveInfo);
-
-
-        // Solve controller
-
 
         if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
         {
@@ -1258,166 +1203,45 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
             {
                 PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
             }
-
-            // Update
-            const PXBool doUIUpdate =
-                (pxController->ButtonPressedBitList & PXControllerButton3) ||
-                (keyboard->Letters & KeyBoardIDLetterU);
-
-            if(doUIUpdate)
-            {
-                PXLogPrint
-                (
-                    PXLoggingWarning,
-                    "PX",
-                    "Update",
-                    "Triggerd by user input"
-                );
-
-
-                pxEngine->UpdateUI = 1;
-            }
-
-
-            if(keyboard->Commands & KeyBoardIDLetterO)
-            {
-                //  PXNativeWindowListUpdate(pxWindow->Info.Handle.WindowHandle);
-                  //PXGUIChildEnumerate(_gui);
-            }
-
-
-            if(keyboard->Commands & KeyBoardIDShiftLeft)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
-            }
-            if(keyboard->Letters & KeyBoardIDLetterW)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1);
-            }
-            if(keyboard->Letters & KeyBoardIDLetterA)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0);
-            }
-            if(keyboard->Letters & KeyBoardIDLetterS)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1);
-            }
-            if(keyboard->Letters & KeyBoardIDLetterD)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0);
-            }
-            if(keyboard->Letters & KeyBoardIDSpace)
-            {
-                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
-            }
-            if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
-            {
-                pxEngine->InteractionLock = PXTrue;
-                PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
-            }
-            if(!(keyboard->Letters & KeyBoardIDLetterF))
-            {
-                pxEngine->InteractionLock = PXFalse;
-            }
-
-
-
-
-
-            // If we have a target, we want to move the camera to it to track it
-           // if(pxEngine->CameraCurrent->Target)
-            {
-                // PXMatrix4x4FMove3F(pxEngine->CameraCurrent->Target, &pxPlayerMoveInfo.MovementWalk);
-
-                PXCameraFollow(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta / 1000000.0f);
-            }
-            // else
-            {
-                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-            }
-
-            // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-
-            PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-            PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
-
-
-            // PXControllerSystemDebugPrint(pxController);
-
-
-            //---------------------------------------------------------------------------
-
-
-
-
-
-            const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
-            const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
-            const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
-
-            if(hasAnyChanged)
-            {
-                pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
-                pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
-                pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
-                pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
-
-                PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
-
-                PXMouseInputReset(mouse);
-
-                if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
-                {
-                    PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-                    PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-                    PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
-
-                    // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
-                }
-
-                pxEngine->TimeData.CounterTimeUser = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeUser;
-            }
-
-
-        }
-
-
-
-
-        // Extended windows resize check
-        if(pxEngine->UpdateUI)
-        {
-            PXGUIProperty pxGUIProperty;
-            PXClear(PXGUIProperty, &pxGUIProperty);
-            //pxGUIProperty.WindowCurrent = pxWindow;
-            pxGUIProperty.Property = PXUIElementPropertySize;
-
-            PXGUIPropertyFetch(pxWindow, &pxGUIProperty, 1, PXFalse);
-
-            PXViewPort pxViewPort;
-            pxViewPort.X = 0;
-            pxViewPort.Y = 0;
-            pxViewPort.Width = pxGUIProperty.Size.Width;
-            pxViewPort.Height = pxGUIProperty.Size.Height;
-            pxViewPort.ClippingMinimum = 0;
-            pxViewPort.ClippingMaximum = 1;
-
-            pxEngine->UpdateUI = PXFalse;
-
-            PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
-
-            if(pxEngine->CameraCurrent)
-            {
-                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
-            }
-
-            // PXWindowhSizeRefresAll(&pxEngine->GUISystem);
-
-            PXNativDrawWindowPrintHirachy(&pxEngine->GUISystem.NativDraw, pxEngine->Window, 0);
-
-            PXNativeDrawRefreshSizeAllChildren(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
         }
     }
+#endif
+    PXWindow* pxWindow = pxEngine->Window;
+
+    // Extended windows resize check
+    if(pxEngine->UpdateUI)
+    {
+        PXGUIProperty pxGUIProperty;
+        PXClear(PXGUIProperty, &pxGUIProperty);
+        //pxGUIProperty.WindowCurrent = pxWindow;
+        pxGUIProperty.Property = PXUIElementPropertySize;
+
+        PXGUIPropertyFetch(pxWindow, &pxGUIProperty, 1, PXFalse);
+
+        PXViewPort pxViewPort;
+        pxViewPort.X = 0;
+        pxViewPort.Y = 0;
+        pxViewPort.Width = pxGUIProperty.Size.Width;
+        pxViewPort.Height = pxGUIProperty.Size.Height;
+        pxViewPort.ClippingMinimum = 0;
+        pxViewPort.ClippingMaximum = 1;
+
+        pxEngine->UpdateUI = PXFalse;
+
+        PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
+
+        if(pxEngine->CameraCurrent)
+        {
+            //PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
+        }
+
+        // PXWindowhSizeRefresAll(&pxEngine->GUISystem);
+
+        PXNativDrawWindowPrintHirachy(&pxEngine->GUISystem.NativDraw, pxEngine->Window, 0);
+
+        PXNativeDrawRefreshSizeAllChildren(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
+    }
+
 
     // Network
     {
@@ -1439,9 +1263,9 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
     }
 
 
-    if((timeNow - pxEngine->TimeData.CounterTimeRenderLast) > 0.2)
+    if((pxEngine->TimeData.TimeNow - pxEngine->TimeData.CounterTimeRenderLast) > 0.2)
     {
-        pxEngine->TimeData.CounterTimeRenderLast = timeNow;
+        pxEngine->TimeData.CounterTimeRenderLast = pxEngine->TimeData.TimeNow;
 
         const PXColorRGBAF color = { 0.01, 0.01, 0.01, 1 };
 
@@ -1553,6 +1377,272 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
 #endif
 
     //PXThreadSleep(PXNull, 1);
+}
+
+void PXAPI PXEngineUpdateTimers(PXEngine PXREF pxEngine)
+{
+    pxEngine->TimeData.TimeNow = PXTimeCounterStampGet();
+
+    pxEngine->TimeData.CounterTimeDelta = pxEngine->TimeData.TimeNow - pxEngine->TimeData.CounterTimeLast;
+    pxEngine->TimeData.CounterTimeLast = pxEngine->TimeData.TimeNow;
+    pxEngine->TimeData.TimeFrequency = PXTimeCounterFrequencyGet();
+    pxEngine->TimeData.FramesPerSecound = PXMathFloor(pxEngine->TimeData.TimeFrequency / (PXF32)pxEngine->TimeData.CounterTimeDelta);
+    pxEngine->TimeData.FrameTime = PXMathCeilingF((1000000 * pxEngine->TimeData.CounterTimeDelta) / (PXF32)pxEngine->TimeData.TimeFrequency);
+
+    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet();
+    //PXWindowUpdate(&pxEngine->Window);
+    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeWindow;
+}
+
+#include <Xinput.h>
+#include <stdio.h>
+
+#pragma comment(lib, "Xinput.lib")
+
+void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine)
+{
+    XINPUT_STATE inputState;
+    ZeroMemory(&inputState, sizeof(inputState));
+
+    DWORD errorCode = XInputGetState(0, &inputState); // Windows XP?, Xinput.lib, xinput.h 
+    PXBool isOK = ERROR_SUCCESS == errorCode;
+
+    if(isOK)
+    {
+        SHORT lx = inputState.Gamepad.sThumbLX;
+        SHORT ly = inputState.Gamepad.sThumbLY;
+        BYTE a = (inputState.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
+
+        printf("[XINPUT] LX=%d LY=%d A=%d\n", lx, ly, a);
+    }
+}
+
+void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventInputMouseMove PXREF pxWindowEventInputMouseMove)
+{
+    PXWindow* pxWindow = pxEngine->Window;
+
+    //pxWindowEventInputMouseMove
+
+    PXVector3F32 pxVector3F32;
+    pxVector3F32.X = 0;
+    pxVector3F32.Y = pxWindowEventInputMouseMove->Delta.X;
+    pxVector3F32.Z = 0;
+
+    pxEngine->CameraCurrent->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y;
+    pxEngine->CameraCurrent->CurrentRotation.Y -= pxWindowEventInputMouseMove->Delta.X;
+
+   // PXCameraRotate(pxEngine->CameraCurrent, &pxVector3F32);
+  //  PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+
+#if 0
+
+    if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
+    {
+        PXController PXREF pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+
+        // pxEngine->CameraCurrent->WalkSpeed = 1;
+        // pxEngine->CameraCurrent->ViewSpeed = 1;
+
+       //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+       //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
+
+
+
+         // Up
+        if(pxController->ButtonPressedBitList & PXControllerButton1)
+        {
+            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
+        }
+
+        // Down
+        if(pxController->ButtonPressedBitList & PXControllerButton2)
+        {
+            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
+        }
+
+        // If we have a target, we want to move the camera to it to track it
+       // if(pxEngine->CameraCurrent->Target)
+        {
+            // PXMatrix4x4FMove3F(pxEngine->CameraCurrent->Target, &pxPlayerMoveInfo.MovementWalk);
+
+            PXCameraFollow(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta / 1000000.0f);
+        }
+        // else
+        {
+            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+        }
+
+        // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+
+        PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+
+
+#if 0
+        // PXControllerSystemDebugPrint(pxController);
+
+        const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
+        const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
+        const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
+
+        if(hasAnyChanged)
+        {
+            pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
+            pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
+            pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
+            pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
+
+            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+
+            PXMouseInputReset(mouse);
+
+            if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+            {
+                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+                PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+                PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+
+                // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
+            }
+        }
+#endif
+    }
+
+#endif
+}
+
+void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKeyboard PXREF pxWindowEventInputKeyboard)
+{
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'q')
+    {
+        pxEngine->CameraCurrent->Position.Y += 1 * 0.5;
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'e')
+    {
+        pxEngine->CameraCurrent->Position.Y -= 1 * 0.5;
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'w')
+    {
+        PXCameraMoveXYZ(pxEngine->CameraCurrent, 0, 0, 1);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'a')
+    {
+        PXCameraMoveXYZ(pxEngine->CameraCurrent, -1, 0, 0);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L's')
+    {
+        PXCameraMoveXYZ(pxEngine->CameraCurrent, 0, 0, -1);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'd')
+    {
+        PXCameraMoveXYZ(pxEngine->CameraCurrent, +1, 0, 0);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PX",
+        "Update",
+        "CAM: %4.2f %4.2f %4.2f",
+        pxEngine->CameraCurrent->Position.X,
+        pxEngine->CameraCurrent->Position.Y,
+        pxEngine->CameraCurrent->Position.Z
+    );
+
+
+    // User input
+    {
+
+        PXPlayerMoveInfo pxPlayerMoveInfo;
+        PXClear(PXPlayerMoveInfo, &pxPlayerMoveInfo);
+
+
+        // Solve controller
+
+
+        if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
+        {
+            PXController PXREF pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+
+            // pxEngine->CameraCurrent->WalkSpeed = 1;
+            // pxEngine->CameraCurrent->ViewSpeed = 1;
+
+           //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+           //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
+            // Update
+            const PXBool doUIUpdate = pxWindowEventInputKeyboard->VirtualKey == KeyU;
+
+            if(doUIUpdate)
+            {
+                PXLogPrint
+                (
+                    PXLoggingWarning,
+                    "PX",
+                    "Update",
+                    "Triggerd by user input"
+                );
+
+
+                pxEngine->UpdateUI = 1;
+            }
+
+       
+       
+
+
+
+
+#if 0
+
+            if(keyboard->Commands & KeyBoardIDShiftLeft)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
+            }
+            if(keyboard->Letters & KeyBoardIDLetterW)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1);
+            }
+            if(keyboard->Letters & KeyBoardIDLetterA)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0);
+            }
+            if(keyboard->Letters & KeyBoardIDLetterS)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1);
+            }
+            if(keyboard->Letters & KeyBoardIDLetterD)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0);
+            }
+            if(keyboard->Letters & KeyBoardIDSpace)
+            {
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
+            }
+            if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
+            {
+                pxEngine->InteractionLock = PXTrue;
+                PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
+            }
+            if(!(keyboard->Letters & KeyBoardIDLetterF))
+            {
+                pxEngine->InteractionLock = PXFalse;
+            }
+#endif
+        }
+    }
 }
 
 PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo)
@@ -1782,6 +1872,8 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
     pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
 }
 
+#pragma comment(lib, "dinput8.lib")
+
 PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
 {
 #if PXLogEnable
@@ -1803,10 +1895,10 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     pxWindowCreateInfo.EventList.CallBackEvent = PXEngineWindowEvent;
     pxWindowCreateInfo.Size.Width = pxEngineStartInfo->Width;
     pxWindowCreateInfo.Size.Height = pxEngineStartInfo->Height;
-    pxWindowCreateInfo.WindowText.A = "[N/A]";
     pxWindowCreateInfo.WindowParent = pxEngineStartInfo->WindowRenderParent;
 
     PXWindowCreate(&pxEngine->Window, &pxWindowCreateInfo);
+
 
     //pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
     //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
@@ -1817,7 +1909,9 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     // Consume all events that are used for creation
     PXWindowEventPoll(pxEngine->Window);
 
-    PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxEngineStartInfo->Width, pxEngineStartInfo->Height);
+    PXWindowMouseMovementEnable(pxEngine->Window);
+
+    //PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxEngineStartInfo->Width, pxEngineStartInfo->Height);
 
     if(0)
     {
@@ -1905,150 +1999,146 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
 
     PXWindow* pxMainWindow = pxEngine->Window;
 
-    HWND hwnd = PXWindowHandleGet(pxMainWindow);
-
-    InitDockContainerStyles(hwnd);
+    InitDockContainerStyles(pxMainWindow);
 
     PXWindowCreateInfo pxWindowCreateInfoSub;
 
-    {
-        PXColorPickerCreateInfo pxColorPickerCreateInfo;
-        PXClear(PXColorPickerCreateInfo, &pxColorPickerCreateInfo);
-        pxColorPickerCreateInfo.Window.WindowParent = pxMainWindow;
-        pxColorPickerCreateInfo.Window.Color.Red = 210;
-        pxColorPickerCreateInfo.Window.Color.Red = 60;
-        pxColorPickerCreateInfo.Window.Color.Red = 60;
-        pxColorPickerCreateInfo.Window.floating = FALSE;
-        pxColorPickerCreateInfo.Window.dockSide = PXWindowDockSideLeft;
-        pxColorPickerCreateInfo.Window.isChild = TRUE;
-        PXColorPickerCreate(&_pxColorPicker, &pxColorPickerCreateInfo);
-    }
 
 
 
-    
+
+
 
 #if 1
-   
+
     PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
     pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 60;
-    pxWindowCreateInfoSub.Color.Red = 210;
-    pxWindowCreateInfoSub.Color.Red = 80;
+    pxWindowCreateInfoSub.BackGroundColor.Red = 60;
+    pxWindowCreateInfoSub.BackGroundColor.Green = 210;
+    pxWindowCreateInfoSub.BackGroundColor.Blue = 80;
     pxWindowCreateInfoSub.floating = FALSE;
     pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
-    pxWindowCreateInfoSub.isChild = TRUE;
+    // pxWindowCreateInfoSub.isChild = TRUE;
     PXWindowCreate(&b, &pxWindowCreateInfoSub);
 
     //c = PXWindowCreateEE(pxMainWindow, 20, 120, 220, FALSE, PXWindowDockSideNone, TRUE, PXECSEntityInfoDraw);
     PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
     pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 210;
-    pxWindowCreateInfoSub.Color.Red = 60;
-    pxWindowCreateInfoSub.Color.Red = 60;
+    pxWindowCreateInfoSub.BackGroundColor.Red = 210;
+    pxWindowCreateInfoSub.BackGroundColor.Green = 60;
+    pxWindowCreateInfoSub.BackGroundColor.Blue = 60;
     pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft; TRUE;
-    pxWindowCreateInfoSub.isChild = TRUE;
+    pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
+    // pxWindowCreateInfoSub.isChild = TRUE;
     PXWindowCreate(&c, &pxWindowCreateInfoSub);
 
-    
-    //d = PXWindowCreateEE(pxMainWindow, 40, 90, 200, FALSE, PXWindowDockSideNone, TRUE, PXFooterDraw);
-    {
-        PXFooterCreateInfo pxFooterCreateInfo;
-        PXClear(PXFooterCreateInfo, &pxFooterCreateInfo);
-        pxFooterCreateInfo.Window.WindowParent = pxMainWindow;
-        pxFooterCreateInfo.Window.Color.Red = 210;
-        pxFooterCreateInfo.Window.Color.Red = 60;
-        pxFooterCreateInfo.Window.Color.Red = 60;
-        pxFooterCreateInfo.Window.floating = FALSE;
-        pxFooterCreateInfo.Window.dockSide = PXWindowDockSideLeft;
-        pxFooterCreateInfo.Window.isChild = TRUE;
-        PXFooterCreate(&_pxFooter, &pxWindowCreateInfoSub);
-    }
 
-   
 
     //e = PXWindowCreateEE(pxMainWindow, 60, 30, 180, FALSE, PXWindowDockSideNone, TRUE, PXColorPickerDraw);
     PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
     pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 60;
-    pxWindowCreateInfoSub.Color.Red = 30;
-    pxWindowCreateInfoSub.Color.Red = 180;
+    pxWindowCreateInfoSub.BackGroundColor.Red = 60;
+    pxWindowCreateInfoSub.BackGroundColor.Green = 30;
+    pxWindowCreateInfoSub.BackGroundColor.Blue = 180;
     pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideNone;
-    pxWindowCreateInfoSub.isChild = TRUE;
+    pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
+    // pxWindowCreateInfoSub.isChild = TRUE;
     PXWindowCreate(&e, &pxWindowCreateInfoSub);
 
     //f = PXWindowCreateEE(pxMainWindow, 80, 0, 160, FALSE, PXWindowDockSideNone, TRUE, PXSceneViewDraw);
     PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
     pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 80;
-    pxWindowCreateInfoSub.Color.Red = 0;
-    pxWindowCreateInfoSub.Color.Red = 160;
+    pxWindowCreateInfoSub.BackGroundColor.Red = 80;
+    pxWindowCreateInfoSub.BackGroundColor.Green = 0;
+    pxWindowCreateInfoSub.BackGroundColor.Blue = 160;
     pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideNone;
-    pxWindowCreateInfoSub.isChild = TRUE;
+    pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
+    //pxWindowCreateInfoSub.isChild = TRUE;
     PXWindowCreate(&f, &pxWindowCreateInfoSub);
 
-    //h = PXWindowCreateEE(pxMainWindow, 100, 80, 0, FALSE, PXWindowDockSideNone, TRUE, PXNull);
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 100;
-    pxWindowCreateInfoSub.Color.Red = 80;
-    pxWindowCreateInfoSub.Color.Red = 0;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideNone;
-    pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&h, &pxWindowCreateInfoSub);
 
-    //i = PXWindowCreateEE(pxMainWindow, 80, 80, 40, FALSE, PXWindowDockSideRight, TRUE, PXNull);
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.Color.Red = 80;
-    pxWindowCreateInfoSub.Color.Red = 80;
-    pxWindowCreateInfoSub.Color.Red = 40;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
-    pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&i, &pxWindowCreateInfoSub);
+
+    {
+        //g = PXWindowCreateEE(pxMainWindow, 80, 80, 0, FALSE, PXWindowDockSideNone, TRUE, PXSpaceGridDraw);
+        PXSpaceGridCreateInfo pxSpaceGridCreateInfo;
+        PXClear(PXSpaceGridCreateInfo, &pxSpaceGridCreateInfo);
+        pxSpaceGridCreateInfo.Camera.Perspective = PXCameraPerspective3D;
+        pxSpaceGridCreateInfo.Window.WindowParent = pxMainWindow;
+        pxSpaceGridCreateInfo.Window.BackGroundColor.Red = 80;
+        pxSpaceGridCreateInfo.Window.BackGroundColor.Green = 80;
+        pxSpaceGridCreateInfo.Window.BackGroundColor.Blue = 0;
+        pxSpaceGridCreateInfo.Window.floating = PXFalse;
+        pxSpaceGridCreateInfo.Window.dockSide = PXWindowDockSideNone;
+        // pxSpaceGridCreateInfo.Window.isChild = TRUE;
+        PXSpaceGridCreate(&_pxSpaceGrid, &pxSpaceGridCreateInfo);
+    }
+
+    {
+        PXTransformViewCrerateInfo pxTransformViewCrerateInfo;
+        PXClear(PXTransformViewCrerateInfo, &pxTransformViewCrerateInfo);
+        pxTransformViewCrerateInfo.Window.WindowParent = pxMainWindow;
+        pxTransformViewCrerateInfo.Window.BackGroundColor.Red = 100;
+        pxTransformViewCrerateInfo.Window.BackGroundColor.Green = 80;
+        pxTransformViewCrerateInfo.Window.BackGroundColor.Blue = 0;
+        pxTransformViewCrerateInfo.Window.floating = FALSE;
+        pxTransformViewCrerateInfo.Window.dockSide = PXWindowDockSideLeft;
+        pxTransformViewCrerateInfo.Position = &_pxSpaceGrid->CameraView->Position;
+        PXTransformViewCreate(&_pxTransformView, &pxTransformViewCrerateInfo);
+    }
+
 #endif
 
-    //g = PXWindowCreateEE(pxMainWindow, 80, 80, 0, FALSE, PXWindowDockSideNone, TRUE, PXSpaceGridDraw);
-    PXSpaceGridCreateInfo pxSpaceGridCreateInfo;
-    PXClear(PXSpaceGridCreateInfo, &pxSpaceGridCreateInfo);
-    pxSpaceGridCreateInfo.Camera.Perspective = PXCameraPerspective3D;
-    pxSpaceGridCreateInfo.Window.WindowParent = pxMainWindow;
-    pxSpaceGridCreateInfo.Window.Color.Red = 210;
-    pxSpaceGridCreateInfo.Window.Color.Green = 60;
-    pxSpaceGridCreateInfo.Window.Color.Blue = 60;
-    pxSpaceGridCreateInfo.Window.floating = PXFalse;
-    pxSpaceGridCreateInfo.Window.dockSide = PXWindowDockSideLeft;
-    pxSpaceGridCreateInfo.Window.isChild = TRUE;
-    PXSpaceGridCreate(&_pxSpaceGrid, &pxSpaceGridCreateInfo);
-
- 
-  
-   
-    
-    
-    
-    
-
-  
 
 
+    {
+        PXColorPickerCreateInfo pxColorPickerCreateInfo;
+        PXClear(PXColorPickerCreateInfo, &pxColorPickerCreateInfo);
+        pxColorPickerCreateInfo.Window.WindowParent = pxMainWindow;
+        pxColorPickerCreateInfo.Window.BackGroundColor.Red = 210;
+        pxColorPickerCreateInfo.Window.BackGroundColor.Green = 60;
+        pxColorPickerCreateInfo.Window.BackGroundColor.Blue = 60;
+        pxColorPickerCreateInfo.Window.floating = FALSE;
+        pxColorPickerCreateInfo.Window.dockSide = PXWindowDockSideRight;
+        //  pxColorPickerCreateInfo.Window.isChild = TRUE;
+        PXColorPickerCreate(&_pxColorPicker, &pxColorPickerCreateInfo);
+    }
+
+    //d = PXWindowCreateEE(pxMainWindow, 40, 90, 200, FALSE, PXWindowDockSideNone, TRUE, PXFooterDraw);
+    {
+        PXFooterCreateInfo pxFooterCreateInfo;
+        PXClear(PXFooterCreateInfo, &pxFooterCreateInfo);
+        pxFooterCreateInfo.Window.WindowParent = pxMainWindow;
+        pxFooterCreateInfo.Window.BackGroundColor.Red = 40;
+        pxFooterCreateInfo.Window.BackGroundColor.Green = 90;
+        pxFooterCreateInfo.Window.BackGroundColor.Blue = 200;
+        pxFooterCreateInfo.Window.floating = FALSE;
+        pxFooterCreateInfo.Window.dockSide = PXWindowDockSideRight;
+        // pxFooterCreateInfo.Window.isChild = TRUE;
+        PXFooterCreate(&_pxFooter, &pxFooterCreateInfo);
+    }
+
+    {
+        //i = PXWindowCreateEE(pxMainWindow, 80, 80, 40, FALSE, PXWindowDockSideRight, TRUE, PXNull);
+        PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
+        pxWindowCreateInfoSub.WindowParent = pxMainWindow;
+        pxWindowCreateInfoSub.BackGroundColor.Red = 80;
+        pxWindowCreateInfoSub.BackGroundColor.Green = 80;
+        pxWindowCreateInfoSub.BackGroundColor.Blue = 40;
+        pxWindowCreateInfoSub.floating = FALSE;
+        pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
+        // pxWindowCreateInfoSub.isChild = TRUE;
+        PXWindowCreate(&i, &pxWindowCreateInfoSub);
+    }
+
+    PXWindowOpenGLEnable(pxMainWindow);
     PXWindowOpenGLEnable(_pxColorPicker->WindowBase);
     PXWindowOpenGLEnable(_pxFooter->WindowBase);
-    //PXWindowOpenGLEnable(e);
-    //PXWindowOpenGLEnable(f);
+    PXWindowOpenGLEnable(_pxTransformView->WindowBase);
     PXWindowOpenGLEnable(_pxSpaceGrid->WindowBase);
 
     LayoutDockedEx(pxMainWindow, NULL);
 
-    if(pxEngineStartInfo->Mode == PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
-    {
-        return PXResultOK;
-    }
+    pxEngine->CameraCurrent = _pxSpaceGrid->CameraView;
 
     return PXResultOK;
 }
@@ -2201,7 +2291,7 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
 
 #if 0
     PXSize amount = 0;
-    PXActionResult res = PXProcessHandleCountGet(PXNull, &amount);
+    PXResult res = PXProcessHandleCountGet(PXNull, &amount);
 
     PXLogPrint
     (
@@ -2211,7 +2301,7 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
         amount
     );
 
-    //PXActionResult ww = PXProcessHandleListAll(PXNull);
+    //PXResult ww = PXProcessHandleListAll(PXNull);
     // printf("");
 #endif
 
@@ -2288,14 +2378,11 @@ void PXAPI PXEngineStop(PXEngine PXREF pxEngine)
         PXSize amountResultInput = 64;
         PXSize amountResultOutput = 0;
 
-        PXThread* pxThreadListRef = pxThreadList;
-        PXThread** pxThreadListRefRef = &pxThreadListRef;
-
-        PXProcessThreadsListAll(PXNull, pxThreadListRefRef, amountResultInput, &amountResultOutput);
+        PXProcessThreadsListAll(PXNull, pxThreadList, amountResultInput, &amountResultOutput);
 
         for(PXSize i = 0; i < amountResultOutput; ++i)
         {
-            PXThread PXREF pxThread = &pxThreadList[i];
+            PXThread PXREF pxThread = pxThreadList[i];
 
             PXText text;
             PXTextConstructBufferA(&text, 256);

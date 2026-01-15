@@ -186,8 +186,10 @@ PXBool PXAPI PXListLinkedFixedNodeRemoveAt(PXListLinkedFixed PXREF linkedListFix
 
     if (!found)
     {
-        return PXNo;            
+        return PXFalse;
     }
 
-    pxLinkedListNodeFixed.NodeNext = PXListLinkedNodeNotUsed;
+    pxLinkedListNodeFixed.NodeNext = PXNull;
+
+    return PXTrue;
 }

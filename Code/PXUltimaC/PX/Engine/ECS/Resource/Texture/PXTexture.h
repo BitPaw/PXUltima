@@ -3,7 +3,7 @@
 #ifndef PXTextureIncluded
 #define PXTextureIncluded
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Media/PXColor.h>
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/System/PXRenderingSystem.h>

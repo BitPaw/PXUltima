@@ -21,9 +21,9 @@ typedef struct PXStreamOnFrameInfo_
 PXStreamOnFrameInfo;
 
 
-typedef PXActionResult(PXAPI* PXStreamCreateFunction)(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
-typedef PXActionResult(PXAPI* PXStreamUpdateFunction)(PXStream PXREF pxStream);
-typedef PXActionResult(PXAPI* PXStreamOnFrameFunction)(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF dataAdress);
+typedef PXResult(PXAPI* PXStreamCreateFunction)(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+typedef PXResult(PXAPI* PXStreamUpdateFunction)(PXStream PXREF pxStream);
+typedef PXResult(PXAPI* PXStreamOnFrameFunction)(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF dataAdress);
 
 
 

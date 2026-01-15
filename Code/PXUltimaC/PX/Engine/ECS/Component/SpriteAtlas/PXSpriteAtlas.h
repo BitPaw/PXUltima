@@ -6,6 +6,7 @@
 #include <PX/Math/PXVector.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
 
 typedef struct PXSpriteMapEntity_
 {

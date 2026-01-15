@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include <PX/Media/PXText.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
@@ -2272,7 +2272,7 @@ void PXAPI PXOpenGLDestruct(PXOpenGL PXREF pxOpenGL)
 
 PXResult PXAPI PXOpenGLErrorCurrent(PXOpenGL PXREF pxOpenGL, PXBool wasSuccessultCall)
 {
-    PXActionResult openGLError = PXResultOK;
+    PXResult openGLError = PXResultOK;
 
     for(;;)
     {
@@ -2726,7 +2726,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
                     attributeList
                 );
 
-                const PXResult xx = PXOpenGLErrorCurrent(pxOpenGL, conAttributes);
+                const PXResult xx = PXOpenGLErrorCurrent(pxOpenGL, conAttributes != 0);
             }
         }
 #endif
@@ -2895,7 +2895,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
 
        // PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
-        PXActionResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, pxGraphicDevicePhysical);
+        PXResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, pxGraphicDevicePhysical);
 
         if(PXResultOK != fetchResult)
         {
@@ -3499,7 +3499,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
    
     //PXVertexBuffer PXREF pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
 
-    PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
+    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->IndexBuffer;
 
  //   if(!pxVertexBuffer->VertexData) // Has data?
   //  {
@@ -3633,13 +3633,13 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
         pxShaderVariableList[2].DataType = PXShaderVariableTypeMatrix4x4;
 
 
-        PXF32 dummyValue[4] = { 1.0f,1.0f,1.0f,1.0f };
+        PXColorRGBAF dummyValue[4] = { 1.0f,1.0f,1.0f,1.0f };
 
-        PXF32* materialDiffuse = dummyValue;
+        PXColorRGBAF* materialDiffuse = dummyValue;
 
         if(pxIndexBuffer->SegmentPrime.Material)
         {
-            materialDiffuse = &pxIndexBuffer->SegmentPrime.Material->DiffuseTexture;
+            materialDiffuse = pxIndexBuffer->SegmentPrime.Material->DiffuseColor;
         }
 
         PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[3].Name, 64);
@@ -5600,14 +5600,12 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
         {
             PXI32U textureType = 0;
             PXI32U textureID = 0;
-            PXI32U enable = pxGraphicTexturInfo->TextureReference;
+            PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
 
             switch(pxGraphicTexturInfo->Type)
             {
                 case PXTextureType2D:
                 {
-                    PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
-
                     if(pxTexture)
                     {
                         textureID = pxTexture->OpenGLID;
@@ -5619,8 +5617,6 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
                 }
                 case PXTextureType3D:
                 {
-                    PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
-
                     if(pxTexture)
                     {
                         textureID = pxTexture->OpenGLID;
@@ -5632,8 +5628,6 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
                 }
                 case PXTextureTypeCube:
                 {
-                    PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
-
                     if(pxTexture)
                     {
                         textureID = pxTexture->OpenGLID;
@@ -5647,7 +5641,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXRE
                     break;
             }
 
-            if(enable)
+            if(pxTexture)
             {
                 pxOpenGL->Binding.Enable(textureType);
                 pxOpenGL->Flags |= PXOpenGLStateIsTexture2DEnabled;
@@ -6945,7 +6939,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
         return PXResultRefusedParameterNull;
     }
 
-    PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
+    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->IndexBuffer;
     PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
     PXSize pxVertexBufferListAmount = pxMesh->VertexBufferListAmount;
 

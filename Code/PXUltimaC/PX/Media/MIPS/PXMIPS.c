@@ -8,7 +8,9 @@ const char PXMIPSProcessorName[] = "MIPS-VR43xx";
 
 void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, PXMIPSBranch PXREF pxMIPSBranch)
 {
-    pxMIPSBranch->Address = (PXI64S)((PXI16S)pxMIPSTInstruction->Immediate) << 2;
+    PXSize res = (PXI64S)((PXI16S)pxMIPSTInstruction->Immediate) << 2;
+
+    pxMIPSBranch->Address = (void*)res;
 
 
 #if PXLogEnable && 0
@@ -79,7 +81,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstru
             offset
         );
 #endif
-        pxMIPSProcessor->ProgramCounter += (PXSize)pxMIPSBranch->Address;
+        (PXSize)pxMIPSProcessor->ProgramCounter += (PXSize)pxMIPSBranch->Address;
     }
     else // Dont jump
     {
@@ -98,17 +100,18 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstru
 
 void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, PXMIPSJump PXREF pxMIPSJump)
 {
-    const PXSize actualAdress = pxMIPSProcessor->ProgramCounter + 4;
-    const PXSize delaySlotAdress = (PXI8U*)pxMIPSProcessor->ROMOffsetVirtual + actualAdress;
+    const PXSize actualAdress = (PXSize)pxMIPSProcessor->ProgramCounter + 4;
+    const PXSize delaySlotAdress = (PXSize)pxMIPSProcessor->ROMOffsetVirtual + (PXSize)actualAdress;
 
-
-    // 26-Bit target, shifted left because the two lowest bits are always 0 anyway (allignment).
-    // add the additional 4-bits of the delay slot
-    pxMIPSJump->AddressVirual =
+    const PXSize res =
         ((0b00000011111111111111111111111111u & pxMIPSTInstruction->OperationCode) << 2) |
         0b11110000000000000000000000000000u & delaySlotAdress;
 
-    pxMIPSJump->AddressPhysical = (PXSize)pxMIPSJump->AddressVirual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+    // 26-Bit target, shifted left because the two lowest bits are always 0 anyway (allignment).
+    // add the additional 4-bits of the delay slot
+    pxMIPSJump->AddressVirual = (void*)res;       
+
+    pxMIPSJump->AddressPhysical = (void*)((PXSize)pxMIPSJump->AddressVirual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual);
 
     if(pxMIPSJump->PreserveReturnPoint)
     {
@@ -447,8 +450,8 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 
     PXMIPSTInstruction pxMIPSTInstruction;
     pxMIPSTInstruction.IncrmentCounter = PXTrue;
-    pxMIPSTInstruction.Adress = (PXI8U*)pxMIPSProcessor->ROMOffsetActual + pxMIPSProcessor->ProgramCounter;
-    pxMIPSTInstruction.AdressVirtual = (PXI8U*)pxMIPSProcessor->ROMOffsetVirtual + pxMIPSProcessor->ProgramCounter;
+    pxMIPSTInstruction.Adress = (void*)((PXSize)pxMIPSProcessor->ROMOffsetActual + (PXSize)pxMIPSProcessor->ProgramCounter);
+    pxMIPSTInstruction.AdressVirtual = (PXI8U*)((PXSize)pxMIPSProcessor->ROMOffsetVirtual + (PXSize)pxMIPSProcessor->ProgramCounter);
 
     // instruction is big endian, to use our bit extraction, we need to swap it
 
@@ -466,7 +469,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
             pxMIPSTInstruction.AdressVirtual
         );
 #endif
-        pxMIPSProcessor->ProgramCounter += instructionWidth;
+        (PXSize)pxMIPSProcessor->ProgramCounter += instructionWidth;
 
         return;
     }
@@ -496,7 +499,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 
     // Next command
     // MIPS always has 4-Byte commands
-    pxMIPSProcessor->ProgramCounter += (pxMIPSTInstruction.IncrmentCounter * instructionWidth);
+    (PXSize)pxMIPSProcessor->ProgramCounter += (pxMIPSTInstruction.IncrmentCounter * instructionWidth);
 }
 
 
@@ -868,7 +871,8 @@ void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor PXREF pxMIPSProcessor)
     );
 #endif
 
-    pxMIPSProcessor->ProgramCounter += 4; // go to next instuction
+    (PXSize)pxMIPSProcessor->ProgramCounter += 4; // go to next instuction
+
     PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
 }
 
@@ -1583,7 +1587,7 @@ void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor PXREF pxMIPSProcessor, 
         adressPhysical
     );
 #endif
-    pxMIPSProcessor->ProgramCounter = adressPhysical;
+    pxMIPSProcessor->ProgramCounter = (void*)adressPhysical;
 
     pxMIPSTInstruction->IncrmentCounter = PXFalse; // Skip the +4 offset
 }

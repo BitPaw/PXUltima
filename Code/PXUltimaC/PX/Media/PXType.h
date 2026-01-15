@@ -124,7 +124,7 @@
 
 #endif
 
-#define PXAPI PXCDECL
+#define PXAPI PXFASTCALL
 
 //---------------------------------------------------------
 // Change label of functions to C-Style (C++ only)
@@ -145,19 +145,15 @@
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
 #define PXPublic PXExtern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
-#define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
 
 #define PXFunctionInvoke(FunctionPoniter, ...) if(FunctionPoniter) FunctionPoniter(__VA_ARGS__)
 
-
 #if PXLanguageCPP
 #define PXDLLExportMangled PXDLLExport
 #define PXDLLExportUnMangled extern "C" PXDLLExport
 #endif
-
-
 
 //-----------------------------------------------------------------------------
 // Restrict keyword
@@ -172,7 +168,7 @@
 //-----------------------------------------------------------------------------
 // Restrict keyword
 //-----------------------------------------------------------------------------
-#if 0 // Make pointers adress readonly but not the data behind it
+#if 1 // Make pointers adress readonly but not the data behind it
 #define PXConst const
 #else   
 #define PXConst 
@@ -988,10 +984,9 @@ PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const
 #define PXEmbeddedArraySize 4
 
 // Predefine
-typedef enum PXActionResult_ PXActionResult;
+typedef enum PXActionResult_ PXResult;
 
 typedef struct PXBuffer_ PXBuffer;
-typedef struct PXModel_ PXModel;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;

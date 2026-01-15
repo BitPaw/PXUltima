@@ -1837,7 +1837,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                     }
 
                     // Attempt memory mapping...
-                    PXActionResult mappingResult = PXFileMapToMemoryEE(pxFile, 0, pxFileIOInfo->AccessMode, PXTrue);
+                    PXResult mappingResult = PXFileMapToMemoryEE(pxFile, 0, pxFileIOInfo->AccessMode, PXTrue);
 
 
                     PXPerformanceInfoGet(&pxPerformanceInfo);
@@ -2289,7 +2289,7 @@ PXBool PXAPI PXFileAssureFreeSize(PXFile PXREF pxFile, const PXSize amount)
             (
                 pxFile->FileHandle,
                 amount
-            );
+            ) != 0;
 
             pxFile->Buffer.SizeAllocated = amount;
 
@@ -4037,7 +4037,7 @@ PXResult PXAPI PXFileStoreOnDiskA(PXFile PXREF pxFile, const char* fileName)
         FILE_ATTRIBUTE_NORMAL, 
         NULL
     );
-    PXActionResult createResult = PXErrorCurrent(INVALID_HANDLE_VALUE != fileHandle);
+    PXResult createResult = PXErrorCurrent(INVALID_HANDLE_VALUE != fileHandle);
 
     if(PXResultOK != createResult)
     {
@@ -4473,7 +4473,7 @@ PXResult PXAPI PXFileTimeGet
 
 PXResult PXAPI PXFilePath(const PXFile PXREF pxFile, PXText PXREF filePath, const PXBool doWrite)
 {
-    PXActionResult pxActionResult = PXResultInvalid;
+    PXResult pxActionResult = PXResultInvalid;
 
     /*
     #if OSUnix

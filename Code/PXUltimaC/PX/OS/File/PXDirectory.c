@@ -262,7 +262,7 @@ PXResult PXAPI PXDirectoryOpen(PXDirectorySearchCache PXREF pxDirectorySearchCac
 #if OSUnix
 
     pxDirectorySearchCache->DirectoryHandleCurrent = opendir(directoryName->A); // dirent.h
-    PXActionResult openResult = PXErrorCurrent(PXNull != pxDirectorySearchCache->DirectoryHandleCurrent);
+    PXResult openResult = PXErrorCurrent(PXNull != pxDirectorySearchCache->DirectoryHandleCurrent);
 
     return openResult;
 
@@ -607,7 +607,7 @@ PXResult PXAPI PXDirectoryDeleteA(const char PXREF directoryName)
 
 #elif OSWindows
     const PXBool removeResultID = RemoveDirectoryA(directoryName); // Windows XP, Kernel32.dll, fileapi.h
-    PXActionResult removeResult = PXErrorCurrent(removeResultID);
+    PXResult removeResult = PXErrorCurrent(removeResultID);
 
     if(PXActionRefusedDirectoryNotEmpty == removeResult)
     {

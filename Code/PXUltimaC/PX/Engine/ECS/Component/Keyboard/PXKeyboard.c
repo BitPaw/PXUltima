@@ -718,6 +718,32 @@ PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 #endif
 }
 
+const char* PXAPI PXKeyPressStateToString(const PXKeyPressState pxKeyPressState)
+{
+    switch(pxKeyPressState)
+    {
+        case PXKeyPressStateInvalid:
+            return "Invalid";
+
+        case PXKeyPressStateDown:
+            return "Down";
+
+        case PXKeyPressStateUp:
+            return "Up";
+
+        case PXKeyPressStateHold:
+            return "Hold";
+
+        case PXKeyPressStateDoubleClick:
+            return "DoubleClick";
+
+        default:
+            break;
+    }
+
+    return PXResultOK;
+}
+
 PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput PXREF inputList, const PXSize inputListSize)
 {
 #if OSUnix

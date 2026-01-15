@@ -1,17 +1,52 @@
 #include "PXThreadPool.h"
 
-#include <PX/OS/Error/PXActionResult.h>
-#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Container/List/PXList.h>
+#include <PX/OS/Async/PXLock.h>
 
 #define PXThreadPoolUsePXIMPLForce  1
 #define PXThreadPoolUsePXIMPL       ((OSUnix || (OSWindows && !WindowsAtleastVista)) || PXThreadPoolUsePXIMPLForce)
 
 
+typedef struct PXThreadPool_
+{
+    PXSize ThreadListSize;
+    PXThread** ThreadList;
+
+    PXList TaskQueue;
+    PXLock* TaskLock;
+
+    PXSize ThreadsAwake;
+
+#if OSUnix
+#elif OSWindows
+    PTP_POOL Pool;
+    PTP_WORK Work;
+#endif
+
+    PXI32U MainThreadID;
+
+    PXSize StackReserve;
+    PXSize StackCommit;
+
+    PXI16U ThreadsMinimum;
+    PXI16U ThreadsMaximum;
+
+    PXI32U Flags;
+
+    PXI32U TaskCounter;
+    PXI32U TaskCounterDone;
+}
+PXThreadPool;
+
+
 const char PXTheadPoolText[] = "ThreadPool";
+
+
 
 
 PXThreadPool _GLOBALThreadPool;

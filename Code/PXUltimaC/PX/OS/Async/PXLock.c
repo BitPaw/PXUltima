@@ -44,8 +44,6 @@ typedef struct PXLock_
 }
 PXLock;
 
-
-
 const char PXOSSemaphore[] = "Semaphore";
 const char PXOSCriticalSection[] = "Crit-Section";
 const char PXLockText[] = "Lock";
@@ -56,7 +54,9 @@ const PXECSRegisterInfoStatic PXLockRegisterInfoStatic =
     sizeof(PXLock),
     __alignof(PXLock),
     PXECSTypeResource,
-    PXLockCreate
+    PXLockCreate,
+    PXNull,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXLockRegisterInfoDynamic;
 
@@ -67,21 +67,25 @@ PXResult PXAPI PXLockRegisterToECS()
     return PXResultOK;
 }
 
-PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreateInfo)
+PXResult PXAPI PXLockCreate(PXLock** pxLockREF, PXLockCreateInfo PXREF pxLockCreateInfo)
 {
     PXLock* pxLock = PXNull;
 
-    if(!lockREF)
+    if(!(pxLockREF && pxLockCreateInfo))
     {
         return PXResultRefusedParameterNull;
     }
 
     pxLockCreateInfo->Info.Static = &PXLockRegisterInfoStatic;
     pxLockCreateInfo->Info.Dynamic = &PXLockRegisterInfoDynamic;
-    PXECSCreate(lockREF, pxLockCreateInfo);
+    PXResult pxResult = PXECSCreate(pxLockREF, pxLockCreateInfo);
 
-    pxLock = *lockREF;
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
+    pxLock = *pxLockREF;
     pxLock->Type = pxLockCreateInfo->Type;
 
     switch(pxLockCreateInfo->Type)
@@ -106,7 +110,7 @@ PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreat
             return PXResultRefusedParameterInvalid;
     }
 
-    PXResult pxResult = pxLock->Create(pxLock);
+    pxResult = pxLock->Create(pxLock);
 
     return pxResult;
 }
@@ -130,6 +134,11 @@ PXResult PXAPI PXLockEngage(PXLock PXREF pxLock, const PXBool forceEnter)
         return PXResultRefusedParameterNull;
     }
 
+    if(!pxLock->Enter)
+    {
+        return PXResultRefusedParameterInvalid;
+    }
+
     ++pxLock->LockCounter;
 
     PXResult pxResult = pxLock->Enter(pxLock, forceEnter);
@@ -142,6 +151,11 @@ PXResult PXAPI PXLockRelease(PXLock PXREF pxLock)
     if(!pxLock)
     {
         return PXResultRefusedParameterNull;
+    }
+
+    if(!pxLock->Leave)
+    {
+        return PXResultRefusedParameterInvalid;
     }
 
     PXResult pxResult = pxLock->Leave(pxLock);
@@ -157,7 +171,7 @@ const PXI32U _lockWaitTrys = 3;
 
 PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
 {
-    PXActionResult pxActionResult;
+    PXResult pxActionResult;
 
 
 #if OSUnix
@@ -213,7 +227,7 @@ PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock)
 #endif
 }
 
-PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
+PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock, const PXBool forceEntering)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -225,7 +239,7 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
     );
 #endif
 
-    PXActionResult waitResult = PXResultInvalid;
+    PXResult waitResult = PXResultInvalid;
 
 #if OSUnix
     const int waitResultID = sem_wait(&lock->SemaphoreHandle);

@@ -1,7 +1,7 @@
 #include "PXADAM7.h"
 
 #include <PX/Math/PXMath.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 /*Try the code, if it returns error, also return the error.*/
 #define CERROR_TRY_RETURN(call){\

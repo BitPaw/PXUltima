@@ -7,7 +7,7 @@
 #include <stdarg.h>
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 #define PXTextUnkownLength -1
 #define PXTextIndexNotFound -1

@@ -256,7 +256,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
     PXClear(PXHuffmanTree, treeLength);
 
     // make sure that length values that aren't filled in will be 0, or a wrong tree will be generated
-    //PXActionResult actionError = PXResultInvalid;
+    //PXResult actionError = PXResultInvalid;
     unsigned n;
 
     /*see comments in deflateDynamic for explanation of the context and these variables, it is analogous*/

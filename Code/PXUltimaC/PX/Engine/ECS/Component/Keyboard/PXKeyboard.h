@@ -371,6 +371,7 @@ PXPublic unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value);
 
 PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXI8U pxKeyPressStateID);
 PXPublic PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
+PXPublic const char* PXAPI PXKeyPressStateToString(const PXKeyPressState pxKeyPressState);
 
 #define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState;
 

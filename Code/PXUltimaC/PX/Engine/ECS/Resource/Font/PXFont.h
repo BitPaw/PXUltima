@@ -4,7 +4,7 @@
 #define PXFontIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
 #include <PX/Media/PXText.h>
@@ -79,8 +79,6 @@ typedef struct PXFont_
     PXI8U ClipPrecision;
     PXI8U Quality;
     PXI8U PitchAndFamily;
-
-    float XSpacer;
 
     char Name[32]; // ToDo: Remove this
 }

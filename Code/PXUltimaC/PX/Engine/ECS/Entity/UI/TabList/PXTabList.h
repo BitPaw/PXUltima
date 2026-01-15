@@ -64,7 +64,7 @@ PXWindowExtendedBehaviourTab;
 typedef struct PXResourceViewEntry_
 {
     PXWindow* EntryList;
-    PXResource* Resource;
+    void* Resource;
 }
 PXResourceViewEntry;
 

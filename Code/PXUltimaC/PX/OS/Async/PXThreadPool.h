@@ -3,48 +3,14 @@
 #ifndef PXThreadPoolIncluded
 #define PXThreadPoolIncluded
 
-#include <PX/Engine/PXResource.h>
 #include <PX/OS/Async/PXThread.h>
-#include <PX/Container/List/PXList.h>
-#include <PX/OS/Async/PXLock.h>
 
 #define PXThreadPoolEnableASYNC (1<<0)
 #define PXThreadPoolCreated     (1<<1)
 
-typedef struct PXThreadPool_
-{
-    PXSize ThreadListSize;
-    PXThread** ThreadList;
-
-    PXList TaskQueue;
-    PXLock* TaskLock;
-
-    PXSize ThreadsAwake;
-
-#if OSUnix
-#elif OSWindows
-    PTP_POOL Pool;
-    PTP_WORK Work;
-#endif
-
-    PXI32U MainThreadID;
-
-    PXSize StackReserve;
-    PXSize StackCommit;
-
-    PXI16U ThreadsMinimum;
-    PXI16U ThreadsMaximum;
-
-    PXI32U Flags;
-
-    PXI32U TaskCounter;
-    PXI32U TaskCounterDone;
-}
-PXThreadPool;
+typedef struct PXThreadPool_ PXThreadPool;
 
 PXPrivate PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXREF pxTask);
-
-
 PXPublic PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32U taskID, void* function, void* parameter1, void* parameter2, const PXI32U behaviour);
 
 // Function WILL copy thread for thread-safety as data could be moved without notice

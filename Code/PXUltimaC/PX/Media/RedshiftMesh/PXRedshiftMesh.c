@@ -35,7 +35,7 @@ PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     PXR3D2 pxR3D2;
     PXClear(PXR3D2, &pxR3D2); 
 
-    PXActionResult pxLoadResult;
+    PXResult pxLoadResult;
 
     switch(PXFileFormatVarriantMask & pxResourceLoadInfo->FormatInfo.Flags)
     {
@@ -416,7 +416,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxR
             case 2:
             {
                 PXSize uhh = 0;
-                PXCompilerParseF32V(&pxCompiler, &pxR3D2->PivotPoint.Data, 3, &uhh);
+                PXCompilerParseF32V(&pxCompiler, pxR3D2->PivotPoint.Data, 3, &uhh);
                 break;
             }
             case 3:
@@ -427,7 +427,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxR
                 PXCompilerSymbolEntryForward(&pxCompiler);
 
                 PXSize uhh = 0;
-                PXCompilerParseF32V(&pxCompiler, pxR3D2->VertexData, pxR3D2->Header.VertexCount*3, &uhh);
+                PXCompilerParseF32V(&pxCompiler, pxR3D2->VertexData->Data, pxR3D2->Header.VertexCount*3, &uhh);
 
                 break;
             }

@@ -4,7 +4,7 @@
 #define PXFrameBufferIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/PXResource.h>
 
 

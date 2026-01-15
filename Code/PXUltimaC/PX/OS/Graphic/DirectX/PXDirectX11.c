@@ -142,8 +142,7 @@ PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicIni
 
     // Create Device
     {
-        D3D_DRIVER_TYPE dxDriverType = 0;
-
+        D3D_DRIVER_TYPE dxDriverType = D3D_DRIVER_TYPE_UNKNOWN;
 
         switch(pxGraphicInitializeInfo->DirectXDriverType)
         {
@@ -447,7 +446,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
 
                     //textureDescription.ArraySize = pxTexture->Image->PixelDataSize;
                     //textureDescription.Format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
-                    textureDescription.Usage = 0;
+                    textureDescription.Usage = D3D11_USAGE_DEFAULT;
                     textureDescription.BindFlags = 0;
                     textureDescription.CPUAccessFlags = 0;
                     textureDescription.MiscFlags = 0;

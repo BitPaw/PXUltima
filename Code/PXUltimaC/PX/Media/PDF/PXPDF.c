@@ -1,6 +1,6 @@
 #include "PXPDF.h"
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/File/PXFile.h>
 
 const char PXPDFSignature[5] = "%PDF-";

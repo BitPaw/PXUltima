@@ -333,7 +333,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
             "Invoke spesific API..."
         );
 
-        PXActionResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+        PXResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
         if(PXResultOK != pxActionResult) // if loading targeted API failed, load plan B
         {

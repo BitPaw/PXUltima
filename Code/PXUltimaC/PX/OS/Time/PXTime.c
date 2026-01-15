@@ -1,7 +1,7 @@
 #include "PXTime.h"
 
 #include <PX/OS/System/Version/PXOSVersion.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 #if OSUnix
 #include <time.h>

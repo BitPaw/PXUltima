@@ -4,7 +4,7 @@
 #define PXModIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 #define PXModLoadFunctionName "PXModLoad"
@@ -22,10 +22,10 @@ typedef struct PXModLoadEventData_
 }
 PXModLoadEventData;
 
-typedef PXActionResult (PXAPI* PXModLoadFunction)(void PXREF owner, PXMod PXREF pxMod, PXModLoadEventData PXREF pxModLoadEventData);
-typedef PXActionResult (PXAPI* PXModInitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
-typedef PXActionResult (PXAPI* PXModDenitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
-typedef PXActionResult (PXAPI* PXModUnloadFunction)(void PXREF owner, PXMod PXREF pxMod);
+typedef PXResult (PXAPI* PXModLoadFunction)(void PXREF owner, PXMod PXREF pxMod, PXModLoadEventData PXREF pxModLoadEventData);
+typedef PXResult (PXAPI* PXModInitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
+typedef PXResult (PXAPI* PXModDenitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
+typedef PXResult (PXAPI* PXModUnloadFunction)(void PXREF owner, PXMod PXREF pxMod);
 
 
 #define PXModBehaviourIsEssential   0b00001 // Is the mod essential for the functionaly of the program?

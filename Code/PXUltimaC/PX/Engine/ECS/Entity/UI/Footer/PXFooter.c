@@ -2,6 +2,7 @@
 #include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Hardware/PXProcessor.h>
+#include <gl/GL.h>
 
 #define PXFooterDebug 0
 
@@ -96,11 +97,20 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWi
         PXGUIDrawModeFront
     );
 
+
+
+    PXTextDrawInfo pxTextDrawInfo;
+    PXClear(PXTextDrawInfo, &pxTextDrawInfo);
+    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.Text = &pxText;
+    pxTextDrawInfo.Behaviour = PXWindowAllignCenter;
+    pxTextDrawInfo.Size = 20;
+    pxTextDrawInfo.OffsetX = 0.2;
+
     PXWindowDrawText
     (
         pxWindow,
-        pxWindowDrawInfo,
-        &pxText
+        &pxTextDrawInfo
     );
 #endif
 

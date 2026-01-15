@@ -1,6 +1,6 @@
 #include "PXLibrary.h"
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
@@ -204,7 +204,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 
     PXText pxText;
     PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
-    PXLibraryName(pxLibrary->ModuleHandle, &pxText); // PXDebugModuleNameFull
+    PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
     (
@@ -227,7 +227,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
 
     PXText pxText;
     PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
-    PXLibraryName(pxLibrary->ModuleHandle, &pxText); // PXDebugModuleNameFull
+    PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
     (
@@ -581,7 +581,7 @@ PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF a
     PXClearList(char, moduleNameBuffer, 260);
     PXSize moduleNameLength = 0;
 
-    PXActionResult moduleFetchResult;
+    PXResult moduleFetchResult;
 
     // Stage 1) Module to string
 #if OSUnix

@@ -14,7 +14,9 @@ const PXECSRegisterInfoStatic PXSkyBoxRegisterInfoStatic =
     sizeof(PXSkyBox),
     __alignof(PXSkyBox),
     PXECSTypeEntity,
-    PXSkyboxCreate
+    PXSkyboxCreate,
+    PXNull,
+
 };
 PXECSRegisterInfoDynamic PXSkyBoxRegisterInfoDynamic;
 
@@ -68,5 +70,10 @@ PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBoxREF, PXSkyBoxCreateInfo PXREF p
 
     PXModelCreate(&pxSkyBox->Model, &pxSkyBoxCreateInfo->Model);
 
+    return PXResultOK;
+}
+
+PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+{
     return PXResultOK;
 }

@@ -1,4 +1,4 @@
-#include "PXActionResult.h"
+#include "PXResult.h"
 
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Console/PXConsole.h>

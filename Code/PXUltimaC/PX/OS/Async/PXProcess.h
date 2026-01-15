@@ -5,7 +5,7 @@
 
 #include <PX/Media/PXType.h>
 #include <PX/Media/PXText.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Time/PXTime.h>
 
 #if OSUnix

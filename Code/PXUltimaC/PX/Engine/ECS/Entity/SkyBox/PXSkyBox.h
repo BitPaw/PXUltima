@@ -4,7 +4,7 @@
 #define PXSkyBoxIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 #include <PX/Engine/ECS/Entity/Model/PXModel.h>
@@ -35,6 +35,6 @@ PXPublic PXResult PXAPI PXSkyBoxRegisterToECS();
 
 PXPublic PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBox, PXSkyBoxCreateInfo PXREF pxSkyBoxCreateInfo);
 
-
+PXPublic PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 #endif

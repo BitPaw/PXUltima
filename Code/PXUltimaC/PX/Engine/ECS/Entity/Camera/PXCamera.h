@@ -5,6 +5,8 @@
 
 #include <PX/Math/PXVector.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/Math/PXMatrix.h>
+#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
 
 #define PXCameraFollowPosition 0
 #define PXCameraFollowRotation 0
@@ -20,7 +22,39 @@ PXCameraPerspective;
 
 typedef struct PXCamera_ PXCamera;
 
-typedef struct PXCameraCreateInfo_ 
+typedef struct PXCamera_
+{
+    PXECSInfo Info;
+
+    PXVector3F32 Position;
+
+    PXVector3F32 LookAtPosition;
+    PXVector3F32 CurrentRotation;
+
+    //---<Follow>---
+    PXVector3F32 Offset;
+    PXVector3F32 DeadZone;
+    //PXI8U TargetFollowFlag;
+    PXMatrix4x4F* Target;
+    PXF32 FollowSpeed; // Ranges from 0 to 1 .. FollowSpeed; = 0.98f
+
+    PXCameraPerspective Perspective;
+
+    PXF32 FieldOfView;
+    PXI32S Height;
+    PXI32S Width;
+    PXF32 Near;
+    PXF32 Far;
+
+    PXF32 WalkSpeed;
+    PXF32 ViewSpeed;
+
+    PXBool LockMovement;
+    PXBool LockView;
+}
+PXCamera;
+
+typedef struct PXCameraCreateInfo_
 {
     PXECSCreateInfo Info;
 
@@ -29,10 +63,11 @@ typedef struct PXCameraCreateInfo_
 PXCameraCreateInfo;
 
 
-PXPublic PXResult PXAPI PXCameraRegisterToECS();
+PXPublic PXResult PXAPI PXCameraRegisterToECS(void);
 
 PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo);
-
+PXPublic PXResult PXAPI PXCameraRelease(const PXCamera PXREF pxCamera);
+PXPublic PXResult PXAPI PXCameraDraw(const PXCamera PXREF pxCamera, struct PXWindowDrawInfo_ PXREF pxWindowDrawInfo);
 
 //-----------
 PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);

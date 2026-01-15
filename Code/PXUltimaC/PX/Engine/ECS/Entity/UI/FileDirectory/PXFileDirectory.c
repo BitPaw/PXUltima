@@ -99,7 +99,7 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
             */
        // PXTextFromAdressA(&pxWindowDrawInfoSub.Content, PXFileNone, PXFileNoneLength, PXFileNoneLength);
 
-        PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, &pxTExt);
+        //PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, &pxTExt);
     }
 
     for(PXSize i = 0; i < pxDirectorySearchCache.EntryList.EntryAmountUsed; ++i)
@@ -168,7 +168,16 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
        // pxWindowDrawInfoSub.Content = pxFileEntry->FilePath;
         pxWindowDrawInfoSub.Behaviour = PXWindowAllignLeft;
 
-        PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, PXNull);
+        /*
+        PXTextDrawInfo pxTextDrawInfo;
+        pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+        pxTextDrawInfo.Text = &pxWindowDrawInfoSub;
+        pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
+        pxTextDrawInfo.X = 0;
+        pxTextDrawInfo.Y = 0;
+
+                PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, PXNull);
+        */
     }  
 
     return PXResultOK;

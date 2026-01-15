@@ -25,6 +25,7 @@ typedef HGLRC PXOpenGLConextID;
 #include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
 #include <PX/Engine/ECS/Resource/Light/PXLight.h>
 #include <PX/Engine/ECS/System/PXRenderingSystem.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
 //---------------------------
 
 

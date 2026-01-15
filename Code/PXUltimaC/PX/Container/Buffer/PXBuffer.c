@@ -12,12 +12,25 @@ PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
 
 PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-    return PXResultOK;
+    if(!pxBuffer->Data) // Do we have data?
+    {
+        return PXBufferAllocate(pxBuffer, size);
+    }
+
+    // is Big enough?
+    if(pxBuffer->SizeAllocated >= size)
+    {
+        return PXResultOK;
+    }
+
+    return PXBufferResize(pxBuffer, size);
 }
 
 PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-
+    pxBuffer->Data = PXMemoryHeapRealloc(PXNull, pxBuffer->Data, size);
+    pxBuffer->SizeAllocated = size;
+    
 
     return PXResultOK;
 }

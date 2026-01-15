@@ -34,7 +34,7 @@ PXPublic PXResult PXAPI PXLockRelease(PXLock PXREF lock);
 
 PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
 PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock, const PXBool forceEntering);
 PXPublic PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock);
 
 PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock);

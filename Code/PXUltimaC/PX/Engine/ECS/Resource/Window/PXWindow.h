@@ -3,15 +3,13 @@
 #ifndef PXWindowIncluded
 #define PXWindowIncluded
 
-#include <PX/OS/Error/PXActionResult.h>
-#include <PX/Engine/PXResource.h>
+#include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/Resource/Font/PXFont.h>
 #include <PX/Engine/ECS/Component/Mouse/PXMouse.h>
 #include <PX/Engine/ECS/Component/Keyboard/PXKeyboard.h>
 #include <PX/Engine/ECS/Component/Rectangle/PXRectangle.h>
 #include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
 #include <PX/Engine/ECS/Resource/Cursor/PXCursor.h>
-#include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
 #include <PX/Media/PXColor.h>
 
@@ -25,6 +23,17 @@ typedef struct PXWindow_ PXWindow;
 typedef struct PXWindowEvent_ PXWindowEvent;
 
 
+typedef enum PXWindowDockSide_
+{
+    PXWindowDockSideNone = 0,
+    PXWindowDockSideCenter,
+    PXWindowDockSideLeft,
+    PXWindowDockSideTop,
+    PXWindowDockSideRight,
+    PXWindowDockSideBottom
+}
+PXWindowDockSide;
+
 
 typedef void (PXAPI* PXWindowEventFunction)(void PXREF owner, PXWindowEvent PXREF pxWindowEvent);
 
@@ -35,9 +44,6 @@ typedef struct PXWindowEventList_
     PXWindowEventFunction CallBackEvent; // Different I/O Events
 }
 PXWindowEventList;
-
-
-
 
 
 typedef struct PXWindowDrawInfo_
@@ -63,16 +69,7 @@ PXWindowDrawInfo;
 
 
 
-typedef enum PXWindowDockSide_
-{
-    PXWindowDockSideNone = 0,
-    PXWindowDockSideCenter,
-    PXWindowDockSideLeft,
-    PXWindowDockSideTop,
-    PXWindowDockSideRight,  
-    PXWindowDockSideBottom
-}
-PXWindowDockSide;
+
 
 PXPublic const char* PXWindowDockSideToString(const PXWindowDockSide pxWindowDockSide);
 
@@ -101,11 +98,6 @@ PXWindow* PaneFromHwnd(HWND h);
 
 
 void SubSegment(RECT* m, RECT* r, PXWindowDockSide side);
-void PaintPattern(HWND hwnd, HDC hdc, RECT* rect, int r, int g, int b);
-
-
-
-
 
 
 // For allocation convenience
@@ -128,11 +120,11 @@ PXPublic PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow);
 
 
-static void LayoutDockedAA(HWND hMain);
-static void LayoutDockedGOOD(HWND hMain);
+void LayoutDockedAA(PXWindow PXREF pxWindow);
+void LayoutDockedGOOD(PXWindow PXREF pxWindow);
 DockLayoutConfig DockDefaultConfig(void);
-void InitDockContainerStyles(HWND hContainer);
-void InitDockChildStyles(HWND hChild);
+void InitDockContainerStyles(PXWindow PXREF pxWindow);
+void InitDockChildStyles(PXWindow PXREF pxWindow);
 int clamp_nonneg(int v);
 int CountVisiblePanes(HWND hParent);
 int CollectSide(HWND hParent, PXWindowDockSide side, Paneref* buf, int cap);
@@ -142,19 +134,20 @@ RECT InsetRectBy(RECT r, BoxInsets in);
 void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg);
 // End of file
 
-BOOL PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
+BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
 PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
-RECT OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side);
-void ShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side);
-void HideDockOverlay(PXWindow PXREF pxWindow);
-void TearOffToFloating(PXWindow* p, POINT startScreen);
-void DockBackToChild(PXWindow* p, PXWindowDockSide side);
-void DrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha);
-void DrawOverlay(HDC hdc, const DockOverlay* ov);
-void DrawScene(void);
-void PaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
-void PaintPattern(HWND hwnd, HDC hdc, RECT* rect, int r, int g, int b);
-void PaintMain(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+RECT PXAPI OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side);
+void PXAPI PXWindowShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side);
+void PXAPI PXWindowHideDockOverlay(PXWindow PXREF pxWindow);
+void PXAPI PXWindowTearOffToFloating(PXWindow* p, POINT startScreen);
+void PXAPI PXWindowDockBackToChild(PXWindow* p, PXWindowDockSide side);
+void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha);
+void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov);
+void PXAPI PXWindowDrawScene(void);
+
+void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGBI8 PXREF color);
+void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 
 
@@ -224,6 +217,17 @@ typedef enum PXUIHoverState_
     PXUIHoverStateHoveredButOverlapped // User hovers over this object but its been blocked by other object
 }
 PXUIHoverState;
+
+typedef enum PXWindowResizeCause_
+{
+    PXWindowResizeCauseUnkown,
+    PXWindowResizeCauseMAXHIDE, // Message is sent to all pop - up windows when some other window is maximized.
+    PXWindowResizeCauseMAXIMIZED, // The window has been maximized.
+    PXWindowResizeCauseMAXSHOW, // Message is sent to all pop - up windows when some other window has been restored to its former size.
+    PXWindowResizeCauseMINIMIZED, // The window has been minimized.
+    PXWindowResizeCauseRESTORED // The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
+}
+PXWindowResizeCause;
 
 typedef enum PXWindowEventType_
 {
@@ -701,6 +705,7 @@ typedef struct PXWindowEventResize_
 {
     PXI16S Width;
     PXI16S Height;
+    PXWindowResizeCause Cause;
 }
 PXWindowEventResize;
 
@@ -720,8 +725,8 @@ PXWindowEventSelect;
 typedef struct PXWindowEventInputMouseMove_
 {
     PXVector2F32 Axis;
-    PXVector2F32 Delta;
-    PXVector2F32 Position;
+    PXVector2I32S Delta;
+    PXVector2I32S Position;
 }
 PXWindowEventInputMouseMove;
 
@@ -729,6 +734,12 @@ typedef struct PXWindowEventInputKeyboard_
 {
     PXKeyPressState PressState;
     PXVirtualKey VirtualKey;
+
+    union MyUnion
+    {
+        char CharacterA;
+        wchar_t CharacterW;
+    };  
 
     PXI16U CharacterID;
 }
@@ -904,13 +915,7 @@ typedef struct PXWindowCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    // Handles
-    //PXWindow* WindowCurrent;
-    //PXWindowHandle CurrnetID;
-
-    PXWindow* WindowParent; // INSERT ONLY!
-    //PXWindowHandle ParentID;
-
+    PXWindow* WindowParent;
     PXDisplay* DisplayCurrent;
 
     // Positions
@@ -919,12 +924,12 @@ typedef struct PXWindowCreateInfo_
     // Style
     PXI8U BorderWidth;
     PXI8U Border;
-    PXColorRGBI8 Color;
+
+    PXColorRGBI8 BackGroundColor;
 
     PXWindowDockSide  dockSide;
-    BOOL isChild;
-    COLORREF  WindowsColor;
-    BOOL      floating;   // if TRUE, excluded from docking layout
+   // BOOL isChild;
+    PXBool      floating;   // if TRUE, excluded from docking layout
 
 
     // Setings
@@ -938,7 +943,7 @@ typedef struct PXWindowCreateInfo_
 
     PXWindow* UIElementReference;
 
-    PXColorRGBAI8 BackGroundColor;
+ 
 
 
 
@@ -1083,11 +1088,27 @@ PXPublic PXBool PXAPI PXWindowIsEnabled(const PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo);
 PXPublic PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo);
 PXPublic PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow);
+
+
+typedef struct PXTextDrawInfo_
+{
+    PXWindowDrawInfo* WindowDrawInfo;
+    PXText* Text;
+
+    float X;
+    float Y;
+
+    PXI32U Behaviour;
+
+    float Size;
+    float OffsetX;
+}
+PXTextDrawInfo;
+
 PXPublic PXResult PXAPI PXWindowDrawText
 (
     PXWindow PXREF pxWindow,
-    PXWindowDrawInfo PXREF pxWindowDrawInfo,
-    PXText PXREF pxText
+    PXTextDrawInfo PXREF pxTextDrawInfo
 );
 PXPublic PXResult PXAPI PXWindowDrawPoint(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y);
 PXPublic PXResult PXAPI PXWindowDrawPoints(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);

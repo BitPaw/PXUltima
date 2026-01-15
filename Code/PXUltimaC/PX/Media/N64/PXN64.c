@@ -2,7 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Media/CRC32/PXCRC32.h>
 #include <PX/Media/MIPS/PXMIPS.h>
 #include <PX/OS/PXOS.h>
@@ -310,7 +310,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         PXMIPSProcessor pxMIPSProcessor;
         PXClear(PXMIPSProcessor, &pxMIPSProcessor);
-        pxMIPSProcessor.ROMOffsetVirtual = (PXSize)0x80000000 + (PXSize)0x400;
+        pxMIPSProcessor.ROMOffsetVirtual = (void*)((PXSize)0x80000000 + (PXSize)0x400);
         pxMIPSProcessor.RAMAdressVirtual = 0x00000000;
         pxMIPSProcessor.RAMSize = 0x03EFFFFF;
         pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXNull, PXAccessModeReadAndWrite);

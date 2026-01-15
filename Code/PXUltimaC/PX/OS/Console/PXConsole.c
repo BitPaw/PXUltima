@@ -11,7 +11,7 @@
 #include <PX/OS/PXOS.h>
 
 PXLock* _GLOBALCosolePrintLock = 0;
-PXI32U* _GLOBALSourceThreadID;
+DWORD _GLOBALSourceThreadID;
 
 #define PXConsoleColorEnable 1
 
@@ -287,6 +287,9 @@ PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor
     }
  
     const BOOL result = SetConsoleTextAttribute(consoleHandle, colorID);
+
+    return PXResultOK;
+
 #else
     return PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -620,7 +623,7 @@ void PXAPI PXLogEnableASYNC()
     PXClear(PXLockCreateInfo, &pxLockCreateInfo);
     pxLockCreateInfo.Type = PXLockTypeGlobal;
 
-    PXLockCreate(_GLOBALCosolePrintLock, &pxLockCreateInfo);
+    PXLockCreate(&_GLOBALCosolePrintLock, &pxLockCreateInfo);
 
     _GLOBALSourceThreadID = PXThreadCurrentID();
 }

@@ -43,9 +43,13 @@ PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWi
 
     PXWindowFontSet(pxButton, pxGUITheme->FontContent);
 
-    pxWindowDrawInfo->Behaviour = PXWindowAllignCenter;
+    PXTextDrawInfo pxTextDrawInfo;
+    PXClear(PXTextDrawInfo, &pxTextDrawInfo);
+    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.Text = PXNull;
+    pxTextDrawInfo.Behaviour = PXWindowAllignCenter;
 
-    PXWindowDrawText(pxButton, pxWindowDrawInfo, PXNull);
+    PXWindowDrawText(pxButton, &pxTextDrawInfo);
 #endif
 
     return PXResultOK;

@@ -4,7 +4,7 @@
 #define PXMIPSIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 
 #define PXMIPSOPCodeNormal  0b00000000
 #define PXMIPSOPCodeSpecial 0b01000000
@@ -311,7 +311,7 @@ typedef struct PXMIPSProcessor_
     void* RAMAdress;
     PXSize RAMSize;
 
-    PXSize ProgramCounter;
+    void* ProgramCounter;
     PXSize RegisterStatus;
 
     PXF32 RegisterPXF32[32];

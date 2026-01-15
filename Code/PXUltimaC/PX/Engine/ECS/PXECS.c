@@ -18,6 +18,7 @@
 #include <PX/Engine/ECS/Entity/SpaceGrid/PXSpaceGrid.h>
 #include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
 #include <PX/Engine/ECS/Entity/UI/TabList/PXTabList.h>
+#include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
 #include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
 #include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
@@ -97,6 +98,7 @@ const PXECSRegisterFunction pxECSRegisterList[] =
     PXSkyBoxRegisterToECS,
     PXECSEntityInfoRegisterToECS,
     PXSpaceGridRegisterToECS,
+    PXTransformViewRegisterToECS,
     PXFileDirectoryRegisterToECS,
     PXLockRegisterToECS,
     PXThreadRegisterToECS,

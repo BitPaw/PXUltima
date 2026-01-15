@@ -1000,7 +1000,7 @@ PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXR
 
 PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int width, const int height)
 {
-    PXActionResult pxActionResult = PXResultInvalid;
+    PXResult pxActionResult = PXResultInvalid;
 
 #if 0
 
@@ -1031,7 +1031,7 @@ PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow P
 
 PXResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height)
 {
-    PXActionResult pxActionResult = PXResultInvalid;
+    PXResult pxActionResult = PXResultInvalid;
 
 #if OSUnix && 0
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);

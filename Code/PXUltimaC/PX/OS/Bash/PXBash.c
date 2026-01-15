@@ -9,7 +9,7 @@ PXResult PXAPI PXBashExecute(const PXText PXREF programPath, const PXBool syncro
 {
     /*
     Pipe pipe;
-    PXActionResult result = pipe.Open(programPath, FileOpenMode::Read);
+    PXResult result = pipe.Open(programPath, FileOpenMode::Read);
     PXSize dataLength = 0;
     unsigned char* data = 0;
 

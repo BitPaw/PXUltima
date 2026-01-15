@@ -52,7 +52,7 @@ PXAudioInitializeInfo;
 
 
 
-typedef PXActionResult(PXAPI* PXAudioInitializeFunction)(void PXREF audioAPI, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
+typedef PXResult(PXAPI* PXAudioInitializeFunction)(void PXREF audioAPI, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
 
 //--------------------------------------------------------
 // Device
@@ -64,19 +64,19 @@ typedef struct PXAudioDeviceAmountInfo_
 }
 PXAudioDeviceAmountInfo;
 
-typedef PXActionResult(PXAPI* PXAudioDeviceFetchFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice);
-typedef PXActionResult(PXAPI* PXAudioDeviceFetchAllFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount);
+typedef PXResult(PXAPI* PXAudioDeviceFetchFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice);
+typedef PXResult(PXAPI* PXAudioDeviceFetchAllFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount);
 
-typedef PXActionResult(PXAPI* PXAudioDeviceOpenFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
-typedef PXActionResult(PXAPI* PXAudioDeviceCloseFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice);
-typedef PXActionResult(PXAPI* PXAudioDeviceLoadFunction)
+typedef PXResult(PXAPI* PXAudioDeviceOpenFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
+typedef PXResult(PXAPI* PXAudioDeviceCloseFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice);
+typedef PXResult(PXAPI* PXAudioDeviceLoadFunction)
 (
     void PXREF audioAPI,
     PXAudioDevice PXREF pxAudioDevice,
     PXSound PXREF pxSound
 );
 
-typedef PXActionResult(PXAPI* PXAudioDeviceUnloadFunction)
+typedef PXResult(PXAPI* PXAudioDeviceUnloadFunction)
 (
     void PXREF audioAPI,
     PXAudioDevice PXREF pxAudioDevice,
@@ -147,7 +147,7 @@ typedef struct PXSoundDeviceProperty_
 PXSoundDeviceProperty;
 
 
-typedef PXActionResult (PXAPI* PXSoundDevicePropertyFunction)(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty);
+typedef PXResult (PXAPI* PXSoundDevicePropertyFunction)(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty);
 
 
 
@@ -295,7 +295,7 @@ typedef struct PXAudioEffect_
 PXAudioEffect;
 
 
-typedef PXActionResult(PXAPI* PXAudioDeviceEffectUpdate)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice, PXAudioEffect PXREF pxAudioEffect);
+typedef PXResult(PXAPI* PXAudioDeviceEffectUpdate)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice, PXAudioEffect PXREF pxAudioEffect);
 
 typedef struct PXAudioMultiMedia_
 {

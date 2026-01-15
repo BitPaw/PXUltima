@@ -2,7 +2,7 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/PXOS.h>
 
@@ -1296,7 +1296,7 @@ PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U 
 
 PXResult PXAPI PXThreadYieldToOtherThreads()
 {
-    PXActionResult pxActionResult;
+    PXResult pxActionResult;
 
 #if OSUnix
     const int yieldResultID =

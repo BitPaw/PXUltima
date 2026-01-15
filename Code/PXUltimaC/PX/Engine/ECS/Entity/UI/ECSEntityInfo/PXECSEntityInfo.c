@@ -61,7 +61,14 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXWind
 
        PXTextPrint(&pxText, "PXID:%i", pxECSInfo->ID);
 
-       PXWindowDrawText(pxWindow, pxWindowDrawInfo, &pxText);
+
+       PXTextDrawInfo pxTextDrawInfo;
+       PXClear(PXTextDrawInfo, &pxTextDrawInfo);
+       pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+       pxTextDrawInfo.Text = &pxText;
+       pxTextDrawInfo.Behaviour = PXWindowAllignLeft;
+
+       PXWindowDrawText(pxWindow, &pxTextDrawInfo);
        
 
        /*

@@ -13,12 +13,12 @@ PXNamePool _pxNamePool;
 
 PXResult PXAPI PXNamePoolInit()
 {
-    PXDictionaryConstruct(&_pxNamePool.NameLookup, sizeof(PXID), PXNull, PXDictionaryValueLocalityInternalEmbedded);
+    PXDictionaryConstruct(&_pxNamePool.NameLookup, sizeof(PXID), 0, PXDictionaryValueLocalityInternalEmbedded);
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXNamePoolStore(const PXID pxID, PXText* pxText, PXText* pxTextResult)
+PXResult PXAPI PXNamePoolStore(const PXID pxID, const PXText* pxText, PXText* pxTextResult)
 {
    // PXDictionaryEntryAddRange();
 
@@ -27,9 +27,7 @@ PXResult PXAPI PXNamePoolStore(const PXID pxID, PXText* pxText, PXText* pxTextRe
     if(PXResultOK != pxResult)
     {
         return pxResult;
-    }
-
-    
+    }    
 
     return PXResultOK;
 }

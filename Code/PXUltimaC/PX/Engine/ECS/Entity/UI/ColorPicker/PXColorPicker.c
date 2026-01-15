@@ -1067,5 +1067,10 @@ PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPickerREF, PXColorPick
 
     pxColorPicker = *pxColorPickerREF;
 
+    pxColorPickerCreateInfo->Window.EventList.CallBackOwner = pxColorPicker;
+    pxColorPickerCreateInfo->Window.EventList.CallBackDraw = PXColorPickerDraw;
+
+    PXWindowCreate(&pxColorPicker->WindowBase, &pxColorPickerCreateInfo->Window);
+
     return PXResultOK;
 }

@@ -2,7 +2,7 @@
 
 #include <PX/Media/PXText.h>
 
-PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, char* versioNString)
+PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, const char* versioNString)
 {
     int versionMajor = 0;
     int versionMinor = 0;

@@ -347,7 +347,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
                 PXText buffer;
                 PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
 
-                PXActionResult result = PXFilePath(pxFile, &buffer, PXFalse);
+                PXResult result = PXFilePath(pxFile, &buffer, PXFalse);
 
                 if(PXResultOK == result)
                 {
@@ -394,7 +394,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
                         0
                     );
                     auto wwwwa = GetLastError();
-                    PXActionResult xwwx = PXWindowsHandleErrorFromID(wwwwa);
+                    PXResult xwwx = PXWindowsHandleErrorFromID(wwwwa);
 
 
                     char symBuffer[300];
@@ -412,7 +412,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
                         symbolInfo
                     );
                     auto wwa = GetLastError();
-                    PXActionResult xx = PXWindowsHandleErrorFromID(wwa);
+                    PXResult xx = PXWindowsHandleErrorFromID(wwa);
 
                     if(rr)
                     {
@@ -582,7 +582,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     PROCESSENTRY32 processEntryW;
     processEntryW.dwSize = sizeof(PROCESSENTRY32);
 
-    PXBool successfulFetch = Process32First(snapshotHandle, &processEntryW);
+    BOOL successfulFetch = Process32First(snapshotHandle, &processEntryW);
 
     if(!successfulFetch)
     {

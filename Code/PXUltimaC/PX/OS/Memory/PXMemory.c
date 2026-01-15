@@ -1,7 +1,7 @@
 #include "PXMemory.h"
 
 #include <PX/Math/PXMath.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/PXOS.h>

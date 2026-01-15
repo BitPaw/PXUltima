@@ -171,7 +171,6 @@
     <ClCompile Include="PX\OS\DataBase\PXDataBase.c" />
     <ClCompile Include="PX\OS\Debug\PXDebug.c" />
     <ClCompile Include="PX\OS\Dialog\PXDialog.c" />
-    <ClCompile Include="PX\OS\Error\PXActionResult.c" />
     <ClCompile Include="PX\OS\File\PXDirectory.c" />
     <ClCompile Include="PX\OS\File\PXFile.c" />
     <ClCompile Include="PX\OS\Graphic\DirectX\PXDirectX.c" />
@@ -291,6 +290,7 @@
     <ClCompile Include="PX\Math\PXTriangle.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\SceneView\PXSceneView.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.c" />
+    <ClCompile Include="PX\OS\Error\PXResult.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -464,7 +464,6 @@
     <ClInclude Include="PX\OS\DataBase\PXDataBase.h" />
     <ClInclude Include="PX\OS\Debug\PXDebug.h" />
     <ClInclude Include="PX\OS\Dialog\PXDialog.h" />
-    <ClInclude Include="PX\OS\Error\PXActionResult.h" />
     <ClInclude Include="PX\OS\File\PXDirectory.h" />
     <ClInclude Include="PX\OS\File\PXFile.h" />
     <ClInclude Include="PX\OS\Graphic\DirectX\PXDirectX.h" />
@@ -584,5 +583,6 @@
     <ClInclude Include="PX\Math\PXTriangle.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\SceneView\PXSceneView.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.h" />
+    <ClInclude Include="PX\OS\Error\PXResult.h" />
   </ItemGroup>
 </Project>

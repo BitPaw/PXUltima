@@ -3,7 +3,7 @@
 #ifndef PXResourceManagerIncludedd
 #define PXResourceManagerIncludedd
 
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Media/PXColor.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMatrix.h>
@@ -252,7 +252,7 @@ if(!(condition)) \
 #define PXModuleStateDoInitialize   1<<0
 #define PXModuleStateDoRelease      1<<1
 
-typedef PXActionResult(PXAPI* PXModuleStateFunction)(void** moduleAdress, const PXI32U flags); // Initialize or Releases a module.
+typedef PXResult(PXAPI* PXModuleStateFunction)(void** moduleAdress, const PXI32U flags); // Initialize or Releases a module.
 
 typedef struct PXModule_
 {
@@ -467,31 +467,6 @@ PXRectangleF;
 
 
 
-
-
-
-
-
-
-
-
-typedef struct PXECSComponentScale2D
-{
-   // PXCompoment dx;
-    PXVector2F32 Scale;
-};
-
-typedef struct PXECSComponentPosition2D
-{
-    PXVector2F32 Position2D;
-};
-
-typedef struct PXECSComponentRotation2D
-{
-    PXVector2F32 Rotation2D;
-};
-
-
 typedef struct PXMatrixModelViewProjection_
 {
     PXMatrix4x4F MatrixModel;
@@ -499,7 +474,6 @@ typedef struct PXMatrixModelViewProjection_
     PXMatrix4x4F MatrixProjection;
 }
 PXMatrixModelViewProjection;
-
 
 
 #define PXDeviceDisplaySize 32
@@ -511,7 +485,6 @@ PXMatrixModelViewProjection;
 #define PXDeviceOpenGLVendorSize 32
 #define PXDeviceOpenGLRendererSize 32
 #define PXDeviceOpenGLShaderSize 32
-
 
 
 typedef struct PXGPUPhysical_

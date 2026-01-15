@@ -5,7 +5,7 @@
 #define MAX_SUPPORTED_DEFLATE_LENGTH 258
 
 /*
-PXActionResult PXLZ77Encode(PXFile PXREF pxCacheStream, Hash* hash, const unsigned char* in, PXSize inpos, PXSize insize, const HuffmanTree* tree_ll, const HuffmanTree* tree_d, const PXLZ77ESetting PXREF pxLZ77ESetting)
+PXResult PXLZ77Encode(PXFile PXREF pxCacheStream, Hash* hash, const unsigned char* in, PXSize inpos, PXSize insize, const HuffmanTree* tree_ll, const HuffmanTree* tree_d, const PXLZ77ESetting PXREF pxLZ77ESetting)
 {
 
 }

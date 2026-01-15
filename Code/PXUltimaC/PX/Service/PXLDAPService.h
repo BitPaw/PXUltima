@@ -4,7 +4,7 @@
 #define PXLDAPIncluded
 
 #include <PX/Media/PXText.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 typedef enum PXLDAPScope_

@@ -7,7 +7,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Async/PXProcess.h>
 #include <PX/OS/Async/PXThread.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/PXResource.h>
 #include <PX/Engine/PXGUI.h>
 

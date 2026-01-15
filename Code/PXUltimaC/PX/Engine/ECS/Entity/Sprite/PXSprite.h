@@ -4,12 +4,13 @@
 #define PXSpriteIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXActionResult.h>
+#include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/PXResource.h>
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 #include <PX/Engine/ECS/Component/Material/PXMaterial.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
 #include <PX/Engine/ECS/Entity/HitBox/PXHitBox.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
 #include <PX/Engine/ECS/PXECS.h>
 
 typedef struct PXSprite_

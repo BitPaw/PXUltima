@@ -1698,7 +1698,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
 
 
 
-PXActionResult PXLZ77Encode
+PXResult PXLZ77Encode
 (
     //PXFile PXREF pxOutputStream,
     PXFile PXREF pxCacheStream,
@@ -1713,7 +1713,7 @@ PXActionResult PXLZ77Encode
 {
     return PXActionRefusedNotImplemented;
 }
-PXActionResult PXLZ77Decode()
+PXResult PXLZ77Decode()
 {
     return PXActionRefusedNotImplemented;
 }
