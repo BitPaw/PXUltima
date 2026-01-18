@@ -183,7 +183,7 @@ typedef void (PXAPI* PXGraphicClearFunction)(void PXREF pxGraphicAPI, const PXCo
 typedef PXBool(PXAPI* PXGraphicSceneDeployFunction)(void PXREF pxGraphicAPI);
 
 typedef PXResult(PXAPI* PXGraphicDevicePhysicalListAmountFunction)(void PXREF graphicAPI, PXI32U PXREF amount);
-typedef PXResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void PXREF graphicAPI, const PXI32U amount, PXGPUPhysical PXREF pxGraphicDevicePhysicalList);
+typedef PXResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void PXREF graphicAPI, const PXI32U amount, PXGraphicsCard PXREF pxGraphicsCardList);
 
 typedef PXResult(PXAPI* PXGraphicSwapIntervalSetFunction)(void PXREF graphicAPI, const PXI32U interval);
 typedef PXResult(PXAPI* PXGraphicSwapIntervalGetFunction)(void PXREF graphicAPI, PXI32U PXREF interval);
@@ -312,7 +312,7 @@ typedef struct PXGraphic_
     PXGraphicSystem GraphicSystem;
 
     PXSize DevicePhysicalListSize;
-    PXGPUPhysical* DevicePhysicalList;
+    PXGraphicsCard* DevicePhysicalList;
 
 #if OSUnix
     Display* DisplayConnection;
