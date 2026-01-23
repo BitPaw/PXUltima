@@ -4,6 +4,7 @@
 #define PXBufferDEFINED
 
 #include <PX/OS/Error/PXResult.h>
+#include <PX/Math/PXVector.h>
 
 // Container to store data.
 // Basically just an array with combined length
@@ -15,6 +16,19 @@ typedef struct PXBuffer_
         PXByte* Data; // Contains the whole data.
         char* TextA;
         wchar_t* TextW;
+        
+        PXI16U* I16U;
+        PXI16U* I32U;
+        PXF32* F32;
+        PXF64* F64;
+
+        //PXVector2F16* F16V2;
+        PXVector2F32* F32V2;
+       // PXVector2F64* F64V2;
+
+        PXVector3F16* F16V3;
+        PXVector3F32* F32V3;
+        PXVector3F64* F64V3;
     };
    
     PXSize CursorOffsetByte;
