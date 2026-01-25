@@ -204,11 +204,11 @@ PXResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
 
     // open
     {
-        const PXResult pxActionResult = PXLibraryOpenA(&pxDotNetMSCoree->Library, CSharpMSCoree);
+        const PXResult pxResult = PXLibraryOpenA(&pxDotNetMSCoree->Library, CSharpMSCoree);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         PXLibraryGetSymbolA(&pxDotNetMSCoree->Library, &createInterface, "CreateInterface", PXTrue);
