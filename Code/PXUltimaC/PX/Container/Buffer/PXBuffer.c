@@ -5,7 +5,10 @@
 PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
 {
     pxBuffer->SizeAllocated = size;
+    pxBuffer->SizeAllowedToUse = size;
     pxBuffer->Adress = PXMemoryHeapCalloc(PXNull, 1, size);
+
+    PXMemorySet(pxBuffer->Adress, 0xFF, size);
 
     return PXResultOK;
 }
@@ -28,9 +31,8 @@ PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size)
 
 PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-    pxBuffer->Data = PXMemoryHeapRealloc(PXNull, pxBuffer->Data, size);
-    pxBuffer->SizeAllocated = size;
-    
+    pxBuffer->Adress = PXMemoryHeapRealloc(PXNull, pxBuffer->Data, size);
+    pxBuffer->SizeAllocated = size;    
 
     return PXResultOK;
 }
