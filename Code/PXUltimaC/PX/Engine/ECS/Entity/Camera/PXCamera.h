@@ -3,10 +3,11 @@
 #ifndef PXCameraIncluded
 #define PXCameraIncluded
 
-#include <PX/Math/PXVector.h>
+
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Math/PXMatrix.h>
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Math/PXRotation.h>
 
 #define PXCameraFollowPosition 0
 #define PXCameraFollowRotation 0
@@ -26,7 +27,8 @@ typedef struct PXCamera_
 {
     PXECSInfo Info;
 
-    PXVector3F32 Position;
+    PXVector4F32 Position;
+    PXRotor Rotation;
 
     PXVector3F32 LookAtPosition;
     PXVector3F32 CurrentRotation;
@@ -66,8 +68,8 @@ PXCameraCreateInfo;
 PXPublic PXResult PXAPI PXCameraRegisterToECS(void);
 
 PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo);
-PXPublic PXResult PXAPI PXCameraRelease(const PXCamera PXREF pxCamera);
-PXPublic PXResult PXAPI PXCameraDraw(const PXCamera PXREF pxCamera, struct PXWindowDrawInfo_ PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera);
+PXPublic PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo);
 
 //-----------
 PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);
@@ -92,5 +94,9 @@ PXPublic void PXAPI PXCameraFollow(PXCamera PXREF camera, const PXF32 deltaTime)
 PXPublic void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime);
 //-------------------------------------------------------------------------
 
+
+PXPublic void PXAPI PXCameraForward(const PXCamera PXREF camera, PXVector3F32 PXREF forward);
+PXPublic void PXAPI PXCameraRight(const PXCamera PXREF camera, PXVector3F32 PXREF right);
+PXPublic void PXAPI PXCameraUp(const PXCamera PXREF camera, PXVector3F32 PXREF up);
 
 #endif
