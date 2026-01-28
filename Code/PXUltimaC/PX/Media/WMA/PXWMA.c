@@ -2,12 +2,12 @@
 
 #include <PX/OS/File/PXFile.h>
 
-PXResult PXAPI PXWMALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWMALoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWMASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWMASaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

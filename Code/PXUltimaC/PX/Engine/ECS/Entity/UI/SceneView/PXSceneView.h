@@ -23,6 +23,6 @@ typedef struct PXSceneViewCreateInfo_
 PXSceneViewCreateInfo;
 
 PXPublic PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreateInfo PXREF pxSceneViewCreateInfo);
-PXPublic PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

@@ -206,7 +206,7 @@ PXPrivate inline PXTIFFColorFormat PXAPI PXTIFFColorFormatFromID(const unsigned 
 
 PXPublic PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXTIFFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTIFFSaveToFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

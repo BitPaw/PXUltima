@@ -1,11 +1,11 @@
 #include "PXGLSL.h"
 
-PXResult PXAPI PXGLSLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXGLSLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXGLSLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXGLSLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

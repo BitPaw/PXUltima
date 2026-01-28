@@ -31,7 +31,12 @@ PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBru
 
     pxBrushCreateInfo->Info.Static = &PXBrushRegisterInfo;
     pxBrushCreateInfo->Info.Dynamic = &PXBrushRegisterInfoDynamic;
-    PXECSCreate(pxBrushRef, pxBrushCreateInfo);
+    PXResult pxResult = PXECSCreate(pxBrushRef, pxBrushCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
     pxBrush = *pxBrushRef;
 

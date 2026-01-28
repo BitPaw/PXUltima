@@ -11,7 +11,7 @@ typedef struct PXPLY_
 }
 PXPLY;
 
-PXPublic PXResult PXAPI PXPLYLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPLYSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPLYLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPLYSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

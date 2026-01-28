@@ -4,10 +4,10 @@
 
 #define PX_X86_BSWAP_ALLOW OS32B
 
-#define PXTypeInt08ULimit 255 // 0xFF
-#define PXTypeInt16ULimit 65535 // 0xFFFF
-#define PXTypeInt32ULimit 4294967295 // 0xFFFFFFFF
-#define PXTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
+#define PXTypeI08ULimit 255 // 0xFF
+#define PXTypeI16ULimit 65535 // 0xFFFF
+#define PXTypeI32ULimit 4294967295 // 0xFFFFFFFF
+#define PXTypeI64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
 
 void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter PXREF pxWorkSetCounter)
 {
@@ -61,36 +61,36 @@ void PXAPI PXTypeToString(const PXI32U dataType, char* buffer)
 #endif
 }
 
-PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
+PXI32U PXAPI PXTypeIFitting(const PXSize expectedSize)
 {
     {
-        const PXBool fitIn08Bit = expectedSize <= (PXSize)PXTypeInt08ULimit;
+        const PXBool fitIn08Bit = expectedSize <= (PXSize)PXTypeI08ULimit;
 
         if (fitIn08Bit)
         {
-            return PXTypeInt08U;
+            return PXTypeI08U;
         }
     }
 
     {
-        const PXBool fitIn16Bit = expectedSize <= (PXSize)PXTypeInt16ULimit;
+        const PXBool fitIn16Bit = expectedSize <= (PXSize)PXTypeI16ULimit;
 
         if (fitIn16Bit)
         {
-            return PXTypeInt16U;
+            return PXTypeI16U;
         }
     }
 
     {
-        const PXBool fitIn32Bit = expectedSize <= (PXSize)PXTypeInt32ULimit;
+        const PXBool fitIn32Bit = expectedSize <= (PXSize)PXTypeI32ULimit;
 
         if (fitIn32Bit)
         {
-            return PXTypeInt32U;
+            return PXTypeI32U;
         }
     }
 
-    return PXTypeInt64U;
+    return PXTypeI64U;
 }
 
 void PXAPI PXEndianSwapI32U(PXI32U PXREF value)

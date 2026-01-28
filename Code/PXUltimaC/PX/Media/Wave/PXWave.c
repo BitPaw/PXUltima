@@ -9,7 +9,7 @@ const static char WAVSignatureLIST[4] = "LIST";
 const static char WAVSignatureData[4] = "data";
 
 
-PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWaveLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     /*
     PXSound PXREF pxSound = (PXSound*)pxResourceLoadInfo->Target;
@@ -23,7 +23,7 @@ PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     // PXRIFF
     {
-       const PXResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
+       const PXResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileCurrent);
 
        PXActionReturnOnError(actionResult);
 
@@ -41,7 +41,7 @@ PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     //---<FMT Chunk>-----------------------------------------------------------
     {
-       const PXResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
+       const PXResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileCurrent, riff.EndianFormat);
 
        PXActionReturnOnError(actionResult);
 
@@ -59,16 +59,16 @@ PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     //---------------------------------------
     {
-       const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureLIST, sizeof(WAVSignatureLIST));
+       const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileCurrent, WAVSignatureLIST, sizeof(WAVSignatureLIST));
 
        if (isPXRIFFListChunk)
        {
-           PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 30u);
+           PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, 30u);
        }
     }
     //---------------------------------------
     {
-       const PXBool validDataChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureData, sizeof(WAVSignatureData));
+       const PXBool validDataChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileCurrent, WAVSignatureData, sizeof(WAVSignatureData));
 
        if (!validDataChunk)
        {
@@ -76,18 +76,18 @@ PXResult PXAPI PXWaveLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
        }
     }
 
-    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &wav.SoundDataSize, riff.EndianFormat);
+    PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &wav.SoundDataSize, riff.EndianFormat);
 
     PXNewList(PXByte, wav.SoundDataSize, &pxSound->Data, &pxSound->DataSize);
 
-    PXFileReadB(pxResourceLoadInfo->FileReference, pxSound->Data, pxSound->DataSize);
+    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxSound->Data, pxSound->DataSize);
     */
 
     return PXResultOK;
 }
 
 
-PXResult PXAPI PXWaveSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWaveSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
 #if 0
     unsigned int bitdepth = 16, bpm = 120;

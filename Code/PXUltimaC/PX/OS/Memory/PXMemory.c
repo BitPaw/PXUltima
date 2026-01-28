@@ -5,6 +5,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Container/Dictionary/PXDictionary.h>
 
 const char PXMemoryCPUName[] = "CPU-SIMD";
 const char PXMemoryCPUCompare[] = "Compare";
@@ -96,7 +97,6 @@ PXResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 #endif
 
 #if MemoryDebugLeakDetection
-#include <PX/Container/PXDictionary/PXDictionary.h>
 #include <Time/Time.h>
 #include <Psapi.h>
 
@@ -131,7 +131,13 @@ PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void)
     {
         PXClear(PXMemorySymbolLookup, &_PXGLOBLALMemorySymbolLookup);
 
-        PXDictionaryConstruct(&_PXGLOBLALMemorySymbolLookup.SymbolLookup, sizeof(void*), sizeof(PXSymbolMemory), PXDictionaryValueLocalityInternalEmbedded);
+        PXDictionaryCreateInfo pxDictionaryCreateInfo;
+        PXClear(PXDictionaryCreateInfo, &pxDictionaryCreateInfo);
+        pxDictionaryCreateInfo.KeySize = sizeof(void*);
+        pxDictionaryCreateInfo.ValueSize = sizeof(PXSymbolMemory);
+        pxDictionaryCreateInfo.ValueLocality = PXDictionaryValueLocalityInternalEmbedded;
+
+        PXDictionaryCreate(&_PXGLOBLALMemorySymbolLookup.SymbolLookup, &pxDictionaryCreateInfo);
 
         _PXGLOBLALMemorySymbolLookupENABLED = PXTrue;
     }
@@ -1021,7 +1027,7 @@ PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
 {
     if(!pxMemoryInfo)
     {
-        return;
+        return PXResultRefusedParameterNull;
     }
 
 #if PXMemoryUseStackAllocation
@@ -1067,11 +1073,13 @@ PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
 
 PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRestrict const outputBuffer, const PXSize bufferSize)
 {
-#if MemoryAssertEnable
-    //assert(bufferSize > 0);
-    assert(inputBuffer);
-    assert(outputBuffer);
-#endif
+    PXAssert(inputBuffer, "Is required");
+    PXAssert(outputBuffer, "Is required");
+
+    if(!(inputBuffer && outputBuffer))
+    {
+        return 0;
+    }
 
 #if PXMemoryDebug && 0
     PXLogPrint

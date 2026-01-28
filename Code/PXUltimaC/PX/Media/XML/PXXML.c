@@ -175,7 +175,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
                     switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
                     case PXCompilerSymbolLexerBool:
-                        pxDocumentElement.ElementMember.ValueType = PXTypeInt08S;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeI08S;
                         break;
 
                     case PXCompilerSymbolLexerReal:
@@ -183,7 +183,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
                         break;
 
                     case PXCompilerSymbolLexerNumeric:
-                        pxDocumentElement.ElementMember.ValueType = PXTypeIntS;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeIS;
                         break;
 
                     default:
@@ -205,14 +205,14 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
     }
 }
 
-PXResult PXAPI PXXMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXXMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXFile* tokenSteam = PXFileCreate();
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.ReadInfo.FileCache = tokenSteam;
     //pxCompiler.Flags =
 
@@ -229,7 +229,7 @@ PXResult PXAPI PXXMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXXMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXXMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

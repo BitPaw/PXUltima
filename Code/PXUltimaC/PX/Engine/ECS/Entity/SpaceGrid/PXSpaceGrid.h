@@ -7,6 +7,7 @@
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
 #include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
 
 typedef struct PXSpaceGrid_
 {
@@ -14,6 +15,10 @@ typedef struct PXSpaceGrid_
 
     PXWindow* WindowBase;
     PXCamera* CameraView;
+
+    PXCamera* CameraPlayer;
+
+    PXModel* ModelRender;
 }
 PXSpaceGrid;
 
@@ -31,6 +36,6 @@ PXSpaceGridCreateInfo;
 PXPublic PXResult PXAPI PXSpaceGridRegisterToECS();
 
 PXPublic PXResult PXAPI PXSpaceGridCreate(PXSpaceGrid** pxSpaceGrid, PXSpaceGridCreateInfo PXREF pxSpaceGridCreateInfo);
-PXPublic PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

@@ -66,9 +66,9 @@ const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode)
     }
 }
 
-PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* pxFile = pxResourceLoadInfo->FileReference;
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXFile* pxN64Data = PXFileCreate();
 
@@ -83,7 +83,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         const char bufferExpectedEndianBig[4] = {0x80, 0x37, 0x12, 0x40};
         char buffer[4];
 
-        PXFileReadB(pxResourceLoadInfo->FileReference, buffer, 4u);
+        PXFileReadB(pxResourceLoadInfo->FileCurrent, buffer, 4u);
 
         if(PXTextCompareA(bufferExpectedByteSwapped, 4, buffer, 4, 0))
         {
@@ -108,15 +108,15 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         if(PXEndianMiddle == n64.Endian)
         {
-            PXFileCursorToBeginning(pxResourceLoadInfo->FileReference);
+            PXFileCursorToBeginning(pxResourceLoadInfo->FileCurrent);
 
             PXFileOpenInfo pxFileOpenInfo;
             PXClear(PXFileOpenInfo, &pxFileOpenInfo);
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-            pxFileOpenInfo.FilePath.SizeUsed = PXFileAllocatedSize(pxResourceLoadInfo->FileReference);
+            pxFileOpenInfo.FilePath.SizeUsed = PXFileAllocatedSize(pxResourceLoadInfo->FileCurrent);
 
             PXFileOpen(pxN64Data, &pxFileOpenInfo);
-            PXFileByteSwap(pxN64Data, pxResourceLoadInfo->FileReference);
+            PXFileByteSwap(pxN64Data, pxResourceLoadInfo->FileCurrent);
 
             pxFile = pxN64Data;
 
@@ -134,20 +134,20 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             {PXNull, PXTypeNibble}, // 0x00
             {&n64.initialPI_BSB_DOM1_LAT_REG, PXTypeNibble}, // 0x01
             {&n64.initialPI_BSD_DOM1_PGS_REG, PXTypeNibble}, // 0x01
-            {&n64.initialPI_BSD_DOM1_PWD_REG, PXTypeInt08U}, // 0x02
-            {&n64.initialPI_BSB_DOM1_PGS_REG, PXTypeInt08U}, // 0x03
-            {&n64.ClockRateOverride, PXTypeInt32UBE}, // 0x04
-            {&n64.RAMEntryPointOffset, PXTypeInt32ULE}, // 0x08
-            {&n64.ReleaseAddress, PXTypeInt32UBE}, // 0x0C
-            {&n64.CRC1Checksum, PXTypeInt32UBE}, // 0x10
-            {&n64.CRC2, PXTypeInt32UBE}, // 0x14
-            {&n64.UnknownA, PXTypeInt64U}, // 0x18
+            {&n64.initialPI_BSD_DOM1_PWD_REG, PXTypeI08U}, // 0x02
+            {&n64.initialPI_BSB_DOM1_PGS_REG, PXTypeI08U}, // 0x03
+            {&n64.ClockRateOverride, PXTypeI32UBE}, // 0x04
+            {&n64.RAMEntryPointOffset, PXTypeI32ULE}, // 0x08
+            {&n64.ReleaseAddress, PXTypeI32UBE}, // 0x0C
+            {&n64.CRC1Checksum, PXTypeI32UBE}, // 0x10
+            {&n64.CRC2, PXTypeI32UBE}, // 0x14
+            {&n64.UnknownA, PXTypeI64U}, // 0x18
             {n64.ImageName, PXTypeText(20)}, // 0x20
-            {&n64.UnknownB, PXTypeInt32UBE}, // 0x34
+            {&n64.UnknownB, PXTypeI32UBE}, // 0x34
             {n64.MediaFormatID, PXTypeDatax4}, // 0x38
             {n64.CartridgeID, PXTypeDatax2}, // 0x3C
-            {&n64.CountryCodeID, PXTypeInt08U}, // 0x3E
-            {&n64.Version, PXTypeInt08U} // 0x3F
+            {&n64.CountryCodeID, PXTypeI08U}, // 0x3E
+            {&n64.Version, PXTypeI08U} // 0x3F
         };
         const PXSize pxFileDataElementTypeSize = sizeof(pxFileDataElementType);
 
@@ -332,7 +332,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXN64SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXN64SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

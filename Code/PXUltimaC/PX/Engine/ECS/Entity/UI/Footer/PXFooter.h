@@ -24,6 +24,6 @@ PXFooterCreateInfo;
 PXPublic PXResult PXAPI PXFooterRegisterToECS();
 
 PXPublic PXResult PXAPI PXFooterCreate(PXFooter** pxFooterREF, PXFooterCreateInfo PXREF pxFooterCreateInfo);
-PXPublic PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

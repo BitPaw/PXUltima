@@ -5,6 +5,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Engine/ECS/PXECS.h>
 
+const char PXCanonRaw3Text[] = "CanonRaw3";
 
 #define  PXCanonRaw3FTYPID PXI32Make('f', 't', 'y', 'p')
 #define  PXCanonRaw3FREEID PXI32Make('f', 'r', 'e', 'e')
@@ -78,8 +79,6 @@ typedef struct PXCanonRaw3Chunk_
     {
         PXCanonRaw3ChunkUUID ChunkUUID;
         PXCanonRaw3ChunkFTYP ChunkFTYP;
-
-
     };
 }
 PXCanonRaw3Chunk;
@@ -89,7 +88,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
 {
     const PXTypeEntry pxDataStreamElementList[] =
     {
-        {&pxCanonRaw3Chunk->SizeTotal, PXTypeInt32UBE},
+        {&pxCanonRaw3Chunk->SizeTotal, PXTypeI32UBE},
         {pxCanonRaw3Chunk->ID.Data, PXTypeDatax4}
     };
 
@@ -125,7 +124,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
         const PXTypeEntry pxDataStreamElementList[] =
         {
             {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXTypeDatax4},
-            {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXTypeInt32UBE},
+            {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXTypeI32UBE},
             {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXTypeDatax4}
         };
 
@@ -262,9 +261,9 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXCanonRaw3LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXCanonRaw3 pxCanonRaw3;
     PXClear(PXCanonRaw3, &pxCanonRaw3);
@@ -273,7 +272,7 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
     PXLogPrint
     (
         PXLoggingInfo,
-        "CanonRaw3",
+        PXCanonRaw3Text,
         "Load",
         "Start parsing..."
     );
@@ -295,9 +294,6 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
         PXFileCursorMoveTo(pxFile, pxCanonRaw3Chunk.PredictedFinalPosition);
     }
 
-
-
-
     // Format is orderd in "boxes". No other data is contained.
 
     // File Type Box
@@ -313,7 +309,7 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
         PXLogPrint
         (
             PXLoggingInfo,
-            "CanonRaw3",
+            PXCanonRaw3Text,
             "Load",
             "Boxes detected <%i>",
             amountOfContainers
@@ -342,7 +338,7 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
     PXLogPrint
     (
         PXLoggingInfo,
-        "CanonRaw3",
+        PXCanonRaw3Text,
         "Load",
         "Finished parsing"
     );
@@ -351,7 +347,7 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadIn
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXCanonRaw3SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

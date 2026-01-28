@@ -5,7 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 
-PXPublic PXResult PXAPI PXRSkinLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRSkinSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRSkinLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRSkinSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

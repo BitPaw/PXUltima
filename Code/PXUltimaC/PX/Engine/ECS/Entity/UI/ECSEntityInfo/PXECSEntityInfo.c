@@ -30,7 +30,7 @@ PXResult PXAPI PXECSEntityInfoCreate(PXECSEntityInfo** pxECSEntityInfo, PXECSEnt
     return PXResultOK;
 }
 
-PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDrawInfo PXREF pxDrawInfo)
 {
        PXGUITheme* pxGUITheme = PXGUIThemeGet();
        PXWindow PXREF pxWindow = pxECSEntityInfo->WindowBase;
@@ -50,7 +50,7 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXWind
        PXWindowDrawRectangle2D
        (
            pxWindow,
-           pxWindowDrawInfo
+           pxDrawInfo
        );
 
 
@@ -64,7 +64,7 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXWind
 
        PXTextDrawInfo pxTextDrawInfo;
        PXClear(PXTextDrawInfo, &pxTextDrawInfo);
-       pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+       pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
        pxTextDrawInfo.Text = &pxText;
        pxTextDrawInfo.Behaviour = PXWindowAllignLeft;
 

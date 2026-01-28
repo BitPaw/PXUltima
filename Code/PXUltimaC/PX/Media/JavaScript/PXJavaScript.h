@@ -5,7 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 
-PXPublic PXResult PXAPI PXJavaScriptLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXJavaScriptSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJavaScriptLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJavaScriptSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

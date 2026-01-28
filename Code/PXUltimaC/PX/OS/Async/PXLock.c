@@ -171,7 +171,7 @@ const PXI32U _lockWaitTrys = 3;
 
 PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
 {
-    PXResult pxActionResult;
+    PXResult pxResult;
 
 
 #if OSUnix
@@ -180,17 +180,17 @@ PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
     unsigned int value = 1;
 
     const int resultID = sem_init(&pxLock->ID, sharedPointer, value);
-    pxActionResult = PXErrorCurrent(0 == resultID); // 0=sucessful, -1=Error
+    pxResult = PXErrorCurrent(0 == resultID); // 0=sucessful, -1=Error
 
 #elif OSWindows
     LONG lInitialCount = 1;
     LONG lMaximumCount = 1;
 
     pxLock->SemaphoreHandle = CreateSemaphoreA(PXNull, lInitialCount, lMaximumCount, PXNull);
-    pxActionResult = PXErrorCurrent(pxLock->SemaphoreHandle != PXNull);
+    pxResult = PXErrorCurrent(pxLock->SemaphoreHandle != PXNull);
 
 #else
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #endif
 
 #if PXLogEnable
@@ -204,7 +204,7 @@ PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
     );
 #endif
 
-    return pxActionResult; // Success
+    return pxResult; // Success
 }
 
 PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock)

@@ -5,8 +5,8 @@ PXResult PXAPI PXLabelDraw(PXLabel PXREF pxLabel, PXLabelCreateInfo PXREF pxLabe
     /*
     PXGUITheme* pxGUITheme = _pxGUIManager.ThemeSelected;
 
-    const char* text = pxWindowDrawInfo->Content ? pxWindowDrawInfo->Content : pxWindow->NameContent;
-    const PXSize textSize = pxWindowDrawInfo->Content ? pxWindowDrawInfo->ContentSize : pxWindow->NameContentSize;
+    const char* text = pxDrawInfo->Content ? pxDrawInfo->Content : pxWindow->NameContent;
+    const PXSize textSize = pxDrawInfo->Content ? pxDrawInfo->ContentSize : pxWindow->NameContentSize;
 
     const int shadowOffset = 1;
 

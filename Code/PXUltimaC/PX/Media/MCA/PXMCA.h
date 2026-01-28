@@ -11,7 +11,7 @@ typedef struct PXMCA_
 }
 PXMCA;
 
-PXPublic PXResult PXAPI PXMCALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMCASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMCALoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMCASaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

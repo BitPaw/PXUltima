@@ -160,7 +160,7 @@ PXPublic void PXAPI PXJPEGDestruct(PXJPEG PXREF jpeg);
 
 PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXJPEGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXJPEGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJPEGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
+PXPublic PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
 
 #endif

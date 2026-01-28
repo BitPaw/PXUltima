@@ -56,7 +56,7 @@ PXResult PXAPI PXTransformViewRelease(PXTransformView PXREF pxTransformView)
 void DrawRect
 (
     PXWindow PXREF pxWindow, 
-    PXWindowDrawInfo PXREF pxWindowDrawInfo, 
+    PXDrawInfo PXREF pxDrawInfo, 
     float x, 
     float y, 
     float w, 
@@ -113,7 +113,7 @@ const PXI8U componentCount = sizeof(axisLetters) / sizeof(char);
 const char unitText[] = "cm";
 const char title[] = "Position";
 
-PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow* pxWindow = pxTransformView->WindowBase;
     PXVector3F32* values = pxTransformView->Position;
@@ -127,7 +127,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWind
 
     SelectObject(hdc, theme->FontTitle->FontHandle);
 
-   // glViewport(0,0, pxWindowDrawInfo->RectangleXYWH.Width, pxWindowDrawInfo->RectangleXYWH.Height);
+   // glViewport(0,0, pxDrawInfo->RectangleXYWH.Width, pxDrawInfo->RectangleXYWH.Height);
   //  glClearColor(0.2, 0.2, 0.4, 1.0);
    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -135,10 +135,10 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWind
 
 
     PXTextDrawInfo pxTextDrawInfo;
-    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
     pxTextDrawInfo.Text = &pxText;
-    pxTextDrawInfo.X = pxWindowDrawInfo->RectangleXYWH.X;
-    pxTextDrawInfo.Y = pxWindowDrawInfo->RectangleXYWH.Y+20;
+    pxTextDrawInfo.X = pxDrawInfo->RectangleXYWH.X;
+    pxTextDrawInfo.Y = pxDrawInfo->RectangleXYWH.Y+20;
     pxTextDrawInfo.Size = 200;
     pxTextDrawInfo.OffsetX = 0.2;
 
@@ -159,7 +159,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWind
 
 
    // pxTextDrawInfo.Y -= 2.0;
-    pxTextDrawInfo.X = pxWindowDrawInfo->RectangleXYWH.X;
+    pxTextDrawInfo.X = pxDrawInfo->RectangleXYWH.X;
 
     for(int i = 0; i < componentCount; i++) // componentCount
     {
@@ -169,7 +169,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWind
         DrawRect
         (
             pxWindow,
-            pxWindowDrawInfo,
+            pxDrawInfo,
             pxTextDrawInfo.X,
             pxTextDrawInfo.Y,
             axisBoxWidth,
@@ -181,7 +181,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXWind
         DrawRect
         (
             pxWindow,
-            pxWindowDrawInfo,
+            pxDrawInfo,
             pxTextDrawInfo.X + axisBoxWidth,
             pxTextDrawInfo.Y,
             fieldWidth,

@@ -4,8 +4,10 @@
 #define PXALSAIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/OS/Audio/PXAudio.h>
+#include <PX/Engine/ECS/System/PXAudioSystem.h>
 
-PXPublic PXResult PXAPI PXALSAInitialize(PXAudio PXREF pxAudio);
+PXPublic PXResult PXAPI PXALSAInitialize(PXAudioSystem PXREF pxAudio);
+PXPublic PXResult PXAPI PXALSARelease(PXAudioSystem PXREF pxAudio);
 
 #endif
+

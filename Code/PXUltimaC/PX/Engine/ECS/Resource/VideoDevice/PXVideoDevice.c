@@ -1,16 +1,13 @@
-#include "PXVideo.h"
+#include "PXVideoDevice.h"
 
 #if OSWindows
 #include <windows.h>
 
 #include <dshow.h> // Direct Show
-
 #include <mfapi.h> // Windows Vista
 #include <mfidl.h>
 #include <combaseapi.h>
-
 #include <mfreadwrite.h>
-
 #include <shlwapi.h>
 
 //#include <mfobjects.h>
@@ -104,7 +101,6 @@ PXResult PXAPI PXVideoCaptureDeviceList()
 
     const HRESULT c = CoInitialize(PXNull);
 
-
     IMFMediaSource* imfMediaSource;
 
     IMFAttributes* attributeList = NULL;
@@ -119,7 +115,6 @@ PXResult PXAPI PXVideoCaptureDeviceList()
             goto done;
         }
     }
-
 
     {
         // Windows Vista, Mfuuid.lib, mfobjects.h

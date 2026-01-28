@@ -13,9 +13,9 @@ const char PXWADText[] = "WAD";
 //---------------------------------------------------------
 const PXI32U PXWADVersion1List[] =
 {
-    PXTypeInt16U,
-    PXTypeInt16U,
-    PXTypeInt32U
+    PXTypeI16U,
+    PXTypeI16U,
+    PXTypeI32U
 };
 const PXI8U PXWADVersion1ListSize = sizeof(PXWADVersion1List) / sizeof(PXI32U);
 //---------------------------------------------------------
@@ -24,12 +24,12 @@ const PXI8U PXWADVersion1ListSize = sizeof(PXWADVersion1List) / sizeof(PXI32U);
 //---------------------------------------------------------
 const PXI32U PXWADVersion2List[] =
 {
-    PXTypeInt08U,
+    PXTypeI08U,
     PXTypeText(83),
-    PXTypeInt64U,
-    PXTypeInt16U,
-    PXTypeInt16U,
-    PXTypeInt32U
+    PXTypeI64U,
+    PXTypeI16U,
+    PXTypeI16U,
+    PXTypeI32U
 };
 const PXI8U PXWADVersion2ListSize = sizeof(PXWADVersion2List) / sizeof(PXI32U);
 //---------------------------------------------------------
@@ -39,8 +39,8 @@ const PXI8U PXWADVersion2ListSize = sizeof(PXWADVersion2List) / sizeof(PXI32U);
 const PXI32U PXWADVersion3List[] =
 {
     PXTypeText(256),
-    PXTypeInt64U,
-    PXTypeInt32U
+    PXTypeI64U,
+    PXTypeI32U
 };
 const PXI8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXI32U);
 //---------------------------------------------------------
@@ -58,23 +58,23 @@ const PXI8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXI32U);
 //---------------------------------------------------------
 const PXI32U PXWADEntryHeaderList[] =
 {
-    PXTypeInt64U,
-    PXTypeInt32U,
-    PXTypeInt32U,
-    PXTypeInt32U,
+    PXTypeI64U,
+    PXTypeI32U,
+    PXTypeI32U,
+    PXTypeI32U,
     PXTypeBit08U(4),
     PXTypeBit08U(4),
-    PXTypeInt08U,
-    PXTypeInt16U,
-    PXTypeInt64U
+    PXTypeI08U,
+    PXTypeI16U,
+    PXTypeI64U
 };
 const PXI8U PXWADEntryHeaderListSize = sizeof(PXWADEntryHeaderList) / sizeof(PXI32U);
 //---------------------------------------------------------
 const PXI32U PXWADHeaderList[] =
 {
     PXTypeDatax2,
-    PXTypeInt08U,
-    PXTypeInt08U
+    PXTypeI08U,
+    PXTypeI08U
 };
 const PXI8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXI32U);
 //---------------------------------------------------------
@@ -208,9 +208,9 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
     {
         char temp[260];
 
-        PXResourceMoveInfo pxResourceMoveInfo;
+        PXECSCreateInfo pxResourceMoveInfo;
         PXClear(pxResourceMoveInfo, &pxResourceMoveInfo);
-        pxResourceMoveInfo.FileReference = dataUncompressed;
+        pxResourceMoveInfo.FileCurrent = dataUncompressed;
 
         // Because the filename is hashed, we cant know the actual filetype from the name.
         // So we need to poke around to find the file. This is very bad.
@@ -230,7 +230,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
         PXText pxText;
         PXTextFromAdressA(&pxText, temp, amount, 260);
 
-        PXFileNameSet(pxResourceMoveInfo.FileReference, &pxText);
+        PXFileNameSet(pxResourceMoveInfo.FileCurrent, &pxText);
 
 
 
@@ -238,16 +238,16 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 
         if(pxResourceMoveInfo.FormatInfo.ResourceLoad)
         {
-            pxResourceMoveInfo.FormatInfo.ResourceLoad(&pxResourceMoveInfo);
+            pxResourceMoveInfo.FormatInfo.ResourceLoad(PXNull, &pxResourceMoveInfo);
         }
     }
 
     PXFileClose(dataUncompressed);
 }
 
-PXResult PXAPI PXWADLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWADLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXWAD pxWAD;
     PXClear(PXWAD, &pxWAD);
@@ -417,7 +417,7 @@ PXResult PXAPI PXWADLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWADSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWADSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

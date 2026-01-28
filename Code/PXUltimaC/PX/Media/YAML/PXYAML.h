@@ -23,7 +23,7 @@ PXYAMLLineType;
 
 PXPrivate PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size);
 
-PXPublic PXResult PXAPI PXYAMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXYAMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXYAMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

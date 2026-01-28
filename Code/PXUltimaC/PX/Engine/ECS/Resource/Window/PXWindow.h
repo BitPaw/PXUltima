@@ -12,6 +12,7 @@
 #include <PX/Engine/ECS/Resource/Cursor/PXCursor.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
 #include <PX/Media/PXColor.h>
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
 
 
 
@@ -46,7 +47,7 @@ typedef struct PXWindowEventList_
 PXWindowEventList;
 
 
-typedef struct PXWindowDrawInfo_
+typedef struct PXDrawInfo_
 {
     PXRectangleXYWHI32 RectangleXYWH;
 
@@ -64,8 +65,10 @@ typedef struct PXWindowDrawInfo_
 
     PXBrush* Brush;
     PXBool Rounded;
+
+    struct PXCamera_* Camera;
 }
-PXWindowDrawInfo;
+PXDrawInfo;
 
 
 
@@ -145,9 +148,9 @@ void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha);
 void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov);
 void PXAPI PXWindowDrawScene(void);
 
-void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGBI8 PXREF color);
-void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 
 
@@ -735,7 +738,7 @@ typedef struct PXWindowEventInputKeyboard_
     PXKeyPressState PressState;
     PXVirtualKey VirtualKey;
 
-    union MyUnion
+    union
     {
         char CharacterA;
         wchar_t CharacterW;
@@ -1085,14 +1088,14 @@ PXPublic PXBool PXAPI PXWindowIsEnabled(const PXWindow PXREF pxWindow);
 
 
 // DRAW
-PXPublic PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo);
-PXPublic PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo);
+PXPublic PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
+PXPublic PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
 PXPublic PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow);
 
 
 typedef struct PXTextDrawInfo_
 {
-    PXWindowDrawInfo* WindowDrawInfo;
+    PXDrawInfo* WindowDrawInfo;
     PXText* Text;
 
     float X;
@@ -1116,7 +1119,7 @@ PXPublic PXResult PXAPI PXWindowDrawLine(PXWindow PXREF pxWindow, const PXI32S x
 PXPublic PXResult PXAPI PXWindowDrawLines(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
 
 
-PXPublic PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo);
+PXPublic PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
 PXPublic PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, const int x, const int y, const int width, const int height);
 
 

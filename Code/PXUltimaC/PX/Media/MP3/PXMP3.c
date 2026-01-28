@@ -787,8 +787,10 @@ PXI8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
     return -1; // MPEGGenreUnknown
 }
 
-PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMP3LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
+
     PXMP3 pxMP3;
 
     PXMP3* mp3 = &pxMP3;
@@ -797,13 +799,13 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     {
 
-        const PXResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxResourceLoadInfo->FileReference);
+        const PXResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxFile);
 
         if(PXResultOK != actionResult) 
             return actionResult;
     }
 
-    while (!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
+    while (!PXFileIsAtEnd(pxFile))
     {
         PXXingInfo xingInfo;
 
@@ -813,7 +815,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         // Parse mp3
         {
-            const PXByte PXREF mp3HeaderDataBlock = (const PXByte PXREF)PXFileDataAtCursor(pxResourceLoadInfo->FileReference);
+            const PXByte PXREF mp3HeaderDataBlock = (const PXByte PXREF)PXFileDataAtCursor(pxFile);
 
             // Parse Byte 1/4
             {
@@ -833,24 +835,24 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
                 mp3->Header.CRCErrorProtection = (byteB & 0b00000001);
 
-                switch (mpegAudioVersionID)
+                switch(mpegAudioVersionID)
                 {
-                default:
-                case 0b00:
-                    mp3->Header.MPEGVersion = MPEGVersion25;
-                    break;
+                    default:
+                    case 0b00:
+                        mp3->Header.MPEGVersion = MPEGVersion25;
+                        break;
 
-                case 0b01:
-                    mp3->Header.MPEGVersion = MPEGVersionReserved;
-                    break;
+                    case 0b01:
+                        mp3->Header.MPEGVersion = MPEGVersionReserved;
+                        break;
 
-                case 0b10:
-                    mp3->Header.MPEGVersion = MPEGVersion2;
-                    break;
+                    case 0b10:
+                        mp3->Header.MPEGVersion = MPEGVersion2;
+                        break;
 
-                case 0b11:
-                    mp3->Header.MPEGVersion = MPEGVersion1;
-                    break;
+                    case 0b11:
+                        mp3->Header.MPEGVersion = MPEGVersion1;
+                        break;
                 }
 
                 switch (layerID)
@@ -1006,41 +1008,35 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
             const PXF32 bitratePerSample = mp3->Header.BitRate / ((PXF32)mp3->Header.SampleRate + mp3->Header.UsePadding);
 
-            switch (mp3->Header.Layer)
+            switch(mp3->Header.Layer)
             {
-            case PXMP3LayerI:
-            {
-                mp3->Header.FrameLength = ((12 * bitratePerSample) * 4) - 4;
-                break;
-            }
-            case PXMP3LayerII:
-            case PXMP3LayerIII:
-            {
-                mp3->Header.FrameLength = (144 * bitratePerSample) - 4 + mp3->Header.UsePadding;
-                break;
-            }
-            case PXMP3LayerReserved:
-            default:
-            {
-                mp3->Header.FrameLength = 0;
-                break;
-            }
+                case PXMP3LayerI:
+                {
+                    mp3->Header.FrameLength = ((12 * bitratePerSample) * 4) - 4;
+                    break;
+                }
+                case PXMP3LayerII:
+                case PXMP3LayerIII:
+                {
+                    mp3->Header.FrameLength = (144 * bitratePerSample) - 4 + mp3->Header.UsePadding;
+                    break;
+                }
+                case PXMP3LayerReserved:
+                default:
+                {
+                    mp3->Header.FrameLength = 0;
+                    break;
+                }
             }
 
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 4u);
+            PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, 4u);
 
             // Header parsing finished..
 
 
-
-
-
-
-
-
             //cursorPositionPredict = pxFile.DataCursor + mp3Header.FrameLength;
 
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 32u);
+            PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, 32u);
 
 #if PXMP3Debug
             printf
@@ -1055,7 +1051,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         // info header
         {
-            const PXResult actionResult = PXXingInfoParse(&xingInfo, pxResourceLoadInfo->FileReference);
+            const PXResult actionResult = PXXingInfoParse(&xingInfo, pxResourceLoadInfo->FileCurrent);
 
             if(PXResultOK != actionResult) 
                 return actionResult;
@@ -1072,7 +1068,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         // LACA??
         {
-            const unsigned char isTag = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMP3ChunkTag, sizeof(PXMP3ChunkTag));
+            const PXBool isTag = PXFileReadAndCompare(pxFile, PXMP3ChunkTag, sizeof(PXMP3ChunkTag));
 
             if (isTag)
             {
@@ -1083,7 +1079,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 );
 #endif
 
-                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 257u);
+                PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, 257u);
 
                 continue; // After this header there is a PXMP3 header next, so parse it.
             }
@@ -1093,7 +1089,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             PXLAME lame;
 
-            const PXResult actionResult = PXLAMELoadFromFile(&lame, pxResourceLoadInfo->FileReference);
+            const PXResult actionResult = PXLAMELoadFromFile(&lame, pxResourceLoadInfo->FileCurrent);
 
             if(PXResultOK != actionResult)
                 return actionResult;
@@ -1109,32 +1105,32 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 
         {
-            const PXBool tagDetected = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, "TAG", 3u);
+            const PXBool tagDetected = PXFileReadAndCompare(pxFile, "TAG", 3u);
 
             if (tagDetected)
             {
-                const PXSize offset = PXFileRemainingSize(pxResourceLoadInfo->FileReference);
+                const PXSize offset = PXFileRemainingSize(pxFile);
 
                 // I currently dont know what this is.
                 // But it comes at the end of the file.. so i am finished?
 
-                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, offset);
+                PXFileCursorAdvance(pxFile, offset);
             }
         }
 
         // Check if reader is still alligned
         {
-            const PXBool isAlligned = cursorPositionPredict == PXFileDataPosition(pxResourceLoadInfo->FileReference);
+            const PXBool isAlligned = cursorPositionPredict == PXFileDataPosition(pxFile);
 
             if (!isAlligned)
             {
-                int offset = cursorPositionPredict - PXFileDataPosition(pxResourceLoadInfo->FileReference);
+                int offset = cursorPositionPredict - PXFileDataPosition(pxFile);
 
 #if PXMP3Debug
                 printf("[PXMP3] detected failed allignment! Off by : %i Bytes\n", offset);
 #endif
 
-                PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, cursorPositionPredict);
+                PXFileCursorMoveTo(pxFile, cursorPositionPredict);
 
                 //pxFile.CursorAdvance(mp3Header.FrameLength);
             }
@@ -1144,7 +1140,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXMP3SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMP3SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

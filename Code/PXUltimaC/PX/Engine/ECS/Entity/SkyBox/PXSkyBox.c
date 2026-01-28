@@ -73,7 +73,7 @@ PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBoxREF, PXSkyBoxCreateInfo PXREF p
     return PXResultOK;
 }
 
-PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXDrawInfo PXREF pxDrawInfo)
 {
     return PXResultOK;
 }

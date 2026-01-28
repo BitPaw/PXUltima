@@ -219,7 +219,7 @@ PXPublic void* PXAPI PXTextureDXInterface(PXTexture PXREF pxTexture);
 
 PXPublic PXBuffer* PXAPI PXTexturePixelData(PXTexture PXREF pxTexture);
 
-PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
+
 PXPublic PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
 PXPublic PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
 PXPublic PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height);
@@ -239,7 +239,12 @@ PXPublic void PXAPI PXTexturePixelSetRGB8
     const PXByte blue
 );
 
-PXPublic PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo);
+
+
+
+PXPublic PXResult PXAPI PXTextureRegisterToECS(void);
+PXPublic PXResult PXAPI PXTextureCreate(PXTexture** pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo);
+PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
 
 PXPublic HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amountofchannels, void* data);
 

@@ -291,11 +291,11 @@ PXResult PXAPI PXDirectoryOpen(PXDirectorySearchCache PXREF pxDirectorySearchCac
     // First entry
     {
         pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
-        const PXResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE != pxDirectorySearchCache->DirectoryHandleCurrent);
+        const PXResult pxResult = PXErrorCurrent(INVALID_HANDLE_VALUE != pxDirectorySearchCache->DirectoryHandleCurrent);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
     }
 
@@ -372,15 +372,15 @@ PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache PXREF pxDirectorySearchCach
 {
 #if OSUnix
     const int returnCode = closedir(pxDirectorySearchCache->DirectoryHandleCurrent);
-    const PXResult pxActionResult = PXErrorCurrent(0 != returnCode);
+    const PXResult pxResult = PXErrorCurrent(0 != returnCode);
 
-    return pxActionResult;
+    return pxResult;
 
 #elif OSWindows
     const PXBool success = FindClose(pxDirectorySearchCache->DirectoryHandleCurrent);
-    const PXResult pxActionResult = PXErrorCurrent(success);
+    const PXResult pxResult = PXErrorCurrent(success);
 
-    return pxActionResult;
+    return pxResult;
 #endif
 }
 
@@ -405,11 +405,11 @@ PXResult PXAPI PXDirectoryCreate(const PXText PXREF directoryName)
 
 #endif
 
-        const PXResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXResult pxResult = PXErrorCurrent(successCreate);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         break;
@@ -433,11 +433,11 @@ PXResult PXAPI PXDirectoryCreate(const PXText PXREF directoryName)
 #endif
 
 #endif
-        const PXResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXResult pxResult = PXErrorCurrent(successCreate);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         break;
@@ -479,20 +479,20 @@ PXResult PXAPI PXDirectoryCurrentA(char PXREF directoryCurrent, const PXSize buf
 {
 #if OSUnix
     const char PXREF text = getcwd(workingDirectory->A, bufferSize);
-    const PXResult pxActionResult = PXErrorCurrent(text);
+    const PXResult pxResult = PXErrorCurrent(text);
 
-    return pxActionResult;
+    return pxResult;
 
 #elif OSWindows
     const DWORD writtenBytes = GetCurrentDirectoryA(bufferSize, directoryCurrent); // _getcwd()
-    const PXResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
+    const PXResult pxResult = PXErrorCurrent(writtenBytes > 0);
 
     if(sizeWritten)
     {
         *sizeWritten = writtenBytes;
     }
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -504,14 +504,14 @@ PXResult PXAPI PXDirectoryCurrentW(wchar_t PXREF directoryCurrent, const PXSize 
     return PXActionRefusedNotSupportedByLibrary;
 #elif OSWindows
     const DWORD writtenBytes = GetCurrentDirectoryW(bufferSize, directoryCurrent); // _getcwd()
-    const PXResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
+    const PXResult pxResult = PXErrorCurrent(writtenBytes > 0);
 
     if(sizeWritten)
     {
         *sizeWritten = writtenBytes;
     }
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -530,11 +530,11 @@ PXResult PXAPI PXDirectoryCurrentChange(const PXText PXREF directoryName)
         const BOOL resultID = SetCurrentDirectoryA(directoryName->A); // _chdir()
 #endif
 
-        const PXResult pxActionResult = PXErrorCurrent(resultID);
+        const PXResult pxResult = PXErrorCurrent(resultID);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         return PXResultOK;
@@ -547,11 +547,11 @@ PXResult PXAPI PXDirectoryCurrentChange(const PXText PXREF directoryName)
         const BOOL resultID = SetCurrentDirectoryW(directoryName->W); // _wchdir()
 #endif
 
-        const PXResult pxActionResult = PXErrorCurrent(resultID);
+        const PXResult pxResult = PXErrorCurrent(resultID);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         return PXResultOK;

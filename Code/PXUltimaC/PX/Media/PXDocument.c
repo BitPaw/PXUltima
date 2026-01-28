@@ -579,8 +579,8 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument PXREF pxDocument, PXCodeDocument
         &pxDocumentElement->ElementChildrenAmount, PXTypeSize,
         &pxDocumentElement->ElementSiblingsAmount, PXTypeSize,
         &pxDocumentElement->ParaentDataPosition, PXTypeSize,
-        &symbolID, PXTypeInt08U,
-        &amount, PXTypeInt32U
+        &symbolID, PXTypeI08U,
+        &amount, PXTypeI32U
     };
 
     const PXSize bytesTransphered = pxFileIOMultibleFunction(&pxDocument->Data, pxFileDataElementTypeList, sizeof(pxFileDataElementTypeList));
@@ -688,7 +688,7 @@ PXResult PXAPI PXDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocum
         if (pxDocumentElement->ElementClass.IsTerminateSignal)
         {
 
-            return;
+            return PXResultInvalid;
         }
 
         PXDocumentElementWrite(pxDocument, pxDocumentElement);
@@ -745,7 +745,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
         PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
         break;
     }
-    case PXTypeIntS:
+    case PXTypeIS:
     {
         int value;
         PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);

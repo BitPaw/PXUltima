@@ -12,7 +12,7 @@ typedef struct PXWMA_
 }
 PXWMA;
 
-PXPublic PXResult PXAPI PXWMALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWMASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWMALoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWMASaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

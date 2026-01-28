@@ -147,18 +147,18 @@ PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
         {pxBattery->ChargeStatus, "STATUS", PXTypeText(32) }, // Charging
         {&pxBattery->PRESENT, "PRESENT", PXTypeBoolAsText }, // 1
         {pxBattery->MaterialTechnology, "TECHNOLOGY", PXTypeText(32) }, // Li-ion
-        {&pxBattery->CYCLE_COUNT, "CYCLE_COUNT", PXTypeInt08U }, // 81
-        {&pxBattery->VOLTAGE_MIN_DESIGN, "VOLTAGE_MIN_DESIGN", PXTypeInt32U }, // 11100000
-        {&pxBattery->VOLTAGE_NOW, "VOLTAGE_NOW", PXTypeInt32U }, // 12276000
-        {&pxBattery->CURRENT_NOW, "CURRENT_NOW", PXTypeInt32U }, // 2889000
-        {&pxBattery->ChargeMaximalTheroetical, "CHARGE_FULL_DESIGN", PXTypeInt32U }, // 4400000
-        {&pxBattery->ChargeMaximumPractical, "CHARGE_FULL", PXTypeInt32U }, // 2506000
-        {&pxBattery->ChargeCurrent, "CHARGE_NOW", PXTypeInt32U }, // 1503000
-        {&pxBattery->CAPACITY, "CAPACITY", PXTypeInt08U }, // 59
+        {&pxBattery->CYCLE_COUNT, "CYCLE_COUNT", PXTypeI08U }, // 81
+        {&pxBattery->VOLTAGE_MIN_DESIGN, "VOLTAGE_MIN_DESIGN", PXTypeI32U }, // 11100000
+        {&pxBattery->VOLTAGE_NOW, "VOLTAGE_NOW", PXTypeI32U }, // 12276000
+        {&pxBattery->CURRENT_NOW, "CURRENT_NOW", PXTypeI32U }, // 2889000
+        {&pxBattery->ChargeMaximalTheroetical, "CHARGE_FULL_DESIGN", PXTypeI32U }, // 4400000
+        {&pxBattery->ChargeMaximumPractical, "CHARGE_FULL", PXTypeI32U }, // 2506000
+        {&pxBattery->ChargeCurrent, "CHARGE_NOW", PXTypeI32U }, // 1503000
+        {&pxBattery->CAPACITY, "CAPACITY", PXTypeI08U }, // 59
         {pxBattery->CAPACITY_LEVEL, "CAPACITY_LEVEL", PXTypeText(32) }, // Normal
         {pxBattery->MODEL_NAME, "MODEL_NAME", PXTypeText(32) }, // PABAS0241231
         {pxBattery->MANUFACTURER, "MANUFACTURER", PXTypeText(32) }, // COMPAL
-        {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXTypeInt08U } // 41167
+        {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXTypeI08U } // 41167
         };
         const PXI8U amount = sizeof(list) / sizeof(PXTypeBinding);
 
@@ -222,7 +222,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 
         if(!locator)
         {
-            return;
+            return PXResultInvalid;
         }
 
 

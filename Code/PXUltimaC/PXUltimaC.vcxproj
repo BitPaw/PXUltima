@@ -51,8 +51,18 @@
     <ClCompile Include="PX\Engine\ECS\Component\Rectangle\PXRectangle.c" />
     <ClCompile Include="PX\Engine\ECS\Component\SpriteAnimator\PXSpriteAnimation.c" />
     <ClCompile Include="PX\Engine\ECS\Component\SpriteAtlas\PXSpriteAtlas.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\AudioEmitter\PXAudioEmitter.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\AudioListener\PXAudioListener.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\FieldEffect\PXFieldEffect.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Gizmo\PXGizmo.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\IconAudio\PXIconAudio.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\IconSun\PXIconSun.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\LightDirectional\PXLightDirectional.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\LightPoint\PXLightPoint.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\LightSpot\PXLightSpot.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\Sprite\PXSprite.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Tesseract\PXTesseract.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\Button\PXButton.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\Calender\PXCalender.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\CheckBox\PXCheckBox.c" />
@@ -91,19 +101,22 @@
     <ClCompile Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\UI\VideoCutter\PXVideoCutter.c" />
     <ClCompile Include="PX\Engine\ECS\Reflection\PXReflection.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\AudioDevice\PXAudioDevice.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Cursor\PXCursor.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Display\PXDisplay.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\DrawScript\PXDrawScript.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\DrawScript\PXDrawScript.h" />
     <ClCompile Include="PX\Engine\ECS\Resource\FrameBuffer\PXFrameBuffer.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\GraphicsCard\PXGraphicsCard.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXBufferLayout.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXIndexBuffer.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXMeshGeometry.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXVertexBuffer.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Monitor\PXMonitor.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Texture\PXTexture.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Brush\PXBrush.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\Camera\PXCamera.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Font\PXFont.c" />
-    <ClCompile Include="PX\Engine\ECS\Entity\HitBox\PXHitBox.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXMesh.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\Model\PXModel.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\SkyBox\PXSkyBox.c" />
@@ -115,6 +128,9 @@
     <ClCompile Include="PX\Engine\ECS\Resource\Shader\PXShader.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Sound\PXSound.c" />
     <ClCompile Include="PX\Engine\ECS\Resource\Timer\PXTimer.c" />
+    <ClCompile Include="PX\Engine\ECS\System\Input\PXInputDevice.c" />
+    <ClCompile Include="PX\Engine\ECS\System\Input\PXInputPlayer.c" />
+    <ClCompile Include="PX\Engine\ECS\System\Input\PXInputSystem.c" />
     <ClCompile Include="PX\Engine\ECS\System\PXRenderingSystem.c" />
     <ClCompile Include="PX\Engine\ID\PXID.c" />
     <ClCompile Include="PX\Engine\Interact\PXSign.c" />
@@ -200,7 +216,6 @@
     <ClCompile Include="PX\Media\PXColor.c" />
     <ClCompile Include="PX\Media\PXDocument.c" />
     <ClCompile Include="PX\Media\PXLevel\PXLevel.c" />
-    <ClCompile Include="PX\Media\PXSound.c" />
     <ClCompile Include="PX\Media\PXText.c" />
     <ClCompile Include="PX\Media\PXType.c" />
     <ClCompile Include="PX\Media\PXUltimaInfo.c" />
@@ -253,7 +268,7 @@
     <ClCompile Include="PX\OS\Async\PXThread.c" />
     <ClCompile Include="PX\OS\Async\PXThreadPool.c" />
     <ClCompile Include="PX\OS\Audio\PXALSA\PXALSA.c" />
-    <ClCompile Include="PX\OS\Audio\PXAudio.c" />
+    <ClCompile Include="PX\Engine\ECS\System\PXAudioSystem.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXAudioMIDI.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXCoreAudio.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXDirectSound.c" />
@@ -279,7 +294,7 @@
     <ClCompile Include="PX\OS\Graphic\PXGraphic.c" />
     <ClCompile Include="PX\OS\Graphic\SoftwareRender\PXSoftwareRender.c" />
     <ClCompile Include="PX\OS\Graphic\Vulcan\PXVulcan.c" />
-    <ClCompile Include="PX\OS\Hardware\PXController.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Controller\PXController.c" />
     <ClCompile Include="PX\OS\Hardware\PXHardDrive.c" />
     <ClCompile Include="PX\OS\Hardware\PXHardware.c" />
     <ClCompile Include="PX\OS\Hardware\PXProcessor.c" />
@@ -300,7 +315,7 @@
     <ClCompile Include="PX\OS\Time\PXStopWatch.c" />
     <ClCompile Include="PX\OS\Time\PXTime.c" />
     <ClCompile Include="PX\OS\User\PXUser.c" />
-    <ClCompile Include="PX\OS\Video\PXVideo.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\VideoDevice\PXVideoDevice.c" />
     <ClCompile Include="PX\PXSentinel.c" />
     <ClCompile Include="PX\Service\PXFTPService.c" />
     <ClCompile Include="PX\Service\PXHTMLService.c" />
@@ -344,8 +359,18 @@
     <ClInclude Include="PX\Engine\ECS\Component\Rectangle\PXRectangle.h" />
     <ClInclude Include="PX\Engine\ECS\Component\SpriteAnimator\PXSpriteAnimation.h" />
     <ClInclude Include="PX\Engine\ECS\Component\SpriteAtlas\PXSpriteAtlas.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\AudioEmitter\PXAudioEmitter.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\AudioListener\PXAudioListener.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\FieldEffect\PXFieldEffect.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Gizmo\PXGizmo.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\IconAudio\PXIconAudio.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\IconSun\PXIconSun.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\LightDirectional\PXLightDirectional.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\LightPoint\PXLightPoint.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\LightSpot\PXLightSpot.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\SpaceGrid\PXSpaceGrid.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\Sprite\PXSprite.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Tesseract\PXTesseract.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\Button\PXButton.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\Calender\PXCalender.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\CheckBox\PXCheckBox.h" />
@@ -384,19 +409,21 @@
     <ClInclude Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\UI\VideoCutter\PXVideoCutter.h" />
     <ClInclude Include="PX\Engine\ECS\Reflection\PXReflection.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\AudioDevice\PXAudioDevice.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Cursor\PXCursor.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Display\PXDisplay.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\FrameBuffer\PXFrameBuffer.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\GraphicsCard\PXGraphicsCard.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Light\PXLight.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXBufferLayout.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXIndexBuffer.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXMeshGeometry.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXVertexBuffer.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Monitor\PXMonitor.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Texture\PXTexture.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Brush\PXBrush.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\Camera\PXCamera.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Font\PXFont.h" />
-    <ClInclude Include="PX\Engine\ECS\Entity\HitBox\PXHitBox.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXMesh.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\Model\PXModel.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Video\PXVideo.h" />
@@ -408,6 +435,9 @@
     <ClInclude Include="PX\Engine\ECS\Resource\Shader\PXShader.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Sound\PXSound.h" />
     <ClInclude Include="PX\Engine\ECS\Resource\Timer\PXTimer.h" />
+    <ClInclude Include="PX\Engine\ECS\System\Input\PXInputDevice.h" />
+    <ClInclude Include="PX\Engine\ECS\System\Input\PXInputPlayer.h" />
+    <ClInclude Include="PX\Engine\ECS\System\Input\PXInputSystem.h" />
     <ClInclude Include="PX\Engine\ECS\System\PXRenderingSystem.h" />
     <ClInclude Include="PX\Engine\ID\PXID.h" />
     <ClInclude Include="PX\Engine\Interact\PXSign.h" />
@@ -493,7 +523,6 @@
     <ClInclude Include="PX\Media\PXColor.h" />
     <ClInclude Include="PX\Media\PXDocument.h" />
     <ClInclude Include="PX\Media\PXLevel\PXLevel.h" />
-    <ClInclude Include="PX\Media\PXSound.h" />
     <ClInclude Include="PX\Media\PXText.h" />
     <ClInclude Include="PX\Media\PXType.h" />
     <ClInclude Include="PX\Media\PXUltimaInfo.h" />
@@ -546,7 +575,7 @@
     <ClInclude Include="PX\OS\Async\PXThread.h" />
     <ClInclude Include="PX\OS\Async\PXThreadPool.h" />
     <ClInclude Include="PX\OS\Audio\PXALSA\PXALSA.h" />
-    <ClInclude Include="PX\OS\Audio\PXAudio.h" />
+    <ClInclude Include="PX\Engine\ECS\System\PXAudioSystem.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXAudioMIDI.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXCoreAudio.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXDirectSound.h" />
@@ -572,7 +601,7 @@
     <ClInclude Include="PX\OS\Graphic\PXGraphic.h" />
     <ClInclude Include="PX\OS\Graphic\SoftwareRender\PXSoftwareRender.h" />
     <ClInclude Include="PX\OS\Graphic\Vulcan\PXVulcan.h" />
-    <ClInclude Include="PX\OS\Hardware\PXController.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Controller\PXController.h" />
     <ClInclude Include="PX\OS\Hardware\PXHardDrive.h" />
     <ClInclude Include="PX\OS\Hardware\PXHardware.h" />
     <ClInclude Include="PX\OS\Hardware\PXProcessor.h" />
@@ -593,7 +622,7 @@
     <ClInclude Include="PX\OS\Time\PXStopWatch.h" />
     <ClInclude Include="PX\OS\Time\PXTime.h" />
     <ClInclude Include="PX\OS\User\PXUser.h" />
-    <ClInclude Include="PX\OS\Video\PXVideo.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\VideoDevice\PXVideoDevice.h" />
     <ClInclude Include="PX\PXSentinel.h" />
     <ClInclude Include="PX\Service\PXFTPService.h" />
     <ClInclude Include="PX\Service\PXHTMLService.h" />
@@ -689,6 +718,7 @@
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatSpecificWarningsAsErrors>164;513;4033</TreatSpecificWarningsAsErrors>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -706,8 +736,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatSpecificWarningsAsErrors>
-      </TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>164;513;4033</TreatSpecificWarningsAsErrors>
       <DebugInformationFormat>None</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>
@@ -733,6 +762,7 @@
       <LanguageStandard_C>stdc11</LanguageStandard_C>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatSpecificWarningsAsErrors>164;513;4033</TreatSpecificWarningsAsErrors>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -750,8 +780,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <TreatSpecificWarningsAsErrors>
-      </TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>164;513;4033</TreatSpecificWarningsAsErrors>
       <DebugInformationFormat>None</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>

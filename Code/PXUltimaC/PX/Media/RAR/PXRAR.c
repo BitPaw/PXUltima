@@ -4,14 +4,16 @@
 
 const char PXRARSignature[] = { 'R', 'a', 'r', '!', 0x1A,0x07 };
 
-PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRARLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
+
     PXRAR pxRAR;
     PXClear(PXRAR, &pxRAR);
 
     // Read Signature
     {
-        const PXBool isSignature = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXRARSignature, sizeof(PXRARSignature));
+        const PXBool isSignature = PXFileReadAndCompare(pxFile, PXRARSignature, sizeof(PXRARSignature));
 
         if (!isSignature)
         {
@@ -20,7 +22,7 @@ PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         char checkA = 0;
 
-        PXFileReadB(pxResourceLoadInfo->FileReference, &checkA, 1u);
+        PXFileReadB(pxFile, &checkA, 1u);
 
         switch (checkA)
         {
@@ -33,7 +35,7 @@ PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const char checkB[2] = { 1,0 };
 
-            const PXBool isSignatureB = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, checkB, 2u);
+            const PXBool isSignatureB = PXFileReadAndCompare(pxFile, checkB, 2u);
 
             if (!isSignatureB)
             {
@@ -53,7 +55,7 @@ PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXRARSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRARSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

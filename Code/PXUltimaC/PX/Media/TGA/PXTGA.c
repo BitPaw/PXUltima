@@ -131,10 +131,8 @@ void PXAPI PXTGADestruct(PXTGA PXREF tga)
 
 }
 
-PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
-
     PXTGA tgaOBJ;
     PXTGA* tga = &tgaOBJ;
 
@@ -157,21 +155,21 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&imageIDLengh, PXTypeInt08U},
-            {&tga->ColorPaletteType, PXTypeInt08U},
-            {&imageTypeValue, PXTypeInt08U},
-            {&colorPaletteChunkEntryIndex, PXTypeInt16ULE},
-            {&colorPaletteChunkSize, PXTypeInt16ULE},
-            {&colorPaletteEntrySizeInBits, PXTypeInt08U},
-            {&tga->OriginX, PXTypeInt16ULE},
-            {&tga->OriginY, PXTypeInt16ULE},
-            {&tga->Width, PXTypeInt16ULE},
-            {&tga->Height, PXTypeInt16ULE},
-            {&pixelDepth, PXTypeInt08U},
-            {&tga->ImageDescriptor, PXTypeInt08U}
+            {&imageIDLengh, PXTypeI08U},
+            {&tga->ColorPaletteType, PXTypeI08U},
+            {&imageTypeValue, PXTypeI08U},
+            {&colorPaletteChunkEntryIndex, PXTypeI16ULE},
+            {&colorPaletteChunkSize, PXTypeI16ULE},
+            {&colorPaletteEntrySizeInBits, PXTypeI08U},
+            {&tga->OriginX, PXTypeI16ULE},
+            {&tga->OriginY, PXTypeI16ULE},
+            {&tga->Width, PXTypeI16ULE},
+            {&tga->Height, PXTypeI16ULE},
+            {&pixelDepth, PXTypeI08U},
+            {&tga->ImageDescriptor, PXTypeI08U}
         };
 
-        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
         tga->ImageInformationSize = imageIDLengh;
 
@@ -211,27 +209,27 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     //---[Parse Image ID]--------------
     if(tga->ImageInformationSize)
     {
-        PXFileReadB(pxResourceLoadInfo->FileReference, tga->ImageInformation, tga->ImageInformationSize);
+        PXFileReadB(pxResourceLoadInfo->FileCurrent, tga->ImageInformation, tga->ImageInformationSize);
     }
     //----------------------------------
 
     //---[Parse Color-Palette]----------
     if(colorPaletteChunkSize > 0)
     {
-        PXFileCursorAdvance(pxResourceLoadInfo->FileReference, colorPaletteChunkSize);
+        PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, colorPaletteChunkSize);
     }
     //--------------------------------
 
     //---[ ImageData ]------------------
-    PXFileReadB(pxResourceLoadInfo->FileReference, pxTexture->PixelData.Adress, pxTexture->PixelData.CursorOffsetByte);
+    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxTexture->PixelData.Adress, pxTexture->PixelData.CursorOffsetByte);
     //-----------------------------------------------------------------
 
 
     // Check end of pxFile if the pxFile is a Version 2.0 pxFile.
     {
-        footerEntryIndex = PXFileDataPosition(pxResourceLoadInfo->FileReference) - (26u - 1u);
+        footerEntryIndex = PXFileDataPosition(pxResourceLoadInfo->FileCurrent) - (26u - 1u);
 
-        const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
+        const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxResourceLoadInfo->FileCurrent, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
 
         if(!isPXTGAVersionTwo) // Is this a PXTGA v.1.0 pxFile?
         {
@@ -239,19 +237,19 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         }
     }
 
-    firstFieldAfterHeader = PXFileDataPosition(pxResourceLoadInfo->FileReference);
+    firstFieldAfterHeader = PXFileDataPosition(pxResourceLoadInfo->FileCurrent);
 
     //---[ Parse Footer ]--------------------------------------------------------
-    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, footerEntryIndex); // Move 26 Bytes before the end. Start of the PXTGA-Footer.
+    PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, footerEntryIndex); // Move 26 Bytes before the end. Start of the PXTGA-Footer.
 
-    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &extensionOffset, PXEndianLittle);
-    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &developerAreaOffset, PXEndianLittle);
+    PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &extensionOffset, PXEndianLittle);
+    PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &developerAreaOffset, PXEndianLittle);
     //---------------------------------------------------------------------------
 
     //---------------------------------------------------------------------------
     if(developerAreaOffset > 0)
     {
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, developerAreaOffset); // Jump to Developer Block
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, developerAreaOffset); // Jump to Developer Block
         // Parse Developer Fields
         // Parse Developer Directory
     }
@@ -262,9 +260,9 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         PXI16U extensionSize = 0;
 
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, extensionOffset); // Jump to Extension Header
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, extensionOffset); // Jump to Extension Header
 
-        PXFileReadI16UE(pxResourceLoadInfo->FileReference, &extensionSize, PXEndianLittle);
+        PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &extensionSize, PXEndianLittle);
 
         const PXBool isExtensionSizeAsExpected = extensionSize == 495u;
 
@@ -279,43 +277,43 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             {tga->AuthorComment, 324u},
 
             // 12 Bytes
-            {&tga->DateTimeMonth, PXTypeInt16ULE},
-            {&tga->JobTimeDay, PXTypeInt16ULE},
-            {&tga->JobTimeYear, PXTypeInt16ULE},
-            {&tga->JobTimeHour, PXTypeInt16ULE},
-            {&tga->JobTimeMinute, PXTypeInt16ULE},
-            {&tga->JobTimeSecond, PXTypeInt16ULE},
+            {&tga->DateTimeMonth, PXTypeI16ULE},
+            {&tga->JobTimeDay, PXTypeI16ULE},
+            {&tga->JobTimeYear, PXTypeI16ULE},
+            {&tga->JobTimeHour, PXTypeI16ULE},
+            {&tga->JobTimeMinute, PXTypeI16ULE},
+            {&tga->JobTimeSecond, PXTypeI16ULE},
             {tga->JobID, 41u},
 
             // 6 Bytes
-            {&tga->JobTimeHours, PXTypeInt16ULE},
-            {&tga->JobTimeMinutes, PXTypeInt16ULE},
-            {&tga->JobTimeSeconds, PXTypeInt16ULE},
+            {&tga->JobTimeHours, PXTypeI16ULE},
+            {&tga->JobTimeMinutes, PXTypeI16ULE},
+            {&tga->JobTimeSeconds, PXTypeI16ULE},
 
             {PXNull, PXTypePadding(12u)},
 
             {tga->SoftwareName, 41u},
-            {&tga->VersionNumber, PXTypeInt16ULE},
-            {&tga->SoftwareVersion, PXTypeInt08U},
+            {&tga->VersionNumber, PXTypeI16ULE},
+            {&tga->SoftwareVersion, PXTypeI08U},
 
-            {&tga->BackGroundColor, PXTypeInt32ULE},
-            {&tga->PixelAspectRatioCounter, PXTypeInt16ULE},
-            {&tga->PixelAspectRatioDenominator, PXTypeInt16ULE},
-            {&tga->GammaCounter, PXTypeInt16ULE},
-            {&tga->GammaDenominator, PXTypeInt16ULE},
-            {&tga->ColorCorrectionOffset, PXTypeInt32ULE},
-            {&tga->PostagestampOffset, PXTypeInt32ULE},
-            {&tga->ScanlineOffset, PXTypeInt32ULE},
-            {&tga->AttributesType, PXTypeInt08U},
+            {&tga->BackGroundColor, PXTypeI32ULE},
+            {&tga->PixelAspectRatioCounter, PXTypeI16ULE},
+            {&tga->PixelAspectRatioDenominator, PXTypeI16ULE},
+            {&tga->GammaCounter, PXTypeI16ULE},
+            {&tga->GammaDenominator, PXTypeI16ULE},
+            {&tga->ColorCorrectionOffset, PXTypeI32ULE},
+            {&tga->PostagestampOffset, PXTypeI32ULE},
+            {&tga->ScanlineOffset, PXTypeI32ULE},
+            {&tga->AttributesType, PXTypeI08U},
         };
 
-        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXTGASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTGASaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

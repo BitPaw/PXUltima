@@ -11,7 +11,7 @@ typedef struct PXVRML_
 }
 PXVRML;
 
-PXPublic PXResult PXAPI PXVRMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXVRMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVRMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVRMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

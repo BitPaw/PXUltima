@@ -332,6 +332,11 @@ void PXAPI PXConsoleWriteF(const PXSize length, const char PXREF source, ...)
 
 void PXAPI PXConsoleWrite(const PXSize length, const char PXREF source)
 {
+    if(!source)
+    {
+        return;
+    }
+
 #if OSUnix
 
     int writtenBytes = 0;

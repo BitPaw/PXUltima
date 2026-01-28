@@ -5,7 +5,7 @@
 
 typedef struct PXNamePool_
 {
-    PXDictionaryT(PXID, void*) NameLookup;
+    PXDictionaryT(PXID, void*)* NameLookup;
 }
 PXNamePool;
 
@@ -13,16 +13,25 @@ PXNamePool _pxNamePool;
 
 PXResult PXAPI PXNamePoolInit()
 {
-    PXDictionaryConstruct(&_pxNamePool.NameLookup, sizeof(PXID), 0, PXDictionaryValueLocalityInternalEmbedded);
+    PXDictionaryCreateInfo pxDictionaryCreateInfo;
+    PXClear(PXDictionaryCreateInfo, &pxDictionaryCreateInfo);
+    pxDictionaryCreateInfo.KeySize = sizeof(PXID);
+    pxDictionaryCreateInfo.ValueLocality = PXDictionaryValueLocalityInternalEmbedded;
+
+    PXDictionaryCreate(&_pxNamePool.NameLookup, &pxDictionaryCreateInfo);
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXNamePoolStore(const PXID pxID, const PXText* pxText, PXText* pxTextResult)
 {
-   // PXDictionaryEntryAddRange();
-
-    PXResult pxResult = PXDictionaryEntryAdd(&_pxNamePool.NameLookup, pxText->A, pxText->SizeUsed);
+    PXResult pxResult = PXDictionaryEntryAddRange
+    (
+        _pxNamePool.NameLookup, 
+        &pxID,
+        pxText->Data,
+        pxText->SizeUsed
+    );
 
     if(PXResultOK != pxResult)
     {

@@ -95,7 +95,7 @@ typedef struct PXBinaryWindows_
 }
 PXBinaryWindows;
 
-PXPublic PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXBinaryWindowsLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXBinaryWindowsSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

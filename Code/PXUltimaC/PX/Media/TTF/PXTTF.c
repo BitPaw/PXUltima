@@ -256,7 +256,7 @@ void PXAPI PXTTFDestruct(PXTTF PXREF ttf)
     // TODO
 }
 
-PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTTFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXTTF ttfdata;
     PXTTF* ttf = &ttfdata;
@@ -269,15 +269,15 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&offsetTable.Version.Major,    PXTypeInt16UBE},
-            {&offsetTable.Version.Minor,    PXTypeInt16UBE},
-            {&offsetTable.NumberOfTables,    PXTypeInt16UBE},
-            {&offsetTable.SearchRange,        PXTypeInt16UBE},
-            {&offsetTable.EntrySelctor,        PXTypeInt16UBE},
-            {&offsetTable.RangeShift,        PXTypeInt16UBE}
+            {&offsetTable.Version.Major,    PXTypeI16UBE},
+            {&offsetTable.Version.Minor,    PXTypeI16UBE},
+            {&offsetTable.NumberOfTables,    PXTypeI16UBE},
+            {&offsetTable.SearchRange,        PXTypeI16UBE},
+            {&offsetTable.EntrySelctor,        PXTypeI16UBE},
+            {&offsetTable.RangeShift,        PXTypeI16UBE}
         };
 
-        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
     for (PXSize i = 0; i < offsetTable.NumberOfTables; ++i)
@@ -289,13 +289,13 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&tableEntry.TypeID,    PXTypeInt32UBE},
-                {&tableEntry.CheckSum,    PXTypeInt32UBE},
-                {&tableEntry.Offset,    PXTypeInt32UBE},
-                {&tableEntry.Length,    PXTypeInt32UBE}
+                {&tableEntry.TypeID,    PXTypeI32UBE},
+                {&tableEntry.CheckSum,    PXTypeI32UBE},
+                {&tableEntry.Offset,    PXTypeI32UBE},
+                {&tableEntry.Length,    PXTypeI32UBE}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             tableEntry.Type = PXTTFTableEntryTypeFromID(tableEntry.TypeID);
         }
@@ -314,8 +314,8 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         );
 #endif
 
-        sourcePosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tableEntry.Offset);
+        sourcePosition = PXFileDataPosition(pxResourceLoadInfo->FileCurrent);
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tableEntry.Offset);
 
         switch (tableEntry.Type)
         {
@@ -324,28 +324,28 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&ttf->Header.Version.Major,    PXTypeInt16UBE},
-                {&ttf->Header.Version.Minor,    PXTypeInt16ULE},
-                {&ttf->Header.Revision.Major,    PXTypeInt16UBE},
-                {&ttf->Header.Revision.Minor,    PXTypeInt16ULE},
-                {&ttf->Header.CheckSumAdjustment,    PXTypeInt32UBE},
-                {&ttf->Header.MagicNumber,    PXTypeInt32UBE},
-                {&ttf->Header.Flags,    PXTypeInt16UBE},
-                {&ttf->Header.UnitsPerEM,    PXTypeInt16UBE},
-                {&ttf->Header.Created,    PXTypeInt64UBE},
-                {&ttf->Header.Modified,    PXTypeInt64UBE},
-                {&ttf->Header.Minimum[0],    PXTypeInt16SBE},
-                {&ttf->Header.Minimum[1],    PXTypeInt16SBE},
-                {&ttf->Header.Maximum[0],    PXTypeInt16SBE},
-                {&ttf->Header.Maximum[1],    PXTypeInt16SBE},
-                {&ttf->Header.MacStyle,    PXTypeInt16UBE},
-                {&ttf->Header.LowestRecPpem,    PXTypeInt16UBE},
-                {&ttf->Header.FontDirectionHint,    PXTypeInt16SBE},
-                {&ttf->Header.IndexToLocFormat,    PXTypeInt16SBE},
-                {&ttf->Header.GlyphDataFormat,    PXTypeInt16SBE},
+                {&ttf->Header.Version.Major,    PXTypeI16UBE},
+                {&ttf->Header.Version.Minor,    PXTypeI16ULE},
+                {&ttf->Header.Revision.Major,    PXTypeI16UBE},
+                {&ttf->Header.Revision.Minor,    PXTypeI16ULE},
+                {&ttf->Header.CheckSumAdjustment,    PXTypeI32UBE},
+                {&ttf->Header.MagicNumber,    PXTypeI32UBE},
+                {&ttf->Header.Flags,    PXTypeI16UBE},
+                {&ttf->Header.UnitsPerEM,    PXTypeI16UBE},
+                {&ttf->Header.Created,    PXTypeI64UBE},
+                {&ttf->Header.Modified,    PXTypeI64UBE},
+                {&ttf->Header.Minimum[0],    PXTypeI16SBE},
+                {&ttf->Header.Minimum[1],    PXTypeI16SBE},
+                {&ttf->Header.Maximum[0],    PXTypeI16SBE},
+                {&ttf->Header.Maximum[1],    PXTypeI16SBE},
+                {&ttf->Header.MacStyle,    PXTypeI16UBE},
+                {&ttf->Header.LowestRecPpem,    PXTypeI16UBE},
+                {&ttf->Header.FontDirectionHint,    PXTypeI16SBE},
+                {&ttf->Header.IndexToLocFormat,    PXTypeI16SBE},
+                {&ttf->Header.GlyphDataFormat,    PXTypeI16SBE},
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             break;
         }
@@ -353,23 +353,23 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                { &ttf->HorizontalHeader.Version.Major, PXTypeInt16UBE },
-                { &ttf->HorizontalHeader.Version.Minor, PXTypeInt16ULE },
-                { &ttf->HorizontalHeader.Ascender, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.Descender, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.LineGap, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.AdvanceWidthMaximum, PXTypeInt16UBE },
-                { &ttf->HorizontalHeader.MinimumLeftSideBearing, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.MinimumRightSideBearing, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.MaximalExtendX, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.CaretSlopeRun, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.CaretSlopeRise, PXTypeInt16SBE    },
+                { &ttf->HorizontalHeader.Version.Major, PXTypeI16UBE },
+                { &ttf->HorizontalHeader.Version.Minor, PXTypeI16ULE },
+                { &ttf->HorizontalHeader.Ascender, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.Descender, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.LineGap, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.AdvanceWidthMaximum, PXTypeI16UBE },
+                { &ttf->HorizontalHeader.MinimumLeftSideBearing, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.MinimumRightSideBearing, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.MaximalExtendX, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.CaretSlopeRun, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.CaretSlopeRise, PXTypeI16SBE    },
                 { PXNull, 10u },
-                { &ttf->HorizontalHeader.MetricDataFormat, PXTypeInt16SBE },
-                { &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXTypeInt16UBE }
+                { &ttf->HorizontalHeader.MetricDataFormat, PXTypeI16SBE },
+                { &ttf->HorizontalHeader.NumberOfHorizontalMetrics, PXTypeI16UBE }
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             break;
         }
@@ -615,27 +615,27 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                { &tableEntryGlyphOutlineEntry.ContourListSize, PXTypeInt16SBE },
-                { &tableEntryGlyphOutlineEntry.Minimum[0], PXTypeInt16UBE },
-                { &tableEntryGlyphOutlineEntry.Minimum[1], PXTypeInt16UBE },
-                { &tableEntryGlyphOutlineEntry.Maximum[0], PXTypeInt16UBE },
-                { &tableEntryGlyphOutlineEntry.Maximum[1], PXTypeInt16UBE }
+                { &tableEntryGlyphOutlineEntry.ContourListSize, PXTypeI16SBE },
+                { &tableEntryGlyphOutlineEntry.Minimum[0], PXTypeI16UBE },
+                { &tableEntryGlyphOutlineEntry.Minimum[1], PXTypeI16UBE },
+                { &tableEntryGlyphOutlineEntry.Maximum[0], PXTypeI16UBE },
+                { &tableEntryGlyphOutlineEntry.Maximum[1], PXTypeI16UBE }
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             const PXBool isSimpleGlyph = tableEntryGlyphOutlineEntry.ContourListSize >= 0;
 
             if (isSimpleGlyph)
             {
-                PXFileReadI16UVE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+                PXFileReadI16UVE(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
 
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
+                PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
 
-                PXFileReadB(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionList, tableEntryGlyphOutlineEntry.InstructionListSize);
+                PXFileReadB(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.InstructionList, tableEntryGlyphOutlineEntry.InstructionListSize);
 
 
-                PXFileReadI8U(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.FlagList);
+                PXFileReadI8U(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.FlagList);
 
                 // xCoordinates
                 //PXFileReadB(pxFile, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
@@ -645,8 +645,8 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             }
             else // compound glyph
             {
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
+                PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
+                PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
             }
 
 
@@ -669,11 +669,11 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 #if 0
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&ttf->Header.Version.Major,    PXTypeInt16UBE},
-                {&ttf->Header.Version.Minor,    PXTypeInt16ULE},
-                {&ttf->Header.Revision.Major,    PXTypeInt16UBE},
-                {&ttf->Header.Revision.Minor,    PXTypeInt16ULE},
-                {&ttf->Header.CheckSumAdjustment,    PXTypeInt32UBE}
+                {&ttf->Header.Version.Major,    PXTypeI16UBE},
+                {&ttf->Header.Version.Minor,    PXTypeI16ULE},
+                {&ttf->Header.Revision.Major,    PXTypeI16UBE},
+                {&ttf->Header.Revision.Minor,    PXTypeI16ULE},
+                {&ttf->Header.CheckSumAdjustment,    PXTypeI32UBE}
             };
 
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -685,8 +685,8 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         // Windows
         case PXTTFTableEntryCharacterCodeMapping:
         {
-            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
-            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
+            PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
+            PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
             ttf->CharacterMapping.EncodingRecordList = PXMemoryHeapCallocT
             (
@@ -701,9 +701,9 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 PXI16U platformID = 0;
                 PXI16U encodingID = 0;
 
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &platformID, PXEndianBig);
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &encodingID, PXEndianBig);
-                PXFileReadI32UE(pxResourceLoadInfo->FileReference, &encodingRecord->SubtableOffset, PXEndianBig);
+                PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &platformID, PXEndianBig);
+                PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &encodingID, PXEndianBig);
+                PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &encodingRecord->SubtableOffset, PXEndianBig);
 
                 encodingRecord->Platform = PXTTFPlatformFromID(platformID);
                 encodingRecord->Encoding = PXTTFEncodingFromID(encodingRecord->Platform, encodingID);
@@ -771,13 +771,13 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         }
         }
 
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, sourcePosition);
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, sourcePosition);
     }
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXTTFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTTFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

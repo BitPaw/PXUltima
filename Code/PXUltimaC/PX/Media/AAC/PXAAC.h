@@ -11,7 +11,7 @@ typedef struct PXAAC_
 }
 PXAAC;
 
-PXPublic PXResult PXAPI PXAACLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXAACSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAACLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAACSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

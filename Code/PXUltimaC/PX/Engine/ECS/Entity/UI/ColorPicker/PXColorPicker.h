@@ -49,7 +49,7 @@ PXColorPickerCreateInfo;
 
 PXPublic PXResult PXAPI PXColorPickerRegisterToECS();
 
-PXPublic PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo);
 PXPublic PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPickerREF, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo);
 
 #endif

@@ -135,12 +135,22 @@ PXResult PXAPI PXFontListFetch()
 
 PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCreateInfo)
 {
+    if(!(pxFontREF && pxFontCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     PXFont* pxFont = PXNull;
     PXText* fontName = &pxFontCreateInfo->RegisteredName;
 
     pxFontCreateInfo->Info.Static = &PXFontRegisterInfoStatic;
     pxFontCreateInfo->Info.Dynamic = &PXFontRegisterInfoDynamic;
-    PXECSCreate(pxFontREF, pxFontCreateInfo);
+    PXResult pxResult = PXECSCreate(pxFontREF, pxFontCreateInfo);
+    
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
     pxFont = *pxFontREF;
 
@@ -225,8 +235,6 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
 
         PXResult pxResult = PXErrorCurrent(PXNull != pxFont->FontHandle);
 
-
-
 #endif
 
 #if PXLogEnable
@@ -254,18 +262,13 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
             "PXID:<%4i>, <%s>, Path:<%s>, from file",
             pxFont->Info.ID,
             fontName->A,
-           PXNull // FilePath            
+            PXNull // FilePath            
         );
 #endif
 
         // Load font
         {
-            PXResourceMoveInfo pxResourceLoadInfo;
-            PXClear(PXResourceMoveInfo, &pxResourceLoadInfo);
-            pxResourceLoadInfo.ResourceTarget = pxFont;
-            pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
-
-            const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, 0);
+            const PXResult loadResult = PXECSLoad(pxFont, &pxFontCreateInfo->Info);
 
             if(PXResultOK != loadResult)
                 return loadResult;

@@ -55,11 +55,11 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
         SHGSI_ICON,
         &stockIconInfo
     ); // Windows Vista, Shell32.dll, shellapi.h
-    const PXResult pxActionResult = PXErrorFromHRESULT(resultFile);
+    const PXResult pxResult = PXErrorFromHRESULT(resultFile);
 
     pxIcon->IconHandle = PXNull;
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif

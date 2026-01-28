@@ -1,36 +1,65 @@
 #include "PXSprite.h"
 
-PXResult PXAPI PXSpriteCreate(PXSprite PXREF pxSprite, PXSpriteCreateInfo PXREF pxSpriteCreateInfo)
+#include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/ECS/Entity/FieldEffect/PXFieldEffect.h>
+
+const char PXSpriteName[] = "Sprite";
+const PXI8U PXSpriteNameLength = sizeof(PXSpriteName);
+const PXECSRegisterInfoStatic PXSpriteRegisterInfoStatic =
 {
+    {sizeof(PXSpriteName), sizeof(PXSpriteName), PXSpriteName, TextFormatASCII},
+    sizeof(PXSprite),
+    __alignof(PXSprite),
+    PXECSTypeEntity,
+    PXModelCreate,
+    PXModelRelease,
+    PXModelDraw
+};
+PXECSRegisterInfoDynamic PXSpriteRegisterInfoDynamic;
+
+
+PXResult PXAPI PXSpriteRegisterToECS()
+{
+    PXECSRegister(&PXSpriteRegisterInfoStatic, &PXSpriteRegisterInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXSpriteCreate(PXSprite** pxSpriteREF, PXSpriteCreateInfo PXREF pxSpriteCreateInfo)
+{
+    PXSprite* pxSprite = PXNull;
+
+    if(!(pxSpriteREF && pxSpriteCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxSpriteCreateInfo->Info.Static = &PXSpriteRegisterInfoStatic;
+    pxSpriteCreateInfo->Info.Dynamic = &PXSpriteRegisterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxSpriteREF, pxSpriteCreateInfo);
+     
+    if(pxResult != PXResultOK)
+    {
+        return pxResult;
+    }
+
+    pxSprite = *pxSpriteREF;
     pxSprite->Info.Behaviour |= PXECSInfoRender;
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXResourceManagerText,
-        "Create",
-        "Sprite ID:%i, Use <%s>",
-        pxSprite->Info.ID,
-        pxResourceCreateInfo->FilePath.A
-    );
-#endif
-
 
     // Create hitbox if requested
     if(pxSpriteCreateInfo->HitboxBehaviour > 0)
     {
-        PXHitboxCreateInfo pxHitboxCreateInfo;
-        PXClear(PXECSCreateInfo, &pxHitboxCreateInfo);
+        PXFieldEffectCreateInfo pxFieldEffectCreateInfo;
+        PXClear(PXECSCreateInfo, &pxFieldEffectCreateInfo);
 
         // Skybox CubeTexture
-        pxHitboxCreateInfo.Info.Type = PXResourceTypeHitBox;
-        pxHitboxCreateInfo.Info.Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
-        pxHitboxCreateInfo.Info.ObjectReference = (PXECSInfo**)&pxSprite->HitBox;
-       // pxHitboxCreateInfo.Model = pxSprite->Model;
-        pxHitboxCreateInfo.Behaviour = 0;
+        pxFieldEffectCreateInfo.Info.Type = PXResourceTypeHitBox;
+        pxFieldEffectCreateInfo.Info.Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
+        pxFieldEffectCreateInfo.Info.ObjectReference = (PXECSInfo**)&pxSprite->HitBox;
+        // pxHitboxCreateInfo.Model = pxSprite->Model;
+        pxFieldEffectCreateInfo.Behaviour = 0;
 
-        PXHitBoxCreate(&pxSprite->HitBox, &pxHitboxCreateInfo);
+        PXFieldEffectCreate(&pxSprite->HitBox, &pxFieldEffectCreateInfo);
     }
 
     // Scaling?
@@ -149,4 +178,14 @@ PXResult PXAPI PXSpriteCreate(PXSprite PXREF pxSprite, PXSpriteCreateInfo PXREF 
 #endif
 
     return PXResultOK;
+}
+
+PXResult PXAPI PXSpriteRelease(PXSprite PXREF pxSprite)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXResult PXAPI PXSpriteDraw(PXSprite PXREF pxSprite, PXDrawInfo PXREF pxDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
 }

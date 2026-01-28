@@ -10,7 +10,7 @@ PXPrivate void PXAPI PXJavaContainerWrite(PXCompiler PXREF pxCompiler);
 PXPrivate void PXAPI PXJavaFunctionWrite(PXCompiler PXREF pxCompiler);
 PXPrivate void PXAPI PXJavaDefinitionWrite(PXCompiler PXREF pxCompiler);
 
-PXPublic PXResult PXAPI PXJavaLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXJavaSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJavaLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJavaSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

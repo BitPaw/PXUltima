@@ -22,7 +22,7 @@ typedef struct PXRAR_
 }
 PXRAR;
 
-PXPublic PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRARSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRARLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRARSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

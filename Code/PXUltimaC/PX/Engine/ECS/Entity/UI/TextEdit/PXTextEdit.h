@@ -18,7 +18,7 @@ typedef struct sdfsdfsdfsdf
 }
 sdfsdfsdfdfssdf;
 
-PXPublic PXResult PXAPI dfssdfsdfsdffsdsdf(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI dfssdfsdfsdffsdsdf(PXButton PXREF pxButton, PXDrawInfo PXREF pxDrawInfo);
 PXPublic PXResult PXAPI sdfsdfsdfsdfsdfsdf(PXButton** pxButton, PXButtonCreateInfo PXREF pxButtonCreateInfo);
 
 #endif

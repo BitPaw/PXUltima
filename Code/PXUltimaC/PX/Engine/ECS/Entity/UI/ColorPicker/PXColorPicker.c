@@ -280,21 +280,16 @@ void drawFilledCircle(float cx, float cy, float r, int segments)
 
 
 
-PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
 
-    float x = pxWindowDrawInfo->RectangleXYWH.X;
-    float y = pxWindowDrawInfo->RectangleXYWH.Y;
-    float width = pxWindowDrawInfo->RectangleXYWH.Width;
-    float height = pxWindowDrawInfo->RectangleXYWH.Height;
+    float x = pxDrawInfo->RectangleXYWH.X;
+    float y = pxDrawInfo->RectangleXYWH.Y;
+    float width = pxDrawInfo->RectangleXYWH.Width;
+    float height = pxDrawInfo->RectangleXYWH.Height;
 
- 
-  
- 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, width, 0, height, -1, 1);
+
 
 
     glColor3f(0.8f, 0.2f, 0.2f);
@@ -845,7 +840,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXWindowDr
     return PXResultOK;
 }
 
-PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
 
@@ -861,18 +856,18 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXWindowDraw
     PXWindowDrawRectangle2D
     (
         pxWindow,
-        pxWindowDrawInfo
+        pxDrawInfo
     );
 
-    PXColorPickerDrawGL(pxColorPicker, pxWindowDrawInfo);
+    PXColorPickerDrawGL(pxColorPicker, pxDrawInfo);
 
-    return;
+    return PXResultInvalid;
 
     PXF32 scaling = 0.80f;
-    int width = (pxWindowDrawInfo->RectangleXYWH.Width - pxWindowDrawInfo->RectangleXYWH.X) / 2;
-    int height = (pxWindowDrawInfo->RectangleXYWH.Height - pxWindowDrawInfo->RectangleXYWH.Y) / 2;
-    int widthS = (pxWindowDrawInfo->RectangleXYWH.Width * scaling - pxWindowDrawInfo->RectangleXYWH.X * scaling) / 2;
-    int heightS = (pxWindowDrawInfo->RectangleXYWH.Height * scaling - pxWindowDrawInfo->RectangleXYWH.Y * scaling) / 2;
+    int width = (pxDrawInfo->RectangleXYWH.Width - pxDrawInfo->RectangleXYWH.X) / 2;
+    int height = (pxDrawInfo->RectangleXYWH.Height - pxDrawInfo->RectangleXYWH.Y) / 2;
+    int widthS = (pxDrawInfo->RectangleXYWH.Width * scaling - pxDrawInfo->RectangleXYWH.X * scaling) / 2;
+    int heightS = (pxDrawInfo->RectangleXYWH.Height * scaling - pxDrawInfo->RectangleXYWH.Y * scaling) / 2;
 
     int precision = 8;
 

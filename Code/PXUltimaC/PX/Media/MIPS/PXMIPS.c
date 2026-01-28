@@ -1369,12 +1369,12 @@ void PXAPI PXMIPSInstructionLoadDoublewordRight(PXMIPSProcessor PXREF pxMIPSProc
 
 void PXAPI PXMIPSInstructionLoadByte(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt08U, PXMIPSMemoryIOLoad);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI08U, PXMIPSMemoryIOLoad);
 }
 
 void PXAPI PXMIPSInstructionLoadHalfword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt16U, PXMIPSMemoryIOLoad);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI16U, PXMIPSMemoryIOLoad);
 }
 
 void PXAPI PXMIPSInstructionLoadWordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
@@ -1384,7 +1384,7 @@ void PXAPI PXMIPSInstructionLoadWordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, 
 
 void PXAPI PXMIPSInstructionLoadWord(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt32U, PXMIPSMemoryIOLoad);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI32U, PXMIPSMemoryIOLoad);
 }
 
 void PXAPI PXMIPSInstructionLoadByteUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
@@ -1409,12 +1409,12 @@ void PXAPI PXMIPSInstructionLoadWordUnsigned(PXMIPSProcessor PXREF pxMIPSProcess
 
 void PXAPI PXMIPSInstructionStoreByte(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt08U, PXMIPSMemoryIOStore);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI08U, PXMIPSMemoryIOStore);
 }
 
 void PXAPI PXMIPSInstructionStoreHalfword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt16U, PXMIPSMemoryIOStore);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI16U, PXMIPSMemoryIOStore);
 }
 
 void PXAPI PXMIPSInstructionStoreWordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
@@ -1433,7 +1433,7 @@ void PXAPI PXMIPSInstructionStoreWord(PXMIPSProcessor PXREF pxMIPSProcessor, PXM
     order two bits of the address are not zero, an address error exception occurs.
     */
 
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt32U, PXMIPSMemoryIOStore);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI32U, PXMIPSMemoryIOStore);
 }
 
 void PXAPI PXMIPSInstructionStoreDoublewordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
@@ -1523,7 +1523,7 @@ void PXAPI PXMIPSInstructionStoreDoublewordFromFPUCoprocessor2(PXMIPSProcessor P
 
 void PXAPI PXMIPSInstructionStoreDoubleword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt64U, PXMIPSMemoryIOStore);
+    PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeI64U, PXMIPSMemoryIOStore);
 }
 
 void PXAPI PXMIPSInstructionShiftLeftLogical(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)

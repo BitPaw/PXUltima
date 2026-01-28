@@ -14,7 +14,7 @@ const char PXRGeometricMapSignature[4] = "OEGM";
 const PXI32U PXRGeometricMapHeaderList[] =
 {
     PXTypeDatax4, // PXTypeSignatureCheck
-    PXTypeInt32U,
+    PXTypeI32U,
 };
 const PXI8U PXRGeometricMapHeaderListSize = sizeof(PXRGeometricMapHeaderList) / sizeof(PXI32U);
 
@@ -356,9 +356,9 @@ void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeo
 
 
 
-PXResult PXAPI PXRGeometricMapLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRGeometricMapLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     return PXResultOK;
 
@@ -624,7 +624,7 @@ PXResult PXAPI PXRGeometricMapLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
     return PXResultOK;
 }
 
-PXResult PXAPI PXRGeometricMapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRGeometricMapSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

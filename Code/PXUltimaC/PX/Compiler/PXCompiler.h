@@ -193,17 +193,10 @@ typedef struct PXCompiler_
 
     PXCodeDocument* CodeDocument;
 
-    PXSize EndOfCommand;
-    const char* EndOfCommandSize;
-
-    PXSize CommentSingleLineSize;
-    const char* CommentSingleLine; // Example : "//" or "#"
-
-    PXSize CommentMultibleLineBeginSize;
-    const char* CommentMultibleLineBegin;  // Example : "/*"
-
-    PXSize CommentMultibleLineEndSize;
-    const char* CommentMultibleLineEnd;  // Example : "*/"
+    PXText EndOfCommand;
+    PXText CommentSingleLine; // Example : "//" or "#"
+    PXText CommentMultibleLineBegin; // Example : "/*"
+    PXText CommentMultibleLineEnd;  // Example : "*/"
 
     PXI32U Flags;
 

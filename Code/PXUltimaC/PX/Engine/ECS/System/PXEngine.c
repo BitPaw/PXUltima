@@ -30,8 +30,9 @@
 #include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
 #include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
 #include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
+#include <PX/Engine/ECS/Entity/UI/ECSEntityList/PXECSEntityList.h>
 
-
+PXModel* pxModel = 0;
 
 PXColorPicker* _pxColorPicker = 0;
 PXWindow* b = 0;
@@ -41,7 +42,10 @@ PXWindow* e = 0;
 PXWindow* f = 0;
 PXSpaceGrid* _pxSpaceGrid = 0;
 PXTransformView* _pxTransformView = 0;
-PXWindow* i = 0;
+PXECSEntityList* _pxECSEntityList = 0;
+
+PXSkyBox* _pxSkyBox = 0;
+PXCamera* _pxCameraPlayer = 0;
 
 
 typedef struct PXEngine_
@@ -53,14 +57,14 @@ typedef struct PXEngine_
     PXGraphic Graphic;
     PXWindow* Window; // PXWindow
     PXModLoader ModLoader;
-    PXAudio Audio;
-    PXControllerSystem ControllerSystem;
+    PXAudioSystem* Audio;
+    //PXControllerSystem ControllerSystem;
     PXDataBase DataBase;
 
     //PXKeyBoard KeyBoardCurrentInput;
     //PXMouse MouseCurrentInput;
 
-    PXAudioDevice AudioStandardOutDevice;
+    PXAudioDevice* AudioStandardOutDevice;
 
     void* Owner;
     PXCamera* CameraCurrent;
@@ -106,7 +110,7 @@ const PXECSRegisterInfoStatic PXEngineRegisterInfoStatic =
     __alignof(PXEngine),
     PXECSTypeSystem,
     PXEngineCreate,
-    PXNull,
+    PXEngineRelease,
     PXNull
 };
 PXECSRegisterInfoDynamic PXEngineRegisterInfoDynamic;
@@ -177,13 +181,18 @@ PXResult PXAPI PXEngineCreate(PXEngine** pxEngineREF, PXEngineCreateInfo PXREF p
     {
         //    PXGUIMouseMovementEnable(pxEngine->Window->Info.Handle.WindowHandle);
 
-        PXControllerSystemInitilize(&pxEngine->ControllerSystem);
-        PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
+       // PXControllerSystemInitilize(&pxEngine->ControllerSystem);
+       // PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
     }
     //-----------------------------------------------------
     // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
 
     return PXResultOK;
+}
+
+PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine)
+{
+    return PXActionRefusedNotImplemented;
 }
 
 #define UseOSDelta 0
@@ -1158,7 +1167,7 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
                 return;
             }
 
-            PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
+           // PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
         }
     }
 
@@ -1167,6 +1176,7 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
     PXWindowRedraw(_pxFooter->WindowBase);
     PXWindowRedraw(_pxTransformView->WindowBase);
     PXWindowRedraw(_pxSpaceGrid->WindowBase);
+
 
     //Sleep(1);
 
@@ -1428,8 +1438,16 @@ void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventInputMouseM
     pxVector3F32.Y = pxWindowEventInputMouseMove->Delta.X;
     pxVector3F32.Z = 0;
 
-    pxEngine->CameraCurrent->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y;
-    pxEngine->CameraCurrent->CurrentRotation.Y -= pxWindowEventInputMouseMove->Delta.X;
+    pxEngine->CameraCurrent->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y * 0.02;
+    pxEngine->CameraCurrent->CurrentRotation.Y += pxWindowEventInputMouseMove->Delta.X * 0.02;
+
+    
+
+
+    const PXF32 maxValue = PXMathDegreeToRadians(85.0f);
+    const PXF32 minValue = PXMathDegreeToRadians(-85.0f);
+
+    pxEngine->CameraCurrent->CurrentRotation.X = PXMathLimit(pxEngine->CameraCurrent->CurrentRotation.X, minValue, maxValue);
 
    // PXCameraRotate(pxEngine->CameraCurrent, &pxVector3F32);
   //  PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
@@ -1513,42 +1531,75 @@ void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventInputMouseM
 
 void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKeyboard PXREF pxWindowEventInputKeyboard)
 {
+    PXCamera PXREF pxCamera = pxEngine->CameraCurrent;
+
+    PXVector3F32 move = {0,0,0};
+
+    PXVector3F32 forward;
+    PXVector3F32 right;
+    PXVector3F32 up;
+
+    PXCameraForward(pxCamera, &forward);
+    PXCameraRight(pxCamera, &right);
+    PXCameraUp(pxCamera, &up);
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'o')
+    {
+        pxEngine->CameraCurrent->Position.W -= 1 * 0.5;
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
+    if(pxWindowEventInputKeyboard->CharacterW == L'p')
+    {
+        pxEngine->CameraCurrent->Position.W += 1 * 0.5;
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    }
+
 
     if(pxWindowEventInputKeyboard->CharacterW == L'q')
     {
-        pxEngine->CameraCurrent->Position.Y += 1 * 0.5;
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Add(&move, &up);
     }
 
     if(pxWindowEventInputKeyboard->CharacterW == L'e')
     {
-        pxEngine->CameraCurrent->Position.Y -= 1 * 0.5;
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Substract(&move, &up);
     }
 
     if(pxWindowEventInputKeyboard->CharacterW == L'w')
     {
-        PXCameraMoveXYZ(pxEngine->CameraCurrent, 0, 0, 1);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Add(&move, &forward);
     }
 
     if(pxWindowEventInputKeyboard->CharacterW == L'a')
     {
-        PXCameraMoveXYZ(pxEngine->CameraCurrent, -1, 0, 0);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Substract(&move, &right);
+      
     }
 
     if(pxWindowEventInputKeyboard->CharacterW == L's')
     {
-        PXCameraMoveXYZ(pxEngine->CameraCurrent, 0, 0, -1);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Substract(&move, &forward);
     }
 
     if(pxWindowEventInputKeyboard->CharacterW == L'd')
     {
-        PXCameraMoveXYZ(pxEngine->CameraCurrent, +1, 0, 0);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+        PXVector3F32Add(&move, &right);
     }
+
+
+    PXF32 length = PXVector3F32Length(&move);
+    if(length > 0.0f)
+    {
+        PXVector3F32Normalize(&move);
+    }
+
+  
+
+    PXVector3F32Add(&pxCamera->Position, &move);
+
+    //PXCameraMove(pxEngine->CameraCurrent, &move);
+    //PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
 
 
     PXLogPrint
@@ -1556,10 +1607,19 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
         PXLoggingInfo,
         "PX",
         "Update",
-        "CAM: %4.2f %4.2f %4.2f",
+        "CAM:\n"
+        "POS: %6.2f %6.2f %6.2f\n"
+        "ROT: %6.2f %6.2f %6.2f\n"
+        "MOV: %6.2f %6.2f %6.2f",
         pxEngine->CameraCurrent->Position.X,
         pxEngine->CameraCurrent->Position.Y,
-        pxEngine->CameraCurrent->Position.Z
+        pxEngine->CameraCurrent->Position.Z,
+        pxEngine->CameraCurrent->CurrentRotation.X,
+        pxEngine->CameraCurrent->CurrentRotation.Y,
+        pxEngine->CameraCurrent->CurrentRotation.Z,
+        move.X,
+        move.Y,
+        move.Z
     );
 
 
@@ -1572,7 +1632,7 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
 
         // Solve controller
 
-
+#if 0
         if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
         {
             PXController PXREF pxController = &pxEngine->ControllerSystem.DeviceListData[0];
@@ -1642,6 +1702,8 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
             }
 #endif
         }
+
+#endif
     }
 }
 
@@ -1842,7 +1904,11 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
     );
 #endif
 
-    const PXResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
+    PXAudioSystemCreateInfo pxAudioSystemCreateInfo;
+    PXClear(PXAudioSystemCreateInfo, &pxAudioSystemCreateInfo);
+    pxAudioSystemCreateInfo.System = PXAudioSystemWindowsDirectSound;
+
+    const PXResult audioInitResult = PXAudioSystemCreate(&pxEngine->Audio, &pxAudioSystemCreateInfo);
 
     if(PXResultOK != audioInitResult)
     {
@@ -1855,21 +1921,21 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
 
     for(PXI32U i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; ++i)
     {
-        PXAudioDevice pxAudioDevice;
+        PXAudioDevice* pxAudioDevice;
 
-        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+        pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
     }
 
     for(PXI32U i = 0; i < pxAudioDeviceAmountInfo.DeviceOutput; ++i)
     {
-        PXAudioDevice pxAudioDevice;
+        PXAudioDevice* pxAudioDevice;
 
-        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
+        pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
     }
 
-    pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
+    pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
 
-    pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
+    pxEngine->Audio->DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
 }
 
 #pragma comment(lib, "dinput8.lib")
@@ -2118,16 +2184,15 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     }
 
     {
-        //i = PXWindowCreateEE(pxMainWindow, 80, 80, 40, FALSE, PXWindowDockSideRight, TRUE, PXNull);
-        PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-        pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-        pxWindowCreateInfoSub.BackGroundColor.Red = 80;
-        pxWindowCreateInfoSub.BackGroundColor.Green = 80;
-        pxWindowCreateInfoSub.BackGroundColor.Blue = 40;
-        pxWindowCreateInfoSub.floating = FALSE;
-        pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
-        // pxWindowCreateInfoSub.isChild = TRUE;
-        PXWindowCreate(&i, &pxWindowCreateInfoSub);
+        PXECSEntityListCreateInfo pxECSEntityListCreateInfo;
+        PXClear(PXECSEntityListCreateInfo, &pxECSEntityListCreateInfo);
+        pxECSEntityListCreateInfo.Window.WindowParent = pxMainWindow;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Red = 0XFF;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Green = 0;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Blue = 0;
+        pxECSEntityListCreateInfo.Window.floating = FALSE;
+        pxECSEntityListCreateInfo.Window.dockSide = PXWindowDockSideLeft;
+        PXECSEntityListCreate(&_pxECSEntityList, &pxECSEntityListCreateInfo);
     }
 
     PXWindowOpenGLEnable(pxMainWindow);
@@ -2135,10 +2200,50 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     PXWindowOpenGLEnable(_pxFooter->WindowBase);
     PXWindowOpenGLEnable(_pxTransformView->WindowBase);
     PXWindowOpenGLEnable(_pxSpaceGrid->WindowBase);
+    PXWindowOpenGLEnable(_pxECSEntityList->WindowBase);
 
     LayoutDockedEx(pxMainWindow, NULL);
 
     pxEngine->CameraCurrent = _pxSpaceGrid->CameraView;
+
+
+    //const char path[] = "C:/Data/WorkSpace/[GIT]/BitFireEngine/BitFireEngineIDE/Model/Dust_II/DustII.obj";
+    const char path[] = "C:/Data/WorkSpace/[GIT]/BitFireEngine/BitFireEngineIDE/Model/GismoTreeD.obj";
+
+
+
+
+
+    //PXSkyBox* _pxSkyBox = 0;
+
+    PXCameraCreateInfo pxCameraCreateInfo;
+    PXClear(PXCameraCreateInfo, &pxCameraCreateInfo);
+    pxCameraCreateInfo.Perspective = PXCameraPerspective3D;
+
+    PXCameraCreate
+    (
+        &_pxCameraPlayer,
+        &pxCameraCreateInfo
+    );
+
+    _pxSpaceGrid->CameraPlayer = _pxCameraPlayer;
+
+
+#if 1
+    PXModelCreateInfo pxModelCreateInfo;
+    PXClear(PXModelCreateInfo, &pxModelCreateInfo);
+    PXTextFromAdressA
+    (
+        &pxModelCreateInfo.Info.FilePath,
+        path,
+        sizeof(path),
+        sizeof(path)
+    );
+
+    PXModelCreate(&pxModel, &pxModelCreateInfo);
+#endif
+
+    _pxSpaceGrid->ModelRender = pxModel;
 
     return PXResultOK;
 }
@@ -2175,7 +2280,12 @@ PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCreateInfo PXR
         );
 #endif
     }
+
+    return PXResultOK;
 }
+
+#include <PX/Engine/ECS/System/Input/PXInputSystem.h>
+
 
 PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
 {
@@ -2328,6 +2438,25 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
     );
 #endif
 
+    PXInputSystemDevicesRefresh();
+
+
+    // test
+#if 0
+    WCHAR ms[] = L"\\\\?\\HID#VID_0079&PID_0006#9&3087077&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+
+    SendVibration_0079_0006(0xFF, 0xFF);
+
+    while(1)
+    {
+        SendVibration_HIDPATH(ms, 120, 120);
+        Sleep(10);
+    }
+#endif
+
+    PXInputDevice* pxInputDevice = PXInputControllerGet(1);
+    PXInputDeviceOpen(pxInputDevice, pxEngine->Window);
+
 
     return PXResultOK;
 }
@@ -2354,7 +2483,7 @@ void PXAPI PXEngineStop(PXEngine PXREF pxEngine)
     PXFunctionInvoke(pxEngine->OnShutDown, pxEngine->Owner, pxEngine);
 
 
-    PXControllerSystemShutdown(&pxEngine->ControllerSystem);
+    //PXControllerSystemShutdown(&pxEngine->ControllerSystem);
     PXGraphicRelease(&pxEngine->Graphic);
 
 #if PXLogEnable
@@ -2491,6 +2620,7 @@ PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture PXREF PXT
 
 
 #include <assert.h>
+#include <PX/Container/Dictionary/PXDictionary.h>
 
 PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxResourceCreateInfo)
 {
@@ -2857,10 +2987,10 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
 
             {
-                const PXResult pxActionResult = pxEngine->Audio.DeviceLoad(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, pxEngineSound->Sound);
+                const PXResult pxResult = pxEngine->Audio.DeviceLoad(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, pxEngineSound->Sound);
 
 #if PXLogEnable
-                if(PXResultOK == pxActionResult)
+                if(PXResultOK == pxResult)
                 {
 
                     PXLogPrint
@@ -2955,23 +3085,6 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                     2
                 );
             }
-
-            break;
-        }
-        case PXResourceTypeHitBox:
-        {
-            PXHitBox* pxHitBox = *(PXHitBox**)pxResourceCreateInfo->ObjectReference;
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "PX",
-                "HitBox-Create",
-                "ID:%i",
-                pxHitBox->Info.ID
-            );
-#endif
 
             break;
         }
@@ -3405,38 +3518,19 @@ PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PX
     return PXResultOK;
 }
 
-PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo)
-{
-    switch(PXResourceMoveInfo->ResourceType)
-    {
-        case PXResourceTypeTexture2D:
-        {
-            PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
+/*
+      PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
 
             PXTextureInfo pxGraphicTexturInfo;
             PXClear(PXTextureInfo, &pxGraphicTexturInfo);
-            pxGraphicTexturInfo.TextureReference = &PXResourceMoveInfo->ResourceTarget;
+            pxGraphicTexturInfo.TextureReference = &PXECSCreateInfo->ResourceTarget;
             pxGraphicTexturInfo.Amount = 1;
             pxGraphicTexturInfo.Type = PXTextureType2D;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
 
             const PXResult textureAction = pxGraphic->TextureAction(pxGraphic->EventOwner, &pxGraphicTexturInfo);
 
-
-            break;
-        }
-
-        default:
-            break;
-    }
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo)
-{
-    return PXResultOK;
-}
+*/
 
 void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
 {
@@ -3660,7 +3754,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
 
         PXBufferSet(&pxResourceCreateInfo.Model.IndexBuffer.Data, indexList, sizeof(indexList));
 
-        pxResourceCreateInfo.Model.IndexBuffer.DataType = PXTypeInt08U;
+        pxResourceCreateInfo.Model.IndexBuffer.DataType = PXTypeI08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 
         // pxResourceCreateInfo.Model.ShaderProgramReference = pxEngine->ResourceManager->ShaderFailback;
@@ -4379,7 +4473,7 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine)
     */
 }
 
-void PXAPI PXEngineHitBoxHandleAvsB(PXEngine PXREF pxEngine, PXHitBox PXREF hitBoxA, PXHitBox PXREF hitBoxB)
+void PXAPI PXEngineHitBoxHandleAvsB(PXEngine PXREF pxEngine, PXFieldEffect PXREF hitBoxA, PXFieldEffect PXREF hitBoxB)
 {
     /*
     PXVector3F32 positionA;

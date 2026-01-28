@@ -43,9 +43,7 @@ typedef struct PXBrushCreateInfo_
 PXBrushCreateInfo;
 
 PXPublic PXResult PXAPI PXBrushRegisterToECS();
-
 PXPublic PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBrushCreateInfo);
-
 PXPublic PXResult PXAPI PXBrushColorSet(PXBrush PXREF pxBrush, const PXByte red, const PXByte green, const PXByte blue);
 
 #endif

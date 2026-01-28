@@ -552,7 +552,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
 PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     HRESULT resultHandle = S_OK;
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
     IMFActivate** ppDevices = NULL;
     UINT32 count = 0;
@@ -600,7 +600,7 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
     IMFMediaSource* pSource = NULL;
     printf("Activating device 0...\n");
     resultHandle = ppDevices[0]->lpVtbl->ActivateObject(ppDevices[0], &IID_IMFMediaSource, (void**)&pSource); 
-    pxActionResult = PXErrorFromHRESULT(resultHandle);
+    pxResult = PXErrorFromHRESULT(resultHandle);
 
     if(resultHandle != S_OK)
     {
@@ -917,9 +917,9 @@ PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxSt
 	}
 
     // Create
-    const PXResult pxActionResult = pxStream->Create(pxStream, pxStreamOpenInfo);
+    const PXResult pxResult = pxStream->Create(pxStream, pxStreamOpenInfo);
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXStreamClose(PXStream PXREF pxStream)

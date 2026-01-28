@@ -7,20 +7,14 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/Engine/ECS/PXNamePool.h>
+#include <PX/Container/Dictionary/PXDictionary.h>
 
 #include <PX/OS/PXOS.h>
 
 
 // Resources
-#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
-#include <PX/Engine/ECS/Entity/Model/PXModel.h>
-#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
-#include <PX/Engine/ECS/Entity/SpaceGrid/PXSpaceGrid.h>
-#include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
-#include <PX/Engine/ECS/Entity/UI/TabList/PXTabList.h>
-#include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
-#include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
-#include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
+#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
+#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
 #include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
 #include <PX/Engine/ECS/Resource/Display/PXDisplay.h>
 #include <PX/Engine/ECS/Resource/Font/PXFont.h>
@@ -29,14 +23,39 @@
 #include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
 #include <PX/Engine/ECS/Resource/Monitor/PXMonitor.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
-#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 #include <PX/Engine/ECS/Resource/Timer/PXTimer.h>
 #include <PX/Engine/ECS/Resource/Video/PXVideo.h>
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
-#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
-#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
+
 #include <PX/Container/ListDynamic/PXListDynamic.h>
+
+#include <PX/Engine/ECS/Entity/AudioEmitter/PXAudioEmitter.h>
+#include <PX/Engine/ECS/Entity/AudioListener/PXAudioListener.h>
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Engine/ECS/Entity/FieldEffect/PXFieldEffect.h>
+#include <PX/Engine/ECS/Entity/Gizmo/PXGizmo.h>
+#include <PX/Engine/ECS/Entity/IconAudio/PXIconAudio.h>
+#include <PX/Engine/ECS/Entity/IconSun/PXIconSun.h>
+#include <PX/Engine/ECS/Entity/LightDirectional/PXLightDirectional.h>
+#include <PX/Engine/ECS/Entity/LightPoint/PXLightPoint.h>
+#include <PX/Engine/ECS/Entity/LightSpot/PXLightSpot.h>
+#include <PX/Engine/ECS/Entity/Model/PXModel.h>
+#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
+#include <PX/Engine/ECS/Entity/SpaceGrid/PXSpaceGrid.h>
+#include <PX/Engine/ECS/Entity/Sprite/PXSprite.h>
+#include <PX/Engine/ECS/Entity/Tesseract/PXTesseract.h>
+#include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
+#include <PX/Engine/ECS/Entity/UI/TabList/PXTabList.h>
+#include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
+#include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
+#include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
+
+#include <PX/Engine/ECS/System/PXAudioSystem.h>
+#include <PX/Engine/ECS/System/PXEngine.h>
+#include <PX/Engine/ECS/System/PXRenderingSystem.h>
+
 
 
 // Components
@@ -49,37 +68,17 @@
 typedef struct PXECS_
 {
     // To know what types we know
-    PXDictionaryT(PXID, PXComponentType*)* ComponentTypeLookup;
+    PXDictionaryT(PXID, PXECSTypeInfo)* LookupType;
 
     // Entity to Component
-    PXDictionaryT(PXID, PXComponent*)* ComponentLookup;
+    PXDictionaryT(PXID, PXECSReferece)* LookupEntry;
 
     // For multithreading we need protection
     PXLock* ResourceLock;
-
     PXLock* AsyncLock;
 
     PXListDynamic NameCache;
     PXListDynamic SourcePathCache;
-
-    PXDictionary MaterialLookUp;
-    PXDictionary SpritelLookUp;
-    PXDictionary FontLookUp;
-    PXDictionary TextLookUp;
-    PXDictionary TimerLookUp;
-    PXDictionary SoundLookUp;
-    PXDictionary HitBoxLookUp;
-    PXDictionary ImageLookUp;
-    PXDictionary BrushLookUp;
-    PXDictionary TextureLookUp;
-    PXDictionary ModelLookUp;
-    PXDictionary SkyBoxLookUp;
-    PXDictionary ShaderProgramLookup;
-    PXDictionary GUIElementLookup;
-    PXDictionary SpriteAnimator;
-    PXDictionary IconLookUp;
-    PXDictionary IconAtlasLookUp;
-    PXDictionary SpriteMapAtlasLookUp;
 
     PXI32U Flags;
 }
@@ -91,13 +90,35 @@ PXECS _pxECS;
 
 const PXECSRegisterFunction pxECSRegisterList[] =
 {
+    PXAudioListenerRegisterToECS,
+    PXAudioEmitterRegisterToECS,
     PXCameraRegisterToECS,
+    PXFieldEffectRegisterToECS,
+    PXGizmoRegisterToECS,
+    PXIconAudioRegisterToECS,
+    PXIconSunRegisterToECS,
+    PXLightDirectionalRegisterToECS,
+    PXLightPointRegisterToECS,
+    PXLightSpotRegisterToECS,
     PXModelRegisterToECS,
+    PXSkyBoxRegisterToECS,
+    PXSpaceGridRegisterToECS,
+    PXSpriteRegisterToECS,
+    PXTesseractRegisterToECS,
+
+    PXSoundRegisterToECS,
+
+    PXVertexBufferRegisterToECS,
+    PXIndexBufferRegisterToECS,
+    PXCameraRegisterToECS,
+
+    PXMeshGeometryRegisterToECS,
     PXColorPickerRegisterToECS,
     PXTabListRegisterToECS,
+    PXGraphicsCardRegisterToECS,
     PXSkyBoxRegisterToECS,
     PXECSEntityInfoRegisterToECS,
-    PXSpaceGridRegisterToECS,
+  
     PXTransformViewRegisterToECS,
     PXFileDirectoryRegisterToECS,
     PXLockRegisterToECS,
@@ -107,8 +128,13 @@ const PXECSRegisterFunction pxECSRegisterList[] =
     PXFrameBufferRegisterToECS,
     PXIconRegisterToECS,
     PXMeshRegisterToECS,
-    PXSkyBoxRegisterToECS,
-    PXWindowRegisterToECS
+
+    PXWindowRegisterToECS,
+
+    PXAudioSystemRegisterToECS,
+    PXEngineRegisterToECS,
+    PXRenderingSystemRegisterToECS,
+    
 };
 const PXI16U _pxECSRegisterListAmount = sizeof(pxECSRegisterList) / sizeof(PXECSRegisterFunction);
 
@@ -116,14 +142,18 @@ const char* PXECSTypeToString(const PXECSType pxECSType)
 {
     switch(pxECSType)
     {
-        case PXECSTypeInvalid:  return "Invalid";
-        case PXECSTypeEntity:   return "Enity";
-        case PXECSTypeComponent:    return "Component";
-        case PXECSTypeResource: return "Resource";
-        case PXECSTypeSystem: return "System";
+        case PXECSTypeEntity:   
+            return "Enity";
+        case PXECSTypeComponent:   
+            return "Component";
+        case PXECSTypeResource:
+            return "Resource";
+        case PXECSTypeSystem: 
+            return "System";
 
+        case PXECSTypeInvalid:
         default:
-            return 0;
+            return "Invalid";
     }
 }
 
@@ -145,8 +175,19 @@ PXResult PXAPI PXECSRegister
         &pxECSRegisterInfoStatic->NameOfType
     );
 
-    PXAssert(pxECSRegisterInfoStatic->TypeSize > sizeof(PXECSInfo), "Used ECS object is missing info");
+    PXAssert(pxECSRegisterInfoStatic->TypeSize >= sizeof(PXECSInfo), "Used ECS object is missing info");
 
+
+
+    // Registration of the type in our system
+    PXECSTypeInfo pxECSTypeInfo;
+    pxECSTypeInfo.Static = pxECSRegisterInfoStatic;
+    pxECSTypeInfo.Dynamic = pxECSRegisterInfoDynamic;
+
+    PXResult pxResult = PXDictionaryEntryAdd(_pxECS.LookupType, &pxECSRegisterInfoDynamic->ID, &pxECSTypeInfo);
+
+
+    //-----------------------
 
 #if PXLogEnable
     char buffer[128];
@@ -162,11 +203,11 @@ PXResult PXAPI PXECSRegister
         PXLoggingAllocation,
         PXECSText,
         "Register",
-        "0d%4.4i_%s:%s_%i, %s",
+        "0d%4.4i_%s:%4.4i_%-20s - %s",
         pxECSRegisterInfoDynamic->ID,
         pxTextModule.A,
-        pxECSRegisterInfoStatic->NameOfType.A,
         pxECSRegisterInfoStatic->TypeSize,
+        pxECSRegisterInfoStatic->NameOfType.A,
         typeName
     );
 #endif
@@ -213,6 +254,17 @@ PXResult PXAPI PXECSInit(void)
     PXListDynamicInit(&_pxECS.NameCache, sizeof(PXID), 2);
     PXListDynamicInit(&_pxECS.SourcePathCache, sizeof(PXID), 2);
 
+    PXDictionaryCreateInfo pxDictionaryCreateInfo;
+    PXClear(PXDictionaryCreateInfo, &pxDictionaryCreateInfo);
+    pxDictionaryCreateInfo.KeySize = sizeof(PXID);
+    pxDictionaryCreateInfo.ValueSize = sizeof(PXECSTypeInfo);
+    pxDictionaryCreateInfo.ValueLocality = PXDictionaryValueLocalityInternalEmbedded;
+
+    PXDictionaryCreate(&_pxECS.LookupType, &pxDictionaryCreateInfo);
+
+    pxDictionaryCreateInfo.ValueSize = sizeof(PXECSReferece);
+    PXDictionaryCreate(&_pxECS.LookupEntry, &pxDictionaryCreateInfo);
+
     PXNamePoolInit();
 
     // Register all entitys
@@ -231,7 +283,7 @@ PXResult PXAPI PXECSInit(void)
 
     for(PXSize i = 0; i < _pxECSRegisterListAmount; ++i)
     {
-#if PXLogEnable
+#if PXLogEnable && 0
         PXLogPrint
         (
             PXLoggingEvent,
@@ -260,6 +312,8 @@ PXResult PXAPI PXECSInit(void)
                 _pxECSRegisterListAmount
             );
 #endif
+
+            DebugBreak();
         }
     }
 
@@ -351,22 +405,22 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
     return PXResultInvalid;
 }
 
-PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElementRef PXREF pxECSElementRef)
+PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece)
 {
-    if(!(pxDictionary && pxECSElementRef)) // Is this NULL?
+    if(!(pxDictionary && pxECSReferece)) // Is this NULL?
     {
         return PXResultRefusedParameterNull; // Illegal call
     }
 
     // Is adress in data range?
-    PXECSInfo* pxECSElement = pxECSElementRef->Element;
+    PXECSInfo* pxECSElement = pxECSReferece->Element;
 
-    const PXBool isInRange = PXListIsAddresValid(&pxDictionary->List, pxECSElementRef->Element);
+    const PXBool isInRange = PXListIsAddresValid(&pxDictionary->List, pxECSReferece->Element);
 
     if(isInRange)
     {
         // Because adress is valid, we can check now
-        const PXBool isDirectMatch = pxECSElementRef->ExpectedID == pxECSElement->ID;
+        const PXBool isDirectMatch = pxECSReferece->ExpectedID == pxECSElement->ID;
 
         if(isDirectMatch)
         {
@@ -384,8 +438,8 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
     PXResult pxResult = PXDictionaryEntryFind
     (
         pxDictionary, 
-        &pxECSElementRef->ExpectedID, 
-        &pxECSElementRef->Element
+        &pxECSReferece->ExpectedID,
+        &pxECSReferece->Element
     );
 
     if(PXResultOK != pxResult)
@@ -399,7 +453,7 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
             PXECSText,
             "Ref-Check",
             "PXID:%i, stale reference detected! Object was deleted",
-            pxECSElementRef->ExpectedID
+            pxECSReferece->ExpectedID
         );
 #endif
 
@@ -415,7 +469,7 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElemen
         PXECSText,
         "Ref-Check",
         "PXID:%i, stale reference detected! Object was moved!",
-        pxECSElementRef->ExpectedID
+        pxECSReferece->ExpectedID
     );
 #endif
 
@@ -455,6 +509,14 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
 
     pxECSInfo->ID = pxID;
 
+
+    PXECSReferece pxECSReferece;
+    pxECSReferece.ExpectedID = pxID;
+    pxECSReferece.Element = pxECSInfo;
+
+    PXResult pxResult = PXDictionaryEntryAdd(_pxECS.LookupEntry, &pxID, &pxECSReferece);
+
+
     *pxECSInfoREF = pxECSInfo;
 
     // Register?
@@ -480,6 +542,395 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
 
     return PXResultOK;
 }
+
+PXSize PXAPI PXECSTypeAmount(void)
+{
+    return PXDictionaryEntryAmount(_pxECS.LookupType);
+}
+
+PXResult PXAPI PXECSTypeGet(PXECSTypeInfo PXREF pxECSTypeInfo, const PXSize index)
+{
+    PXDictionaryEntry pxDictionaryEntry;
+
+    PXResult pxResult = PXDictionaryIndex(_pxECS.LookupType, index, &pxDictionaryEntry);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    *pxECSTypeInfo = *(PXECSTypeInfo*)pxDictionaryEntry.Value;
+
+    return PXResultOK;
+}
+
+PXSize PXAPI PXECSEntryAmount(void)
+{
+    return PXDictionaryEntryAmount(_pxECS.LookupEntry);
+}
+
+PXResult PXAPI PXECSEntryGet(PXECSReferece PXREF pxECSReferece, const PXSize index)
+{
+    PXDictionaryEntry pxDictionaryEntry;
+
+    PXResult pxResult = PXDictionaryIndex(_pxECS.LookupEntry, index, &pxDictionaryEntry);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    *pxECSReferece = *(PXECSReferece*)pxDictionaryEntry.Value;
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo)
+{
+    if(!pxECSCreateInfo)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXText* pxFilePath = &pxECSCreateInfo->FilePath;
+
+    // parameter valid check
+    {
+        PXBool textValid = 
+            pxFilePath->Data &&
+            pxFilePath->SizeUsed;
+
+        if(!textValid)
+        {
+            return PXResultRefusedParameterInvalid;
+        }
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXECSText,
+        "Load",
+        "Begin for <%s>",
+        pxFilePath->A
+    );
+#endif
+
+    // try to detect format over file extension
+    PXFileTypeInfoProbe(&pxECSCreateInfo->FormatInfo, pxFilePath);
+
+
+    // if we dont even have a clue how to load it, let the OS try to load it.
+    {
+        if(pxECSCreateInfo->FormatInfo.Flags == PXFileFormatUnkown)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Load",
+                "Refused : Format not detected"
+            );
+#endif
+
+            return PXActionRefusedNotSupportedByLibrary;
+        }
+
+        if(!pxECSCreateInfo->FormatInfo.ResourceLoad)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Load",
+                "Refused : Not implemented"
+            );
+#endif
+
+            return PXActionRefusedNotImplemented;
+        }
+    }
+
+
+    PXFile* pxFile = PXFileCreate();
+    pxECSCreateInfo->FileCurrent = pxFile;
+
+    // Loading and map file if possible
+    {
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.FilePath = *pxFilePath;
+        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
+
+        const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileOpenInfo);
+
+        if(PXResultOK != fileLoadingResult)
+            return fileLoadingResult;
+    }
+
+    PXPerformanceInfo pxPerformanceInfo;
+    pxPerformanceInfo.UpdateCounter = 0;
+
+    // If a peek method exists, execute it, if not, strait to loading
+    if(pxECSCreateInfo->FormatInfo.ResourcePeek)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-Peek",
+            "Start..."
+        );
+#endif
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+        const PXResult pxPeekResult = pxECSCreateInfo->FormatInfo.ResourcePeek(pxECSInfo, pxECSCreateInfo);
+        const PXBool success = PXResultOK == pxPeekResult;
+
+        if(!success)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "File-Peek",
+                "Failed"
+            );
+#endif
+            return pxPeekResult;
+        }
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+        pxECSCreateInfo->TimePeek = pxPerformanceInfo.TimeDelta;
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-Peek",
+            "Done! Took:%6.3fs",
+            pxECSCreateInfo->TimePeek
+        );
+#endif
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-Peek",
+            "No peek function implemented. procceed.."
+        );
+#endif
+    }
+
+    // Preallocate on device
+    if(pxECSCreateInfo->OnDeviceDataRegister)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-PreAlloc",
+            "Preallocate resource on device"
+        );
+#endif
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+
+        pxECSCreateInfo->OnDeviceDataRegister(pxECSInfo, pxECSCreateInfo);
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+
+        pxECSCreateInfo->TimeDeviceDataRegister = pxPerformanceInfo.TimeDelta;
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-PreAlloc",
+            "Preallocate took:<%6.3f>",
+            pxECSCreateInfo->TimeDeviceDataRegister
+        );
+#endif
+    }
+
+    // Try to load assumed format
+    if(pxECSCreateInfo->FormatInfo.ResourceLoad)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-Extract",
+            "Start..."
+        );
+#endif
+
+        //pxECSCreateInfo->FileReference = pxFile;
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+
+        const PXResult fileParsingResult = pxECSCreateInfo->FormatInfo.ResourceLoad(pxECSInfo, pxECSCreateInfo);
+
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+
+        pxECSCreateInfo->TimeTransphere = pxPerformanceInfo.TimeDelta;
+
+
+
+        PXFileClose(pxFile);
+
+        if(PXResultOK != fileParsingResult)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Load-Extract",
+                "Failed. Took:%6.3f  ROPs:%-7i <%s>",
+                pxECSCreateInfo->TimeTransphere,
+                PXFileOperationsRead(pxFile),
+                pxFilePath->A
+            );
+#endif
+
+            return fileParsingResult;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Load-Extract",
+            "OK! Took:%6.3f, ROPs:%-7i PageFaults:%-7i <%s>",
+            pxECSCreateInfo->TimeTransphere,
+            PXFileOperationsRead(pxFile),
+            pxPerformanceInfo.PageFaultCount,
+            pxFilePath->A
+        );
+#endif
+
+        return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
+
+    }
+}
+
+PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo)
+{
+    if(!pxECSCreateInfo)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXText* pxFilePath = &pxECSCreateInfo->FilePath;
+
+    PXFile* pxFile = PXFileCreate();
+
+    // Loading file
+    {
+        PXFileOpenInfo pxFileIOInfo;
+        PXClear(PXFileOpenInfo, &pxFileIOInfo);
+        pxFileIOInfo.FilePath = *pxFilePath;
+        pxFileIOInfo.AccessMode = PXAccessModeWriteOnly;
+        pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileIOInfo.FlagList = PXFileIOInfoFilePhysical | PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
+
+        const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileIOInfo);
+
+        if(PXResultOK != fileLoadingResult)
+            return fileLoadingResult;
+    }
+
+
+    // try to detect format over file extension
+    PXFileTypeInfoProbe(&pxECSCreateInfo->FormatInfo, pxFilePath);
+
+
+    // Try to load assumed format
+    {
+        if(PXFileFormatUnkown == pxECSCreateInfo->FormatInfo.Flags)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Save",
+                "Refused : Format not known"
+            );
+#endif
+
+            return PXActionRefusedNotSupportedByLibrary;
+        }
+
+        if(PXNull == pxECSCreateInfo->FormatInfo.ResourceSave)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Save",
+                "Refused : Not implemented"
+            );
+#endif
+
+            return PXActionRefusedNotImplemented;
+        }
+
+#if PXLogEnable
+        const PXI64U timeStampA = PXTimeCounterStampGet();
+#endif
+
+       // pxECSCreateInfo->FileReference = pxFile;
+
+        const PXResult fileParsingResult = pxECSCreateInfo->FormatInfo.ResourceSave(pxECSInfo, pxECSCreateInfo);
+
+#if PXLogEnable
+        const PXI64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        const PXF32 timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXECSText,
+            "Save",
+            "%6.3fms SOPs:%-7i <%s>",
+            timeDelta,
+            PXFileOperationsWrite(pxFile),
+            pxFilePath->A
+        );
+#endif
+
+        // PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try
+
+        // return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
+
+    }
+
+    PXFileClose(pxFile);
+
+    //pxECSCreateInfo->FileReference = PXNull;
+
+    return PXResultOK;
+}
+
 
 /*
 PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationInfo)

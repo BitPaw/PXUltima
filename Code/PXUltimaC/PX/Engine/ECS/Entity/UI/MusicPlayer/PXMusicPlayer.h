@@ -11,6 +11,6 @@ typedef struct PXMusicPlayer_
 }
 PXMusicPlayer;
 
-PXPublic PXResult PXAPI PXMusicPlayerDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXMusicPlayerDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

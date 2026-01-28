@@ -12,7 +12,7 @@ typedef struct PXPDF_
 }
 PXPDF;
 
-PXPublic PXResult PXAPI PXPDFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPDFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPDFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPDFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

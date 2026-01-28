@@ -81,7 +81,7 @@ PXWindowExtendedBehaviourResourceView;
 
 PXPublic PXResult PXAPI PXTabListRegisterToECS();
 
-PXPublic PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXDrawInfo PXREF pxDrawInfo);
 
 PXPublic PXResult PXAPI PXTabListCreate(PXTabList** pxTabListREF, PXTabListCreateInfo PXREF pxTabListCreateInfo);
 

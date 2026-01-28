@@ -6,7 +6,7 @@
 
 const char PXButtonName[] = "Button";
 
-PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXDrawInfo PXREF pxDrawInfo)
 {
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
 
@@ -23,9 +23,9 @@ PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWi
     );
 #endif
 
-    pxWindowDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
+    pxDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
  
-    PXWindowDrawRectangle3D(pxButton, pxWindowDrawInfo);
+    PXWindowDrawRectangle3D(pxButton, pxDrawInfo);
 
 #if 1
     PXWindowBrushSet
@@ -45,7 +45,7 @@ PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWi
 
     PXTextDrawInfo pxTextDrawInfo;
     PXClear(PXTextDrawInfo, &pxTextDrawInfo);
-    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
     pxTextDrawInfo.Text = PXNull;
     pxTextDrawInfo.Behaviour = PXWindowAllignCenter;
 

@@ -115,6 +115,13 @@ PXF64 PXAPI PXMathAbsoluteD(const PXF64 value)
 #endif 
 }
 
+PXF32 PXAPI PXMathClampF(const PXF32 value, const PXF32 minimum, const PXF32 maximum)
+{
+    if(value <= minimum) return minimum;
+    if(value >= maximum) return maximum;
+    return value;
+}
+
 char PXAPI PXMathLimitC(const char value, const char minimum, const char maximum)
 {
     return PXMathLimit(value, minimum, maximum);

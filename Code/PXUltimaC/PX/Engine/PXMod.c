@@ -44,9 +44,9 @@ PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF
         PXText pyText;
         PXTextConstructFromAdressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
 
-        const PXResult pxActionResult = PXLibraryOpen(&pxMod.Library, &pyText);
+        const PXResult pxResult = PXLibraryOpen(&pxMod.Library, &pyText);
 
-        if (pxActionResult != PXResultOK)
+        if (pxResult != PXResultOK)
         {
             PXLogPrint
             (

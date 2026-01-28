@@ -138,10 +138,8 @@
 //-----------------------------------------------------
 
 
-typedef struct PXResourceMoveInfo_ PXResourceMoveInfo;
-
 typedef PXResult(PXAPI* PXResourceFileSizePredict)(void PXREF resource, PXSize PXREF fileSize);
-typedef PXResult(PXAPI* PXResourceTransphereFunction)(PXResourceMoveInfo PXREF PXResourceMoveInfo);
+typedef PXResult(PXAPI* PXResourceTransphereFunction)(struct PXECSInfo_ PXREF pxECSInfo, struct PXECSCreateInfo_ PXREF PXECSCreateInfo);
 
 //---------------------------------------------------------
 // Contains all info about a file

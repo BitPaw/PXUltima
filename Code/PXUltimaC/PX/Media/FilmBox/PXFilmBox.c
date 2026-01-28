@@ -9,9 +9,9 @@ const char PXFBXSignature[] = "Kaydara FBX Binary  \x00\x1A"; // Hidden \0
 
 const PXI32U PXFilmBoxNodeRecordArrayBinding[] =
 {
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
 };
 const PXI8U PXFilmBoxNodeRecordArrayBindingSize = sizeof(PXFilmBoxNodeRecordArrayBinding) / sizeof(PXI32U);
 
@@ -53,10 +53,10 @@ PXFilmBoxProperty;
 
 const PXI32U PXFilmBoxNodeRecordList[] =
 {
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt08U
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI08U
 };
 const PXI8U PXFilmBoxNodeRecordListSize = sizeof(PXFilmBoxNodeRecordList) / sizeof(PXI32U);
 
@@ -76,17 +76,17 @@ PXI32U PXAPI PXFilmBoxTypeTranslate(const PXI8U type)
 {
     switch(type)
     {
-        case 'Y': return PXTypeInt16SLE; // 2 byte signed Integer
+        case 'Y': return PXTypeI16SLE; // 2 byte signed Integer
         case 'C': return PXTypeBool; // 1 bit boolean(1: true, 0 : false) encoded as the LSB of a 1 Byte value.
-        case 'I': return PXTypeInt32SLE; // 4 byte signed Integer
+        case 'I': return PXTypeI32SLE; // 4 byte signed Integer
         case 'F': return PXTypeF32; // 4 byte single - precision IEEE 754 number
         case 'D': return PXTypeF64; // 8 byte double - precision IEEE 754 number
-        case 'L': return PXTypeInt64ULE; // 8 byte signed Integer
+        case 'L': return PXTypeI64ULE; // 8 byte signed Integer
 
         case 'f': return PXTypeIsArray | PXTypeF32; // Array of 4 byte single - precision IEEE 754 number
         case 'd': return PXTypeIsArray | PXTypeF64; // Array of 8 byte double - precision IEEE 754 number
-        case 'l': return PXTypeIsArray | PXTypeInt64SLE; // Array of 8 byte signed Integer
-        case 'i': return PXTypeIsArray | PXTypeInt32SLE; // Array of 4 byte signed Integer
+        case 'l': return PXTypeIsArray | PXTypeI64SLE; // Array of 8 byte signed Integer
+        case 'i': return PXTypeIsArray | PXTypeI32SLE; // Array of 4 byte signed Integer
         case 'b': return PXTypeIsArray | PXTypeBool; // Array of 1 byte Booleans(always 0 or 1)
 
         case 'S': return PXTypeIsArray; // String
@@ -313,9 +313,9 @@ void PXAPI PXFilmBoxReadNode(PXFile PXREF pxFile, PXFilmBoxNodeRecord PXREF pxFi
 
 
 
-PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXFilmBoxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
     PXFilmBox pxFilmBox;
 
     // Header 27 Bytes
@@ -340,7 +340,7 @@ PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXFilmBoxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXFilmBoxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

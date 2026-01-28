@@ -764,11 +764,11 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
 
     // Creates a new work object.
     pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxThreadPool->Work);
+    const PXResult pxResult = PXErrorCurrent(PXNull != pxThreadPool->Work);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     SubmitThreadpoolWork(pxThreadPool->Work); // Queue the work

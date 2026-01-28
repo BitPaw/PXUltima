@@ -17,7 +17,7 @@
 const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 const PXI32U PXPNGChunkHeaderList[] =
 {
-    PXTypeInt32UBE,
+    PXTypeI32UBE,
     PXTypeText(4)
 };
 const PXI8U PXPNGChunkHeaderListSize = sizeof(PXPNGChunkHeaderList) / sizeof(PXI32U);
@@ -25,27 +25,27 @@ const PXI8U PXPNGChunkHeaderListSize = sizeof(PXPNGChunkHeaderList) / sizeof(PXI
 
 const PXI32U PXPNGInfoHeaderList[] =
 {
-    PXTypeInt32UBE,
-    PXTypeInt32UBE,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U
+    PXTypeI32UBE,
+    PXTypeI32UBE,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U
 };
 const PXI8U PXPNGInfoHeaderListSize = sizeof(PXPNGInfoHeaderList) / sizeof(PXI32U);
 
 
 const PXI32U PXPNGPrimaryChromaticsList[] =
 {
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE,
-     PXTypeInt32UBE
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE,
+     PXTypeI32UBE
 };
 const PXI8U PXPNGPrimaryChromaticsListSize = sizeof(PXPNGPrimaryChromaticsList) / sizeof(PXI32U);
 
@@ -53,12 +53,12 @@ const PXI8U PXPNGPrimaryChromaticsListSize = sizeof(PXPNGPrimaryChromaticsList) 
 
 const PXI32U PXPNGLastModificationTimeList[] =
 {
-    PXTypeInt16UBE,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U
+    PXTypeI16UBE,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U
 };
 const PXI8U PXPNGLastModificationTimeListSize = sizeof(PXPNGLastModificationTimeList) / sizeof(PXI32U);
 
@@ -281,10 +281,10 @@ PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSi
     return sum;
 }
 
-PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
+PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
     PXPNG* png = PXNull;
+    PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
     /*
     PXFile imageDataCache;
@@ -301,7 +301,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const PXBool isValidHeader = PXFileReadAndCompare(PXResourceMoveInfo->FileReference, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));
+            const PXBool isValidHeader = PXFileReadAndCompare(pxFile, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));
 
             if(!isValidHeader)
             {
@@ -311,7 +311,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 
         // Allocate resource
         png = PXMemoryHeapCallocT(PXPNG, 1);
-        PXResourceMoveInfo->ResourceSource = png;
+        //pxECSCreateInfo->ResourceSource = png;
         //---------------------------------------------------------------------
 
 #if PNGDebugInfo
@@ -331,7 +331,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 
             PXFileBinding
             (
-                PXResourceMoveInfo->FileReference,
+                pxFile,
                 &chunk.Header,
                 PXPNGChunkHeaderList,
                 PXPNGChunkHeaderListSize,
@@ -355,7 +355,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
                 chunk.IsSafeToCopy = PXTextIsLetterCaseUpper(chunk.Header.ID[3]);
 
 
-                predictedOffset = PXFileDataPosition(PXResourceMoveInfo->FileReference) + chunk.Header.Size;
+                predictedOffset = PXFileDataPosition(pxFile) + chunk.Header.Size;
             }
 
 #if PNGDebugInfo
@@ -383,16 +383,16 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
                     break; // Exit
                 }
 
-                PXPNGChunkListFunction[functionIndex](png, PXResourceMoveInfo->FileReference, chunk.Header.Size);
+                PXPNGChunkListFunction[functionIndex](png, pxFile, chunk.Header.Size);
             }
             else
             {
                 // Unknown chunk!
             }         
    
-            PXFileCursorMoveTo(PXResourceMoveInfo->FileReference, predictedOffset);
+            PXFileCursorMoveTo(pxFile, predictedOffset);
 
-            PXFileReadI32UE(PXResourceMoveInfo->FileReference, &chunk.CRC, PXEndianBig); // 4 Bytes
+            PXFileReadI32UE(pxFile, &chunk.CRC, PXEndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
@@ -403,10 +403,11 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
     return (PXResult)PXResultOK;
 }
 
-PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
-    PXPNG PXREF png = (PXPNG*)pxResourceLoadInfo->ResourceSource;
+    PXPNG PXREF png = 0;// (PXPNG*)pxResourceLoadInfo->ResourceSource;
+
+    PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
     //---<Allocate>------------------------------------------------------------
     {
@@ -461,7 +462,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXBufferSet
         (
             &pxFileOpenInfo.Data,
-            (PXByte*)PXFileDataAtCursor(pxResourceLoadInfo->FileReference) + pxPNGDataBlock->FileOffset,
+            (PXByte*)PXFileDataAtCursor(pxFile) + pxPNGDataBlock->FileOffset,
             pxPNGDataBlock->DataSize
         );
 
@@ -480,8 +481,8 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             const PXPNGDataBlock PXREF pxPNGDataBlock = &png->DataBlockList[i];
 
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxPNGDataBlock->FileOffset);
-            PXFileDataCopy(pxResourceLoadInfo->FileReference, &pxZLIBStream, pxPNGDataBlock->DataSize);
+            PXFileCursorMoveTo(pxFile, pxPNGDataBlock->FileOffset);
+            PXFileDataCopy(pxFile, &pxZLIBStream, pxPNGDataBlock->DataSize);
         }
 
         PXFileCursorToBeginning(&pxZLIBStream);
@@ -1233,22 +1234,22 @@ PXSize PXAPI preProcessScanlines
     return error;
 }
 
-PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
+PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
+    PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
     //---<Signature>--- 8 Bytes
     {
         const PXI64U pngFileHeader = PXPNGHeaderSequenz;
 
-        PXFileWriteI64U(PXResourceMoveInfo->FileReference, pngFileHeader);
+        PXFileWriteI64U(pxFile, pngFileHeader);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
     {
         PXI8U colorType = 0;
         const PXI8U interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
-        const PXByte* chunkStart = PXFileDataAtCursor(PXResourceMoveInfo->FileReference);
+        const PXByte* chunkStart = PXFileDataAtCursor(pxFile);
 
         const PXI8U compressionMethod = 0;
         const PXI8U filterMethod = 0;
@@ -1274,27 +1275,27 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         }
         const unsigned int chunkLength = 13u;
 
-        PXFileWriteI32UE(PXResourceMoveInfo->FileReference, chunkLength, PXEndianBig);
-        PXFileWriteB(PXResourceMoveInfo->FileReference, "IHDR", 4u);
+        PXFileWriteI32UE(pxFile, chunkLength, PXEndianBig);
+        PXFileWriteB(pxFile, "IHDR", 4u);
 
-        PXFileWriteI32UE(PXResourceMoveInfo->FileReference, pxTexture->Width, PXEndianBig);
-        PXFileWriteI32UE(PXResourceMoveInfo->FileReference, pxTexture->Height, PXEndianBig);
+        PXFileWriteI32UE(pxFile, pxTexture->Width, PXEndianBig);
+        PXFileWriteI32UE(pxFile, pxTexture->Height, PXEndianBig);
 
         {
             const PXI8U bitDepth = PXColorFormatBitsPerPixel(pxTexture->Format);
 
-            PXFileWriteI8U(PXResourceMoveInfo->FileReference, bitDepth);
+            PXFileWriteI8U(pxFile, bitDepth);
         }
 
-        PXFileWriteI8U(PXResourceMoveInfo->FileReference, colorType);
-        PXFileWriteI8U(PXResourceMoveInfo->FileReference, compressionMethod);
-        PXFileWriteI8U(PXResourceMoveInfo->FileReference, filterMethod);
-        PXFileWriteI8U(PXResourceMoveInfo->FileReference, interlaceMethod);
+        PXFileWriteI8U(pxFile, colorType);
+        PXFileWriteI8U(pxFile, compressionMethod);
+        PXFileWriteI8U(pxFile, filterMethod);
+        PXFileWriteI8U(pxFile, interlaceMethod);
 
         {
             const PXI32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXFileWriteI32UE(PXResourceMoveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxFile, crc, PXEndianBig);
         }
 
 
@@ -1409,40 +1410,40 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = PXFileDataAtCursor(PXResourceMoveInfo->FileReference);
+        const unsigned char* chunkStart = PXFileDataAtCursor(pxFile);
         const PXSize chunkLength = 7u;
 
         const PXTypeEntry pxFileDataElementType[] =
         {
-            {&chunkLength, PXTypeInt32UBE},
+            {&chunkLength, PXTypeI32UBE},
             {"tIME", PXTypeDatax4},
-            {&pngLastModificationTime.Year, PXTypeInt16UBE},
-            {&pngLastModificationTime.Month, PXTypeInt08U},
-            {&pngLastModificationTime.Day, PXTypeInt08U},
-            {&pngLastModificationTime.Hour, PXTypeInt08U},
-            {&pngLastModificationTime.Minute, PXTypeInt08U},
-            {&pngLastModificationTime.Second, PXTypeInt08U},
+            {&pngLastModificationTime.Year, PXTypeI16UBE},
+            {&pngLastModificationTime.Month, PXTypeI08U},
+            {&pngLastModificationTime.Day, PXTypeI08U},
+            {&pngLastModificationTime.Hour, PXTypeI08U},
+            {&pngLastModificationTime.Minute, PXTypeI08U},
+            {&pngLastModificationTime.Second, PXTypeI08U},
         };
 
-        PXFileWriteMultible(PXResourceMoveInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
+        PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 
         {
             const PXI32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXFileWriteI32UE(PXResourceMoveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxFile, crc, PXEndianBig);
         }
     }
 #endif
 
     // [IDAT] Image data
     {
-        const PXSize offsetSizeofChunk = PXFileDataPosition(PXResourceMoveInfo->FileReference);
-        const void* chunkStart = PXFileDataAtCursor(PXResourceMoveInfo->FileReference);
+        const PXSize offsetSizeofChunk = PXFileDataPosition(pxFile);
+        const void* chunkStart = PXFileDataAtCursor(pxFile);
 
         PXSize chunkLength = 0;
 
-        PXFileWriteI32UE(PXResourceMoveInfo->FileReference, 0u, PXEndianBig); // Length
-        PXFileWriteB(PXResourceMoveInfo->FileReference, "IDAT", 4u);
+        PXFileWriteI32UE(pxFile, 0u, PXEndianBig); // Length
+        PXFileWriteB(pxFile, "IDAT", 4u);
 
         PXFile* pxScanlineStream = PXFileCreate();
         // PXFileConstruct(&pxScanlineStream);
@@ -1469,13 +1470,13 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 
         // PXZLIB
         {
-            PXSize cursorBefore = PXFileDataPosition(PXResourceMoveInfo->FileReference);
+            PXSize cursorBefore = PXFileDataPosition(pxFile);
 
-            const PXResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, PXResourceMoveInfo->FileReference);
+            const PXResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, pxFile);
 
-            chunkLength = PXFileDataPosition(PXResourceMoveInfo->FileReference) - cursorBefore;
+            chunkLength = PXFileDataPosition(pxFile) - cursorBefore;
 
-            PXFileWriteAtI32UE(PXResourceMoveInfo->FileReference, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
+            PXFileWriteAtI32UE(pxFile, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
         }
 
         PXFileClose(&pxScanlineStream);
@@ -1483,7 +1484,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
         {
             const PXI32U crc = PXCRC32Generate(&((PXByte*)chunkStart)[4], chunkLength + 4);
 
-            PXFileWriteI32UE(PXResourceMoveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxFile, crc, PXEndianBig);
         }
     }
 
@@ -1497,7 +1498,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
             {(void*)imageEndChunk, sizeof(imageEndChunk)}
         };
 
-        PXFileWriteMultible(PXResourceMoveInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
+        PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
     }
 
     return PXResultOK;
@@ -2527,7 +2528,7 @@ void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, co
             {
                 unsigned char value = 0;
 
-                PXFileReadI8U(PXResourceMoveInfo->FileReference, &value);
+                PXFileReadI8U(PXECSCreateInfo->FileReference, &value);
 
                 png->Palette[i * 4 + 3] = value;
             }

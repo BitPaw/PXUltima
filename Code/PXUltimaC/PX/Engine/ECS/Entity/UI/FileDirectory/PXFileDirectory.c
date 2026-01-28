@@ -32,14 +32,14 @@ const PXI8U PXFileNoneLength = sizeof(PXFileNone);
 const char PXLocalPath[] = "./";
 const PXI8U PXLocalPathLength = sizeof(PXLocalPath);
 
-PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDrawInfo PXREF pxDrawInfo)
 {
     PXDirectorySearchCache pxDirectorySearchCache;// = (PXDirectorySearchCache*)pxWindow->ExtendedData;
     
     PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
     PXWindow* pxWindow = pxFileDirectory;
 
-    PXWindowDrawInfo pxWindowDrawInfoSub = *pxWindowDrawInfo;
+    PXDrawInfo pxWindowDrawInfoSub = *pxDrawInfo;
 
 #if PXLogEnable
     PXLogPrint
@@ -51,9 +51,9 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
     );
 #endif
 
-    pxWindowDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
+    pxDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
 
-    PXWindowDrawRectangle3D(pxWindow, pxWindowDrawInfo);
+    PXWindowDrawRectangle3D(pxWindow, pxDrawInfo);
 
 
     PXText pxTExt;
@@ -110,14 +110,14 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
 
         const PXResult iconResult = PXIconGetViaFilePath(&pxIcon, &pxFileEntry->FilePath);
 
-        PXI32S rowY = (pxWindowDrawInfo->RectangleXYWH.Height * (i));
+        PXI32S rowY = (pxDrawInfo->RectangleXYWH.Height * (i));
 
         PXWindowDrawIcon
         (
             pxWindow,
             &pxIcon,
             2,
-            pxWindowDrawInfo->RectangleXYWH.Y + rowY + 2,
+            pxDrawInfo->RectangleXYWH.Y + rowY + 2,
             iconSize,
             iconSize
         );
@@ -163,14 +163,14 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWind
             }
         }
 
-        pxWindowDrawInfoSub.RectangleXYWH.X = pxWindowDrawInfo->RectangleXYWH.X + iconSize + 8;
-        pxWindowDrawInfoSub.RectangleXYWH.Y = pxWindowDrawInfo->RectangleXYWH.Y + rowY;
+        pxWindowDrawInfoSub.RectangleXYWH.X = pxDrawInfo->RectangleXYWH.X + iconSize + 8;
+        pxWindowDrawInfoSub.RectangleXYWH.Y = pxDrawInfo->RectangleXYWH.Y + rowY;
        // pxWindowDrawInfoSub.Content = pxFileEntry->FilePath;
         pxWindowDrawInfoSub.Behaviour = PXWindowAllignLeft;
 
         /*
         PXTextDrawInfo pxTextDrawInfo;
-        pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+        pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
         pxTextDrawInfo.Text = &pxWindowDrawInfoSub;
         pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
         pxTextDrawInfo.X = 0;

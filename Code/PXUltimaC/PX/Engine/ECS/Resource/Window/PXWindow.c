@@ -1149,7 +1149,7 @@ void PXAPI PXWindowDrawScene(void)
 }
 
 
-PXResult PXAPI PXWindowDrawGDI(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXWindowDrawGDI(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     PXColorRGBI8* color = &pxWindow->BackGroundColor;
 
@@ -1197,7 +1197,7 @@ PXResult PXAPI PXWindowDrawGDI(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF p
     return PXResultOK;
 }
 
-PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     PXColorRGBI8* color = &pxWindow->BackGroundColor;
 
@@ -1230,8 +1230,8 @@ PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF px
 
 #else
 
-    int w = pxWindowDrawInfo->RectangleXYWH.Width;
-    int h = pxWindowDrawInfo->RectangleXYWH.Height;
+    int w = pxDrawInfo->RectangleXYWH.Width;
+    int h = pxDrawInfo->RectangleXYWH.Height;
     glViewport(0, 0, w, h);
     // 2D orthographic projection (pixel coordinates)
     glMatrixMode(GL_PROJECTION);
@@ -1294,7 +1294,7 @@ PXResult PXAPI PXWindowDrawGL(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF px
     return PXResultOK;
 }
 
-void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
     const HDC hdc = PXWindowDCGet(pxWindow);
@@ -1340,15 +1340,30 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxW
 
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
+
+#if 0
             glOrtho
             (
-                pxWindowDrawInfo->RectangleXYWH.X,
-                pxWindowDrawInfo->RectangleXYWH.X + pxWindowDrawInfo->RectangleXYWH.Width,
-                pxWindowDrawInfo->RectangleXYWH.Y + pxWindowDrawInfo->RectangleXYWH.Height,
-                pxWindowDrawInfo->RectangleXYWH.Y,
+                pxDrawInfo->RectangleXYWH.X,
+                pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width,
+                pxDrawInfo->RectangleXYWH.Y,
+                pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height,
                 -1.0f,
                 +1.0f
             );
+#else
+            glOrtho
+            (
+                pxDrawInfo->RectangleXYWH.X,
+                pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width,
+                pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height,
+                pxDrawInfo->RectangleXYWH.Y,           
+                -1.0f,
+                +1.0f
+            );
+            glScalef(1.0f,-1.0f,1.0f);
+#endif
+
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
@@ -1370,11 +1385,11 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxW
     {
         drawFunciton = pxECSDrawFunction;
 
-        PXResult pxResult = drawFunciton(pxECSInfo, pxWindowDrawInfo);
+        PXResult pxResult = drawFunciton(pxECSInfo, pxDrawInfo);
     }
     else
     {
-        drawFunciton(pxWindow, pxWindowDrawInfo);
+        drawFunciton(pxWindow, pxDrawInfo);
     }  
 
     // Post render update
@@ -1445,7 +1460,7 @@ void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGBI8 PXR
     DeleteObject(hatsolid);
 }
 
-void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     switch(pxWindow->GraphicSystem)
     {
@@ -1846,23 +1861,23 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
 
         case WM_PAINT:
         {
-            PXWindowDrawInfo pxWindowDrawInfo;
-            PXClear(PXWindowDrawInfo, &pxWindowDrawInfo);
+            PXDrawInfo pxDrawInfo;
+            PXClear(PXDrawInfo, &pxDrawInfo);
 
             PAINTSTRUCT painStruct;
             HDC hdcInvalid = BeginPaint(windowHandle, &painStruct);
  
-            PXWindowRectangleXYWH(pxWindow, &pxWindowDrawInfo.RectangleXYWH);
-            pxWindow->Position.Form = pxWindowDrawInfo.RectangleXYWH;
+            PXWindowRectangleXYWH(pxWindow, &pxDrawInfo.RectangleXYWH);
+            pxWindow->Position.Form = pxDrawInfo.RectangleXYWH;
 
 #if 1
             if(pxWindow->WindowParent)
             {
-                PXWindowPaintPane(pxWindow, &pxWindowDrawInfo);
+                PXWindowPaintPane(pxWindow, &pxDrawInfo);
             }
             else
             {
-                PXWindowPaintMain(pxWindow, &pxWindowDrawInfo);
+                PXWindowPaintMain(pxWindow, &pxDrawInfo);
             }
 #endif
 
@@ -1877,14 +1892,14 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
             DRAWITEMSTRUCT PXREF drawItemInfo = (DRAWITEMSTRUCT*)lParam;
 
 #if 0
-            PXWindowDrawInfo pxWindowDrawInfo;
-            PXClear(PXWindowDrawInfo, &pxWindowDrawInfo);
-            pxWindowDrawInfo.hwnd = drawItemInfo->hwndItem;
-            pxWindowDrawInfo.hDC = drawItemInfo->hDC;
+            PXDrawInfo pxDrawInfo;
+            PXClear(PXDrawInfo, &pxDrawInfo);
+            pxDrawInfo.hwnd = drawItemInfo->hwndItem;
+            pxDrawInfo.hDC = drawItemInfo->hDC;
 
-            PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&drawItemInfo->rcItem, &pxWindowDrawInfo.RectangleXYWH);
+            PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&drawItemInfo->rcItem, &pxDrawInfo.RectangleXYWH);
 
-            const PXBool isOK = PXWindowRender(&pxWindowDrawInfo);
+            const PXBool isOK = PXWindowRender(&pxDrawInfo);
 
             if(isOK)
             {
@@ -1900,18 +1915,18 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
         case WM_PRINTCLIENT:
         {
 #if 0
-            PXWindowDrawInfo pxWindowDrawInfo;
-            PXClear(PXWindowDrawInfo, &pxWindowDrawInfo);
-            pxWindowDrawInfo.hwnd = windowID;
-            pxWindowDrawInfo.hDC = (HDC)wParam;
-            //  pxWindowDrawInfo.rcDirty = &rc;
-            pxWindowDrawInfo.bErase = TRUE;
+            PXDrawInfo pxDrawInfo;
+            PXClear(PXDrawInfo, &pxDrawInfo);
+            pxDrawInfo.hwnd = windowID;
+            pxDrawInfo.hDC = (HDC)wParam;
+            //  pxDrawInfo.rcDirty = &rc;
+            pxDrawInfo.bErase = TRUE;
 
             RECT rc;
 
             GetClientRect(windowID, &rc);
 
-            const PXBool isOK = PXWindowRender(&pxWindowDrawInfo);
+            const PXBool isOK = PXWindowRender(&pxDrawInfo);
 
             if(isOK)
             {
@@ -3267,6 +3282,11 @@ PXResult PXAPI PXWindowRegisterToECS()
 
 HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow)
 {
+    if(!pxWindow)
+    {
+        return PXNull;
+    }
+
     if(pxWindow->DeviceContextHandle)
     {
         return pxWindow->DeviceContextHandle;
@@ -3600,17 +3620,17 @@ PXResult PXAPI PXWindowEventPoll(const PXWindow PXREF pxWindow)
 
 PXResult PXAPI PXWindowBufferSwap(const PXWindow PXREF pxWindow)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix
     glXSwapBuffers(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxWindow->WindowHandle);
-    pxActionResult = PXResultOK; // TODO: Do we have error checking?
+    pxResult = PXResultOK; // TODO: Do we have error checking?
 
 #elif OSWindows
     const BOOL result = SwapBuffers(pxWindow->DeviceContextHandle);
-    pxActionResult = PXErrorCurrent(result);
+    pxResult = PXErrorCurrent(result);
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
 #if PXLogEnable && 0
@@ -3620,11 +3640,11 @@ PXResult PXAPI PXWindowBufferSwap(const PXWindow PXREF pxWindow)
         PXNativDraw,
         "BufferSwap",
         "%i",
-        pxActionResult
+        pxResult
     );
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXWindowDestroy(PXWindow PXREF pxWindow)
@@ -3809,9 +3829,9 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
     const HDC windowDeviceHandle = PXWindowDCGet(pxWindow);
     const int pixelFormatIndex = ChoosePixelFormat(windowDeviceHandle, &pixelFormatDescriptor);
     const BOOL successul = SetPixelFormat(windowDeviceHandle, pixelFormatIndex, &pixelFormatDescriptor);
-    const PXResult pxActionResult = PXErrorCurrent(successul);
+    const PXResult pxResult = PXErrorCurrent(successul);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -3823,10 +3843,10 @@ PXResult PXAPI PXWindowPixelSystemSet(PXWindow PXREF pxWindow, PXWindowPixelSyst
         );
 #endif
 
-        return pxActionResult;
+        return pxResult;
     }
 
-    return pxActionResult;
+    return pxResult;
 
 #else
     return PXActionRefusedNotSupported;
@@ -4131,7 +4151,7 @@ PXResult PXAPI PXWindowForegroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF
 
 PXResult PXAPI PXWindowBackgroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF pxColorRGBI8)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix
     const PXI32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
@@ -4259,10 +4279,10 @@ PXResult PXAPI PXWindowBrushSet(PXWindow PXREF pxWindow, PXBrush PXREF pxBrush, 
 
 PXResult PXAPI PXWindowTextGet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #elif OSWindows
 
     switch(pxText->Format)
@@ -4294,18 +4314,18 @@ PXResult PXAPI PXWindowTextGet(PXWindow PXREF pxWindow, PXText PXREF pxText)
     }
 
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXWindowTextSet(PXWindow PXREF pxWindow, PXText PXREF pxText)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #elif OSWindows
 
     BOOL result = FALSE;
@@ -4337,10 +4357,10 @@ PXResult PXAPI PXWindowTextSet(PXWindow PXREF pxWindow, PXText PXREF pxText)
     }
 
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXWindowStyleUpdate(PXWindow PXREF pxWindow)
@@ -4419,15 +4439,15 @@ PXBool PXAPI PXWindowIsEnabled(const PXWindow PXREF pxWindow)
     return PXFalse;
 #elif OSWindows
     const BOOL success = IsWindowEnabled(pxWindow->WindowHandle); // Windows 2000, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(success);
+    const PXResult pxResult = PXErrorCurrent(success);
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXFalse;
 #endif
 }
 
-PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo)
+PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo)
 {
     PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
 
@@ -4464,8 +4484,8 @@ PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo
         pxWindowBrush = pxGUITheme->BrushMainPrimary;
     }
 
-    PXWindowDrawInfo pxWindowDrawRectangleInfoSub;
-    PXClear(PXWindowDrawInfo, &pxWindowDrawRectangleInfoSub);
+    PXDrawInfo pxWindowDrawRectangleInfoSub;
+    PXClear(PXDrawInfo, &pxWindowDrawRectangleInfoSub);
     pxWindowDrawRectangleInfoSub.RectangleXYWH = pxWindowDrawRectangleInfo->RectangleXYWH;
     pxWindowDrawRectangleInfoSub.Brush = pxWindowBrush;
     pxWindowDrawRectangleInfoSub.Rounded = PXFalse;
@@ -4475,7 +4495,7 @@ PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXWindowDrawInfo
     return pxResult;
 }
 
-PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo)
+PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo)
 {
     //PXAssert(width > 0, "Width is 0");
       //PXAssert(height > 0, "height is 0");
@@ -4709,29 +4729,9 @@ PXResult PXAPI PXTextDraw(PXTextDrawInfo PXREF pxTextDrawInfo, PXOpenGL PXREF px
     PXResult pxResult = PXResultOK;
 
     glPushMatrix(); // We need to store the current matrix to use a new one
-    //glScalef(0.7, -0.7, 1);
+    glScalef(20, 20, 1.0);
 
-    pxOpenGL->Binding.Translatef
-    (
-        0.0,
-        pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Height,
-        0.0f
-    );
-
-    /*
-    glOrtho
-    (
-        pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.X,
-        pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Width,
-        pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Height,
-        pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Y,
-        -1,
-        1
-    );*/
-
-    //glLoadIdentity();
-
-    glScalef(50, -50, 1.0);
+    pxOpenGL->Binding.Translatef(pxTextDrawInfo->X, pxTextDrawInfo->Y, 0.0f);
 
     switch(pxText->Format)
     {
@@ -4907,7 +4907,10 @@ PXResult PXAPI PXWindowDrawText
                 format |= DT_VCENTER | DT_CENTER;
             }
 
-            RECT* rectangle = (RECT*)&pxTextDrawInfo->WindowDrawInfo->RectangleXYWH;
+            RECT rectangle = *(RECT*)&pxTextDrawInfo->WindowDrawInfo->RectangleXYWH;
+
+            rectangle.left += pxTextDrawInfo->X;
+            rectangle.top += pxTextDrawInfo->Y;
 
             switch(targetText->Format)
             {
@@ -4918,7 +4921,7 @@ PXResult PXAPI PXWindowDrawText
                         pxWindow->DeviceContextHandle,
                         targetText->A,
                         targetText->SizeUsed,
-                        rectangle,
+                        &rectangle,
                         format,
                         PXNull
                     ); // Windows 2000, User32.dll, winuser.h
@@ -4931,7 +4934,7 @@ PXResult PXAPI PXWindowDrawText
                         pxWindow->DeviceContextHandle,
                         targetText->W,
                         targetText->SizeUsed,
-                        rectangle,
+                        &rectangle,
                         format,
                         PXNull
                     ); // Windows 2000, User32.dll, winuser.h
@@ -5131,7 +5134,7 @@ PXResult PXAPI PXWindowDrawLines(PXWindow PXREF pxWindow, const PXI32S x, const 
 #endif
 }
 
-PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawRectangleInfo)
+PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo)
 {
     PXGraphic* pxGraphic = PXGraphicInstantiateGET();
     PXOpenGL PXREF pxOpenGL = &pxGraphic->OpenGLInstance;
@@ -5377,9 +5380,9 @@ PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow)
     // RegisterRawInputDevices should not be used from a library!
     // As it may interfere with any raw input processing logic already present in applications that load it.
     const BOOL regsiterRawImputSuccess = RegisterRawInputDevices(rawInputDeviceList, 2, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(regsiterRawImputSuccess);
+    const PXResult pxResult = PXErrorCurrent(regsiterRawImputSuccess);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
 #if PXLogEnable
         PXLogPrint
@@ -5392,7 +5395,7 @@ PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow)
         );
 #endif
 
-        return pxActionResult;
+        return pxResult;
     }
 
 #if PXLogEnable
@@ -5598,10 +5601,10 @@ PXResult PXAPI PXWindowCursorPositionGet(PXWindow PXREF pxWindow, PXVector2I32S 
 
 PXResult PXAPI PXWindowText(PXWindow PXREF pxWindow, PXText PXREF pxText, const PXBool doWrite)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #elif OSWindows
 
     switch(pxText->Format)
@@ -5656,10 +5659,10 @@ PXResult PXAPI PXWindowText(PXWindow PXREF pxWindow, PXText PXREF pxText, const 
     }
 
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF pxWindowCreateInfo)

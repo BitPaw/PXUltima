@@ -5,6 +5,9 @@
 
 #include <math.h>
 
+#include <PX/Engine/ECS/Entity/Gizmo/PXGizmo.h>
+#include <PX/Engine/ECS/Entity/Tesseract/PXTesseract.h>
+
 const char PXSpaceGridName[] = "SpaceGrid";
 const PXI8U PXSpaceGridNameLength = sizeof(PXSpaceGridName);
 const PXECSRegisterInfoStatic PXSpaceGridRegisterInfoStatic =
@@ -61,11 +64,14 @@ PXResult PXAPI PXSpaceGridCreate(PXSpaceGrid** pxSpaceGridREF, PXSpaceGridCreate
 }
 
 #include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Math/PXMath.h>
 
-PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindowBase = pxSpaceGrid->WindowBase;
     PXCamera PXREF pxCamera = pxSpaceGrid->CameraView;
+
+    pxDrawInfo->Camera = pxCamera;
 
     const float GRID_SIZE = 200.0f; // half-extent (so 400x400 total)
     const float GRID_STEP = 0.5f;   // minor grid spacing
@@ -76,17 +82,46 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
     glClearColor(ClearColor.Red, ClearColor.Green, ClearColor.Blue, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    double aspectRatio = (double)pxWindowDrawInfo->RectangleXYWH.Height / (double)pxWindowDrawInfo->RectangleXYWH.Width;
+    double aspectRatio = (double)pxDrawInfo->RectangleXYWH.Width / (double)pxDrawInfo->RectangleXYWH.Height;
 
     glMatrixMode(GL_PROJECTION); 
     glLoadIdentity();
     gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity(); 
-    glRotatef(pxCamera->CurrentRotation.X, 1.0f, 0.0f, 0.0f);
-    glRotatef(pxCamera->CurrentRotation.Y, 0.0f, 1.0f, 0.0f);
-    glRotatef(pxCamera->CurrentRotation.Z, 0.0f, 0.0f, 1.0f);
+    glLoadIdentity();
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
     glTranslatef(pxCamera->Position.X, pxCamera->Position.Y, pxCamera->Position.Z);
+
+
+    
+    
+
+    PXVector3F32 forward;
+    PXVector3F32 right;
+    PXVector3F32 up;
+
+    PXCameraForward(pxCamera, &forward);
+    PXCameraRight(pxCamera, &right);
+    PXCameraUp(pxCamera, &up);
+
+
+    glBegin(GL_LINES);
+    glColor4f(0.8f, 0.00f, 0.0f, 1.0f);
+    glVertex3f(right.X, right.Y, right.Z);
+    glVertex3f(right.X+3, right.Y, right.Z);
+
+    glColor4f(0.00f, 0.8f, 0.0f, 1.0f);
+    glVertex3f(up.X, up.Y, up.Z);
+    glVertex3f(up.X, up.Y+3, up.Z);
+
+    glColor4f(0.0f, 0.0f, 0.8f, 1.0f);
+    glVertex3f(forward.X, forward.Y, right.Z);
+    glVertex3f(forward.X, forward.Y, right.Z+3);
+    glEnd();
+
+
 
 
     glEnable(GL_FOG);
@@ -145,6 +180,45 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
     glDisable(GL_FOG);
 
 
+    PXModelDraw(pxSpaceGrid->ModelRender, pxDrawInfo);
+
+
+
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
+    glTranslatef(pxCamera->Position.X, pxCamera->Position.Y, pxCamera->Position.Z);
+
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    PXGizmoDraw(PXNull, pxDrawInfo);
+
+
+
+
+    PXTesseractDraw(PXNull, pxDrawInfo);
+
+
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+    glRotatef(PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
+    glTranslatef(pxCamera->Position.X, pxCamera->Position.Y, pxCamera->Position.Z);
+
+    PXCameraDraw(pxSpaceGrid->CameraPlayer, pxDrawInfo);
+
+
     char buffer[64];
     PXText pxText;
     PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
@@ -152,7 +226,7 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXWindowDrawInfo P
 
 
     PXTextDrawInfo pxTextDrawInfo;
-    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
     pxTextDrawInfo.Text = &pxText;
     pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
     pxTextDrawInfo.X = 0;

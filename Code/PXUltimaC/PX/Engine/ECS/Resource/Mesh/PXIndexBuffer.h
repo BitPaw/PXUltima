@@ -8,12 +8,28 @@
 #include "PXBufferLayout.h"
 
 
-typedef struct PXIndexSegment_
+typedef struct PXIndexSegmentEntry_
 {
     PXMaterial* Material;
     PXSize DataRange;
 }
+PXIndexSegmentEntry;
+
+typedef struct PXIndexSegment_
+{
+    PXSize SegmentListAmount; // 0=Not allowed. 1=Mesh is single, n=Segmented
+
+    union
+    {
+        PXIndexSegmentEntry SegmentPrime; // Only used if Segment is only one
+        PXIndexSegmentEntry* SegmentList;
+    };
+}
 PXIndexSegment;
+
+PXPublic void PXAPI PXIndexSegmentSET(PXIndexSegment PXREF pxIndexSegment, const PXSize amount);
+PXPublic PXIndexSegmentEntry* PXAPI PXIndexSegmentGET(PXIndexSegment PXREF pxIndexSegment);
+
 
 
 // Index buffer, used to store the vertex render order.
@@ -35,34 +51,39 @@ typedef struct PXIndexBuffer_
 
     PXI32U DrawModeID; // How to draw, modes like triangle or lines
 
-    PXSize LayoutListAmount;
-    PXSize SegmentListAmount; // 0=Not allowed. 1=Mesh is single, n=Segmented
-
-    union
-    {
-        PXIndexSegment SegmentPrime; // Only used if Segment is only one
-        PXIndexSegment* SegmentList;
-    };
-
-    union
-    {
-        PXBufferLayout LayoutPrime;
-        PXBufferLayout* LayoutList;
-    };
+    PXIndexSegment Segment;
+    PXBufferLayout Layout;
 }
 PXIndexBuffer;
 
 
-// Allocate an indexbuffer in a way to minimize size for given amount of vertex points
-PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
-PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer);
+typedef struct PXIndexBufferCreateInfo_
+{
+    PXECSCreateInfo Info;
 
-PXPublic PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer PXREF pxIndexBuffer);
-PXPublic PXBufferLayout* PXAPI PXIndexLayoutListGET(PXIndexBuffer PXREF pxIndexBuffer);
+    PXSize AmountVertex;
+    PXSize AmountSegments; // aka amount of materials
+}
+PXIndexBufferCreateInfo;
+
+PXPublic PXResult PXAPI PXIndexBufferRegisterToECS(void);
+PXPublic PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBuffer, PXIndexBufferCreateInfo PXREF pxIndexBufferCreateInfo);
+PXPublic PXResult PXAPI PXIndexBufferRelease(PXIndexBuffer PXREF pxIndexBuffer);
+PXPublic PXSize PXAPI PXIndexBufferAmount(const PXIndexBuffer PXREF pxIndexBuffer);
+
+
+// Allocate an indexbuffer in a way to minimize size for given amount of vertex points
+PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer);
 
 PXPublic PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer PXREF pxIndexBuffer, const PXI8U type);
 
+typedef void (PXAPI* PXIndexBufferIndexSET)(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData);
 
+PXPublic PXIndexBufferIndexSET PXAPI PXIndexBufferIndexFunc(const PXIndexBuffer PXREF pxIndexBuffer);
 
+PXPublic void PXAPI PXIndexBufferIndex08SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData);
+PXPublic void PXAPI PXIndexBufferIndex16SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData);
+PXPublic void PXAPI PXIndexBufferIndex32SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData);
+PXPublic void PXAPI PXIndexBufferIndex64SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData);
 
 #endif

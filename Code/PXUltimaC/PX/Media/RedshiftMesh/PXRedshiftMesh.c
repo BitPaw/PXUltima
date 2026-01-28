@@ -16,12 +16,12 @@ const PXI8U PXR3D2HeaderSignatureLength = sizeof(PXR3D2HeaderSignature);
 const PXI32U PXR3D2HeaderList[] =
 {
     PXTypeDatax8,
-    PXTypeInt16U,
-    PXTypeInt16U,
+    PXTypeI16U,
+    PXTypeI16U,
     PXTypeText(128),
-    PXTypeInt32U,
-    PXTypeInt32U,
-    PXTypeInt32U,
+    PXTypeI32U,
+    PXTypeI32U,
+    PXTypeI32U,
     PXTypeF32List(3),
     PXTypeF32List(3)
 };
@@ -30,7 +30,7 @@ const PXI8U PXR3D2HeaderListSize = sizeof(PXR3D2HeaderList) / sizeof(PXI32U);
 
 
 
-PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXR3D2LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXR3D2 pxR3D2;
     PXClear(PXR3D2, &pxR3D2); 
@@ -64,7 +64,7 @@ PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 #if 0
 
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
     char name[260];
 
     PXTextPrintA(name, 260, "%s.%s", pxFile->FilePath.A, "obj");
@@ -143,9 +143,9 @@ PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXCopyList(char, PXR3D2HeaderSignatureLength, PXR3D2HeaderSignature, pxR3D2->Header.Signature);
 
@@ -301,9 +301,9 @@ const PXI8U PXR3D2TextNameListAmount = sizeof(PXR3D2TextNameLengthList) / sizeof
 
 
 
-PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
 #if PXLogEnable
     PXLogPrint
@@ -319,7 +319,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxR
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.ReadInfo.FileCache = compiledSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
@@ -507,7 +507,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxR
     return PXResultOK;
 }
 
-PXResult PXAPI PXR3D2SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXR3D2SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

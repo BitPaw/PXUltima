@@ -10,28 +10,28 @@
 // A mesh can contain multible vertexBuffers or just one thats interleaved
 typedef struct PXVertexBuffer_
 {
-    PXECSInfo Info; // VertexArrayObject (VAO)
+    PXECSInfo Info;
 
     union
     {
-        PXI32U VBO;
-
-        struct ID3D11Buffer* BufferD11;
+        PXI32U VBO; // OpenGL VertexBufferObject
 
         struct IDirect3DVertexBuffer9* Buffer_9;
+        struct ID3D11Buffer* Buffer_11;
     };
 
     PXBuffer VertexData;
 
-    PXSize LayoutAmount;
-
-    union
-    {
-        PXBufferLayout LayoutPrime[PXEmbeddedArraySize]; // Store up zo 4, saving allocations
-        PXBufferLayout* LayoutList;
-    };
+    PXBufferLayout Layout;
 }
 PXVertexBuffer;
+
+typedef struct PXVertexBufferCreateInfo_
+{
+    PXECSCreateInfo Info;
+}
+PXVertexBufferCreateInfo;
+
 
 typedef struct PXVertexBufferFormatInfo_
 {
@@ -59,6 +59,10 @@ typedef struct PXVertexBufferFormatInfo_
 PXVertexBufferFormatInfo;
 
 
-PXPublic PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer PXREF pxVertexBuffer);
+PXPublic PXResult PXAPI PXVertexBufferRegisterToECS(void);
+PXPublic PXResult PXAPI PXVertexBufferCreate(PXVertexBuffer** pxVertexBufferREF, PXVertexBufferCreateInfo PXREF pxVertexBufferCreateInfo);
+PXPublic PXResult PXAPI PXVertexBufferRelease(PXVertexBuffer PXREF pxVertexBuffer);
+
+PXPublic PXResult PXAPI PXVertexBufferLayoutPrint(const PXVertexBuffer PXREF pxVertexBuffer);
 
 #endif

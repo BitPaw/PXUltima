@@ -5,13 +5,14 @@
 
 const char PXPDFSignature[5] = "%PDF-";
 
-PXResult PXAPI PXPDFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXPDFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXPDF pxPDF;
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
     // Check for header
     {
-        const PXBool validSignature = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXPDFSignature, sizeof(PXPDFSignature));
+        const PXBool validSignature = PXFileReadAndCompare(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
 
         if (!validSignature)
         {
@@ -21,19 +22,20 @@ PXResult PXAPI PXPDFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     // Fetch Versionc
     {
-        PXFileReadTextIU8(pxResourceLoadInfo->FileReference, &pxPDF.VersionMajor);
-        PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 1u); // Move over the dot
-        PXFileReadTextIU8(pxResourceLoadInfo->FileReference, &pxPDF.VersionMinor);
-        PXFileSkipEndOfLineCharacters(pxResourceLoadInfo->FileReference);
+        PXFileReadTextIU8(pxFile, &pxPDF.VersionMajor);
+        PXFileCursorAdvance(pxFile, 1u); // Move over the dot
+        PXFileReadTextIU8(pxFile, &pxPDF.VersionMinor);
+        PXFileSkipEndOfLineCharacters(pxFile);
     }
-
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXPDFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXPDFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    PXFileWriteB(pxResourceSaveInfo->FileReference, PXPDFSignature, sizeof(PXPDFSignature));
+    PXFile* pxFile = pxResourceSaveInfo->FileCurrent;
+
+    PXFileWriteB(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
 
     return PXActionRefusedNotImplemented;
 }

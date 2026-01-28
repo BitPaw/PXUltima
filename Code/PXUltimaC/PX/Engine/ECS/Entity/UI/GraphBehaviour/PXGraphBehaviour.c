@@ -4,7 +4,7 @@
 
 const char PXGraphBehaviourText[] = "GraphBehaviour";
 
-PXResult PXAPI PXGraphBehaviourDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXGraphBehaviourDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     /*
     PXGUITheme* pxGUITheme = _pxGUIManager.ThemeSelected;

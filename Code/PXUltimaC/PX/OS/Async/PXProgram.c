@@ -222,9 +222,9 @@ PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF retu
     }
     case WAIT_FAILED:
     {
-        const PXResult pxActionResult = PXErrorCurrent(PXFalse);
+        const PXResult pxResult = PXErrorCurrent(PXFalse);
 
-        return pxActionResult;
+        return pxResult;
     }
     case WAIT_ABANDONED:
     case WAIT_OBJECT_0:
@@ -234,11 +234,11 @@ PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF retu
     }
 
     const BOOL exitCodeGetSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(exitCodeGetSuccess);
+    const PXResult pxResult = PXErrorCurrent(exitCodeGetSuccess);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     *returnCode = result;
@@ -285,11 +285,11 @@ PXResult PXAPI PXProgramAttach(PXProgram PXREF pxProgram)
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
     pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
-    const PXResult pxActionResult = PXErrorCurrent(pxProgram->Handle != PXNull);
+    const PXResult pxResult = PXErrorCurrent(pxProgram->Handle != PXNull);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     return PXResultOK;
@@ -310,11 +310,11 @@ PXResult PXAPI PXProgramDetach(PXProgram PXREF pxProgram)
     HANDLE handleID = 0;
 
     const PXBool closeResult = CloseHandle(pxProgram->Handle);
-    const PXResult pxActionResult = PXErrorCurrent(closeResult);
+    const PXResult pxResult = PXErrorCurrent(closeResult);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     pxProgram->Handle = PXNull;
@@ -338,11 +338,11 @@ PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF a
     SIZE_T readSize = 0;
 
     const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, &readSize); // Windows XP, Kernel32.dll, memoryapi.h
-    const PXResult pxActionResult = PXErrorCurrent(readResult);
+    const PXResult pxResult = PXErrorCurrent(readResult);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     *bufferSizeWritten = readSize;
@@ -366,11 +366,11 @@ PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF 
     SIZE_T writtenSize = 0;
 
     const PXBool readResult = WriteProcessMemory(pxProgram->Handle, (LPVOID)adress, buffer, bufferSize, &writtenSize); // Windows XP, Kernel32.dll, memoryapi.h
-    const PXResult pxActionResult = PXErrorCurrent(readResult);
+    const PXResult pxResult = PXErrorCurrent(readResult);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     *bufferSizeWritten = writtenSize;

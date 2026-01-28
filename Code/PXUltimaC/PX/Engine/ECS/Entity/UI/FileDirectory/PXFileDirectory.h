@@ -23,7 +23,7 @@ PXFileDirectoryCreateInfo;
 
 PXPublic PXResult PXAPI PXFileDirectoryRegisterToECS();
 
-PXPublic PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDrawInfo PXREF pxDrawInfo);
 PXPublic PXResult PXAPI PXFileDirectoryCreate(PXFileDirectory** pxFileDirectory, PXFileDirectoryCreateInfo PXREF pxFileDirectoryCreateInfo);
 
 #endif

@@ -21,7 +21,7 @@ typedef struct PXButtonCreateInfo_
 }
 PXButtonCreateInfo;
 
-PXPublic PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXDrawInfo PXREF pxDrawInfo);
 PXPublic PXResult PXAPI PXButtonCreate(PXButton** pxButtonREF, PXButtonCreateInfo PXREF pxButtonCreateInfo);
 
 #endif

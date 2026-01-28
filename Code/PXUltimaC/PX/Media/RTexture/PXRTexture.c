@@ -9,13 +9,13 @@ const char PXRTextureSignature[4] = "TEX\0";
 const PXI32U PXRTextureHeaderList[] =
 {
     PXTypeDatax4, // PXTypeSignatureCheck
-    PXTypeInt16U,
-    PXTypeInt16U,
+    PXTypeI16U,
+    PXTypeI16U,
 
     PXTypeBool,
-    PXTypeInt08U,
-    PXTypeInt08U,
-    PXTypeInt08U
+    PXTypeI08U,
+    PXTypeI08U,
+    PXTypeI08U
 };
 const PXI8U PXRTextureHeaderListSize = sizeof(PXRTextureHeaderList) / sizeof(PXI32U);
 
@@ -144,9 +144,9 @@ const PXI8U PXBlockSizeList[17] =
     sizeof(AtcInterpolatedAlphaBlock)
 };
 
-PXResult PXAPI PXRTextureLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRTextureLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXRTexture pxRTexture;
     PXClear(PXRTexture, &pxRTexture);
@@ -292,7 +292,7 @@ PXResult PXAPI PXRTextureLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInf
     return PXResultOK;
 }
 
-PXResult PXAPI PXRTextureSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRTextureSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

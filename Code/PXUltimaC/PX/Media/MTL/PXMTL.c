@@ -79,18 +79,18 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char PXREF line, const PXSize lineSize)
     }
 }
 
-PXResult PXAPI PXMTLPeekFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMTLPeekFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
+    //PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     // We dont want to compile, as this can impact performance
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
+    PXMaterialContainer PXREF pxMaterialList = 0;// (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     PXI32U materialAmount = 0;
     PXMaterial* pxMaterialCurrent = PXNull;
@@ -109,11 +109,11 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.ReadInfo.FileCache = compiledSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
-    pxCompiler.CommentSingleLineSize = 1u;
-    pxCompiler.CommentSingleLine = "#";
+
+    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
 
 #if PXLogEnable
@@ -394,7 +394,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXMTLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMTLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

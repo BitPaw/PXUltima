@@ -10,7 +10,7 @@ PXPrivate void PXAPI PXCSharpContainerWrite(PXCompiler PXREF pxCompiler);
 PXPrivate void PXAPI PXCSharpFunctionWrite(PXCompiler PXREF pxCompiler);
 PXPrivate void PXAPI PXCSharpDefinitionWrite(PXCompiler PXREF pxCompiler);
 
-PXPublic PXResult PXAPI PXCSharpLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXCSharpSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXCSharpLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXCSharpSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -6,6 +6,7 @@
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Math/PXMatrix.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 //#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
 //#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
@@ -104,5 +105,13 @@ typedef struct PXRenderEntity_
 }
 PXRenderEntity;
 
+
+typedef struct PXRenderingSystem_
+{
+    PXECSInfo Info;
+}
+PXRenderingSystem;
+
+PXPublic PXResult PXAPI PXRenderingSystemRegisterToECS();
 
 #endif

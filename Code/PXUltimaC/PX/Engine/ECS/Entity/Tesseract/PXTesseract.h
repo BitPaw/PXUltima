@@ -18,7 +18,6 @@ typedef struct PXTesseractCreateInfo_
 PXTesseractCreateInfo;
 
 PXPublic PXResult PXAPI PXTesseractRegisterToECS();
-
 PXPublic PXResult PXAPI PXTesseractCreate(PXTesseract** pxTesseractREF, PXTesseractCreateInfo PXREF pxTesseractCreateInfo);
 PXPublic PXResult PXAPI PXTesseractRelease(PXTesseract PXREF pxTesseract);
 PXPublic PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXDrawInfo PXREF pxDrawInfo);

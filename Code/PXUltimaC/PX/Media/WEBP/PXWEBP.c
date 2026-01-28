@@ -6,10 +6,9 @@
 
 const char PXWEBPVP[4] = "VP8 ";
 
-PXResult PXAPI PXWEBPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
-    PXFile* pxFile = pxResourceLoadInfo->FileReference;
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
     // Parse RIFF header
     {
@@ -58,14 +57,12 @@ PXResult PXAPI PXWEBPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         default:
             break;
         }
-
     }
-
 
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWEBPSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWEBPSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     // Write RIFF
     {
@@ -74,7 +71,7 @@ PXResult PXAPI PXWEBPSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         pxRiff.Format = PXRIFFWebPicture;
         pxRiff.EndianFormat = PXEndianLittle;
 
-        const PXResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileReference);
+        const PXResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileCurrent);
     }
 
     return PXActionRefusedNotImplemented;

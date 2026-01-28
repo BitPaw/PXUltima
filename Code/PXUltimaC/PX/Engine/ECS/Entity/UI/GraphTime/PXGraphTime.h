@@ -11,6 +11,6 @@ typedef struct PXGraphTime_
 }
 PXGraphTime;
 
-PXPublic PXResult PXAPI PXGraphTimeDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXGraphTimeDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

@@ -207,7 +207,7 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
     if(numDevices == 0)
     {
         PXMemoryHeapFree(PXNull, deviceList);
-        return;
+        return PXResultInvalid;
     }
 
     for(UINT i = 0; i < numDevices; ++i) 
@@ -224,7 +224,7 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
             // First call to get the size of the buffer needed
             if(GetRawInputDeviceInfo(rawINPUTDEVICELIST->hDevice, RIDI_DEVICENAME, NULL, &deviceNameSize) == -1) {
                 //printf("Failed to get device name size.\n");
-                return;
+                return PXResultInvalid;
             }
 
             char xxxxxxxxx[260];
@@ -233,7 +233,7 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
             if(GetRawInputDeviceInfo(rawINPUTDEVICELIST->hDevice, RIDI_DEVICENAME, xxxxxxxxx, &deviceNameSize) < 0) {
                 //printf("Failed to get device name.\n");
                // free(deviceName);
-                return;
+                return PXResultInvalid;
             }
 
             PXSize siii = 260;

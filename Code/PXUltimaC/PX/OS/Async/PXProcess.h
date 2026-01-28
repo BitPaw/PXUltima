@@ -128,4 +128,9 @@ PXPublic PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess);
 
 PXPublic PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemoryInfo);
 
+
+// Can set the scheduling mode into an eco mode which reduces CPU time.
+// For minimal applications this can increase battery life by reducing CPU usage.
+PXPublic void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable);
+
 #endif

@@ -29,28 +29,28 @@ PXResult PXAPI PXLAMELoadFromFile(PXLAME PXREF lame, PXFile PXREF pxFile)
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&lame->Revision,PXTypeInt08U},
-            {&lame->VBRType,PXTypeInt08U},
-            {&lame->LowpassFrequency,PXTypeInt08U},
-            {&lame->Peak_signal, PXTypeInt32UBE},
-            {&lame->Radio_replay_pad, PXTypeInt16UBE },
-            {&lame->Radio_replay_set_name, PXTypeInt16UBE},
-            {&lame->Radio_replay_originator_code, PXTypeInt16UBE},
-            {&lame->Radio_replay_gain, PXTypeInt16UBE},
-            {&lame->Audiophile_replay_gain, PXTypeInt16UBE},
-            {&lame->Flag_ath_type,PXTypeInt08U},
-            {&lame->Flag_expn_psy_tune,PXTypeInt08U},
-            {&lame->Flag_safe_joint,PXTypeInt08U},
-            {&lame->Flag_no_gap_more,PXTypeInt08U},
-            {&lame->Flag_no_gap_previous,PXTypeInt08U},
-            {&lame->Average_bit_rate,PXTypeInt08U},
-            {&lame->Delay_padding_delay_high,PXTypeInt08U},
-            {&lame->Delay_padding_delay_low,PXTypeInt08U},
-            {&lame->Delay_padding_padding_high,PXTypeInt08U},
-            {&lame->Delay_padding_padding_low,PXTypeInt08U},
-            {&lame->noise_shaping,PXTypeInt08U},
-            {&lame->stereo_mode,PXTypeInt08U},
-            {&lame->non_optimal,PXTypeInt08U}
+            {&lame->Revision,PXTypeI08U},
+            {&lame->VBRType,PXTypeI08U},
+            {&lame->LowpassFrequency,PXTypeI08U},
+            {&lame->Peak_signal, PXTypeI32UBE},
+            {&lame->Radio_replay_pad, PXTypeI16UBE },
+            {&lame->Radio_replay_set_name, PXTypeI16UBE},
+            {&lame->Radio_replay_originator_code, PXTypeI16UBE},
+            {&lame->Radio_replay_gain, PXTypeI16UBE},
+            {&lame->Audiophile_replay_gain, PXTypeI16UBE},
+            {&lame->Flag_ath_type,PXTypeI08U},
+            {&lame->Flag_expn_psy_tune,PXTypeI08U},
+            {&lame->Flag_safe_joint,PXTypeI08U},
+            {&lame->Flag_no_gap_more,PXTypeI08U},
+            {&lame->Flag_no_gap_previous,PXTypeI08U},
+            {&lame->Average_bit_rate,PXTypeI08U},
+            {&lame->Delay_padding_delay_high,PXTypeI08U},
+            {&lame->Delay_padding_delay_low,PXTypeI08U},
+            {&lame->Delay_padding_padding_high,PXTypeI08U},
+            {&lame->Delay_padding_padding_low,PXTypeI08U},
+            {&lame->noise_shaping,PXTypeI08U},
+            {&lame->stereo_mode,PXTypeI08U},
+            {&lame->non_optimal,PXTypeI08U}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -89,9 +89,9 @@ PXResult PXAPI PXLAMELoadFromFile(PXLAME PXREF lame, PXFile PXREF pxFile)
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&lame->Unused,PXTypeInt08U},
-            {&lame->Preset,PXTypeInt16UBE},
-            {&lame->MusicLength,PXTypeInt32UBE}
+            {&lame->Unused,PXTypeI08U},
+            {&lame->Preset,PXTypeI16UBE},
+            {&lame->MusicLength,PXTypeI32UBE}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

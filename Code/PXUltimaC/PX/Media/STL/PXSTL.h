@@ -11,7 +11,7 @@ typedef struct PXSTL_
 }
 PXSTL;
 
-PXPublic PXResult PXAPI PXSTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSTLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

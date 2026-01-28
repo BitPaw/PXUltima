@@ -11,7 +11,7 @@ typedef struct PXFastFile_
 }
 PXFastFile;
 
-PXPublic PXResult PXAPI PXFastFileLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFastFileSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFastFileLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFastFileSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

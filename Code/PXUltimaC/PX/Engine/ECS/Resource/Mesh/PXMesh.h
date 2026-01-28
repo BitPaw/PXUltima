@@ -6,6 +6,7 @@
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/ECS/Component/Material/PXMaterial.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXMeshGeometry.h>
 #include "PXVertexBuffer.h"
 #include "PXBufferLayout.h"
 #include "PXIndexBuffer.h"
@@ -185,8 +186,6 @@ PXModelForm;
 // A mesh is a structure that contains vertex and index data to render itself
 typedef struct PXMesh_ PXMesh;
 
-
-
 typedef struct PXMesh_
 {
     PXECSInfo Info; // Contains VAO
@@ -196,21 +195,7 @@ typedef struct PXMesh_
         PXI32U VAO; // OpenGL
     };
 
-    // Primary allocatedspace
-    //PXSize VertexDataSize;
-    //void* VertexDataAdress;
-
-    // Can either store interleaved data or seperate ones
-    PXSize VertexBufferListAmount; // Realistically, is not more than 1,2,3,4,..
-
-    union
-    {
-        PXVertexBuffer VertexBufferPrime[PXEmbeddedArraySize]; // Can store position, normal, texturepos and one additional parameter 
-        PXVertexBuffer* VertexBufferList; // Used as the same above, but can store many more.
-    };
-
-    PXIndexBuffer* IndexBuffer; // Contains IBO
-
+    PXMeshGeometry* Geometry;
 
     PXSize MaterialContaierListAmount;
     PXMaterialContainer* MaterialContaierList;
@@ -230,25 +215,9 @@ PXMeshCreateInfo;
 
 
 PXPublic PXResult PXAPI PXMeshRegisterToECS();
-
-
-PXPublic PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh);
-
-// Define and allocate vertex data to be stored and how
-PXPublic PXResult PXAPI PXMeshVertexLayout(PXMesh PXREF pxMesh, const PXSize index, PXBufferLayout PXREF pxVertexBufferLayoutList, const PXSize amount);
-PXPublic PXResult PXAPI PXMeshIndexLayout(PXMesh PXREF pxMesh, const PXSize primitveAmount, const PXSize segmentAmount);
-
-PXPublic PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh PXREF pxMesh, const PXI8U type);
-
-PXPublic void* PXAPI PXMeshVertexInsert(PXMesh PXREF pxMesh, const PXI8U type);
-PXPublic void* PXAPI PXMeshIndexInsert(PXMesh PXREF pxMesh, const PXI8U type);
-
-PXPublic PXSize PXAPI PXMeshVertexStrideGET(PXMesh PXREF pxMesh);
-
-PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh PXREF pxMesh);
-PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh PXREF pxMesh, const PXSize amount);
-
-PXPublic PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh PXREF pxMesh);
+PXPublic PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCreateInfo);
+PXPublic PXResult PXAPI PXMeshRelease(PXMesh PXREF pxMesh);
+PXPublic PXResult PXAPI PXMeshDraw(PXMesh PXREF pxMesh, PXDrawInfo PXREF pxDrawInfo);
 
 PXPublic PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh);
 PXPublic PXResult PXAPI PXMeshNormalDataGenerate(PXMesh PXREF pxMesh);
@@ -257,7 +226,7 @@ PXPublic PXResult PXAPI PXMeshVertexArrayAdd
     PXMesh PXREF pxMesh,
     void* data,
     const PXSize dataLength,
-    PXBufferLayout PXREF pxVertexBufferLayoutList,
+    PXBufferLayoutEntry PXREF pxVertexBufferLayoutList,
     const PXSize pxVertexBufferLayoutListAmount
 );
 //---------------------------------------------------------
@@ -267,8 +236,5 @@ PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh PXREF pxMesh);
 PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh PXREF pxMesh, const PXSize index);
 //PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh PXREF pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
 
-PXPublic PXResult PXAPI PXMeshRegisterToECS();
-
-PXPublic PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCreateInfo);
 
 #endif

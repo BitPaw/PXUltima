@@ -67,11 +67,33 @@ PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PXREF pxMod
 
     pxModelCreateInfo->Info.Static = &PXModelRegisterInfoStatic;
     pxModelCreateInfo->Info.Dynamic = &PXModelRegisterInfoDynamic;
-    PXECSCreate(pxModelREF, pxModelCreateInfo);
+    const PXResult pxResult = PXECSCreate(pxModelREF, pxModelCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
     pxModel = *pxModelREF;
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
+
+    // We want to load the mesh from a file or embedded
+    PXText* filePath = &pxModelCreateInfo->Info.FilePath;
+
+    if(filePath->Data)
+    {
+        // Path defined, lets load it!
+        PXMeshCreateInfo pxMeshCreateInfo;
+        PXClear(PXMeshCreateInfo, &pxMeshCreateInfo);
+        pxMeshCreateInfo.Info = pxModelCreateInfo->Info;
+
+        PXMeshCreate(&pxModel->Mesh, &pxMeshCreateInfo);
+    }
+    else
+    {
+        // No path specifies, are we loading something predefined?
+    }
 
     return PXResultOK;
 }
@@ -81,55 +103,169 @@ PXResult PXAPI PXModelRelease(PXModel PXREF pxModel)
     return PXResultOK;
 }
 
-PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo)
 {
-    PXModelDrawGL(pxModel, pxWindowDrawInfo);
+    PXModelDrawGL(pxModel, pxDrawInfo);
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+#include <PX/OS/Console/PXConsole.h>
+
+PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo)
 {
-    /*
+    PXMesh PXREF pxMesh = pxModel->Mesh;
+    PXMeshGeometry PXREF pxMeshGeometry = pxMesh->Geometry;
+
+
+
+
+
+
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, sizeof(VertexPNT), &model->verts[0].px);
+    glVertexPointer
+    (
+        3,
+        GL_FLOAT,
+        0,
+        pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data
+    );
+    glScalef(3,3,3);
+    glTranslatef(-20, 0, 0);
 
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glNormalPointer(GL_FLOAT, sizeof(VertexPNT), &model->verts[0].nx);
+    float* ddat = pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data;
+    PXSize amountff = pxMeshGeometry->VertexBufferPrime[0]->VertexData.CursorOffsetByte / sizeof(float);
 
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#if 0
+    for(size_t i = 0; i < amountff; i+=3)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Model",
+            "Color-Set",
+            "%6.2f %6.2f %6.2f",
+            ddat[i + 0],
+            ddat[i + 1],
+            ddat[i + 2]
+        );
+#endif 
+    }
+#endif
 
-    for(int i = 0; i < model->segment_count; ++i) {
-        PXMeshSegment* seg = &model->segments[i];
-        PXMaterial* mat = seg->material;
+
+    if(1)
+    {
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glNormalPointer
+        (
+            GL_FLOAT,
+            0,
+            pxMeshGeometry->VertexBufferPrime[1]->VertexData.Data
+        );
+
+    }
+
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    PXSize amount = pxMeshGeometry->IndexBuffer->Segment.SegmentListAmount;
+    PXIndexSegmentEntry* pxIndexSegmentEntryList = PXIndexSegmentGET(&pxMeshGeometry->IndexBuffer->Segment);
+
+    PXSize offset = 0;
+
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        PXIndexSegmentEntry* pxIndexSegmentEntry = &pxIndexSegmentEntryList[i];
+       // PXMaterial* mat = pxIndexSegmentEntry->material;
 
         // Apply material properties
-        GLfloat diffuse[4] = { mat->Kd[0], mat->Kd[1], mat->Kd[2], mat->d };
-        GLfloat ambient[4] = { mat->Ka[0], mat->Ka[1], mat->Ka[2], mat->d };
-        GLfloat specular[4] = { mat->Ks[0], mat->Ks[1], mat->Ks[2], mat->d };
+      //  GLfloat diffuse[4] = { mat->Kd[0], mat->Kd[1], mat->Kd[2], mat->d };
+       // GLfloat ambient[4] = { mat->Ka[0], mat->Ka[1], mat->Ka[2], mat->d };
+       // GLfloat specular[4] = { mat->Ks[0], mat->Ks[1], mat->Ks[2], mat->d };
 
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat->Ns);
+      //  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+       // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+       // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+       // glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat->Ns);
 
         // Bind texture if available
-        if(mat->texture_id) {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, mat->texture_id);
+        if(0) {
+            //glEnable(GL_TEXTURE_2D);
+           // glBindTexture(GL_TEXTURE_2D, mat->texture_id);
         }
         else {
             glDisable(GL_TEXTURE_2D);
         }
 
+        PXSize typeSize = PXTypeSizeGet(pxMeshGeometry->IndexBuffer->DataType);
+
         // Draw this segment
-        glTexCoordPointer(2, GL_FLOAT, sizeof(VertexPNT), &model->verts[0].tu);
-        glDrawElements(GL_TRIANGLES, seg->index_count, GL_UNSIGNED_SHORT, seg->indices);
+       
+        //glTexCoordPointer(2, GL_FLOAT, sizeof(VertexPNT), &model->verts[0].tu);
+       
+
+
+
+
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_NORMALIZE);
+
+        GLfloat lightPos[] = { 1.0f, 10.0f, 1.0f, 100.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+
+        glColor3f(1.0, 1.0, 1.0);
+        glDrawArrays
+        (
+            GL_TRIANGLES,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+        glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHT0);
+        glDisable(GL_NORMALIZE);
+
+
+        glPointSize(8);
+        glColor3f(0.8, 0.2, 0.2);
+        glDrawArrays
+        (
+            GL_POINTS,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+        glLineWidth(1);
+        glColor3f(0.6, 1.0, 0.6);
+        glDrawArrays
+        (
+            GL_LINES,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+      
+
+
+
+       /*
+        glDrawElements
+        (
+            GL_POINTS,
+            pxIndexSegmentEntry->DataRange, 
+            GL_UNSIGNED_SHORT,
+            pxMesh->IndexBuffer->Data.Data + offset
+        );*/
+
+        offset += pxIndexSegmentEntry->DataRange * typeSize;
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    */
+    
     return PXResultOK;
 }

@@ -38,7 +38,7 @@ PXGIF;
 
 PXPublic PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXGIFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXGIFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXGIFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -14,10 +14,10 @@ const char PXRGeometrySignature[4] = "WGEO";
 const PXI32U PXRGeometryHeaderList[] =
 {
     PXTypeDatax4, // PXTypeSignatureCheck
-    PXTypeInt16U,
-    PXTypeInt16U,
-    PXTypeInt32U,
-    PXTypeInt32U
+    PXTypeI16U,
+    PXTypeI16U,
+    PXTypeI32U,
+    PXTypeI32U
 };
 const PXI8U PXRGeometryHeaderSize = sizeof(PXRGeometryHeaderList) / sizeof(PXI32U);
 
@@ -35,16 +35,16 @@ const PXI32U PXRGeometryMeshList[] =
     PXTypeF32List(4),
     PXTypeF32List(6),
    
-    PXTypeInt32U,
-    PXTypeInt32U
+    PXTypeI32U,
+    PXTypeI32U
 };
 const PXI8U PXRGeometryMeshListSize = sizeof(PXRGeometryMeshList) / sizeof(PXI32U);
 
 
 
-PXResult PXAPI PXRGeometricWorldLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRGeometricWorldLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXRGeometricWorld pxRGeometricWorld;
     PXClear(PXRGeometricWorld, &pxRGeometricWorld);
@@ -158,7 +158,7 @@ PXResult PXAPI PXRGeometricWorldLoadFromFile(PXResourceMoveInfo PXREF pxResource
     return PXResultOK;
 }
 
-PXResult PXAPI PXRGeometricWorldSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRGeometricWorldSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

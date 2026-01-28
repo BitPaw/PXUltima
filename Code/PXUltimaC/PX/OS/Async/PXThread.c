@@ -222,11 +222,11 @@ PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread)
     DWORD dwThreadId = 0;
 
     const HANDLE threadID = OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != threadID);
+    const PXResult pxResult = PXErrorCurrent(PXNull != threadID);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     return PXResultOK;
@@ -711,11 +711,11 @@ PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMod
 
 #if OSUnix
     const int newPriority = setpriority(0, pxThread->ThreadHandle, threadPriority);
-    const PXResult pxActionResult = PXErrorCurrent(-1 != newPriority);
+    const PXResult pxResult = PXErrorCurrent(-1 != newPriority);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     return PXResultOK;
@@ -723,11 +723,11 @@ PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMod
 #elif OSWindows
     // SetPriorityClass() also exists, but is it needed?
     const BOOL success = SetThreadPriority(pxThread->ThreadHandle, threadPriority);
-    const PXResult pxActionResult = PXErrorCurrent(FALSE != success);
+    const PXResult pxResult = PXErrorCurrent(FALSE != success);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     return PXResultOK;
@@ -1167,11 +1167,11 @@ PXResult PXAPI PXThreadResume(PXThread PXREF pxThread)
 #elif OSWindows
     const PXProcessThreadHandle threadHandle = pxThread->ThreadHandle;
     const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
+    const PXResult pxResult = PXErrorCurrent(-1 != suspendCount);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 #endif
 
@@ -1200,11 +1200,11 @@ PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
 
 #elif OSWindows
     const DWORD result = SuspendThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(-1 != result);
+    const PXResult pxResult = PXErrorCurrent(-1 != result);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 #endif
 
@@ -1296,7 +1296,7 @@ PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U 
 
 PXResult PXAPI PXThreadYieldToOtherThreads()
 {
-    PXResult pxActionResult;
+    PXResult pxResult;
 
 #if OSUnix
     const int yieldResultID =
@@ -1305,22 +1305,22 @@ PXResult PXAPI PXThreadYieldToOtherThreads()
 #else
         sched_yield(); // sched.h, libc, sets errno but on linux never fails
 #endif
-    pxActionResult = PXErrorCurrent(0 != yieldResultID);
+    pxResult = PXErrorCurrent(0 != yieldResultID);
 
 #elif OSWindows
     // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
 
 #if 0
     Sleep(0);
-    pxActionResult = PXResultOK;
+    pxResult = PXResultOK;
 #else
     const BOOL switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-    pxActionResult = PXResultOK; // cant fail
+    pxResult = PXResultOK; // cant fail
 #endif
 
 #else
-    pxActionResult = PXActionNotSupportedByOperatingSystem;
+    pxResult = PXActionNotSupportedByOperatingSystem;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }

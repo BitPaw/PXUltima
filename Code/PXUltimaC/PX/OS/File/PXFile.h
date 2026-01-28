@@ -5,7 +5,7 @@
 
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Media/PXText.h>
-//#include <PX/Engine/PXResource.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 #if OSUnix
 #define PXPathSizeMax 260

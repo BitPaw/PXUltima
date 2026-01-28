@@ -161,9 +161,9 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
         PXText pxText;
         PXTextFromAdressA(&pxText, PXODBCLibtrary, PXODBCLibtraryLength, PXODBCLibtraryLength);
 
-        const PXResult pxActionResult = PXLibraryOpen(&pxDataBase->ODBCLibrary, &pxText);
+        const PXResult pxResult = PXLibraryOpen(&pxDataBase->ODBCLibrary, &pxText);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -464,10 +464,10 @@ PXResult PXAPI PXDataBaseConnectA
     PXTextFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
     PXTextFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
 
-    const PXResult pxActionResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
+    const PXResult pxResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
 
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXDataBaseConnect

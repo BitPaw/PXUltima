@@ -118,8 +118,8 @@ const PXI8U PXDEFLATEHeaderSize = sizeof(PXDEFLATEHeader) / sizeof(PXI32U);
 
 const PXI32U PXDEFLATELiteralRawDataList[] =
 {
-    PXTypeInt16ULE,
-    PXTypeInt16ULE
+    PXTypeI16ULE,
+    PXTypeI16ULE
 };
 const PXI8U PXDEFLATELiteralRawDataListSize = sizeof(PXDEFLATELiteralRawDataList) / sizeof(PXI32U);
 

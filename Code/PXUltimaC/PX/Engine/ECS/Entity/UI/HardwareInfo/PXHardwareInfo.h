@@ -11,6 +11,6 @@ typedef struct PXHardwareInfo_
 }
 PXHardwareInfo;
 
-PXPublic PXResult PXAPI Draw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI Draw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

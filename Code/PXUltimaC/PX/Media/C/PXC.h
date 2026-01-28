@@ -43,7 +43,7 @@ PXPrivate PXResult PXAPI PXCParseEnumMember(PXCompiler PXREF pxCompiler, PXCodeD
 PXPrivate PXResult PXAPI PXCParseTypeContainer(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement);
 PXPrivate PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElementParent);
 
-PXPublic PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXCSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXCSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

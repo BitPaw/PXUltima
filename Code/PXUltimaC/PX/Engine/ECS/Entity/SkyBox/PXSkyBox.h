@@ -35,6 +35,6 @@ PXPublic PXResult PXAPI PXSkyBoxRegisterToECS();
 
 PXPublic PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBox, PXSkyBoxCreateInfo PXREF pxSkyBoxCreateInfo);
 
-PXPublic PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

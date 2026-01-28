@@ -1,11 +1,11 @@
 #include "PXRedshiftAnimation.h"
 
-PXResult PXAPI PXRedshiftAnimationLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRedshiftAnimationLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     return PXResultOK;
 }
 
-PXResult PXAPI PXRedshiftAnimationSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRedshiftAnimationSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

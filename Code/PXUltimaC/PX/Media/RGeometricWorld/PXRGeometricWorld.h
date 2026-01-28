@@ -36,7 +36,7 @@ typedef struct PXRGeometricWorld_
 }
 PXRGeometricWorld;
 
-PXPublic PXResult PXAPI PXRGeometricWorldLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRGeometricWorldSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRGeometricWorldLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRGeometricWorldSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

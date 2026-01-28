@@ -6,21 +6,59 @@
 #include <PX/OS/PXOS.h>
 
 const char PXDictionaryName[] = "Dictionary";
-
-void PXAPI PXDictionaryConstruct(PXDictionary PXREF dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
+const PXI8U PXDictionaryNameLength = sizeof(PXDictionaryName);
+const PXECSRegisterInfoStatic PXDictionaryInfoStatic =
 {
-    PXClear(PXDictionary, dictionary);
+    {sizeof(PXDictionaryName), sizeof(PXDictionaryName), PXDictionaryName, TextFormatASCII},
+    sizeof(PXDictionary),
+    __alignof(PXDictionary),
+    PXECSTypeComponent,
+    PXDictionaryCreate,
+    PXDictionaryRelease,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXDictionaryInfoDynamic;
 
-    dictionary->ValueLocality = pxDictionaryValueLocality;
-    dictionary->KeyTypeSize = keySize;
+PXResult PXAPI PXDictionaryRegisterToECS()
+{
+    PXECSRegister(&PXDictionaryInfoStatic, &PXDictionaryInfoDynamic);
 
-    PXListInitialize(&dictionary->List, valueSize, 0);
-    dictionary->List.EntryGrowthOnAllocation = 128;
+    return PXResultOK;
 }
 
-void PXAPI PXDictionaryDestruct(PXDictionary PXREF dictionary)
+PXResult PXAPI PXDictionaryCreate(PXDictionary** pxDictionaryREF, PXDictionaryCreateInfo PXREF pxDictionaryCreateInfo)
+{
+    PXDictionary* pxDictionary = PXNull;
+
+    if(!(pxDictionaryREF && pxDictionaryCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxDictionaryCreateInfo->Info.Static = &PXDictionaryInfoStatic;
+    pxDictionaryCreateInfo->Info.Dynamic = &PXDictionaryInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxDictionaryREF, pxDictionaryCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxDictionary = *pxDictionaryREF;
+    pxDictionary->ValueLocality = pxDictionaryCreateInfo->ValueLocality;
+    pxDictionary->KeyTypeSize = pxDictionaryCreateInfo->KeySize;
+
+    PXListInitialize(&pxDictionary->List, pxDictionaryCreateInfo->ValueSize, 0);
+    pxDictionary->List.EntryGrowthOnAllocation = 128;
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXDictionaryRelease(PXDictionary PXREF dictionary)
 {
     PXListRelease(&dictionary->List);
+
+    return PXResultOK;
 }
 
 PXSize PXAPI PXDictionaryValueSize(const PXDictionary PXREF dictionary)
@@ -39,6 +77,11 @@ PXSize PXAPI PXDictionaryValueSize(const PXDictionary PXREF dictionary)
     }
 }
 
+PXSize PXAPI PXDictionaryEntryAmount(const PXDictionary PXREF dictionary)
+{
+    return dictionary->List.EntryAmountUsed;
+}
+
 void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSize entrys)
 {
     const PXSize rowSize = dictionary->KeyTypeSize + PXDictionaryValueSize(dictionary);
@@ -53,7 +96,7 @@ void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSize entrys
 
 PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const void* key, void** value)
 {
-    if(!(pxDictionary && key))
+    if(!(pxDictionary && key && value))
     {
         return PXResultRefusedParameterNull;
     }
@@ -82,40 +125,53 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const vo
 #endif
     }
 
+    PXBool found = PXFalse;
+
     PXDictionaryEntry target;
     target.Key = 0;
     target.Value = 0;
 
     for(PXSize i = 0; i < pxDictionary->List.EntryAmountAllocated; ++i)
     {
-        PXDictionaryEntry pxDictionaryEntry;
+        PXResult pxResult = PXDictionaryIndex(pxDictionary, i, &target);
 
-        PXDictionaryIndex(pxDictionary, i, &pxDictionaryEntry);
+        if(PXActionRefusedIndexOutOfBounce == pxResult)
+        {
+            PXDictionaryIndexUnsafe(pxDictionary, i, &target);
 
-        const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, pxDictionary->KeyTypeSize, 0x00);
+            found = PXTrue;
+            break;
+        }
+
+        const PXBool isEmptyKeyField = PXMemoryCompareToByte(target.Key, pxDictionary->KeyTypeSize, 0xFF);
 
         if(isEmptyKeyField)
         {
-            target = pxDictionaryEntry;
+            found = target.Key && target.Value;
             break;
         }
     }
 
-    PXBool found = target.Key && target.Value;
-
-    if(found && value)
+    if(!found)
     {
-        // Copy Key
-        PXMemoryCopy(key, target.Key, pxDictionary->KeyTypeSize);
+        return PXEndianInvalid;
+    }
 
-        *value = target.Value; 
+    // Copy Key
+    PXMemoryCopy(key, target.Key, pxDictionary->KeyTypeSize);
 
-        return PXResultOK;
+    if(*value)
+    {
+        // We have data, insert it!
+        PXMemoryCopy(*value, target.Value, pxDictionary->List.ValueTypeSize);
     }
     else
     {
-        return PXResultInvalid;
-    } 
+        // We dont have attached data, return insertion point
+        *value = target.Value;
+    }
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void* key, const void* value)
@@ -141,7 +197,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
         default:
         case PXDictionaryValueLocalityInvalid:
         {
-            return PXResultInvalid; // Illegal call
+            return PXResultRefusedParameterInvalid; // Illegal call
         }
         case PXDictionaryValueLocalityInternalEmbedded:
         {
@@ -198,9 +254,51 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
     return pxResult;
 }
 
-PXResult PXAPI PXDictionaryEntryAddRange(PXDictionary PXREF pxDictionary, const void* key, const void* value, const PXSize valueSize)
+PXResult PXAPI PXDictionaryEntryAddRange
+(
+    PXDictionary PXREF pxDictionary,
+    const void* key,
+    const void* value,
+    const PXSize valueSize
+)
 {
-    return PXResultOK;
+    if(!(pxDictionary && key && value && valueSize))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    const void* valueSourceAdress = 0;
+    void* valueTargetAdress = 0;
+
+    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAdress);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    switch(pxDictionary->ValueLocality)
+    {
+        default:
+        case PXDictionaryValueLocalityInvalid:
+        {
+            return PXResultRefusedParameterInvalid; // Illegal call
+        }
+        case PXDictionaryValueLocalityInternalEmbedded:
+        {
+            valueSourceAdress = value;
+            break;
+        }
+        case PXDictionaryValueLocalityExternalReference:
+        {
+            valueSourceAdress = &value;
+            break;
+        }
+    }
+
+    PXMemoryCopy(valueSourceAdress, valueTargetAdress, valueSize);
+
+    ++pxDictionary->List.EntryAmountUsed;
 }
 
 PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** keyList, const void** valueList, const PXSize amount)
@@ -276,21 +374,39 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF
     return PXTrue;
 }
 
-void PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry)
+void PXAPI PXDictionaryIndexUnsafe(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry)
 {
-    if(!dictionary->List.Buffer.Data)
-    {
-        pxDictionaryEntry->Key = 0;
-        pxDictionaryEntry->Value = 0;
-        return;
-    }
-
     const PXSize dataBlockSize = PXDictionaryValueSize(dictionary);
     const PXSize blockSize = dictionary->KeyTypeSize + dataBlockSize;
     const PXByte* blockStart = ((PXByte*)dictionary->List.Buffer.Data) + blockSize * index;
 
     pxDictionaryEntry->Key = (void*)blockStart;
     pxDictionaryEntry->Value = (void*)(blockStart + dictionary->KeyTypeSize);
+}
+
+PXResult PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry)
+{
+    pxDictionaryEntry->Key = 0;
+    pxDictionaryEntry->Value = 0;
+
+    if(!dictionary->List.Buffer.Data)
+    {
+        return PXEndianInvalid;
+    }
+
+    // Range check
+    {
+        PXBool is = dictionary->List.EntryAmountUsed > index;
+
+        if(!is)
+        {
+            return PXActionRefusedIndexOutOfBounce;
+        }
+    }
+
+    PXDictionaryIndexUnsafe(dictionary, index, pxDictionaryEntry);
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void PXREF key, void* PXREF valueResult)

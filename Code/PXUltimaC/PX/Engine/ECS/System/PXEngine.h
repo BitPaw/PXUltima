@@ -8,8 +8,7 @@
 #include <PX/Engine/PXResource.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Signal/PXSignal.h>
-#include <PX/OS/Audio/PXAudio.h>
-#include <PX/OS/Hardware/PXController.h>
+#include <PX/Engine/ECS/System/PXAudioSystem.h>
 #include <PX/OS/DataBase/PXDataBase.h>
 #include <PX/OS/Graphic/PXGraphic.h>
 
@@ -140,6 +139,8 @@ PXPrivate PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCrea
 
 PXPublic PXResult PXAPI PXEngineRegisterToECS();
 PXPublic PXResult PXAPI PXEngineCreate(PXEngine** pxEngine, PXEngineCreateInfo PXREF pxEngineCreateInfo);
+PXPublic PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine);
+
 PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine);
 PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
 PXPublic void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
@@ -160,9 +161,6 @@ PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXE
 
 PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxEngineResourceCreateInfo);
 PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity);
-
-PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo);
-PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo);
 
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine);
 

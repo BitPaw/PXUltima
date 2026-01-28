@@ -218,7 +218,7 @@ PXN64;
 PXPrivate PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXI8U pxN64CountryCodeID);
 PXPrivate const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode);
 
-PXPublic PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXN64SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXN64SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

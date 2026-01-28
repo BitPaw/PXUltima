@@ -26,16 +26,6 @@ static int gWindowHeight = 600;
 /* Simple demo rotation */
 static float gAngle = 0.0f;
 
-/* Helper: set up an orthographic 2D projection for UI rendering */
-static void SetOrtho(int width, int height)
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, (GLdouble)width, 0.0, (GLdouble)height, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
-
 /* Helper: draw a filled rectangle in screen coordinates */
 static void DrawFilledRect(float x0, float y0, float x1, float y1,
                            float r, float g, float b)
@@ -175,20 +165,19 @@ PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreate
     return PXResultOK;
 }
 
-PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     const float topBarHeight = 40.0f;
     const float bottomBarHeight = 30.0f;
 
-    int width = pxWindowDrawInfo->RectangleXYWH.Width;
-    int height = pxWindowDrawInfo->RectangleXYWH.Height;
+    int width = pxDrawInfo->RectangleXYWH.Width;
+    int height = pxDrawInfo->RectangleXYWH.Height;
 
     Reshape(width, height);
 
     Idle();
 
     /* ----------------- UI LAYERS (orthographic) ----------------- */
-    SetOrtho(width, height);
 
     /* Top bar background */
     DrawFilledRect(0.0f, height - topBarHeight,

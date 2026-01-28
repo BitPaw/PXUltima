@@ -135,11 +135,11 @@ PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
 
 #elif PXOSWindowsDestop
     const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
-    const PXResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxResult = PXErrorCurrent(result);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     return PXResultOK;
@@ -201,11 +201,11 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
     DWORD dwContinueStatus = DBG_CONTINUE; // This flag need to be set for the debugger in this functiom
 
     const DWORD dwMilliseconds = 0;
-    const PXResult pxActionResult = PXDebugEventWait(&debugEvent, dwMilliseconds);
+    const PXResult pxResult = PXDebugEventWait(&debugEvent, dwMilliseconds);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     switch(debugEvent.dwDebugEventCode) // Process the debugging event code.
@@ -1033,9 +1033,9 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug)
 
     while(pxDebug->IsRunning)
     {
-        PXResult pxActionResult = PXDebugWaitForEvent(pxDebug);
+        PXResult pxResult = PXDebugWaitForEvent(pxDebug);
 
-        pxActionResult = PXResultInvalid;
+        pxResult = PXResultInvalid;
     }
 
     return PXResultOK;
@@ -1048,11 +1048,11 @@ PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
 #elif OSWindows && 0
 
     const HANDLE hFile = CreateFileA("minidump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    const PXResult pxActionResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
+    const PXResult pxResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     const HANDLE processHandle = GetCurrentProcess();

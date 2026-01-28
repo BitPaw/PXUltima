@@ -4,8 +4,8 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
 #include "PXIndexBuffer.h"
+#include <PX/Math/PXMath.h>
 
-const char PXIndexBufferText[] = "IndexBuffer";
 const char PXVertexBufferText[] = "VertexBuffer";
 const char PXMeshText[] = "Mesh";
 const PXI8U PXMeshTextLength = sizeof(PXMeshText);
@@ -116,15 +116,18 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
 {
     PXMesh* pxMesh = PXNull;
 
-    PXECSCreate(pxMeshREF, pxMeshCreateInfo);
+    pxMeshCreateInfo->Info.Static = &PXMeshRegisterInfoStatic;
+    pxMeshCreateInfo->Info.Dynamic = &PXMeshRegisterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxMeshREF, pxMeshCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
     pxMesh = *pxMeshREF;
 
-    pxMesh->VertexBufferListAmount = 1;
-    PXVertexBuffer PXREF pxVertexBuffer = PXMeshVertexBufferListGET(pxMesh);
-    PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
-
-    const PXBool hasFilePath = PXNull != 0;// pxResourceCreateInfo->FilePath.A;
+    const PXBool hasFilePath = pxMeshCreateInfo->Info.FilePath.Data > 0;
 
     if(hasFilePath)
     {
@@ -142,12 +145,7 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
 
         // Load model
         {
-            PXResourceMoveInfo pxResourceLoadInfo;
-            PXClear(PXResourceMoveInfo, &pxResourceLoadInfo);
-            pxResourceLoadInfo.ResourceTarget = pxMesh;
-            pxResourceLoadInfo.ResourceType = PXResourceTypeModel;
-
-            const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxMeshCreateInfo->Info.FilePath);
+            const PXResult loadResult = PXECSLoad(pxMesh, &pxMeshCreateInfo->Info);
             const PXBool success = PXResultOK == loadResult;
 
             if(!success)
@@ -168,8 +166,9 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
     }
     else
     {
-        // As this element is internal, we need to create an ID
-        pxMesh->Info.ID = PXIDGenerate();
+       // pxMesh->VertexBufferListAmount = 1;
+       // PXVertexBuffer** pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+       // PXIndexBuffer PXREF pxIndexBuffer = pxMesh->IndexBuffer;
 
 #if PXLogEnable
         PXLogPrint
@@ -245,19 +244,19 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
             }
             case PXModelFormTriangle:
             {
-                pxVertexBuffer->LayoutAmount = 1;
-                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
-                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                //pxVertexBuffer->LayoutAmount = 1;
+                //pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                //pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
 
-                PXBufferSet(&pxVertexBuffer->VertexData, PXVertexDataTriangle, sizeof(PXVertexDataTriangle));
+                //PXBufferSet(&pxVertexBufferList->VertexData, PXVertexDataTriangle, sizeof(PXVertexDataTriangle));
 
-                pxIndexBuffer->DataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
+                //pxIndexBuffer->DataType = PXTypeI08U;
+               // pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
 
-                PXBufferSet(&pxIndexBuffer->Data, PXIndexDataTriangle, sizeof(PXIndexDataTriangle));
+              //  PXBufferSet(&pxIndexBuffer->Data, PXIndexDataTriangle, sizeof(PXIndexDataTriangle));
 
-                pxIndexBuffer->SegmentListAmount = 1;
-                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
+                //pxIndexBuffer->SegmentListAmount = 1;
+                //pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
 
 
 #if PXLogEnable
@@ -274,20 +273,20 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
             }
             case PXModelFormRectangle:
             {
-                pxVertexBuffer->LayoutAmount = 1;
-                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
-                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
-                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                //pxVertexBuffer->LayoutAmount = 1;
+                //pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                //pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                //pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
 
-                PXBufferSet(&pxVertexBuffer->VertexData, PXVertexDataRectangle, sizeof(PXVertexDataRectangle));
+                //PXBufferSet(&pxVertexBufferList->VertexData, PXVertexDataRectangle, sizeof(PXVertexDataRectangle));
 
-                pxIndexBuffer->DataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+                //pxIndexBuffer->DataType = PXTypeI08U;
+               // pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
 
-                PXBufferSet(&pxIndexBuffer->Data, PXIndexDataRectangle, sizeof(PXIndexDataRectangle));
+               // PXBufferSet(&pxIndexBuffer->Data, PXIndexDataRectangle, sizeof(PXIndexDataRectangle));
 
-                pxIndexBuffer->SegmentListAmount = 1;
-                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
+                //pxIndexBuffer->SegmentListAmount = 1;
+                //pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
 
 #if PXLogEnable
                 PXLogPrint
@@ -303,23 +302,23 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
             }
             case PXModelFormRectangleTX:
             {
-                pxVertexBuffer->LayoutAmount = 2;
-                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
-                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
-                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
-                pxVertexBuffer->LayoutPrime[1].AmountOfElements = 2;
-                pxVertexBuffer->LayoutPrime[1].Format = PXTypeF32;
-                pxVertexBuffer->LayoutPrime[1].Type = PXVertexBufferLayoutTypeTexturePos;
+                //pxVertexBuffer->LayoutAmount = 2;
+                //pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                //pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                //pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                //pxVertexBuffer->LayoutPrime[1].AmountOfElements = 2;
+                //pxVertexBuffer->LayoutPrime[1].Format = PXTypeF32;
+                //pxVertexBuffer->LayoutPrime[1].Type = PXVertexBufferLayoutTypeTexturePos;
 
-                PXBufferSet(&pxVertexBuffer->VertexData, PXVertexDataRectangleTX, sizeof(PXVertexDataRectangleTX));
+              //  PXBufferSet(&pxVertexBufferList->VertexData, PXVertexDataRectangleTX, sizeof(PXVertexDataRectangleTX));
 
-                pxIndexBuffer->DataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+               // pxIndexBuffer->DataType = PXTypeI08U;
+               // pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
 
-                PXBufferSet(&pxIndexBuffer->Data, PXIndexDataRectangle, sizeof(PXIndexDataRectangle));
+               // PXBufferSet(&pxIndexBuffer->Data, PXIndexDataRectangle, sizeof(PXIndexDataRectangle));
 
-                pxIndexBuffer->SegmentListAmount = 1;
-                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
+                //pxIndexBuffer->SegmentListAmount = 1;
+                //pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
 
 #if PXLogEnable
                 PXLogPrint
@@ -340,14 +339,14 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
                 PXF32 radius = 1;
                 int segmentAmount = 16;
 
-                pxVertexBuffer->LayoutAmount = 1;
-                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
-                pxVertexBuffer->LayoutPrime[0].Format = PXTypeInt32S;
-                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                //pxVertexBuffer->LayoutAmount = 1;
+                //pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                //pxVertexBuffer->LayoutPrime[0].Format = PXTypeI32S;
+                //pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
 
-                PXBufferAllocate(&pxVertexBuffer->VertexData, sizeof(PXF32) * segmentAmount * 2);
+              //  PXBufferAllocate(&pxVertexBufferList->VertexData, sizeof(PXF32) * segmentAmount * 2);
 
-                PXF32* vertexData = (PXF32*)pxVertexBuffer->VertexData.Data;
+                PXF32* vertexData = 0;// (PXF32*)pxVertexBufferList->VertexData.Data;
 
                 for(PXSize i = 0; i < segmentAmount; ++i)
                 {
@@ -373,25 +372,25 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
             }
             case PXModelFormCube:
             {
-                pxVertexBuffer->LayoutAmount = 1;
-                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 3;
-                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32; // PXTypeInt08S
-                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                //pxVertexBuffer->LayoutAmount = 1;
+                //pxVertexBuffer->LayoutPrime[0].AmountOfElements = 3;
+                //pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32; // PXTypeI08S
+                //pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
 
-                PXBufferSet(&pxVertexBuffer->VertexData, PXVertexDataCube, sizeof(PXVertexDataCube));
+              //  PXBufferSet(&pxVertexBufferList->VertexData, PXVertexDataCube, sizeof(PXVertexDataCube));
 
-                pxIndexBuffer->DataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+               // pxIndexBuffer->DataType = PXTypeI08U;
+               // pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
 
-                PXBufferSet(&pxIndexBuffer->Data, PXIndexDataCube, sizeof(PXIndexDataCube));
+               // PXBufferSet(&pxIndexBuffer->Data, PXIndexDataCube, sizeof(PXIndexDataCube));
 
-                pxIndexBuffer->LayoutListAmount = 1;
-                pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
+                //pxIndexBuffer->LayoutListAmount = 1;
+                //pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
                 //pxIndexBuffer->LayoutPrime. = 1;
-                pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
+                //pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
 
-                pxIndexBuffer->SegmentListAmount = 1;
-                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
+                //pxIndexBuffer->SegmentListAmount = 1;
+                //pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.SizeAllocated;
 
 
 
@@ -442,7 +441,7 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
 
     // After loading, we need to transmute it 
     // into a format we can actually use
-    //PXMeshVertexLayoutTransmute(&pxModel->Mesh);
+    //PXMeshVertexLayoutTransmute(pxMesh);
 
 
     //pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
@@ -452,251 +451,14 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
     return PXResultOK;
 }
 
-PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh)
+PXResult PXAPI PXMeshRelease(PXMesh PXREF pxMesh)
 {
-    PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
-
-    char bufferLayout[64];
-
-    for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
-    {
-        PXVertexBuffer* pxVertexBuffer = &pxVertexBufferList[i];
-
-        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXVertexBufferText,
-            "Layout",
-            "PXID:%i, GLID_VBO:%i, (%i/%i), Amount:%i",
-            pxVertexBuffer->Info.ID,
-            pxVertexBuffer->VBO,
-            i + 1,
-            pxMesh->VertexBufferListAmount,
-            pxVertexBuffer->LayoutAmount
-        );
-#endif
-
-        for(size_t w = 0; w < pxVertexBuffer->LayoutAmount; w++)
-        {
-            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
-
-            PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
-            PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXVertexBufferText,
-                "Layout",
-                "- (%i/%i) Amount:%i, TypeSize:%i, Type:%i",
-                w + 1,
-                pxVertexBuffer->LayoutAmount,
-                amountOfElement,
-                sizeOfSingleElement,
-                pxVertexBufferLayout->Type
-            );
-#endif
-        }
-    }
-
-    return PXResultOK;
+    return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXMeshVertexLayout(PXMesh PXREF pxMesh, const PXSize index, PXBufferLayout PXREF pxVertexBufferLayoutList, const PXSize amount)
+PXResult PXAPI PXMeshDraw(PXMesh PXREF pxMesh, PXDrawInfo PXREF pxDrawInfo)
 {
-    PXVertexBuffer* pxVertexBufferList = PXNull;
-
-    pxMesh->VertexBufferListAmount = amount;
-
-    //-----------------------------------------------------
-    // Calc total use
-    PXSize totalVertexDataSize = 0;
-
-    for(PXSize i = 0; i < amount; ++i)
-    {
-        PXBufferLayout PXREF pxVertexBufferLayout = &pxVertexBufferLayoutList[i];
-
-        PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
-        PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
-
-        totalVertexDataSize += sizeOfSingleElement * amountOfElement;
-    }
-    //-----------------------------------------------------
-
-    //-----------------------------------------------------
-    // Alloc, VBO
-    pxVertexBufferList = PXMeshVertexBufferListSET(pxMesh, amount);
-
-    //-----------------------------------------------------
-
-    // Distructbute
-
-    PXVertexBuffer* pxVertexBuffer = &pxVertexBufferList[index];
-
-    pxVertexBuffer->LayoutAmount = amount;
-    PXCopyList(PXBufferLayout, amount, pxVertexBufferLayoutList, pxVertexBuffer->LayoutPrime);
-
-    PXBufferAllocate(&pxVertexBuffer->VertexData, totalVertexDataSize);
-
-    // How many vertex arrays?
-}
-
-PXResult PXAPI PXMeshIndexLayout(PXMesh PXREF pxMesh, const PXSize primitveAmount, const PXSize segmentAmount)
-{
-    PXIndexBufferPrepare(&pxMesh->IndexBuffer, primitveAmount, segmentAmount);
-
-    pxMesh->IndexBuffer->DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-
-    pxMesh->MaterialContaierListAmount = segmentAmount;
-    pxMesh->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, segmentAmount);
-
-    return PXResultOK;
-}
-
-PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh PXREF pxMesh, const PXI8U type)
-{
-    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
-
-    // Search every vertexBuffer
-    for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
-    {
-        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
-        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
-
-        // Search every layout
-        for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
-        {
-            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
-
-            // if layout matches..
-            if(pxVertexBufferLayout->Type == type)
-            {
-                return pxVertexBufferLayout;
-            }
-        }
-    }
-
-    return PXNull;
-}
-
-void* PXAPI PXMeshVertexInsert(PXMesh PXREF pxMesh, const PXI8U type)
-{
-    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
-
-    // Search every vertexBuffer
-    for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
-    {
-        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
-        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
-
-        PXSize offset = 0;
-
-        // Search every layout
-        for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
-        {
-            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
-
-            PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
-            PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
-
-            offset += sizeOfSingleElement * amountOfElement;
-
-            // if layout matches..
-            if(pxVertexBufferLayout->Type == type)
-            {
-                void* adress = (PXByte*)pxVertexBuffer->VertexData.Data + offset;
-
-                PXAssert
-                (
-                    offset <=
-                    pxVertexBuffer->VertexData.SizeAllocated,
-                    "Out of bounce"
-                );
-
-                return adress;
-            }
-        }
-    }
-
-    return PXNull;
-}
-
-void* PXAPI PXMeshIndexInsert(PXMesh PXREF pxMesh, const PXI8U type)
-{
-    PXByte* data = (PXByte*)pxMesh->IndexBuffer->Data.Data;
-    const PXSize sizeOfElement = PXTypeSizeGet(pxMesh->IndexBuffer->DataType);
-
-    PXBufferLayout* pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
-
-    for(PXSize i = 0; i < pxMesh->IndexBuffer->LayoutListAmount; ++i)
-    {
-        PXBufferLayout* pxBufferLayout = &pxBufferLayoutList[i];
-
-        if(type == pxBufferLayout->Type)
-        {
-            return data + sizeOfElement * i;
-        }
-    }
-
-    return PXNull;
-}
-
-PXSize PXAPI PXMeshVertexStrideGET(PXMesh PXREF pxMesh)
-{
-    return 0;
-}
-
-PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh PXREF pxMesh)
-{
-    if(pxMesh->VertexBufferListAmount <= 4)
-    {
-        return pxMesh->VertexBufferPrime;
-    }
-    else
-    {
-        return pxMesh->VertexBufferList;
-    }
-}
-
-PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh PXREF pxMesh, const PXSize amount)
-{
-    if(amount <= 4)
-    {
-        return pxMesh->VertexBufferPrime;
-    }
-    else
-    {
-        pxMesh->VertexBufferList = PXMemoryHeapCallocT(PXVertexBuffer, pxMesh->VertexBufferListAmount);
-
-        return pxMesh->VertexBufferList;
-    }
-}
-
-PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh PXREF pxMesh)
-{
-    PXBufferLayout PXREF pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
-
-    PXI8U typeSize = 0;
-
-    for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
-    {
-        PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
-
-        typeSize = PXTypeSizeGet(pxBufferLayout->Type);
-    }
-
-    if(typeSize == 0)
-    {
-        typeSize = 1;
-    }
-
-    PXSize res = (pxMesh->IndexBuffer->Data.SizeAllocated / typeSize) / pxMesh->VertexBufferListAmount;
-
-    return res;
+    return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh)
@@ -711,7 +473,7 @@ PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh)
     PXBufferLayout PXREF pxIndexBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
 
 
-    const PXSize layoutListAmount = pxIndexBuffer->LayoutListAmount;
+    const PXSize layoutListAmount = pxIndexBuffer->Layout.LayoutAmount;
     const PXSize vertexBufferAmount = pxMesh->VertexBufferListAmount;
 
     const PXBool hasMultiIndexArray = layoutListAmount > 1;
@@ -739,7 +501,7 @@ PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh)
 
         PXSize width = 0;
 
-        for(size_t i = 0; i < pxVertexBuffer->LayoutAmount; i++)
+        for(size_t i = 0; i < pxVertexBuffer->Layout.LayoutAmount; i++)
         {
             PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
 
@@ -1157,30 +919,30 @@ PXResult PXAPI PXMeshVertexArrayAdd
     PXMesh PXREF pxMesh,
     void* data,
     const PXSize dataLength,
-    PXBufferLayout PXREF pxVertexBufferLayoutList,
+    PXBufferLayoutEntry PXREF pxVertexBufferLayoutList,
     const PXSize pxVertexBufferLayoutListAmount
 )
 {
     PXVertexBuffer* pxVertexBufferTarget = PXNull;
 
     // Do we need to allocate? Buffer
-    const PXSize expectedIndex = pxMesh->VertexBufferListAmount;
+    const PXSize expectedIndex = pxMesh->Geometry->VertexBufferListAmount;
     const PXBool createNew = PXEmbeddedArraySize < (expectedIndex + 1);
 
     if(createNew)
     {
         // Do then
-        pxVertexBufferTarget = &pxMesh->VertexBufferList[expectedIndex];
+        pxVertexBufferTarget = &pxMesh->Geometry->VertexBufferList[expectedIndex];
     }
     else
     {
-        pxVertexBufferTarget = &pxMesh->VertexBufferPrime[expectedIndex];
+        pxVertexBufferTarget = &pxMesh->Geometry->VertexBufferPrime[expectedIndex];
     }
 
     PXAssert(pxVertexBufferTarget, "Can't be NULL");
 
-    pxVertexBufferTarget->LayoutAmount = pxVertexBufferLayoutListAmount;
-    PXCopyList(PXBufferLayout, pxVertexBufferLayoutListAmount, pxVertexBufferLayoutList, pxVertexBufferTarget->LayoutPrime);
+    //pxVertexBufferTarget->LayoutAmount = pxVertexBufferLayoutListAmount;
+    //PXCopyList(PXBufferLayoutEntry, pxVertexBufferLayoutListAmount, pxVertexBufferLayoutList, pxVertexBufferTarget->LayoutPrime);
 
     // COPY??
     PXBufferSet(&pxVertexBufferTarget->VertexData, data, dataLength);
@@ -1252,20 +1014,6 @@ PXF32* PXAPI PXMeshTriangleIndex(PXMesh PXREF pxMesh, const PXSize index)
 
 
 
-
-
-
-PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer PXREF pxVertexBuffer)
-{
-    if(PXEmbeddedArraySize >= pxVertexBuffer->LayoutAmount)
-    {
-        return pxVertexBuffer->LayoutPrime;
-    }
-    else
-    {
-        return pxVertexBuffer->LayoutList;
-    }
-}
 
 /*
 void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer PXREF pxVertexBuffer, const PXVertexBufferFormat pxVertexBufferFormat, const PXSize index)
@@ -1344,133 +1092,3 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer PXREF pxVertexBuff
 #endif
 }
 */
-
-void PXAPI PXIndexBufferPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials)
-{
-    // Index array data Type    
-    if(amountVertex <= 0xFFu)
-    {
-        // 8-Bit
-        pxIndexBuffer->DataType = PXTypeInt08U;
-    }
-    else if(amountVertex <= 0xFFFFu)
-    {
-        // 16-Bit
-        pxIndexBuffer->DataType = PXTypeInt16U;
-    }
-    else if(amountVertex <= 0xFFFFFFFFu)
-    {
-        // 32-Bit
-        pxIndexBuffer->DataType = PXTypeInt32U;
-    }
-    else
-    {
-        // 64-Bit
-        pxIndexBuffer->DataType = PXTypeInt64U;
-    }
-
-    const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->DataType);
-
-    PXBufferAllocate(&pxIndexBuffer->Data, amountVertex * 3 * dataSize);
-
-    PXSize indexAmount = 3;
-
-    pxIndexBuffer->LayoutListAmount = 3;
-    pxIndexBuffer->LayoutList = PXMemoryHeapCallocT(PXBufferLayout, pxIndexBuffer->LayoutListAmount);
-
-    pxIndexBuffer->LayoutList[0].Format = pxIndexBuffer->DataType;
-    pxIndexBuffer->LayoutList[0].AmountOfElements = 1;
-    pxIndexBuffer->LayoutList[0].Type = PXVertexBufferLayoutTypePosition;
-
-    pxIndexBuffer->LayoutList[1].Format = pxIndexBuffer->DataType;
-    pxIndexBuffer->LayoutList[1].AmountOfElements = 1;
-    pxIndexBuffer->LayoutList[1].Type = PXVertexBufferLayoutTypeNormal;
-
-    pxIndexBuffer->LayoutList[2].Format = pxIndexBuffer->DataType;
-    pxIndexBuffer->LayoutList[2].AmountOfElements = 1;
-    pxIndexBuffer->LayoutList[2].Type = PXVertexBufferLayoutTypeTexturePos;
-
-
-    pxIndexBuffer->SegmentListAmount = amountMaterials;
-    pxIndexBuffer->SegmentList = PXMemoryHeapCallocT(PXIndexSegment, amountMaterials);
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXIndexBufferText,
-        "prepare",
-        "PXID:%i, TypeSize:%i, IndexAmount:%i, VertexAmount:%i, Materials:%i",
-        pxIndexBuffer->IBO,
-        dataSize,
-        indexAmount,
-        amountVertex,
-        amountMaterials
-    );
-#endif
-}
-
-PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer)
-{
-    return pxIndexBuffer->IBO != 0;
-}
-
-PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(PXIndexBuffer PXREF pxIndexBuffer)
-{
-    PXAssert(pxIndexBuffer->SegmentListAmount != 0, "This cant be 0");
-
-    if(pxIndexBuffer->SegmentListAmount == 1)
-    {
-        return &pxIndexBuffer->SegmentPrime;
-    }
-    else
-    {
-        return pxIndexBuffer->SegmentList;
-    }
-}
-
-PXBufferLayout* PXAPI PXIndexLayoutListGET(PXIndexBuffer PXREF pxIndexBuffer)
-{
-    PXBufferLayout* pxBufferLayout = PXNull;
-
-    PXAssert(pxIndexBuffer->LayoutListAmount != 0, "This cant be 0");
-
-    if(pxIndexBuffer->LayoutListAmount == 1)
-    {
-        pxBufferLayout = &pxIndexBuffer->LayoutPrime;
-    }
-    else
-    {
-        pxBufferLayout = pxIndexBuffer->LayoutList;
-    }
-
-    return pxBufferLayout;
-}
-
-PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer PXREF pxIndexBuffer, const PXI8U type)
-{
-#if 1
-
-
-
-#else
-
-
-    PXBufferLayout PXREF pxBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
-
-    for(size_t i = 0; i < pxIndexBuffer->LayoutListAmount; i++)
-    {
-        PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
-
-        if(type != pxBufferLayout->Type)
-        {
-            continue;
-        }
-
-        pxBufferLayout->
-    }
-
-    return 0;
-#endif
-}

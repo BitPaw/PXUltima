@@ -47,9 +47,9 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
         PXText pxText;
         PXTextFromAdressA(&pxText, PXWindowsCommonDialog, PXWindowsCommonDialogLength, PXWindowsCommonDialogLength);
 
-        const PXResult pxActionResult = PXLibraryOpen(&pxDialogSystem->CommonDialogLibrary, &pxText);
+        const PXResult pxResult = PXLibraryOpen(&pxDialogSystem->CommonDialogLibrary, &pxText);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -159,11 +159,11 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
         {
             const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
             const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-            const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
+            const PXResult pxResult = PXErrorCurrent(wasSuccesful);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
         }
 
@@ -187,11 +187,11 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 
         const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
         const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         return PXResultOK;
@@ -233,11 +233,11 @@ PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 
         const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
         const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         return PXResultOK;
@@ -260,11 +260,11 @@ PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 
         const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
         const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxResult = PXErrorCurrent(wasSuccesful);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         return PXResultOK;

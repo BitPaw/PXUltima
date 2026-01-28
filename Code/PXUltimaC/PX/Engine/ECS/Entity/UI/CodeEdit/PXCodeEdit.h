@@ -11,6 +11,6 @@ typedef struct PXCodeEdit_
 }
 PXCodeEdit;
 
-PXPrivate PXResult PXAPI PXCodeEditDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPrivate PXResult PXAPI PXCodeEditDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

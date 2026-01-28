@@ -194,7 +194,7 @@ const char PXUSDBinarFIELDSETSy[9] = "FIELDSETS";
 const char PXUSDBinarySPECS[5] = "SPECS";
 const char PXUSDBinaryPATHS[5] = "PATHS";
 
-typedef PXResult(PXAPI* PXUSDLoadFunction)(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+typedef PXResult(PXAPI* PXUSDLoadFunction)(PXECSCreateInfo PXREF pxResourceLoadInfo);
 typedef PXResult(PXAPI* PXUSDSegmentLoadFunction)(PXFile PXREF pxFile, void* object);
 
 const char* PXUSDBinaryTokenListData[6] =
@@ -229,9 +229,9 @@ const PXI8U PXUSDBinaryTokenListAmount = sizeof(PXUSDBinaryTokenListsize) / size
 
 
 
-PXResult PXAPI PXUSDLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference; 
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent; 
     PXUSDLoadFunction pxUSDLoadFunction;
 
 #if PXLogEnable
@@ -284,10 +284,10 @@ PXResult PXAPI PXUSDLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
 
 
-PXResult PXAPI PXUSDCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXUSD pxUSD;
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXBool isSignatureValid = PXFileReadAndCompare(pxFile, PXUSDBinarySignature, sizeof(PXUSDBinarySignature));
 
@@ -596,32 +596,34 @@ PXResult PXAPI PXUSDCSectionPaths(PXFile PXREF pxFile, PXTOCSectionPaths PXREF p
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXUSDZLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDZLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-
+    return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
 {
+    PXFile* pxFile = pxECSCreateInfo->FileCurrent;
+
     PXCompiler pxCompiler;
     PXFile* tokenSteam = PXFileCreate();
     PXUSD* pxUSD = 0;
-    PXBool isPrime = !pxResourceLoadInfo->ResourceLoadContainer;
+    PXBool isPrime = 1;// !pxECSCreateInfo->ResourceLoadContainer;
     PXSize offset = 0;
 
     if(isPrime)
     {
-        pxResourceLoadInfo->ResourceLoadContainer = PXMemoryHeapCallocT(PXUSD, 1);
+       // pxECSCreateInfo->ResourceLoadContainer = PXMemoryHeapCallocT(PXUSD, 1);
     }
 
-    pxUSD = (PXUSD*)pxResourceLoadInfo->ResourceLoadContainer;
+   // pxUSD = (PXUSD*)pxECSCreateInfo->ResourceLoadContainer;
 
     offset = pxUSD->Text.EntryAmount;
 
     // Lexer
     {
         PXClear(PXCompiler, &pxCompiler);
-        pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+        pxCompiler.ReadInfo.FileInput = pxECSCreateInfo->FileCurrent;
         pxCompiler.ReadInfo.FileCache = tokenSteam;
         pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
@@ -756,7 +758,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXTextConstructBufferA(&resultPath, 260);
         PXTextFromAdressA(&subFile, pxUSDEntry->Included, pxUSDEntry->IncludedSize, pxUSDEntry->IncludedSize);
 
-        PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &subFile, &resultPath);
+        PXFilePathRelativeFromFile(pxECSCreateInfo->FileCurrent, &subFile, &resultPath);
 
 #if PXLogEnable
         char nameBuffer[64];
@@ -784,11 +786,12 @@ PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         );
 #endif
 
-        PXResourceMoveInfo PXResourceMoveInfo;
-        PXClear(PXResourceMoveInfo, &PXResourceMoveInfo);
-        PXResourceMoveInfo.ResourceLoadContainer = pxUSD;
+        PXECSCreateInfo PXECSCreateInfo;
+        PXClear(PXECSCreateInfo, &PXECSCreateInfo);
+       // PXECSCreateInfo.ResourceLoadContainer = pxUSD;
 
-        PXResourceLoad(&PXResourceMoveInfo, &resultPath);
+        // &resultPath
+        PXECSLoad(0, &PXECSCreateInfo);
     }
 #endif
 
@@ -1412,7 +1415,7 @@ void PXAPI PXUSDAParseEntryName(PXUSDA PXREF pxUSDA, PXUSDEntry PXREF pxUSDEntry
 
 
 
-PXResult PXAPI PXUSDSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXUSDSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

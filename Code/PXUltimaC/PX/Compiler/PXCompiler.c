@@ -230,10 +230,10 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompil
         const PXI32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
         PXTypeEntry pxFileDataElementType[] =
         {
-            &oldCopy.ID, PXTypeInt08U,
-            &oldCopy.Coloum, PXTypeInt32U,
-            &oldCopy.Line, PXTypeInt32U,
-            &size, PXTypeInt32U,
+            &oldCopy.ID, PXTypeI08U,
+            &oldCopy.Coloum, PXTypeI32U,
+            &oldCopy.Line, PXTypeI32U,
+            &size, PXTypeI32U,
             &oldCopy.Source, PXTypeAdress
         };
 
@@ -250,10 +250,10 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompil
         const void* emptyAdress = 0;
         const PXTypeEntry pxFileDataElementType[] =
         {
-            &symbolID, PXTypeInt08U,
-            &mergCopy.Coloum, PXTypeInt32U,
-            &mergCopy.Line, PXTypeInt32U,
-            &emptyValue, PXTypeInt32U,
+            &symbolID, PXTypeI08U,
+            &mergCopy.Coloum, PXTypeI32U,
+            &mergCopy.Line, PXTypeI32U,
+            &emptyValue, PXTypeI32U,
             &emptyAdress, PXTypeAdress
         };
 
@@ -970,7 +970,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
     pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
-    pxFileOpenInfo.FileSizeRequest = PXFileDataPosition(pxCompiler->ReadInfo.FileInput) * 5u;
+    pxFileOpenInfo.FileSizeRequest = PXFileRemainingSize(pxCompiler->ReadInfo.FileInput) * 8u;
     pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
     const PXResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
@@ -1072,9 +1072,9 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
             PXBool isLineComment = PXTextCompareA
             (
                 compilerSymbolEntry.Source, 
-                pxCompiler->CommentSingleLineSize, 
-                pxCompiler->CommentSingleLine,
-                pxCompiler->CommentSingleLineSize,
+                pxCompiler->CommentSingleLine.SizeUsed, 
+                pxCompiler->CommentSingleLine.A,
+                pxCompiler->CommentSingleLine.SizeUsed,
                 PXTextCompareRequireSameLength
             );
 
@@ -1083,8 +1083,8 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
                 compilerSymbolEntry.ID = PXCompilerSymbolLexerComment; // This is a comment
                 compilerSymbolEntry.Line = currentLine;
                 compilerSymbolEntry.Coloum = currentColoum;
-                compilerSymbolEntry.Source += pxCompiler->CommentSingleLineSize;
-                compilerSymbolEntry.Size = PXFileSkipLine(pxFileInput) - pxCompiler->CommentSingleLineSize;
+                compilerSymbolEntry.Source += pxCompiler->CommentSingleLine.SizeUsed;
+                compilerSymbolEntry.Size = PXFileSkipLine(pxFileInput) - pxCompiler->CommentSingleLine.SizeUsed;
 
                 // if we have multtible line comments in a row, we want to merge them.
                 PXBool merged = PXFalse;
@@ -1092,7 +1092,14 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
                 do
                 {
                     const char* isChainedComment = &compilerSymbolEntry.Source[compilerSymbolEntry.Size];
-                    isLineComment = PXTextCompareA(isChainedComment, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize, 0);
+                    isLineComment = PXTextCompareA
+                    (
+                        isChainedComment,
+                        pxCompiler->CommentSingleLine.SizeUsed,
+                        pxCompiler->CommentSingleLine.A, 
+                        pxCompiler->CommentSingleLine.SizeUsed,
+                        0
+                    );
 
                     if(isLineComment)
                     {
@@ -1128,14 +1135,20 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
             (
                 compilerSymbolEntry.Source, 
                 compilerSymbolEntry.Size,
-                pxCompiler->CommentMultibleLineBegin,
-                pxCompiler->CommentMultibleLineBeginSize, 
+                pxCompiler->CommentMultibleLineBegin.Data,
+                pxCompiler->CommentMultibleLineBegin.SizeUsed,
                 0
             );
 
             if(isStartOfMultibleLineComment)
             {
-                const PXSize index = PXTextFindFirstStringA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxCompiler->CommentMultibleLineEnd, pxCompiler->CommentMultibleLineEndSize);
+                const PXSize index = PXTextFindFirstStringA
+                (
+                    compilerSymbolEntry.Source,
+                    compilerSymbolEntry.Size,
+                    pxCompiler->CommentMultibleLineEnd.Data,
+                    pxCompiler->CommentMultibleLineEnd.SizeUsed
+                );
                 const PXBool isCompleate = index != -1;
 
                 if(!isCompleate)
@@ -1146,8 +1159,8 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
                 }
 
                 compilerSymbolEntry.ID = PXCompilerSymbolLexerComment;
-                compilerSymbolEntry.Source += pxCompiler->CommentMultibleLineEndSize;
-                compilerSymbolEntry.Size -= pxCompiler->CommentMultibleLineEndSize;
+                compilerSymbolEntry.Source += pxCompiler->CommentMultibleLineEnd.SizeUsed;
+                compilerSymbolEntry.Size -= pxCompiler->CommentMultibleLineEnd.SizeUsed;
                 compilerSymbolEntry.Size += index;
 
                 if(pxCompiler->Flags & PXCompilerKeepComments)
@@ -1772,7 +1785,7 @@ void PXAPI PXCompilerWriteComment(PXCompiler PXREF pxCompiler)
 
     if(current->CommentSize > 0)
     {
-        PXFileWriteA(pxFile, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
+        PXFileWriteText(pxFile, &pxCompiler->CommentSingleLine);
         PXFileWriteA(pxFile, current->CommentAdress, current->CommentSize);
         PXFileWriteNewLine(pxFile);
     }

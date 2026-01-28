@@ -18,8 +18,8 @@ PXResult PXAPI PXFMTLoadFromFile(PXFMT PXREF fmt, PXFile PXREF pxFile, const PXE
         }
     }
 
-    const PXI32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
-    const PXI32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
+    const PXI32U x16 = endian == PXEndianLittle ? PXTypeI16ULE : PXTypeI16UBE;
+    const PXI32U x32 = endian == PXEndianLittle ? PXTypeI32ULE : PXTypeI32UBE;
 
     const PXTypeEntry pxDataStreamElementList[] =
     {
@@ -39,8 +39,8 @@ PXResult PXAPI PXFMTLoadFromFile(PXFMT PXREF fmt, PXFile PXREF pxFile, const PXE
 
 PXResult PXAPI PXFMTSaveToFile(const PXFMT PXREF fmt, PXFile PXREF pxFile, const PXEndian endian)
 {
-    const PXI32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
-    const PXI32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
+    const PXI32U x16 = endian == PXEndianLittle ? PXTypeI16ULE : PXTypeI16UBE;
+    const PXI32U x32 = endian == PXEndianLittle ? PXTypeI32ULE : PXTypeI32UBE;
 
     const PXTypeEntry pxDataStreamElementList[] =
     {

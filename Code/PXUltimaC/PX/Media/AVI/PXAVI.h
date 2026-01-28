@@ -28,7 +28,7 @@ typedef struct PXAVI_
 }
 PXAVI;
 
-PXPublic PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXAVISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAVILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAVISaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

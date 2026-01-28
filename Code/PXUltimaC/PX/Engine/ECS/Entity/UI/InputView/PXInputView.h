@@ -11,6 +11,6 @@ typedef struct PXInputView_
 }
 PXInputView;
 
-PXPrivate PXResult PXAPI PXInputViewDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPrivate PXResult PXAPI PXInputViewDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

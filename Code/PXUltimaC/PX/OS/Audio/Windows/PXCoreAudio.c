@@ -41,7 +41,7 @@ DEFINE_GUID(IID_IAudioRenderClient, 0xf294acfc, 0x3146, 0x4483, 0xa7, 0xbf, 0xad
 
 PXCoreAudio _pxCoreAudio;
 
-PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
+PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 {
     PXClear(PXCoreAudio, &_pxCoreAudio);
 
@@ -83,6 +83,16 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
 
     // Get default audio device
     {
+#if PXLanguageCPP
+        resultID = CoCreateInstance
+        (
+            CLSID_MMDeviceEnumerator,
+            NULL,
+            CLSCTX_ALL,
+            IID_IMMDeviceEnumerator,
+            (void**)&_pxCoreAudio.AudioDeviceEnumerator
+        );
+#else
         resultID = CoCreateInstance
         (
             &CLSID_MMDeviceEnumerator,
@@ -91,14 +101,26 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
             &IID_IMMDeviceEnumerator,
             (void**)&_pxCoreAudio.AudioDeviceEnumerator
         );
+#endif
 
-        resultID = _pxCoreAudio.AudioDeviceEnumerator->lpVtbl->GetDefaultAudioEndpoint
+
+
+#if PXLanguageCPP
+        resultID = _pxCoreAudio.AudioDeviceEnumerator->GetDefaultAudioEndpoint
         (
-            _pxCoreAudio.AudioDeviceEnumerator,
             eRender, 
             eConsole,
             &_pxCoreAudio.AudioDevice
         );
+#else
+        resultID = _pxCoreAudio.AudioDeviceEnumerator->lpVtbl->GetDefaultAudioEndpoint
+        (
+            _pxCoreAudio.AudioDeviceEnumerator,
+            eRender,
+            eConsole,
+            &_pxCoreAudio.AudioDevice
+        );
+#endif
     }
 
     // Create XAudio2 API interface
@@ -182,26 +204,43 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
 
 
 
-
-    resultID = _pxCoreAudio.AudioDevice->lpVtbl->Activate
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioDevice->Activate
     (
-        _pxCoreAudio.AudioDevice,
-        &IID_IAudioClient, 
+        IID_IAudioClient, 
         CLSCTX_ALL,
         NULL,
         (void**)&_pxCoreAudio.AudioClient
     );
+#else
+    resultID = _pxCoreAudio.AudioDevice->lpVtbl->Activate
+    (
+        _pxCoreAudio.AudioDevice,
+        &IID_IAudioClient,
+        CLSCTX_ALL,
+        NULL,
+        (void**)&_pxCoreAudio.AudioClient
+    );
+#endif
 
 
 
     WAVEFORMATEX* pwfx = NULL;
+
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioClient->GetMixFormat(&pwfx);
+#else
     resultID = _pxCoreAudio.AudioClient->lpVtbl->GetMixFormat(_pxCoreAudio.AudioClient, &pwfx);
+#endif
+
+
+
 
     REFERENCE_TIME hnsBufferDuration = 10000000; // 1 second
 
-    resultID = _pxCoreAudio.AudioClient->lpVtbl->Initialize
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioClient->Initialize
     (
-        _pxCoreAudio.AudioClient,
         AUDCLNT_SHAREMODE_SHARED, 
         0,
         hnsBufferDuration,
@@ -209,26 +248,65 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
         pwfx,
         NULL
     );
+#else
+    resultID = _pxCoreAudio.AudioClient->lpVtbl->Initialize
+    (
+        _pxCoreAudio.AudioClient,
+        AUDCLNT_SHAREMODE_SHARED,
+        0,
+        hnsBufferDuration,
+        0,
+        pwfx,
+        NULL
+    );
+#endif
 
 
     IAudioRenderClient* pRenderClient = NULL;
 
     UINT32 bufferFrameCount;
+
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioClient->GetBufferSize(&bufferFrameCount);
+#else
     resultID = _pxCoreAudio.AudioClient->lpVtbl->GetBufferSize(_pxCoreAudio.AudioClient, &bufferFrameCount);
+#endif
+    
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioClient->GetService(IID_IAudioRenderClient, (void**)&pRenderClient);
+#else
     resultID = _pxCoreAudio.AudioClient->lpVtbl->GetService(_pxCoreAudio.AudioClient, &IID_IAudioRenderClient, (void**)&pRenderClient);
+#endif
+
 
     BYTE* pData;
     double t = 0.0;
     double dt = 1.0 / 1.0;// SAMPLE_RATE;
 
+#if PXLanguageCPP
+    resultID = _pxCoreAudio.AudioClient->Start();
+#else
     resultID = _pxCoreAudio.AudioClient->lpVtbl->Start(_pxCoreAudio.AudioClient);
+#endif
 
-    while(1) {
+    while(1) 
+    {
         UINT32 numFramesPadding;
+
+#if PXLanguageCPP
+        resultID = _pxCoreAudio.AudioClient->GetCurrentPadding(&numFramesPadding);
+#else
         resultID = _pxCoreAudio.AudioClient->lpVtbl->GetCurrentPadding(_pxCoreAudio.AudioClient, &numFramesPadding);
+#endif
+        
         UINT32 numFramesAvailable = bufferFrameCount - numFramesPadding;
 
+#if PXLanguageCPP
+        resultID = pRenderClient->GetBuffer(numFramesAvailable, &pData);
+#else
         resultID = pRenderClient->lpVtbl->GetBuffer(pRenderClient, numFramesAvailable, &pData);
+#endif
+
 
         for(UINT32 i = 0; i < numFramesAvailable; i++) {
             float sample = 0;// generate_sample(t);
@@ -240,13 +318,26 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
 
         //printf(".");
 
+
+#if PXLanguageCPP
+        resultID = pRenderClient->ReleaseBuffer(numFramesAvailable, 0);
+#else
         resultID = pRenderClient->lpVtbl->ReleaseBuffer(pRenderClient, numFramesAvailable, 0);
+#endif
+        
+        
         Sleep(10);
     }
 
     // Cleanup (not reached in this loop)
     CoTaskMemFree(pwfx);
+
+#if PXLanguageCPP
+    pRenderClient->Release();
+#else
     pRenderClient->lpVtbl->Release(pRenderClient);
+#endif
+
    // pAudioClient->lpVtbl->Release(pAudioClient);
    // pDevice->lpVtbl->Release(pDevice);
    // pEnumerator->lpVtbl->Release(pEnumerator);

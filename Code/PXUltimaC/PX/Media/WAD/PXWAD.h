@@ -70,7 +70,7 @@ typedef struct PXWAD_
 }
 PXWAD;
 
-PXPublic PXResult PXAPI PXWADLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWADSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWADLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWADSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

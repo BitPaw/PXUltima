@@ -46,7 +46,7 @@ PXResult PXAPI PXSpriteMapCreate(PXSpriteMap PXREF pxSpriteMap, PXSpriteMapInfo 
     {
         PXModel PXREF pxModel = pxSpriteMap->Model;
 
-        PXBufferLayout pxVertexBufferLayout[3];
+        PXBufferLayoutEntry pxVertexBufferLayout[3];
         pxVertexBufferLayout[0].Format = PXTypeF32;
         pxVertexBufferLayout[0].AmountOfElements = 2;
         pxVertexBufferLayout[0].UpdatePerPrimitive = 1;

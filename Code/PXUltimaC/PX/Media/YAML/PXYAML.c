@@ -59,19 +59,18 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXResult PXAPI PXYAMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile* tokenSteam = PXFileCreate();
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.ReadInfo.FileCache = tokenSteam;
-    pxCompiler.CommentSingleLineSize = 1u;
-    pxCompiler.CommentSingleLine = "#";
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes | PXCompilerKeepTABs;
+    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
@@ -319,7 +318,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXYAMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXYAMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

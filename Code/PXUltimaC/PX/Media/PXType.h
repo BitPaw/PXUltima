@@ -301,53 +301,53 @@
 //-------------------------------------------------
 // Int - Normal
 //-------------------------------------------------
-#define PXTypeIntS      PXTypeBaseNumeric | PXTypeSigned
-#define PXTypeIntU      PXTypeBaseNumeric | PXTypeUnsigned
+#define PXTypeIS      PXTypeBaseNumeric | PXTypeSigned
+#define PXTypeIU      PXTypeBaseNumeric | PXTypeUnsigned
 
-#define PXTypeIntSLE    PXTypeIntS | PXTypeEndianLittle
-#define PXTypeIntSBE    PXTypeIntS | PXTypeEndianBig
+#define PXTypeISLE    PXTypeIS | PXTypeEndianLittle
+#define PXTypeISBE    PXTypeIS | PXTypeEndianBig
 
-#define PXTypeIntULE    PXTypeIntU | PXTypeEndianLittle
-#define PXTypeIntUBE    PXTypeIntU | PXTypeEndianBig
+#define PXTypeIULE    PXTypeIU | PXTypeEndianLittle
+#define PXTypeIUBE    PXTypeIU | PXTypeEndianBig
 
 #define PXTypeBoolAsText 
 
 // Integer 8-Bit
-#define PXTypeInt08S    PXTypeSize08 | PXTypeIntS
-#define PXTypeInt08U    PXTypeSize08 | PXTypeIntU
-#define PXTypeBool PXTypeInt08U
+#define PXTypeI08S    PXTypeSize08 | PXTypeIS
+#define PXTypeI08U    PXTypeSize08 | PXTypeIU
+#define PXTypeBool PXTypeI08U
 
 // Integer 16-Bit
-#define PXTypeInt16S    PXTypeSize16 | PXTypeIntS
-#define PXTypeInt16SLE  PXTypeSize16 | PXTypeIntSLE
-#define PXTypeInt16SBE  PXTypeSize16 | PXTypeIntSBE
-#define PXTypeInt16U    PXTypeSize16 | PXTypeIntU
-#define PXTypeInt16ULE  PXTypeSize16 | PXTypeIntULE
-#define PXTypeInt16UBE  PXTypeSize16 | PXTypeIntUBE
+#define PXTypeI16S    PXTypeSize16 | PXTypeIS
+#define PXTypeI16SLE  PXTypeSize16 | PXTypeISLE
+#define PXTypeI16SBE  PXTypeSize16 | PXTypeISBE
+#define PXTypeI16U    PXTypeSize16 | PXTypeIU
+#define PXTypeI16ULE  PXTypeSize16 | PXTypeIULE
+#define PXTypeI16UBE  PXTypeSize16 | PXTypeIUBE
 
 // Integer 32-Bit
-#define PXTypeInt32S    PXTypeSize32 | PXTypeIntS
-#define PXTypeInt32SLE  PXTypeSize32 | PXTypeIntSLE
-#define PXTypeInt32SBE  PXTypeSize32 | PXTypeIntSBE
-#define PXTypeInt32U    PXTypeSize32 | PXTypeIntU
-#define PXTypeInt32ULE  PXTypeSize32 | PXTypeIntULE
-#define PXTypeInt32UBE  PXTypeSize32 | PXTypeIntUBE
+#define PXTypeI32S    PXTypeSize32 | PXTypeIS
+#define PXTypeI32SLE  PXTypeSize32 | PXTypeISLE
+#define PXTypeI32SBE  PXTypeSize32 | PXTypeISBE
+#define PXTypeI32U    PXTypeSize32 | PXTypeIU
+#define PXTypeI32ULE  PXTypeSize32 | PXTypeIULE
+#define PXTypeI32UBE  PXTypeSize32 | PXTypeIUBE
 
 // Integer 64-Bit
-#define PXTypeInt64U    PXTypeSize64 | PXTypeIntS
-#define PXTypeInt64ULE  PXTypeSize64 | PXTypeIntULE
-#define PXTypeInt64UBE  PXTypeSize64 | PXTypeIntUBE
-#define PXTypeInt64S    PXTypeSize64 | PXTypeIntU
-#define PXTypeInt64SLE  PXTypeSize64 | PXTypeIntULE
-#define PXTypeInt64SBE  PXTypeSize64 | PXTypeIntUBE
+#define PXTypeI64U    PXTypeSize64 | PXTypeIS
+#define PXTypeI64ULE  PXTypeSize64 | PXTypeIULE
+#define PXTypeI64UBE  PXTypeSize64 | PXTypeIUBE
+#define PXTypeI64S    PXTypeSize64 | PXTypeIU
+#define PXTypeI64SLE  PXTypeSize64 | PXTypeIULE
+#define PXTypeI64SBE  PXTypeSize64 | PXTypeIUBE
 
 // Integer 128-Bit
-#define PXTypeInt128U    PXTypeSize128 | PXTypeIntS
-#define PXTypeInt128ULE  PXTypeSize128 | PXTypeIntULE
-#define PXTypeInt128UBE  PXTypeSize128 | PXTypeIntUBE
-#define PXTypeInt128S    PXTypeSize128 | PXTypeIntU
-#define PXTypeInt128SLE  PXTypeSize128 | PXTypeIntULE
-#define PXTypeInt128SBE  PXTypeSize128 | PXTypeIntUBE
+#define PXTypeI128U    PXTypeSize128 | PXTypeIS
+#define PXTypeI128ULE  PXTypeSize128 | PXTypeIULE
+#define PXTypeI128UBE  PXTypeSize128 | PXTypeIUBE
+#define PXTypeI128S    PXTypeSize128 | PXTypeIU
+#define PXTypeI128SLE  PXTypeSize128 | PXTypeIULE
+#define PXTypeI128SBE  PXTypeSize128 | PXTypeIUBE
 
 // Float 16-Bit
 #define PXTypeF16 PXTypeSize16 | PXTypeBaseDecimal
@@ -360,14 +360,14 @@
 #define PXTypeF64 PXTypeSize64 | PXTypeBaseDecimal
 
 // System depended
-#define PXTypeSize PXTypeInt64U
+#define PXTypeSize PXTypeI64U
 
 // Conditional
-#define PXTypeInt32ULEOnlyIf32B PXTypeInt32ULE | PXTypeIgnoreIn32B
-#define PXTypeInt32ULEOnlyIf64B PXTypeInt32ULE | PXTypeIgnoreIn64B
+#define PXTypeI32ULEOnlyIf32B PXTypeI32ULE | PXTypeIgnoreIn32B
+#define PXTypeI32ULEOnlyIf64B PXTypeI32ULE | PXTypeIgnoreIn64B
 
-#define PXTypeIntFlexLE | PXTypeBaseNumeric | PXTypeEndianLittle
-#define PXTypeIntFlexBE | PXTypeBaseNumeric | PXTypeEndianBig
+#define PXTypeIFlexLE | PXTypeBaseNumeric | PXTypeEndianLittle
+#define PXTypeIFlexBE | PXTypeBaseNumeric | PXTypeEndianBig
 
 
 
@@ -765,18 +765,18 @@ PXTypeBinding;
 //---------------------------------------------------------
 
 
-#define SplittIntLEA(i) ((i) & 0xFF)
-#define SplittIntLEB(i) ((i >>  8u) & 0xFF)
-#define SplittIntLEC(i) ((i >> 16u) & 0xFF)
-#define SplittIntLED(i) ((i >> 24u) & 0xFF)
+#define SplittIntLEA(i) ((_pxECSEntityList) & 0xFF)
+#define SplittIntLEB(i) ((_pxECSEntityList >>  8u) & 0xFF)
+#define SplittIntLEC(i) ((_pxECSEntityList >> 16u) & 0xFF)
+#define SplittIntLED(i) ((_pxECSEntityList >> 24u) & 0xFF)
 
 #define SplittIntLE(i, a, b, c, d)\
-a = SplittIntLEA(i);\
-b = SplittIntLEB(i);\
-c = SplittIntLEC(i);\
-_pxFooter = SplittIntLED(i);
+a = SplittIntLEA(_pxECSEntityList);\
+b = SplittIntLEB(_pxECSEntityList);\
+c = SplittIntLEC(_pxECSEntityList);\
+_pxFooter = SplittIntLED(_pxECSEntityList);
 
-#define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, _pxFooter)
+#define SplittInt(i, a, b, c, d) SplittIntLE(_pxECSEntityList, a, b, c, _pxFooter)
 
 typedef struct PXI16SCluster
 {
@@ -968,7 +968,7 @@ PXPublic PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter PXREF pxWorkSetCount
 
 PXPublic void PXAPI PXTypeToString(const PXI32U dataType, char* buffer);
 
-PXPublic PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize);
+PXPublic PXI32U PXAPI PXTypeIFitting(const PXSize expectedSize);
 
 PXPublic void PXAPI PXEndianSwapI32U(PXI32U PXREF value);
 PXPublic void PXAPI PXEndianSwapI16U(PXI16U PXREF value);
@@ -983,9 +983,12 @@ PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const
 
 #define PXEmbeddedArraySize 4
 
-// Predefine
-typedef enum PXActionResult_ PXResult;
+// ToDo: Remove this cheese
+typedef enum PXResult_ PXResult;
 
+typedef struct PXDrawInfo_ PXDrawInfo;
+typedef struct PXDictionary_ PXDictionary;
+typedef struct PXDrawInfo_ PXDrawInfo;
 typedef struct PXBuffer_ PXBuffer;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;

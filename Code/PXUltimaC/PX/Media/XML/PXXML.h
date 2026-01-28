@@ -26,7 +26,7 @@ PXXMLSymbol;
 PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char PXREF text, const PXSize textSize);
 PXPrivate void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxCompiler);
 
-PXPublic PXResult PXAPI PXXMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXXMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXXMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXXMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

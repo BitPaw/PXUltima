@@ -699,7 +699,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "char"
 
-                pxCodeDocumentElement->DataType |= PXTypeInt08U;
+                pxCodeDocumentElement->DataType |= PXTypeI08U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -711,7 +711,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "short"
 
-                pxCodeDocumentElement->DataType |= PXTypeInt16U;
+                pxCodeDocumentElement->DataType |= PXTypeI16U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -723,7 +723,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXTypeInt32U;
+                pxCodeDocumentElement->DataType |= PXTypeI32U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -774,7 +774,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
-                pxCodeDocumentElement->DataType |= PXTypeInt08U;
+                pxCodeDocumentElement->DataType |= PXTypeI08U;
 
                 done = 1;
 
@@ -1276,8 +1276,9 @@ PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentEleme
 
     char buffer[64];
 
-    PXTextCopyA( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size, buffer, 64);
+    PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size, buffer, 64);
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -1286,12 +1287,15 @@ PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentEleme
         "enum : %s",
         buffer
     );
+#endif
 
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -1302,7 +1306,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     );
 #endif
 
-    PXCodeDocument* pxDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
+    PXCodeDocument* pxDocument = 0;// (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     PXClear(PXCodeDocument, pxDocument);
 
     PXFile* tokenSteam = PXFileCreate();
@@ -1310,15 +1314,13 @@ PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.CodeDocument = pxDocument;
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileInput = pxFile;
     pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepComments | PXCompilerKeepAnalyseTypes;
-    pxCompiler.CommentSingleLineSize = 2;
-    pxCompiler.CommentSingleLine = "//";
-    pxCompiler.CommentMultibleLineBegin = "/*";
-    pxCompiler.CommentMultibleLineBeginSize = 2;
-    pxCompiler.CommentMultibleLineEnd = "*/";
-    pxCompiler.CommentMultibleLineEndSize = 2;
+
+    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
+    PXTextFromAdressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
+    PXTextFromAdressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
 
     PXCodeDocumentElement* pxCodeDocumentElementRoot = PXNull;
 
@@ -1336,7 +1338,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXText filePath;
         PXTextConstructBufferA(&filePath, PXPathSizeMax);
 
-        PXFilePath(pxResourceLoadInfo->FileReference, &filePath, PXFalse);
+        PXFilePath(pxFile, &filePath, PXFalse);
 
         PXFilePathStructure pxFilePathStructure;
 
@@ -1585,7 +1587,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXCSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXCSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

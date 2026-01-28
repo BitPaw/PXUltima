@@ -259,6 +259,7 @@ PXPublic int PXAPI PXMathCeilingD(const double value);
 
 
 //---------------------------------------------------------
+PXPublic PXF32 PXAPI PXMathClampF(const PXF32 value, const PXF32 minimum, const PXF32 maximum);
 PXPublic char PXAPI PXMathLimitC(const char value, const char minimum, const char maximum);
 PXPublic unsigned char PXAPI PXMathLimitCU(const unsigned char  value, const unsigned char  minimum, const unsigned char maximum);
 PXPublic int PXAPI PXMathLimitI(const int value, const int minimum, const int maximum);

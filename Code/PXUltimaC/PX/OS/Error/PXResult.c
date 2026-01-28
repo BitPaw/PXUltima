@@ -469,13 +469,15 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
         case 0xC0070006: // FACILITY_WIN32 | ERROR_INVALID_HANDLE
             return PXActionRefusedObjectIDInvalid;
 
+
+
         case ERROR_CLASS_ALREADY_EXISTS:
             return PXActionRefusedObjectAlreadyExists;
 
         case    ERROR_FILE_NOT_FOUND:
-            return PXResultInvalid; //    The system cannot find the file specified.    2 (0x2)
+            return PXActionRefusedNotFound; //    The system cannot find the file specified.    2 (0x2)
         case    ERROR_PATH_NOT_FOUND:
-            return PXResultInvalid; //    The system cannot find the path specified.    3 (0x3)
+            return PXActionRefusedNotFound; //    The system cannot find the path specified.    3 (0x3)
         case    ERROR_TOO_MANY_OPEN_FILES:
             return PXResultInvalid; //    The system cannot open the file.    4 (0x4)
         case    ERROR_ACCESS_DENIED:

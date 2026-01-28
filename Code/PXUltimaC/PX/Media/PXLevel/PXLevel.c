@@ -5,7 +5,7 @@
 
 const char PXLevelSignature[] = {'P', 'X', 'L', 'V'};
 
-PXResult PXAPI PXLevelLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXLevelLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     // Signature
 
@@ -18,8 +18,9 @@ PXResult PXAPI PXLevelLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXLevelSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXLevelSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
+    PXFile* pxFile = pxResourceSaveInfo->FileCurrent;
     PXLevel pxLevel;
 
     // Write Header
@@ -27,12 +28,12 @@ PXResult PXAPI PXLevelSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         PXTypeEntry pxFileDataElementList[] =
         {
             {PXLevelSignature, PXTypeDatax4},
-            {&pxLevel.Version, PXTypeInt16U},
-            {&pxLevel.EntryAmount, PXTypeInt32U},
+            {&pxLevel.Version, PXTypeI16U},
+            {&pxLevel.EntryAmount, PXTypeI32U},
         };
         const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 
-        PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
+        PXFileWriteMultible(pxFile, pxFileDataElementList, pxFileDataElementListSize);
     }
 
     // Parse entrys
@@ -40,18 +41,18 @@ PXResult PXAPI PXLevelSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
         PXLevelEntry pxLevelEntry;
         PXClear(PXLevelEntry, &pxLevelEntry);
 
-        while(!PXFileIsAtEnd(pxResourceSaveInfo->FileReference))
+        while(!PXFileIsAtEnd(pxFile))
         {
             PXTypeEntry pxFileDataElementList[] =
             {
                 {&pxLevelEntry.ResourceType, PXTypeDatax4},
-                {&pxLevelEntry.DataSize, PXTypeInt64U}
+                {&pxLevelEntry.DataSize, PXTypeI64U}
             };
             const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 
-            PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
+            PXFileWriteMultible(pxFile, pxFileDataElementList, pxFileDataElementListSize);
 
-            pxLevelEntry.DataAdress = PXFileDataPosition(pxResourceSaveInfo->FileReference);
+            pxLevelEntry.DataAdress = PXFileDataPosition(pxFile);
 
 #if PXLogEnable
             PXLogPrint

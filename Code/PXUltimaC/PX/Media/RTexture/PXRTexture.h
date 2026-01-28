@@ -28,7 +28,7 @@ typedef struct PXRTexture
 }
 PXRTexture;
 
-PXPublic PXResult PXAPI PXRTextureLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRTextureSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRTextureLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRTextureSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -260,9 +260,9 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
         PXText pxText;
         PXTextFromAdressA(&pxText, PXWindowsLDAPLibrary, PXWindowsLDAPLibraryLength, PXWindowsLDAPLibraryLength);
 
-        const PXResult pxActionResult = PXLibraryOpen(&pxLDAPClient->LDAPLibrary, &pxText);
+        const PXResult pxResult = PXLibraryOpen(&pxLDAPClient->LDAPLibrary, &pxText);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -551,11 +551,11 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
                 pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.A, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult; // LdapGetLastError()
+                return pxResult; // LdapGetLastError()
             }
 
             break;
@@ -582,11 +582,11 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
                 pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.W, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult; // LdapGetLastError()
+                return pxResult; // LdapGetLastError()
             }
 
             break;
@@ -612,11 +612,11 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
         const ULONG optionSetResult = pxldap_set_option(pxLDAPClient->ID, LDAP_OPT_PROTOCOL_VERSION, &version);
         const PXBool optionSetSuccessful = LDAP_SUCCESS == optionSetResult;
 
-        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult; // LdapGetLastError()
+            return pxResult; // LdapGetLastError()
         }
     }
 #endif
@@ -629,11 +629,11 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
         const ULONG connectResult = pxldap_connect(pxLDAPClient->ID, &ldaptime);
         const PXBool connectionSuccessful = LDAP_SUCCESS == connectResult;
 
-        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult; // LdapGetLastError()
+            return pxResult; // LdapGetLastError()
         }
     }
 
@@ -649,11 +649,11 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
         );
         const PXBool bindSuccessful = LDAP_SUCCESS == bindResult;
 
-        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult; // LdapGetLastError()
+            return pxResult; // LdapGetLastError()
         }
     }
 
@@ -677,11 +677,11 @@ PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient)
     const ULONG result = pxldap_unbind(pxLDAPClient->ID);
     const PXBool successful = LDAP_SUCCESS == result;
 
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+    const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult; // LdapGetLastError()
+        return pxResult; // LdapGetLastError()
     }
 
     pxLDAPClient->ID = PXNull;
@@ -756,11 +756,11 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
                 const PXBool successful = LDAP_SUCCESS == messageID;
 
-                const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+                const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-                if(PXResultOK != pxActionResult)
+                if(PXResultOK != pxResult)
                 {
-                    return pxActionResult; // LdapGetLastError()
+                    return pxResult; // LdapGetLastError()
                 }
             }
             else
@@ -780,11 +780,11 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
                 const PXBool successful = LDAP_SUCCESS == searchResult;
 
-                const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+                const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-                if(PXResultOK != pxActionResult)
+                if(PXResultOK != pxResult)
                 {
-                    return pxActionResult; // LdapGetLastError()
+                    return pxResult; // LdapGetLastError()
                 }
             }
 
@@ -811,11 +811,11 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
             );
             const PXBool successful = LDAP_SUCCESS == messageID;
 
-            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult; // LdapGetLastError()
+                return pxResult; // LdapGetLastError()
             }
 
             return PXResultOK;

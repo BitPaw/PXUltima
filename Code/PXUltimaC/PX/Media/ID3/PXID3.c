@@ -254,7 +254,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
                 {id3->Album, PXID3AlbumSize},
                 {id3->Year, PXID3YearSize},
                 {id3->Comment, PXID3CommentSize},
-                {&id3->Genre, PXTypeInt08U}
+                {&id3->Genre, PXTypeI08U}
             };
 
             PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));

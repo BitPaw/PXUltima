@@ -2,8 +2,6 @@
 #define PXMemoryIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/OS/Error/PXResult.h>
-#include <PX/Container/Dictionary/PXDictionary.h>
 
 typedef struct PXSymbol_ PXSymbol;
 
@@ -171,7 +169,7 @@ PXSymbolMemory;
 
 typedef struct PXMemorySymbolLookup_
 {
-    PXDictionary SymbolLookup;
+    PXDictionary* SymbolLookup;
 }
 PXMemorySymbolLookup;
 

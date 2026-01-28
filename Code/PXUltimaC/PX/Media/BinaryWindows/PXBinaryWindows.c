@@ -11,40 +11,40 @@ const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 const PXI32U PXDOSHeaderLayout[] =
 {
     PXTypeDatax2,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
     PXTypePadding(8),
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
     PXTypePadding(20),
-    PXTypeInt32ULE
+    PXTypeI32ULE
 };
 const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXI32U);
 const char PXBinaryWindowsText[] = "BinaryWindows";
 
 #define PXBinaryWindowsDebug 1
 
-PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXBinaryWindowsLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXBinaryWindows PXREF pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
+    PXBinaryWindows PXREF pxBinaryWindows = 0;// (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
 
     if(!pxBinaryWindows)
     {
         return PXResultRefusedParameterNull;
     }
 
-    PXFile* pxFile = pxResourceLoadInfo->FileReference;
+    PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
 #if PXBinaryWindowsDebug
     PXLogPrint
@@ -63,30 +63,30 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
     {
         PXDOSHeader PXREF pxDOSHeader = &pxBinaryWindows->Header;
 #if 0
-        PXFileBinding(pxResourceLoadInfo->FileReference, &pxBinaryWindows->Header, PXDOSHeaderLayout, PXDOSHeaderLayoutSize, PXFalse);
+        PXFileBinding(pxResourceLoadInfo->FileCurrent, &pxBinaryWindows->Header, PXDOSHeaderLayout, PXDOSHeaderLayoutSize, PXFalse);
 
 #else
         const PXTypeEntry pxDataStreamElementList[] =
         {
             {pxDOSHeader->Magic,PXTypeDatax2 },
-            {&pxDOSHeader->LastPageSize, PXTypeInt16ULE},
-            {&pxDOSHeader->TotalPagesInFile, PXTypeInt16ULE},
-            {&pxDOSHeader->ReallocationItems, PXTypeInt16ULE},
-            {&pxDOSHeader->ParagraphsInHeader, PXTypeInt16ULE},
-            {&pxDOSHeader->ParagraphsExtraMinimum, PXTypeInt16ULE},
-            {&pxDOSHeader->ParagraphsExtraMaximum, PXTypeInt16ULE},
-            {&pxDOSHeader->StackInitialSegment, PXTypeInt16ULE},
-            {&pxDOSHeader->StackInitialPointer, PXTypeInt16ULE},
-            {&pxDOSHeader->ChecksumCompliment, PXTypeInt16ULE},
-            {&pxDOSHeader->InstructionPointerInternal, PXTypeInt16ULE},
-            {&pxDOSHeader->CodeSegmentInitial, PXTypeInt16ULE},
-            {&pxDOSHeader->e_lfarlc, PXTypeInt16ULE},
-            {&pxDOSHeader->e_ovno, PXTypeInt16ULE},
+            {&pxDOSHeader->LastPageSize, PXTypeI16ULE},
+            {&pxDOSHeader->TotalPagesInFile, PXTypeI16ULE},
+            {&pxDOSHeader->ReallocationItems, PXTypeI16ULE},
+            {&pxDOSHeader->ParagraphsInHeader, PXTypeI16ULE},
+            {&pxDOSHeader->ParagraphsExtraMinimum, PXTypeI16ULE},
+            {&pxDOSHeader->ParagraphsExtraMaximum, PXTypeI16ULE},
+            {&pxDOSHeader->StackInitialSegment, PXTypeI16ULE},
+            {&pxDOSHeader->StackInitialPointer, PXTypeI16ULE},
+            {&pxDOSHeader->ChecksumCompliment, PXTypeI16ULE},
+            {&pxDOSHeader->InstructionPointerInternal, PXTypeI16ULE},
+            {&pxDOSHeader->CodeSegmentInitial, PXTypeI16ULE},
+            {&pxDOSHeader->e_lfarlc, PXTypeI16ULE},
+            {&pxDOSHeader->e_ovno, PXTypeI16ULE},
             {PXNull, PXTypePadding(8)},
-            {&pxDOSHeader->e_oemid, PXTypeInt16ULE},
-            {&pxDOSHeader->e_oeminfo, PXTypeInt16ULE},
+            {&pxDOSHeader->e_oemid, PXTypeI16ULE},
+            {&pxDOSHeader->e_oeminfo, PXTypeI16ULE},
             {PXNull, PXTypePadding(20)},
-            {&pxDOSHeader->FileOffsetToHeader, PXTypeInt32ULE}
+            {&pxDOSHeader->FileOffsetToHeader, PXTypeI32ULE}
         };
 
         const PXSize amount = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -133,30 +133,30 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&pxNEHeader->LinkerVersionMajor, PXTypeInt08U},
-                {&pxNEHeader->LinkerVersionMinor, PXTypeInt08U},
-                {&pxNEHeader->EntryTableOffset, PXTypeInt16ULE},
-                {&pxNEHeader->EntryTableLength, PXTypeInt16ULE},
-                {&pxNEHeader->FileLoadCRC, PXTypeInt32ULE},
-                {&pxNEHeader->FlagList, PXTypeInt16ULE},
-                {&pxNEHeader->SegmentDataAutoIndex, PXTypeInt16ULE},
-                {&pxNEHeader->HeapSizeInit, PXTypeInt16ULE},
-                {&pxNEHeader->StackSizeInit, PXTypeInt16ULE},
-                {&pxNEHeader->EntryPoint, PXTypeInt32ULE},
-                {&pxNEHeader->InitStack, PXTypeInt32ULE},
-                {&pxNEHeader->SegmentTableEntryAmount, PXTypeInt16ULE},
-                {&pxNEHeader->ModuleReferenceTableEntryAmount, PXTypeInt16ULE},
-                {&pxNEHeader->NonresidentNameTableEntryAmount, PXTypeInt16ULE},
-                {&pxNEHeader->SegmentTableOffset, PXTypeInt16ULE},
-                {&pxNEHeader->ResourceTableOffset, PXTypeInt16ULE},
-                {&pxNEHeader->ResidentNamesTableOffset, PXTypeInt16ULE},
-                {&pxNEHeader->ModRefTable, PXTypeInt16ULE},
-                {&pxNEHeader->ImportNameTable, PXTypeInt16ULE},
-                {&pxNEHeader->OffStartNonResTab, PXTypeInt32ULE},
-                {&pxNEHeader->MovEntryCount, PXTypeInt16ULE},
-                {&pxNEHeader->FileAlnSzShftCnt, PXTypeInt16ULE},
-                {&pxNEHeader->nResTabEntries, PXTypeInt16ULE},
-                {&pxNEHeader->targOS, PXTypeInt08U}
+                {&pxNEHeader->LinkerVersionMajor, PXTypeI08U},
+                {&pxNEHeader->LinkerVersionMinor, PXTypeI08U},
+                {&pxNEHeader->EntryTableOffset, PXTypeI16ULE},
+                {&pxNEHeader->EntryTableLength, PXTypeI16ULE},
+                {&pxNEHeader->FileLoadCRC, PXTypeI32ULE},
+                {&pxNEHeader->FlagList, PXTypeI16ULE},
+                {&pxNEHeader->SegmentDataAutoIndex, PXTypeI16ULE},
+                {&pxNEHeader->HeapSizeInit, PXTypeI16ULE},
+                {&pxNEHeader->StackSizeInit, PXTypeI16ULE},
+                {&pxNEHeader->EntryPoint, PXTypeI32ULE},
+                {&pxNEHeader->InitStack, PXTypeI32ULE},
+                {&pxNEHeader->SegmentTableEntryAmount, PXTypeI16ULE},
+                {&pxNEHeader->ModuleReferenceTableEntryAmount, PXTypeI16ULE},
+                {&pxNEHeader->NonresidentNameTableEntryAmount, PXTypeI16ULE},
+                {&pxNEHeader->SegmentTableOffset, PXTypeI16ULE},
+                {&pxNEHeader->ResourceTableOffset, PXTypeI16ULE},
+                {&pxNEHeader->ResidentNamesTableOffset, PXTypeI16ULE},
+                {&pxNEHeader->ModRefTable, PXTypeI16ULE},
+                {&pxNEHeader->ImportNameTable, PXTypeI16ULE},
+                {&pxNEHeader->OffStartNonResTab, PXTypeI32ULE},
+                {&pxNEHeader->MovEntryCount, PXTypeI16ULE},
+                {&pxNEHeader->FileAlnSzShftCnt, PXTypeI16ULE},
+                {&pxNEHeader->nResTabEntries, PXTypeI16ULE},
+                {&pxNEHeader->targOS, PXTypeI08U}
 
             };
 
@@ -175,10 +175,10 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
 
                 const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&pxNEHeaderSegmentEntry.LogicalSectorOffset, PXTypeInt16ULE},
-                    {&pxNEHeaderSegmentEntry.LengthoftheSegment, PXTypeInt16ULE},
-                    {&pxNEHeaderSegmentEntry.Flag, PXTypeInt16ULE},
-                    {&pxNEHeaderSegmentEntry.MinimumAllocationSize, PXTypeInt16ULE}
+                    {&pxNEHeaderSegmentEntry.LogicalSectorOffset, PXTypeI16ULE},
+                    {&pxNEHeaderSegmentEntry.LengthoftheSegment, PXTypeI16ULE},
+                    {&pxNEHeaderSegmentEntry.Flag, PXTypeI16ULE},
+                    {&pxNEHeaderSegmentEntry.MinimumAllocationSize, PXTypeI16ULE}
                 };
 
                 const PXSize amount = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -292,7 +292,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLo
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBinaryWindowsSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

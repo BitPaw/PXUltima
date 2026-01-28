@@ -462,8 +462,8 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "IN", PXNull, 0 }, // 0xE5
 {PXNull, "OUT", PXNull, 0 }, // 0xE6
 {PXNull, "OUT", PXNull, 0 }, // 0xE7
-{ PXX86InstructionCall, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
-{ PXX86InstructionJMPNEAR, "JMP-NEAR", PXNull, PXTypeInt32SLE }, // 0xE9
+{ PXX86InstructionCall, "CALL-NEAR", "", PXTypeI32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
+{ PXX86InstructionJMPNEAR, "JMP-NEAR", PXNull, PXTypeI32SLE }, // 0xE9
 {PXNull, "JMP-FAR", PXNull, 0 }, // 0xEA
 {PXNull, "JMP-SHORT", PXNull, 0 }, // 0xEB
 {PXNull, "IN", PXNull, 0 }, // 0xEC

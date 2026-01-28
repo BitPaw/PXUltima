@@ -77,10 +77,10 @@ PXI8U PXAPI PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderTy
 const PXI32U PXBitMapHeader[] =
 {
     PXTypeText(2),
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE
 };
 const PXI8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXI32U);
 
@@ -90,44 +90,44 @@ const PXI8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXI32U);
 
 const PXI32U PXBitMapInfoHeaderTypeList[] =
 {
-    PXTypeInt32SLE,
-    PXTypeInt32SLE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32SLE,
-    PXTypeInt32SLE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE
+    PXTypeI32SLE,
+    PXTypeI32SLE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32SLE,
+    PXTypeI32SLE,
+    PXTypeI32ULE,
+    PXTypeI32ULE
 };
 const PXI8U PXBitMapInfoHeaderTypeListSize = sizeof(PXBitMapInfoHeaderTypeList) / sizeof(PXI32U);
 
 
 const PXI32U PXBitMapV5HeaderTypeList[] =
 {
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
     PXTypePadding(4)
 };
 const PXI8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / sizeof(PXI32U);
@@ -135,35 +135,34 @@ const PXI8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / si
 
 const PXI32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
 {
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt16ULE
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI16ULE
 };
 const PXI8U PXBitmapHeaderOS21XBitMapHeaderTypeListSize = sizeof(PXBitmapHeaderOS21XBitMapHeaderTypeList) / sizeof(PXI32U);
 
 const PXI32U PXBitmapHeaderOS22XList[] =
 {
-    PXTypeInt16ULE,
+    PXTypeI16ULE,
     PXTypePadding(2),
-    PXTypeInt16ULE,
-    PXTypeInt16ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE,
-    PXTypeInt32ULE
+    PXTypeI16ULE,
+    PXTypeI16ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE,
+    PXTypeI32ULE
 };
 const PXI8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXI32U);
 
 
-PXResult PXAPI PXBitmapPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
+PXResult PXAPI PXBitmapPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
-    PXFile PXREF pxFile = PXResourceMoveInfo->FileReference;
+    PXFile PXREF pxFile = pxECSCreateInfo->FileCurrent;
 
     PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
-    PXResourceMoveInfo->ResourceSource = bmp;
+    //pxECSCreateInfo->ResourceSource = bmp;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
@@ -251,12 +250,11 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
+PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF PXECSCreateInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
-    PXFile PXREF pxFile = PXResourceMoveInfo->FileReference;
+    PXFile PXREF pxFile = PXECSCreateInfo->FileCurrent;
 
-    PXBitmap* bmp = (PXBitmap*)PXResourceMoveInfo->ResourceSource;
+    PXBitmap* bmp = 0;// (PXBitmap*)PXECSCreateInfo->ResourceSource;
 
     // Generate imagedata
     {
@@ -304,7 +302,7 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 #if 0
     if(0 == imageDataLayout.RowPaddingSize) // if we don't have any padding
     {
-        PXFileReadB(PXResourceMoveInfo->FileReference, PXTexture->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
+        PXFileReadB(PXECSCreateInfo->FileReference, PXTexture->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
     }
 #endif
 
@@ -329,10 +327,9 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXBitmapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBitmapSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceSaveInfo->ResourceTarget;
-    PXFile PXREF pxFile = pxResourceSaveInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceSaveInfo->FileCurrent;
 
     PXSize width = PXTextureWidth(pxTexture);
     PXSize height = PXTextureHeight(pxTexture);

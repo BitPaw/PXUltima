@@ -3,7 +3,8 @@
 #ifndef PXDirectSoundIncluded
 #define PXDirectSoundIncluded
 
-#include <PX/OS/Audio/PXAudio.h>
+#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
+#include <PX/Engine/ECS/System/PXAudioSystem.h>
 
 typedef struct PXAudioDeviceDetectObjectEventData_
 {
@@ -35,7 +36,7 @@ typedef HRESULT(WINAPI* PXDllCanUnloadNow)(void);
 #endif
 
 //--------------------------------------------------------
-PXPublic PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSound, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
+PXPublic PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSound, PXAudioDeviceCreateInfo PXREF pxAudioInitializeInfo);
 
 PXPublic PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDeviceAmountInfo PXREF pxAudioDeviceAmountInfo);
 PXPublic PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound PXREF pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice);

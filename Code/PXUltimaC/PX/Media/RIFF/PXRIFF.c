@@ -101,7 +101,7 @@ PXResult PXAPI PXRIFFLoadFromFile(PXRIFF PXREF riff, PXFile PXREF pxFile)
     const PXTypeEntry pxDataStreamElementList[] =
     {
         {chunkID.Data, PXTypeDatax4},
-        {&riff->ChunkSize, PXTypeInt32ULE},
+        {&riff->ChunkSize, PXTypeI32ULE},
         {formatID.Data, PXTypeDatax4}
     };
 
@@ -121,9 +121,9 @@ PXResult PXAPI PXRIFFSaveToFile(const PXRIFF PXREF riff, PXFile PXREF pxFile)
 
     const PXTypeEntry pxDataStreamElementList[] =
     {
-        {&riffSignature, PXTypeInt32ULE},
-        {&riff->ChunkSize, PXTypeInt32ULE},
-        {&riffType, PXTypeInt32ULE}
+        {&riffSignature, PXTypeI32ULE},
+        {&riff->ChunkSize, PXTypeI32ULE},
+        {&riffType, PXTypeI32ULE}
     };
 
     PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

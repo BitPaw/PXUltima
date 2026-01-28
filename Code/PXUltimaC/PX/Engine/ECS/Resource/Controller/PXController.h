@@ -28,10 +28,13 @@
 
 typedef struct PXController_
 {
-    char Name[PXControllerNameSize];
+    PXECSInfo Info;
+
     PXI32U ID;
 
-    PXI32S Axis[6]; // X,Y,Z,R,U,V
+    PXI32S Axis[8]; // X, Y, Z, R, U, V
+    PXI32S AxisVelocity[8];
+
     PXI32S AxisMin[6];
     PXI32S AxisMax[6];
 
@@ -48,33 +51,5 @@ typedef struct PXController_
 PXController;
 
 
-typedef struct PXControllerSystem_
-{
-    PXLibrary InputLibrary;
-
-    // Funcitons
-    void* NumDevsGet;
-    void* DevCapsGetA;
-    void* GetPosEx;
-
-    // Number of devices
-    PXSize DeviceListAmount;
-    PXController* DeviceListData;
-}
-PXControllerSystem;
-
-
-PXPublic PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxControllerSystem);
-PXPublic void PXAPI PXControllerSystemShutdown(PXControllerSystem PXREF pxControllerSystem);
-
-PXPublic PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem PXREF pxControllerSystem);
-PXPublic PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem PXREF pxControllerSystem);
-
-PXPublic void PXAPI PXControllerSystemDebugPrint(PXController PXREF pxController);
-
-#if PXWindowUSE
-PXPublic PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);
-PXPublic PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controllerID);
-#endif
 
 #endif

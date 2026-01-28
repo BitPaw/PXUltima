@@ -50,7 +50,7 @@ PXResult PXAPI PXFooterCreate(PXFooter** pxFooterREF, PXFooterCreateInfo PXREF p
     return PXResultOK;
 }
 
-PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxFooter->WindowBase;
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
@@ -65,12 +65,12 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWi
     );
 #endif
 
-    pxWindowDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
+    pxDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
 
     PXWindowDrawRectangle3D
     (
         pxWindow,
-        pxWindowDrawInfo
+        pxDrawInfo
     );
 
     PXWindowFontSet(pxWindow, pxGUITheme->FontContent);
@@ -101,7 +101,7 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXWindowDrawInfo PXREF pxWi
 
     PXTextDrawInfo pxTextDrawInfo;
     PXClear(PXTextDrawInfo, &pxTextDrawInfo);
-    pxTextDrawInfo.WindowDrawInfo = pxWindowDrawInfo;
+    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
     pxTextDrawInfo.Text = &pxText;
     pxTextDrawInfo.Behaviour = PXWindowAllignCenter;
     pxTextDrawInfo.Size = 20;

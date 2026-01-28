@@ -820,24 +820,24 @@ PXResult PXAPI PXComputerNameGet(char PXREF text, const PXSize textSizeMax, PXSi
 
 PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, const PXSize pathOutputSizeMAX, PXSize PXREF pathOutputSizeWritten)
 {
-    PXResult pxActionResult;
+    PXResult pxResult;
 
 #if OSUnix
     realpath()
 #elif OSWindows
     const DWORD length = GetFullPathNameA(pathInput, pathOutputSizeMAX, pathOutput, NULL); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
-    pxActionResult = PXErrorCurrent(0 != length);
+    pxResult = PXErrorCurrent(0 != length);
 
     if(pathOutputSizeWritten)
     {
         *pathOutputSizeWritten = length;
     }
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 void PXAPI PXTextUTF8ToUNICODE(wchar_t PXREF textOutput, const char PXREF textInput)
@@ -893,7 +893,7 @@ PXResult PXAPI PXProcessMemoryWrite
     PXSize PXREF bufferSizeWritten
 )
 {
-    PXResult pxActionResult;
+    PXResult pxResult;
 
 #if OSUnix
 #elif OSWindows
@@ -905,12 +905,12 @@ PXResult PXAPI PXProcessMemoryWrite
         bufferSizeMax,
         bufferSizeWritten
     );
-    pxActionResult = PXErrorCurrent(successful);
+    pxResult = PXErrorCurrent(successful);
 #else
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXProcessMemoryRead
@@ -922,7 +922,7 @@ PXResult PXAPI PXProcessMemoryRead
     PXSize PXREF bufferSizeWritten
 )
 {
-    PXResult pxActionResult;
+    PXResult pxResult;
 
 #if OSUnix
 #elif OSWindows
@@ -934,12 +934,12 @@ PXResult PXAPI PXProcessMemoryRead
         bufferSizeMax,
         bufferSizeWritten
     );
-    pxActionResult = PXErrorCurrent(successful);
+    pxResult = PXErrorCurrent(successful);
 #else
-    pxActionResult = PXActionRefusedNotImplemented;
+    pxResult = PXActionRefusedNotImplemented;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap)
@@ -2351,14 +2351,14 @@ PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const P
     }
 
     const DWORD decResultSize = pxUnDecorateSymbolName(inputName, (PSTR)name, nameLengthMax, UNDNAME_COMPLETE); // UnDecorateSymbolName
-    const PXResult pxActionResult = PXErrorCurrent(0 != decResultSize);
+    const PXResult pxResult = PXErrorCurrent(0 != decResultSize);
 
     if(nameLengthWritten)
     {
         nameLengthWritten = 0;
     }
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress)
@@ -2535,11 +2535,11 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
         (PPROCESS_MEMORY_COUNTERS)&processMemoryCounters,
         processMemoryCounters.cb
     );
-    const PXResult pxActionResult = PXErrorCurrent(processMemoryInfo);
+    const PXResult pxResult = PXErrorCurrent(processMemoryInfo);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
 
@@ -2682,51 +2682,11 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
 
 
 
-    return pxActionResult;
+    return pxResult;
 
 #else
     return PXResultInvalid;
 #endif
-}
-
-PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxGPUPhysicalListSize)
-{
-#if OSUnix
-#elif OSWindows
-    DISPLAY_DEVICEA displayDevice;
-    displayDevice.cb = sizeof(DISPLAY_DEVICEA);
-
-    for(DWORD displayDeviceIndex = 0; EnumDisplayDevicesA(NULL, displayDeviceIndex, &displayDevice, 0); ++displayDeviceIndex)
-    {
-        PXBool isActive = (DISPLAY_DEVICE_ACTIVE & displayDevice.StateFlags) > 0;
-        PXBool isDeviceAttached = (DISPLAY_DEVICE_ATTACHED_TO_DESKTOP & displayDevice.StateFlags) > 0;
-        PXBool isDevice = isActive || isDeviceAttached;
-
-        if(!isDevice) 
-        {
-            continue;
-        }
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXOSName,
-            "GPU",
-            "%20s : %s\n"
-            "%20s : %s\n"
-            "%20s : %s\n"
-            "%20s : %s"
-            "DeviceName", displayDevice.DeviceName,
-            "DeviceString", displayDevice.DeviceString,
-            "DeviceID", displayDevice.DeviceID,
-            "DeviceKey", displayDevice.DeviceKey
-        );
-#endif
-    }
-#endif
-
-    return PXResultOK;
 }
 
 PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadID)
@@ -2762,9 +2722,9 @@ PXResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
     DEBUG_EVENT* debugEvent = (DEBUG_EVENT*)pxDebugEventInfo;
 
     const BOOL success = pxWaitForDebugEvent(debugEvent, time);
-    const PXResult pxActionResult = PXErrorCurrent(success);
+    const PXResult pxResult = PXErrorCurrent(success);
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXDebugProcessActive(void)
@@ -2875,9 +2835,9 @@ PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)
     }
 
     const BOOL successful = pxDebugActiveProcessStop(processID);
-    const PXResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxResult = PXErrorCurrent(successful);
 
-    return pxActionResult;
+    return pxResult;
 #endif
 }
 
@@ -2919,17 +2879,17 @@ void PXAPI PXConvertAnyToFloat(void* a, const PXI32U aType, float* b)
 
     switch(PXTypeSizeGet(aType))
     {
-        case PXTypeInt08S:
+        case PXTypeI08S:
         {
             *b = *(PXI8S*)a;
             return;
         }
-        case PXTypeInt16S:
+        case PXTypeI16S:
         {
             *b = *(PXI16S*)a;
             return;
         }
-        case PXTypeInt32S:
+        case PXTypeI32S:
         {
             *b = *(PXI32S*)a;
             return;

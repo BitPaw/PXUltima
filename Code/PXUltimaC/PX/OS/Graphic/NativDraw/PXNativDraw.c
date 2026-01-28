@@ -877,7 +877,7 @@ PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXR
     {
 #if OSUnix
         const int resultID = XMoveWindow(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxWindow->Info.Handle.WindowHandle, position->X, position->Y);
-        const PXResult pxActionResult = PXWindowErrorFromXSystem(resultID);
+        const PXResult pxResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
         // Note:
         // MoveWindow() is a bad function. SetWindowPos() seems to be better in every case.
@@ -893,9 +893,9 @@ PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXR
             pxRectangleXYWHI32->Height,
             flags
         ); // Windows 2000, User32.dll
-        const PXResult pxActionResult = PXErrorCurrent(success);
+        const PXResult pxResult = PXErrorCurrent(success);
 
-        return pxActionResult;
+        return pxResult;
 
 #else
         return PXActionRefusedNotSupportedByLibrary;
@@ -1000,13 +1000,13 @@ PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXR
 
 PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int width, const int height)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if 0
 
 #if OSUnix
     const int resultID = 0;//XResizeWindow(Display *display, Window w, width, height);
-    pxActionResult = PXWindowErrorFromXSystem(resultID);
+    pxResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER;
     const PXBool success = SetWindowPos
@@ -1019,31 +1019,31 @@ PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow P
         height,
         flags
     ); // Windows 2000, User32.dll
-    pxActionResult = PXErrorCurrent(success);
+    pxResult = PXErrorCurrent(success);
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
 #if OSUnix && 0
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
-    pxActionResult = PXWindowErrorFromXSystem(resultID);
+    pxResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop && 0
     const PXBool success = MoveWindow(pxWindow->Info.Handle.WindowHandle, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
-    pxActionResult = PXErrorCurrent(success);
+    pxResult = PXErrorCurrent(success);
 #else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXNativDrawCursorPosition(PXNativDraw PXREF pxNativDraw, PXVector2I32S PXREF position, const PXBool isWrite)
@@ -1445,16 +1445,16 @@ void PXNativDrawEventTranslator(PXNativDraw PXREF pxNativDraw, const XEvent PXRE
 
             if(windowCurrent)
             {
-                PXWindowDrawInfo pxWindowDrawInfo;
-                PXClear(PXWindowDrawInfo, &pxWindowDrawInfo);
-                pxWindowDrawInfo.RectangleXYWH.X = xExposeEventData->x;
-                pxWindowDrawInfo.RectangleXYWH.Y = xExposeEventData->y;
-                pxWindowDrawInfo.RectangleXYWH.Width = xExposeEventData->width;
-                pxWindowDrawInfo.RectangleXYWH.Height = xExposeEventData->height;
-                pxWindowDrawInfo.ScreenIDHandle = DefaultScreen(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle);
-                pxWindowDrawInfo.DisplayHandle = pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle;
-                pxWindowDrawInfo.WindowIDHandle = xExposeEventData->window;
-                pxWindowDrawInfo.GraphicContntainerHandle = DefaultGC(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxWindowDrawInfo.ScreenIDHandle);
+                PXDrawInfo pxDrawInfo;
+                PXClear(PXDrawInfo, &pxDrawInfo);
+                pxDrawInfo.RectangleXYWH.X = xExposeEventData->x;
+                pxDrawInfo.RectangleXYWH.Y = xExposeEventData->y;
+                pxDrawInfo.RectangleXYWH.Width = xExposeEventData->width;
+                pxDrawInfo.RectangleXYWH.Height = xExposeEventData->height;
+                pxDrawInfo.ScreenIDHandle = DefaultScreen(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle);
+                pxDrawInfo.DisplayHandle = pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle;
+                pxDrawInfo.WindowIDHandle = xExposeEventData->window;
+                pxDrawInfo.GraphicContntainerHandle = DefaultGC(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxDrawInfo.ScreenIDHandle);
 
                 // Sync current pos with element
                 windowCurrent->Position.Form.X = xExposeEventData->x;
@@ -1473,7 +1473,7 @@ void PXNativDrawEventTranslator(PXNativDraw PXREF pxNativDraw, const XEvent PXRE
 
                         PXNativDrawClear(pxNativDraw, windowCurrent);
 
-                        windowCurrent->DrawFunction(pxNativDraw->GUISystem, windowCurrent, &pxWindowDrawInfo);
+                        windowCurrent->DrawFunction(pxNativDraw->GUISystem, windowCurrent, &pxDrawInfo);
                     }
                     else
                     {
@@ -1697,14 +1697,14 @@ void PXNativDrawEventTranslator(PXNativDraw PXREF pxNativDraw, const XEvent PXRE
     }
 }
 #elif OSWindows
-PXBool PXAPI PXWindowRender(PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXBool PXAPI PXWindowRender(PXDrawInfo PXREF pxDrawInfo)
 {
     /*
     PXNativDraw PXREF pxNativDraw = PXNativDrawInstantance();
 
     PAINTSTRUCT paintStruct;
     PXWindow* pxWindow = PXNull;
-    const HWND windowHandle = pxWindowDrawInfo->hwnd;
+    const HWND windowHandle = pxDrawInfo->hwnd;
 
     if(pxNativDraw->ResourceManager)
     {
@@ -1778,10 +1778,10 @@ PXBool PXAPI PXWindowRender(PXWindowDrawInfo PXREF pxWindowDrawInfo)
         case PXGraphicSystemNative:
         {
             // Required to be able to use GDI calls
-            pxWindowDrawInfo->hDC = BeginPaint(windowHandle, &paintStruct); // This HDC is ONLY valid for GDI calls!
+            pxDrawInfo->hDC = BeginPaint(windowHandle, &paintStruct); // This HDC is ONLY valid for GDI calls!
             paintStruct.fErase = 1;
-            pxWindowDrawInfo->bErase = paintStruct.fErase;
-            //pxWindow->DeviceContextHandle = pxWindowDrawInfo->hDC;
+            pxDrawInfo->bErase = paintStruct.fErase;
+            //pxWindow->DeviceContextHandle = pxDrawInfo->hDC;
 
            // PXGUIDrawRectangle3D(pxWindow, 20, 20, 100, 100);
 
@@ -1792,12 +1792,12 @@ PXBool PXAPI PXWindowRender(PXWindowDrawInfo PXREF pxWindowDrawInfo)
 
    
 
-            pxWindow->DrawFunction(pxWindow, pxWindowDrawInfo);
+            pxWindow->DrawFunction(pxWindow, pxDrawInfo);
 
             // Finalize GDI calls
             const BOOL endSuccess = EndPaint(windowHandle, &paintStruct);
 
-            //SwapBuffers(pxWindowDrawInfo->hDC);
+            //SwapBuffers(pxDrawInfo->hDC);
 
             return TRUE; // We did a custom draw, so return true to mark this as handled
         }
@@ -1819,7 +1819,7 @@ PXBool PXAPI PXWindowRender(PXWindowDrawInfo PXREF pxWindowDrawInfo)
             result = wglMakeCurrent(pxWindow->DeviceContextHandle, pxWindow->RenderContext); // Bind
             glViewport(0, 0, pxWindow->Position.Form.Width, pxWindow->Position.Form.Height);
 
-            pxWindow->DrawFunction(pxWindow, pxWindowDrawInfo);
+            pxWindow->DrawFunction(pxWindow, pxDrawInfo);
 
             result = wglMakeCurrent(pxWindow->DeviceContextHandle, 0); // un-bind
 

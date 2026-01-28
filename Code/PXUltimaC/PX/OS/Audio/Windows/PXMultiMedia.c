@@ -91,7 +91,7 @@ typedef MMRESULT(WINAPI* PXmixerGetControlDetailsW)(HMIXEROBJ hmxobj, LPMIXERCON
 const char PXWindowsMMText[] = "WIN-MM";
 PXAudioMultiMedia _pxAudioMultiMedia;
 
-PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioInitializeInfo PXREF pxAudioInitializeInfo)
+PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioSystemCreateInfo PXREF pxAudioInitializeInfo)
 {
     PXClear(PXAudioMultiMedia, &_pxAudioMultiMedia);
 
@@ -240,6 +240,7 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia
         PXLibraryGetSymbolListA(&_pxAudioMultiMedia.MultiMediaLibrary, pxLibraryFuntionEntryList, amount);
     }
 
+#if 0
     // Link
     {
         PXAudio PXREF pxAudio = pxAudioInitializeInfo->AudioReference;
@@ -257,6 +258,7 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia
        // pxAudio->DeviceRestart = PXMultiMediaDeviceRestart;
        // pxAudio->DeviceReset = PXMultiMediaDeviceReset;
     }
+#endif
 
     return PXResultOK;
 #endif
@@ -276,8 +278,8 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
 
 #if OSUnix
 #elif OSWindows
-    const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->WaveOutHandle;
-    const HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->WaveInHandle;
+    const HWAVEOUT handleWaveOut = pxAudioDevice->WaveOutHandle;
+    const HWAVEIN handleWaveIn = pxAudioDevice->WaveInHandle;
     MMRESULT resultID = 0;
 #endif
 
@@ -554,9 +556,6 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
 
     return PXResultOK;
 }
-
-
-
 
 PXResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia PXREF pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice)
 {

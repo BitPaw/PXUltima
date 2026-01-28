@@ -11,13 +11,13 @@ const static char PXOGGHeaderSignature[4] = "OggS";
 
 #define PXOPGGDebug 0
 
-PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXOGG ogg;
 
     PXClear(PXOGG, &ogg);
 
-    while(!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
+    while(!PXFileIsAtEnd(pxResourceLoadInfo->FileCurrent))
     {
         // Header tag does exist multible times.
         // You can refocus it when the file is corrupted.
@@ -28,16 +28,16 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         const PXTypeEntry pxDataStreamElementList[] =
         {
             {signature.Data, PXTypeDatax4},
-            {&page.Version, PXTypeInt08U},
-            {&page.HeaderType, PXTypeInt08U},
-            {&page.GranulePosition, PXTypeInt32UBE},
-            {&page.SerialNumber, PXTypeInt32UBE},
-            {&page.SequenceNumber, PXTypeInt32UBE},
-            {&page.CRC32CheckSum, PXTypeInt32UBE},
-            {&page.PageSegments, PXTypeInt08U}
+            {&page.Version, PXTypeI08U},
+            {&page.HeaderType, PXTypeI08U},
+            {&page.GranulePosition, PXTypeI32UBE},
+            {&page.SerialNumber, PXTypeI32UBE},
+            {&page.SequenceNumber, PXTypeI32UBE},
+            {&page.CRC32CheckSum, PXTypeI32UBE},
+            {&page.PageSegments, PXTypeI08U}
         };
 
-        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
         const PXBool validHeaderSignature = PXMemoryCompare(signature.Data, 4u, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
@@ -78,7 +78,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         for(PXSize i = 0; i < page.PageSegments; ++i)
         {
-            PXFileReadI8U(pxResourceLoadInfo->FileReference, &segmentSizeList[i]);
+            PXFileReadI8U(pxResourceLoadInfo->FileCurrent, &segmentSizeList[i]);
 
 #if PXOPGGDebug
             printf
@@ -98,7 +98,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
             for(PXSize i = 0; i < x; i++)
             {
-                unsigned char* currentPos = (unsigned char*)PXFileDataAtCursor(pxResourceLoadInfo->FileReference) + i;
+                unsigned char* currentPos = (unsigned char*)PXFileDataAtCursor(pxResourceLoadInfo->FileCurrent) + i;
 
                 char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 
@@ -116,16 +116,18 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             printf("\n");
 #endif
 
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, x);
+            PXFileCursorAdvance(pxResourceLoadInfo->FileCurrent, x);
         }
     }
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXOGGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXOGGSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    PXFileWriteB(pxResourceSaveInfo->FileReference, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
+    PXFile* pxFile = pxResourceSaveInfo->FileCurrent;
+
+    PXFileWriteB(pxFile, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
     return PXActionRefusedNotImplemented;
 }

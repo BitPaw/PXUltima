@@ -47,10 +47,10 @@ typedef struct PXR3D2_
 }
 PXR3D2;
 
-PXPrivate PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPrivate PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPrivate PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPrivate PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxResourceLoadInfo);
 
-PXPublic PXResult PXAPI PXR3D2LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXR3D2SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXR3D2LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXR3D2SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

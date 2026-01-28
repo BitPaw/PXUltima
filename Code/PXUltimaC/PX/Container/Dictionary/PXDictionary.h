@@ -5,6 +5,7 @@
 
 #include <PX/Media/PXType.h>
 #include <PX/Container/List/PXList.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 typedef enum PXDictionaryValueLocality_
 {
@@ -33,10 +34,22 @@ typedef struct PXDictionaryEntry_
 }
 PXDictionaryEntry;
 
-PXPublic void PXAPI PXDictionaryConstruct(PXDictionary PXREF dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality);
-PXPublic void PXAPI PXDictionaryDestruct(PXDictionary PXREF dictionary);
+typedef struct PXDictionaryCreateInfo_
+{
+    PXECSCreateInfo Info;
+
+    PXSize KeySize;
+    PXSize ValueSize;
+    PXDictionaryValueLocality ValueLocality;
+}
+PXDictionaryCreateInfo;
+
+PXPublic PXResult PXAPI PXDictionaryRegisterToECS();
+PXPublic PXResult PXAPI PXDictionaryCreate(PXDictionary** pxDictionaryREF, PXDictionaryCreateInfo PXREF pxDictionaryCreateInfo);
+PXPublic PXResult PXAPI PXDictionaryRelease(PXDictionary PXREF pxDictionary);
 
 PXPublic PXSize PXAPI PXDictionaryValueSize(const PXDictionary PXREF dictionary);
+PXPublic PXSize PXAPI PXDictionaryEntryAmount(const PXDictionary PXREF dictionary);
 
 PXPublic void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSize entrys);
 
@@ -54,7 +67,9 @@ PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary PXREF dictionary, con
 
 // Removed the object and returns it
 PXPublic PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF key, void PXREF value);
-PXPublic void PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry);
+
+PXPublic void PXAPI PXDictionaryIndexUnsafe(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry);
+PXPublic PXResult PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry);
 
 
 #endif

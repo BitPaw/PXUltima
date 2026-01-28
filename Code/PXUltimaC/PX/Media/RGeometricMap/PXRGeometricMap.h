@@ -195,7 +195,7 @@ PXRGeometricMap;
 PXPrivate void PXAPI PXRGeometricMapBucketedGeometryLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeometricMapSceneGraph PXREF pxRGeometricMapSceneGraph, PXFile PXREF pxFile);
 PXPrivate void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeometricMapMesh PXREF pxRGeometricMapMesh, PXFile PXREF pxFile);
 
-PXPublic PXResult PXAPI PXRGeometricMapLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRGeometricMapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRGeometricMapLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRGeometricMapSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

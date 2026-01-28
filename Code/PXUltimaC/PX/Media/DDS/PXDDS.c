@@ -444,10 +444,8 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture PXREF pxDirectDrawTexture)
 
 */
 
-PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
-
     if(!pxTexture)
     {
         return PXResultOK;
@@ -455,7 +453,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
     PXDirectDrawTexture pxDirectDrawTexture;
     PXClear(PXDirectDrawTexture, &pxDirectDrawTexture);
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     // Check header signature
     {
@@ -471,19 +469,19 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&pxDirectDrawTexture.Size,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.Flags,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.Height,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.Width,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.pitchOrLinearSize,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.Depth,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.MipMapCount,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.Size,PXTypeI32ULE},
+            {&pxDirectDrawTexture.Flags,PXTypeI32ULE},
+            {&pxDirectDrawTexture.Height,PXTypeI32ULE},
+            {&pxDirectDrawTexture.Width,PXTypeI32ULE},
+            {&pxDirectDrawTexture.pitchOrLinearSize,PXTypeI32ULE},
+            {&pxDirectDrawTexture.Depth,PXTypeI32ULE},
+            {&pxDirectDrawTexture.MipMapCount,PXTypeI32ULE},
             {PXNull, PXTypePadding(sizeof(PXI32U) * 11u)},
-            {&pxDirectDrawTexture.ddspf,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.caps,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.caps2,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.caps3,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.caps4,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.ddspf,PXTypeI32ULE},
+            {&pxDirectDrawTexture.caps,PXTypeI32ULE},
+            {&pxDirectDrawTexture.caps2,PXTypeI32ULE},
+            {&pxDirectDrawTexture.caps3,PXTypeI32ULE},
+            {&pxDirectDrawTexture.caps4,PXTypeI32ULE},
             {PXNull, PXTypePadding(sizeof(PXI32U) * 2u)}
         };
 
@@ -507,10 +505,10 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&pxDirectDrawTexture.GIFormatID,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.resourceDimension,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.miscFlag,PXTypeInt32ULE},
-            {&pxDirectDrawTexture.arraySize,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.GIFormatID,PXTypeI32ULE},
+            {&pxDirectDrawTexture.resourceDimension,PXTypeI32ULE},
+            {&pxDirectDrawTexture.miscFlag,PXTypeI32ULE},
+            {&pxDirectDrawTexture.arraySize,PXTypeI32ULE},
             {PXNull, PXTypePadding(sizeof(PXI32U))}
         };
 
@@ -705,7 +703,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXDDSSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXDDSSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

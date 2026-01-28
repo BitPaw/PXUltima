@@ -12,7 +12,7 @@ typedef struct PXSTEP_
 }
 PXSTEP;
 
-PXPublic PXResult PXAPI PXSTEPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSTEPSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTEPLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTEPSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

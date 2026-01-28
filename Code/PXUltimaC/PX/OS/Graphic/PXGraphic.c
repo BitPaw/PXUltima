@@ -333,9 +333,9 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
             "Invoke spesific API..."
         );
 
-        PXResult pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+        PXResult pxResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
-        if(PXResultOK != pxActionResult) // if loading targeted API failed, load plan B
+        if(PXResultOK != pxResult) // if loading targeted API failed, load plan B
         {
             PXLogPrint
             (
@@ -346,7 +346,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
             );
 
 #if OSUnix
-            return pxActionResult; // On linux systems, dont try a plan B, if opengl does not work, nothing will be
+            return pxResult; // On linux systems, dont try a plan B, if opengl does not work, nothing will be
 #elif OSWindows
             // On windows, try DirectX. some version will work, hopefully.
 
@@ -358,9 +358,9 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
             pxGraphicInitializeInfo->GraphicSystem = PXGraphicSystemDirectX;
             pxGraphicInitializeInfo->DirectXVersion = PXDirectXVersionNewest;
 
-            pxActionResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
+            pxResult = pxGraphic->Initialize(pxGraphic->EventOwner, pxGraphicInitializeInfo);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
                 PXClear(PXGraphic, pxGraphic);
 
@@ -372,7 +372,7 @@ PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitiali
                     "Failure initializing plan B. Exiting engine..."
                 );
 
-                return pxActionResult;
+                return pxResult;
             }
 #endif
 

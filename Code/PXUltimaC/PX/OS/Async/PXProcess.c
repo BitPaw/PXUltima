@@ -4,11 +4,14 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #elif OSWindows
+#include <windows.h>
 //#include <processthreadsapi.h> Not found in XP build
 #include <psapi.h>
 #include <tlhelp32.h>
 #include <winternl.h> // ntexapi.h.
 #include <dbghelp.h>
+#include <processthreadsapi.h>
+#include <powerbase.h>
 #endif
 
 #include <PX/OS/Memory/PXMemory.h>
@@ -18,6 +21,8 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/PXOS.h>
+
+#pragma comment(lib, "kernel32.lib")
 
 const char PXKernelNT[] = "ntdll.dll";
 const PXI8U PXKernelNTLength = sizeof(PXKernelNT);
@@ -86,11 +91,11 @@ PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handle
         pxProcess->ProcessHandle,
         &handleCount
     );
-    const PXResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxResult = PXErrorCurrent(successful);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     *handlesAmount = handleCount;
@@ -493,11 +498,11 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
                 &startupInfo,
                 &processInfo
             );
-            const PXResult pxActionResult = PXErrorCurrent(successful);
+            const PXResult pxResult = PXErrorCurrent(successful);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             pxProcess->ProcessHandle = processInfo.hProcess;
@@ -536,11 +541,11 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
                 &startupInfo,
                 &processInfo
             );
-            const PXResult pxActionResult = PXErrorCurrent(successful);
+            const PXResult pxResult = PXErrorCurrent(successful);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             pxProcess->ProcessHandle = processInfo.hProcess;
@@ -571,11 +576,11 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     const DWORD processID = 0;
     const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
     const PXBool successful = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
-    const PXResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxResult = PXErrorCurrent(successful);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
 
@@ -701,11 +706,11 @@ PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID p
 #elif OSWindows
     const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
     const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(processHandle != PXNull);
+    const PXResult pxResult = PXErrorCurrent(processHandle != PXNull);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     pxProcess->ProcessID = pxProcessID;
@@ -723,11 +728,11 @@ PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess)
     return PXActionRefusedNotImplemented;
 #elif OSWindows
     const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
-    const PXResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxResult = PXErrorCurrent(successful);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     pxProcess->ProcessHandle = PXNull;
@@ -794,11 +799,11 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
             &processMemoryCounters,
             processMemoryCountersSize
         );
-        const PXResult pxActionResult = PXErrorCurrent(successful);
+        const PXResult pxResult = PXErrorCurrent(successful);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         pxProcessMemoryInfo->PageFaults = processMemoryCounters.PageFaultCount;
@@ -830,11 +835,11 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
             &timeStampList[2], // kernelTime
             &timeStampList[3] // userTime
         );
-        const PXResult pxActionResult = PXErrorCurrent(successful);
+        const PXResult pxResult = PXErrorCurrent(successful);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
 
         // Convert
@@ -889,4 +894,46 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
 #endif
 
     return PXResultOK;
+}
+
+void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
+{
+    PXProcess target;
+    HANDLE processHandle = PXNull;
+
+    if(pxProcess)
+    {
+        processHandle = pxProcess->ProcessHandle;
+    }
+    else
+    {
+        processHandle = GetCurrentProcess();
+    }
+
+#if 0
+    POWER_THROTTLING_STATE powerThrottleingState;
+    PXClear(POWER_THROTTLING_STATE, &powerThrottleingState);
+    powerThrottleingState.Version = POWER_THROTTLING_STATE_VERSION;
+    powerThrottleingState.ControlMask = POWER_THROTTLING_EXECUTION_SPEED;
+
+    if(enable)
+    {
+        powerThrottleingState.StateMask = POWER_THROTTLING_EXECUTION_SPEED;
+    }
+
+    const BOOL result = SetProcessInformation 
+    (
+        processHandle,
+        ProcessPowerThrottling,
+        &powerThrottleingState,
+        sizeof(powerThrottleingState)
+    ); // Windows 8 (+UWP), Kernel32.lib, processthreadsapi.h
+    PXResult pxResult = PXErrorCurrent(result);
+
+
+    return pxResult;
+#else
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+
 }

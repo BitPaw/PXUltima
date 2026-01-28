@@ -372,10 +372,10 @@ PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value)
     }
 }
 
-PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXBinaryLinux PXREF pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->ResourceTarget;
-    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
+    PXBinaryLinux PXREF pxBinaryLinux = 0;// (PXBinaryLinux*)pxResourceLoadInfo->ResourceTarget;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     PXClear(PXBinaryLinux, pxBinaryLinux);
 
@@ -392,11 +392,11 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoad
             const PXTypeEntry pxDataStreamElementList[] =
             {
                 {signature.Data, PXTypeDatax4},
-                {&classID,PXTypeInt08U},
-                {&dataID,PXTypeInt08U},
-                {&versionID,PXTypeInt08U},
-                {&osAPIID,PXTypeInt08U},
-                {&pxBinaryLinux->Header.TargetOSAPIVersion,PXTypeInt08U},
+                {&classID,PXTypeI08U},
+                {&dataID,PXTypeI08U},
+                {&versionID,PXTypeI08U},
+                {&osAPIID,PXTypeI08U},
+                {&pxBinaryLinux->Header.TargetOSAPIVersion,PXTypeI08U},
                 {PXNull, PXTypePadding(7u)}
             };
 
@@ -430,19 +430,19 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoad
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&typeID, PXTypeInt16U},
-                {&machineID, PXTypeInt16U},
-                {&versionID,PXTypeInt32U},
+                {&typeID, PXTypeI16U},
+                {&machineID, PXTypeI16U},
+                {&versionID,PXTypeI32U},
                 {&pxBinaryLinux->Header.EntryPointOfCode,PXTypeAdressFlex},
                 {&pxBinaryLinux->Header.ProgrammHeaderOffset,PXTypeAdressFlex},
                 {&pxBinaryLinux->Header.SectionHeaderOffset,PXTypeAdressFlex},
-                {&e_flags,PXTypeInt32U},
-                {&sizeOfThisHeader, PXTypeInt16U},
-                {&pxBinaryLinux->Header.ProgrammHeaderSize, PXTypeInt16U},
-                {&pxBinaryLinux->Header.ProgrammHeaderAmount, PXTypeInt16U},
-                {&pxBinaryLinux->Header.SectionHeaderSize, PXTypeInt16U},
-                {&pxBinaryLinux->Header.SectionHeaderAmount, PXTypeInt16U},
-                {&shstrndx, PXTypeInt16U}
+                {&e_flags,PXTypeI32U},
+                {&sizeOfThisHeader, PXTypeI16U},
+                {&pxBinaryLinux->Header.ProgrammHeaderSize, PXTypeI16U},
+                {&pxBinaryLinux->Header.ProgrammHeaderAmount, PXTypeI16U},
+                {&pxBinaryLinux->Header.SectionHeaderSize, PXTypeI16U},
+                {&pxBinaryLinux->Header.SectionHeaderAmount, PXTypeI16U},
+                {&shstrndx, PXTypeI16U}
             };
 
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -467,14 +467,14 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoad
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&typeID,PXTypeInt32U},
-                {&flagsID, PXTypeInt32ULEOnlyIf64B},
+                {&typeID,PXTypeI32U},
+                {&flagsID, PXTypeI32ULEOnlyIf64B},
                 {&pxELFProgramHeader.AdressOffsetRead,PXTypeAdressFlex},
                 {&pxELFProgramHeader.AdressTargetVirtual,PXTypeAdressFlex},
                 {&pxELFProgramHeader.AdressTargetPhysical,PXTypeAdressFlex},
                 {&pxELFProgramHeader.SizeOnFile,PXTypeAdressFlex},
                 {&pxELFProgramHeader.SizeInMemory,PXTypeAdressFlex},
-                {&flagsID, PXTypeInt32ULEOnlyIf32B},
+                {&flagsID, PXTypeI32ULEOnlyIf32B},
                 {&pxELFProgramHeader.p_align,PXTypeAdressFlex}
             };
 
@@ -512,14 +512,14 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoad
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&pxSectionHeader.sh_nameOffset,PXTypeInt32U},
-                {&pxSectionHeader.sh_type,PXTypeInt32U},
+                {&pxSectionHeader.sh_nameOffset,PXTypeI32U},
+                {&pxSectionHeader.sh_type,PXTypeI32U},
                 {&pxSectionHeader.sh_flags,PXTypeAdressFlex},
                 {&pxSectionHeader.sh_addr,PXTypeAdressFlex},
                 {&pxSectionHeader.FileImageOffset,PXTypeAdressFlex},
                 {&pxSectionHeader.FileImageSize,PXTypeAdressFlex},
-                {&pxSectionHeader.sh_link,PXTypeInt32U},
-                {&pxSectionHeader.sh_info,PXTypeInt32U},
+                {&pxSectionHeader.sh_link,PXTypeI32U},
+                {&pxSectionHeader.sh_info,PXTypeI32U},
                 {&pxSectionHeader.sh_addralign,PXTypeAdressFlex},
                 {&pxSectionHeader.sh_entsize,PXTypeAdressFlex}
             };
@@ -531,12 +531,12 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBinaryLinuxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    PXBinaryLinux PXREF pxBinaryLinux = (PXBinaryLinux*)pxResourceSaveInfo->ResourceTarget;
-    PXFile PXREF pxFile = pxResourceSaveInfo->FileReference;
+    //PXBinaryLinux PXREF pxBinaryLinux = (PXBinaryLinux*)pxResourceSaveInfo->ResourceTarget;
+    //PXFile PXREF pxFile = pxResourceSaveInfo->FileReference;
 
-    PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
+    //PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
 
     return PXActionRefusedNotImplemented;
 }

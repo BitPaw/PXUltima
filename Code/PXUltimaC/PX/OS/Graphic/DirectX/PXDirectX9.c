@@ -102,11 +102,11 @@ PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitia
         PXText pxText;
         PXTextFromAdressA(&pxText, PXDirectX9Library, PXDirectX9LibraryLength, PXDirectX9LibraryLength);
 
-        const PXResult pxActionResult = PXLibraryOpen(&pxDirectX9->LibraryDirect3D, &pxText);
+        const PXResult pxResult = PXLibraryOpen(&pxDirectX9->LibraryDirect3D, &pxText);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
     }
 
@@ -114,13 +114,13 @@ PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitia
     {
         PXDirect3DCreate9 pxDirect3DCreate;
 
-        const PXResult pxActionResult = PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3D, &pxDirect3DCreate, PXDirectX9Created, PXTrue);
+        const PXResult pxResult = PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3D, &pxDirect3DCreate, PXDirectX9Created, PXTrue);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
             PXLibraryClose(&pxDirectX9->LibraryDirect3D);
 
-            return pxActionResult;
+            return pxResult;
         }
 
         pxDirectX9->Context = pxDirect3DCreate(D3D_SDK_VERSION); // Create DirectX context, alternative Direct3DCreate9Ex()
@@ -1214,9 +1214,9 @@ PXResult PXAPI PXDirectX9MaterialSet(PXDirectX9 PXREF pxDirectX9, const PXMateri
         pxDirectX9->Device,
         &d3dMaterial
     );
-    const PXResult pxActionResult = PXErrorFromHRESULT(result);
+    const PXResult pxResult = PXErrorFromHRESULT(result);
 
-    return pxActionResult;
+    return pxResult;
 
 #endif
 }
@@ -1234,11 +1234,11 @@ PXResult PXAPI PXDirectX9MaterialGet(PXDirectX9 PXREF pxDirectX9, PXMaterial PXR
         pxDirectX9->Device,
         &d3dMaterial
     );
-    const PXResult pxActionResult = PXErrorFromHRESULT(result);
+    const PXResult pxResult = PXErrorFromHRESULT(result);
 
     PXDirectXMaterialToPXMaterial(pxMaterial, &d3dMaterial);
 
-    return pxActionResult;
+    return pxResult;
 
 #else
     return PXActionRefusedNotSupportedByLibrary;
@@ -1323,7 +1323,7 @@ PXResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9 PXREF pxDir
     return PXResultOK;;
 }
 
-PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGPUPhysical PXREF pxGraphicDevicePhysicalList)
+PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicsCard PXREF pxGraphicDevicePhysicalList)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -1343,7 +1343,7 @@ PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDire
 
         for(PXI32U deviceIndex = 0; deviceIndex < pxGraphicDevicePhysicalListSize; deviceIndex++)
         {
-            PXGPUPhysical* pxGraphicDevicePhysicalCurrent = &pxGraphicDevicePhysicalList[i];
+            PXGraphicsCard* pxGraphicDevicePhysicalCurrent = &pxGraphicDevicePhysicalList[i];
 
             PXBool found = PXTextCompareA(adapterIdentifier.DeviceName, 32, pxGraphicDevicePhysicalCurrent->DeviceDisplay, PXDeviceDisplaySize, 0);
 
@@ -1724,18 +1724,18 @@ PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXIndexB
     {
         switch(pxIndexBuffer->DataType)
         {
-            case PXTypeInt16SLE:
-            case PXTypeInt16ULE:
-            case PXTypeInt16SBE:
-            case PXTypeInt16UBE:
+            case PXTypeI16SLE:
+            case PXTypeI16ULE:
+            case PXTypeI16SBE:
+            case PXTypeI16UBE:
             {
                 dataFormat = D3DFMT_INDEX16;
                 break;
             }
-            case PXTypeInt32SLE:
-            case PXTypeInt32ULE:
-            case PXTypeInt32SBE:
-            case PXTypeInt32UBE:
+            case PXTypeI32SLE:
+            case PXTypeI32ULE:
+            case PXTypeI32SBE:
+            case PXTypeI32UBE:
             {
                 dataFormat = D3DFMT_INDEX32;
                 break;

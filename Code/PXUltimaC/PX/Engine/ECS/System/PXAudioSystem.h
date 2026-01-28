@@ -1,11 +1,13 @@
 #pragma once
 
-#ifndef PXAudioIncluded
-#define PXAudioIncluded
+#ifndef PXAudioSystemIncluded
+#define PXAudioSystemIncluded
 
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 #include <PX/Engine/ECS/Resource/Sound/PXSound.h>
+#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 #define PitchMaximum 2.9f
 #define PitchMinimum 0.2f
@@ -18,7 +20,7 @@ typedef enum PXSoundPlayStyle_
 }
 PXSoundPlayStyle;
 
-typedef enum PXAudioSystem_
+typedef enum PXAudioSystemAPI_
 {
     PXAudioSystemInvalid,
     PXAudioSystemWindowsMultiMedia, // Windows 2000
@@ -27,7 +29,7 @@ typedef enum PXAudioSystem_
     PXAudioSystemWindowsIAudio, // Windows Vista (successor to DirectSound)
     PXAudioSystemWindowsXAudio // Windows 8 (successor to IAudio)
 }
-PXAudioSystem;
+PXAudioSystemAPI;
 
 typedef struct PXAudioClip_
 {
@@ -43,17 +45,6 @@ typedef struct PXAudioConfig_
 }
 PXAudioConfig;
 
-typedef struct PXAudioInitializeInfo_
-{
-    struct PXAudio_* AudioReference;
-    PXAudioSystem AudioSystem;
-}
-PXAudioInitializeInfo;
-
-
-
-typedef PXResult(PXAPI* PXAudioInitializeFunction)(void PXREF audioAPI, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
-
 //--------------------------------------------------------
 // Device
 //--------------------------------------------------------
@@ -63,33 +54,6 @@ typedef struct PXAudioDeviceAmountInfo_
     PXI32U DeviceOutput;
 }
 PXAudioDeviceAmountInfo;
-
-typedef PXResult(PXAPI* PXAudioDeviceFetchFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice);
-typedef PXResult(PXAPI* PXAudioDeviceFetchAllFunction)(void PXREF audioAPI, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount);
-
-typedef PXResult(PXAPI* PXAudioDeviceOpenFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
-typedef PXResult(PXAPI* PXAudioDeviceCloseFunction)(void PXREF audioAPI, PXAudioDevice PXREF pxAudioDevice);
-typedef PXResult(PXAPI* PXAudioDeviceLoadFunction)
-(
-    void PXREF audioAPI,
-    PXAudioDevice PXREF pxAudioDevice,
-    PXSound PXREF pxSound
-);
-
-typedef PXResult(PXAPI* PXAudioDeviceUnloadFunction)
-(
-    void PXREF audioAPI,
-    PXAudioDevice PXREF pxAudioDevice,
-    PXSound PXREF pxSound,
-    const PXAudioDeviceType pxAudioDeviceType,
-    const PXI32U deviceID
-);
-
-
-
-
-
-
 
 
 //--------------------------------------------------------
@@ -178,13 +142,13 @@ PXAudioEffectType;
 
 typedef struct PXAudioEffectChorus_
 {
-    PXF32       WetDryMix;
-    PXF32       Depth;
-    PXF32       Feedback;
-    PXF32       Frequency;
-    PXF32        Waveform;          // LFO shape; DSFXCHORUS_WAVE_xxx
-    PXF32       Delay;
-    PXF32        Phase;
+    PXF32 WetDryMix;
+    PXF32 Depth;
+    PXF32 Feedback;
+    PXF32 Frequency;
+    PXF32 Waveform; // LFO shape; DSFXCHORUS_WAVE_xxx
+    PXF32 Delay;
+    PXF32 Phase;
 }
 PXAudioEffectChorus;
 
@@ -410,7 +374,7 @@ typedef struct PXAudioDirectSound_
 {
     PXLibrary DirectSoundLibrary;
 
-    void* DirectSoundInterface; // LPDIRECTSOUND8
+    struct IDirectSoundCapture* DirectSoundInterface; // LPDIRECTSOUND8
 
     void* SoundCreate;
     void* SoundEnumerateA;
@@ -435,18 +399,29 @@ typedef struct PXAudioXSystem_
 }
 PXAudioXSystem;
 
+
+typedef struct PXAudioSystemCreateInfo_ PXAudioSystemCreateInfo;
+
+
+typedef PXResult(PXAPI* PXAudioInitializeFunction)(void PXREF audioAPI, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo);
+
+
 // General audio wrapper around system solutions
-typedef struct PXAudio_
+typedef struct PXAudioSystem_
 {
+    PXECSInfo Info;
+
+#if 0
     union
     {
-        PXAudioDirectSound DirectSound;
-        PXAudioMultiMedia MultiMedia;
-        PXAudioXSystem XSystem;
+        //PXAudioDirectSound DirectSound;
+        //PXAudioMultiMedia MultiMedia;
+        //PXAudioXSystem XSystem;
     };
+#endif
 
     void* SystemReference;
-    PXAudioSystem System;
+    PXAudioSystemAPI System;
 
 
     PXI32U DeviceOutputAmount;
@@ -468,10 +443,21 @@ typedef struct PXAudio_
     // Effects
     PXAudioDeviceEffectUpdate DeviceEffectUpdate;
 }
-PXAudio;
+PXAudioSystem;
 
-PXPublic PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAudioSystem);
-PXPublic PXResult PXAPI PXAudioRelease(PXAudio PXREF pxAudio);
+typedef struct PXAudioSystemCreateInfo_
+{
+    PXECSCreateInfo Info;
+
+    PXAudioSystemAPI System;
+}
+PXAudioSystemCreateInfo;
+
+
+
+PXPublic PXResult PXAPI PXAudioSystemRegisterToECS();
+PXPublic PXResult PXAPI PXAudioSystemCreate(PXAudioSystem** pxAudioSystemREF, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo);
+PXPublic PXResult PXAPI PXAudioSystemRelease(PXAudioSystem PXREF pxAudioSystem);
 
 PXPublic void PXAPI PXAudioSpeakerBeep(const PXI32U hz, const PXI32U time);
 
@@ -581,5 +567,4 @@ typedef enum PXAudioSystemSoundBeepType_
 
 PXPublic void PXAPI PXAudioSystemSoundBeep(const PXI32U hz,);
 */
-
 #endif

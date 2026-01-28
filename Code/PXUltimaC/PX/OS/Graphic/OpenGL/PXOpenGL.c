@@ -2888,8 +2888,8 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
 
     // List devices
     {
-        PXGPUPhysical pxGraphicDevicePhysical[4];
-        PXClearList(PXGPUPhysical, &pxGraphicDevicePhysical, 4);
+        PXGraphicsCard pxGraphicDevicePhysical[4];
+        PXClearList(PXGraphicsCard, pxGraphicDevicePhysical, 4);
 
         PXI32U devices = 1;
 
@@ -3186,9 +3186,9 @@ PXResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL PXREF pxOpenGL, PXI32U 
 #endif
 }
 
-PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PXI32U amount, PXGPUPhysical PXREF pxGraphicDevicePhysicalList)
+PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PXI32U amount, PXGraphicsCard PXREF pxGraphicsCardList)
 {
-    if(!(pxOpenGL && pxGraphicDevicePhysicalList))
+    if(!(pxOpenGL && pxGraphicsCardList))
     {
         return PXResultRefusedParameterNull;
     }
@@ -3213,7 +3213,7 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
         return PXActionRefusedContextNotBound;
     }
 
-    PXClearList(PXGPUPhysical, pxGraphicDevicePhysicalList, amount);
+    PXClearList(PXGraphicsCard, pxGraphicsCardList, amount);
 
     if(!pxOpenGL->Binding.GetString)
     {
@@ -3227,9 +3227,9 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
         );
 #endif
 
-        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Vendor, PXDeviceOpenGLVendorSize);
-        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Renderer, PXDeviceOpenGLRendererSize);
-        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Shader, PXDeviceOpenGLShaderSize);
+        PXTextCopyA("???", 3, pxGraphicsCardList->Vendor, PXDeviceOpenGLVendorSize);
+        PXTextCopyA("???", 3, pxGraphicsCardList->Renderer, PXDeviceOpenGLRendererSize);
+        PXTextCopyA("???", 3, pxGraphicsCardList->Shader, PXDeviceOpenGLShaderSize);
 
         return PXResultInvalid;
     }
@@ -3238,17 +3238,17 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
     // This name does not change from release to release.
     const char* vendor = pxOpenGL->Binding.GetString(GL_VENDOR);
 
-    PXTextCopyA(vendor, PXTextUnkownLength, pxGraphicDevicePhysicalList->Vendor, PXDeviceOpenGLVendorSize);
+    PXTextCopyA(vendor, PXTextUnkownLength, pxGraphicsCardList->Vendor, PXDeviceOpenGLVendorSize);
 
     // Returns the name of the renderer.
     // This name is typically specific to a particular configuration of a hardware platform.It does not change from release to release.
     const char* renderer = pxOpenGL->Binding.GetString(GL_RENDERER);
 
-    PXTextCopyA(renderer, PXTextUnkownLength, pxGraphicDevicePhysicalList->Renderer, PXDeviceOpenGLRendererSize);
+    PXTextCopyA(renderer, PXTextUnkownLength, pxGraphicsCardList->Renderer, PXDeviceOpenGLRendererSize);
 
     const char* glslVersion = pxOpenGL->Binding.GetString(GL_SHADING_LANGUAGE_VERSION); //    Returns a version or release number.
 
-    PXTextCopyA(glslVersion, PXTextUnkownLength, pxGraphicDevicePhysicalList->Shader, PXDeviceOpenGLShaderSize);
+    PXTextCopyA(glslVersion, PXTextUnkownLength, pxGraphicsCardList->Shader, PXDeviceOpenGLShaderSize);
 
     // Parse version, Returns a version or release number.
     {
@@ -3261,14 +3261,14 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
         pxOpenGL->Version = PXOpenGLVersionParse(id);
     }
 
-    pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryTotal = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
+    pxGraphicsCardList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
+    pxGraphicsCardList->VideoMemoryTotal = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX);
+    pxGraphicsCardList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX);
+    pxGraphicsCardList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
+    pxGraphicsCardList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
 
     // Nvidea gives us the free memory, not the used one
-    pxGraphicDevicePhysicalList->VideoMemoryCurrent = pxGraphicDevicePhysicalList->VideoMemoryTotal - pxGraphicDevicePhysicalList->VideoMemoryCurrent;
+    pxGraphicsCardList->VideoMemoryCurrent = pxGraphicsCardList->VideoMemoryTotal - pxGraphicsCardList->VideoMemoryCurrent;
 
     return PXResultOK;
 }
@@ -3298,9 +3298,9 @@ PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF
         formatData, 
         pxBuffer->Adress
     );
-    const PXResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
+    const PXResult pxResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXOpenGLRelease(PXOpenGL PXREF pxOpenGL)
@@ -3499,7 +3499,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
    
     //PXVertexBuffer PXREF pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
 
-    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->IndexBuffer;
+    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->Geometry->IndexBuffer;
 
  //   if(!pxVertexBuffer->VertexData) // Has data?
   //  {
@@ -3637,10 +3637,12 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
         PXColorRGBAF* materialDiffuse = dummyValue;
 
-        if(pxIndexBuffer->SegmentPrime.Material)
-        {
-            materialDiffuse = pxIndexBuffer->SegmentPrime.Material->DiffuseColor;
-        }
+     //   PXIndexSegment
+
+       // if(pxIndexBuffer->SegmentPrime.Material)
+       // {
+       //     materialDiffuse = pxIndexBuffer->SegmentPrime.Material->DiffuseColor;
+       // }
 
         PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[3].Name, 64);
         pxShaderVariableList[3].Amount = 1;
@@ -3765,12 +3767,15 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
     }
 
 
+    PXIndexSegmentEntry PXREF pxIndexSegmentEntryList = PXIndexSegmentGET(pxIndexBuffer);
 
-    const GLsizei drawElementsCount = pxIndexBuffer->SegmentListAmount;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+
+    const PXSize segmentListAmount = pxIndexBuffer->Segment.SegmentListAmount;
+    const GLsizei drawElementsCount = segmentListAmount;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
     const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->DataType);
     const PXI8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->DataType);
 
-    const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
+    const PXBool renderSegmented = segmentListAmount > 1;
 
 
     unsigned short modeAmount = 0;
@@ -3794,13 +3799,14 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
         ++modeAmount;
     }
 
+
     if(renderSegmented)
     {
         PXSize renderOffset = 0;
 
-        for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; ++i)
+        for(PXSize i = 0; i < pxIndexBuffer->Segment.SegmentListAmount; ++i)
         {
-            PXIndexSegment PXREF pxIndexSegment = &pxIndexBuffer->SegmentList[i];
+            PXIndexSegmentEntry PXREF pxIndexSegment = &pxIndexSegment[i];
             PXTexture* pxTexture = 0;
 
             if(pxIndexSegment->Material)
@@ -3855,9 +3861,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
     }
     else
     {
-        const PXIndexSegment PXREF pxIndexSegment = &pxIndexBuffer->SegmentPrime;
-
-        PXMaterial* pxMaterial = pxIndexSegment->Material;
+        PXMaterial* pxMaterial = pxIndexSegmentEntryList->Material;
 
         if(pxRenderEntity->MaterialOverride)
         {
@@ -5819,7 +5823,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
     // PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
 
     const PXSize segmentSize = PXTypeSizeGet(pxIndexBuffer->DataType);
-    const GLsizei drawElementsCount = PXMeshIndexBufferLengthGET(pxMesh);
+    const GLsizei drawElementsCount = pxMesh->Geometry->IndexBuffer->Data.CursorOffsetByte;
 
     pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->VBO);
     pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IBO);
@@ -5850,7 +5854,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
 
     // glDrawElements();
 
-    // PXOpenGLDrawElements(pxOpenGL, PXOpenGLRenderLines, 24u, PXTypeInt8U, skybox->Model.IndexBuffer.IndexData);
+    // PXOpenGLDrawElements(pxOpenGL, PXOpenGLRenderLines, 24u, PXTypeI8U, skybox->Model.IndexBuffer.IndexData);
 
 
 
@@ -6438,30 +6442,30 @@ PXI32U PXAPI PXOpenGLTypeToID(const PXI32U pxDataType)
 {
     switch(pxDataType)
     {
-        case PXTypeInt08S:
+        case PXTypeI08S:
             return GL_BYTE;
 
-        case PXTypeInt08U:
+        case PXTypeI08U:
             return GL_UNSIGNED_BYTE;
 
-        case PXTypeInt16SLE:
-        case PXTypeInt16SBE:
-        case PXTypeInt16S:
+        case PXTypeI16SLE:
+        case PXTypeI16SBE:
+        case PXTypeI16S:
             return GL_SHORT;
 
-        case PXTypeInt16ULE:
-        case PXTypeInt16UBE:
-        case PXTypeInt16U:
+        case PXTypeI16ULE:
+        case PXTypeI16UBE:
+        case PXTypeI16U:
             return GL_UNSIGNED_SHORT;
 
-        case PXTypeInt32SLE:
-        case PXTypeInt32SBE:
-        case PXTypeInt32S:
+        case PXTypeI32SLE:
+        case PXTypeI32SBE:
+        case PXTypeI32S:
             return GL_INT;
 
-        case PXTypeInt32ULE:
-        case PXTypeInt32UBE:
-        case PXTypeInt32U:
+        case PXTypeI32ULE:
+        case PXTypeI32UBE:
+        case PXTypeI32U:
             return GL_UNSIGNED_INT;
 
         case PXTypeF16:
@@ -6637,7 +6641,7 @@ PXResult PXAPI PXOpenGLSpriteRegister(PXOpenGL PXREF pxOpenGL, PXSprite PXREF px
         pxSprite->Model.IndexBuffer.IndexData = (void*)indexData;
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
-        pxSprite->Model.IndexBuffer.DataType = PXTypeInt08U;
+        pxSprite->Model.IndexBuffer.DataType = PXTypeI08U;
         pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
@@ -6749,7 +6753,7 @@ PXResult PXAPI PXOpenGLSpriteRegister(PXOpenGL PXREF pxOpenGL, PXSprite PXREF px
         pxSprite->Model.IndexBuffer.IndexData = (void*)indexData;
         pxSprite->Model.IndexBuffer.IndexDataSize = sizeof(indexData);
         pxSprite->Model.IndexBuffer.IndexDataAmount = indexAmount;
-        pxSprite->Model.IndexBuffer.DataType = PXTypeInt08U;
+        pxSprite->Model.IndexBuffer.DataType = PXTypeI08U;
         pxSprite->Model.IndexBuffer.DrawModeID = PXDrawModeIDPoint | PXDrawModeIDLine | PXDrawModeIDTriangle;
 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
@@ -6939,9 +6943,9 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
         return PXResultRefusedParameterNull;
     }
 
-    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->IndexBuffer;
-    PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
-    PXSize pxVertexBufferListAmount = pxMesh->VertexBufferListAmount;
+    PXIndexBuffer PXREF pxIndexBuffer = pxMesh->Geometry->IndexBuffer;
+    PXVertexBuffer* pxVertexBufferList = PXMeshGeometryVertexBufferListGET(pxMesh);
+    PXSize pxVertexBufferListAmount = pxMesh->Geometry->VertexBufferListAmount;
 
     // Check if the model is valid
     if(0 == pxVertexBufferListAmount)
@@ -7027,12 +7031,12 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
 
     const PXBool hasIndexData = 
         pxIndexBuffer->Data.SizeAllowedToUse > 0 && 
-        pxMesh->VertexBufferListAmount == 1;
+        pxMesh->Geometry->VertexBufferListAmount == 1;
 
 
     // Registering of array buffers
     {
-        const PXSize bufferAmountRequest = pxMesh->VertexBufferListAmount + hasIndexData;
+        const PXSize bufferAmountRequest = pxMesh->Geometry->VertexBufferListAmount + hasIndexData;
 
 
         //-------------------------------------------------
@@ -7192,11 +7196,11 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
             PXOpenGLErrorCurrent(pxOpenGL, 1);
             //---------------------------------------------
 
-
+           
              //---------------------------------------------
             // Layout define
-            const PXSize layoutAmount = pxVertexBuffer->LayoutAmount;
-            const PXBufferLayout* pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+            const PXSize layoutAmount = pxVertexBuffer->Layout.LayoutAmount;
+            const PXBufferLayoutEntry* pxVertexBufferLayoutList = PXBufferLayoutGET(&pxVertexBuffer->Layout);
 
             PXSize vertexStride = 0; // Stride is the offset to the next rotation of values. When no other data is in, its 0.
             PXSize offset = 0;
@@ -7215,7 +7219,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
 
             for(PXSize attributeIndex = 0; attributeIndex < layoutAmount; ++attributeIndex)
             {
-                const PXBufferLayout PXREF pxVertexBufferLayout = &pxVertexBufferLayoutList[attributeIndex];
+                const PXBufferLayoutEntry PXREF pxVertexBufferLayout = &pxVertexBufferLayoutList[attributeIndex];
                 const GLenum openGLType = PXOpenGLTypeToID(pxVertexBufferLayout->Format);
                 const PXSize sizeOfType = PXTypeSizeGet(pxVertexBufferLayout->Format);
                 const PXSize sizeOfSegment = sizeOfType * pxVertexBufferLayout->AmountOfElements;
@@ -7311,7 +7315,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMes
     pxOpenGL->Binding.VertexArrayBind(0);
 
 
-    PXMeshVertexLayoutPrint(pxMesh); // PLI
+    PXMeshGeometryVertexBufferLayoutPrint(pxMesh); // PLI
 
 
     // Additional textures

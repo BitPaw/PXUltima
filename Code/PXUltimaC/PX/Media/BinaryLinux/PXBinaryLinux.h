@@ -209,7 +209,7 @@ PXPrivate inline PXELFMachine PXAPI PXELFMachineFromID(const PXI8U value);
 PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXI8U value);
 PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value);
 
-PXPublic PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

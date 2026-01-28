@@ -202,7 +202,7 @@ PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, cons
     return 0;
 }
 
-PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXTIFF pxTIFFOBject;
     PXTIFF* tiff = &pxTIFFOBject;
@@ -215,7 +215,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         {
             PXI16UCluster headerTag;
 
-            PXFileReadB(pxResourceLoadInfo->FileReference, headerTag.Data, 2u);
+            PXFileReadB(pxResourceLoadInfo->FileCurrent, headerTag.Data, 2u);
 
             switch (headerTag.Value)
             {
@@ -231,35 +231,35 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 return PXActionRefusedInvalidHeaderSignature;
             }
 
-            PXFileEndianessSet(pxResourceLoadInfo->FileReference, tiff->Endianness);
+            PXFileEndianessSet(pxResourceLoadInfo->FileCurrent, tiff->Endianness);
 
         }
 
         {
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&tiff->Version, PXTypeInt16U},// Version, expect this to be "42"
-                {&tiff->OffsetToIFD, PXTypeInt32U}
+                {&tiff->Version, PXTypeI16U},// Version, expect this to be "42"
+                {&tiff->OffsetToIFD, PXTypeI32U}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         }
 
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiff->OffsetToIFD); // Jump to adress
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiff->OffsetToIFD); // Jump to adress
 
         // PredictSize
 
 
         // Now we are at IFD page 0
-        while (!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
+        while (!PXFileIsAtEnd(pxResourceLoadInfo->FileCurrent))
         {
             PXTIFFPage tiffPage;
 
             PXClear(PXTIFFPage, &tiffPage);
 
-            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tiffPage.NumberOfTags, tiff->Endianness); // 2-Bytes
+            PXFileReadI16UE(pxResourceLoadInfo->FileCurrent, &tiffPage.NumberOfTags, tiff->Endianness); // 2-Bytes
 
-            tiffPage.PredictedEndPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference) + 12u * tiffPage.NumberOfTags;
+            tiffPage.PredictedEndPosition = PXFileDataPosition(pxResourceLoadInfo->FileCurrent) + 12u * tiffPage.NumberOfTags;
 
             for (PXI16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
@@ -268,13 +268,13 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 {
                     const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&tiffTag.TypeID, PXTypeInt16U},// Version, expect this to be "42"
-                        {&tiffTag.DataTypeID, PXTypeInt16U},
-                        {&tiffTag.NumberOfValues, PXTypeInt32U},
-                        {&tiffTag.ImageFileDataOffset, PXTypeInt32U},
+                        {&tiffTag.TypeID, PXTypeI16U},// Version, expect this to be "42"
+                        {&tiffTag.DataTypeID, PXTypeI16U},
+                        {&tiffTag.NumberOfValues, PXTypeI32U},
+                        {&tiffTag.ImageFileDataOffset, PXTypeI32U},
                     };
 
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 }
 
                 tiffTag.Type = PXTIFFTagTypeFromID(tiffTag.TypeID);
@@ -399,21 +399,21 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
                 case PXTIFFTagSoftware:
                 {
-                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
+                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileCurrent);
 
-                    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
-                    PXFileReadB(pxResourceLoadInfo->FileReference, tiff->Software, tiffTag.NumberOfValues);
-                    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, oldPosition);
+                    PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiffTag.ImageFileDataOffset);
+                    PXFileReadB(pxResourceLoadInfo->FileCurrent, tiff->Software, tiffTag.NumberOfValues);
+                    PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, oldPosition);
 
                     break;
                 }
                 case PXTIFFTagDateTime:
                 {
-                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
+                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileCurrent);
 
-                    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
-                    PXFileReadB(pxResourceLoadInfo->FileReference, tiff->DateTimeStamp, tiffTag.NumberOfValues);
-                    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, oldPosition);
+                    PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiffTag.ImageFileDataOffset);
+                    PXFileReadB(pxResourceLoadInfo->FileCurrent, tiff->DateTimeStamp, tiffTag.NumberOfValues);
+                    PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, oldPosition);
 
                     break;
                 }
@@ -456,11 +456,11 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 {
                     if (tiffTag.ImageFileDataOffset != 0)
                     {
-                        const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
+                        const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileCurrent);
 
-                        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
-                        PXFileReadB(pxResourceLoadInfo->FileReference, tiff->CopyRight, tiffTag.NumberOfValues);
-                        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, oldPosition);
+                        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiffTag.ImageFileDataOffset);
+                        PXFileReadB(pxResourceLoadInfo->FileCurrent, tiff->CopyRight, tiffTag.NumberOfValues);
+                        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, oldPosition);
                     }
                     else
                     {
@@ -477,10 +477,10 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
                 }
             }
 
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffPage.PredictedEndPosition);
+            PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiffPage.PredictedEndPosition);
 
-            PXFileReadI32UE(pxResourceLoadInfo->FileReference, &tiffPage.OffsetToNextImageFileDirectory, tiff->Endianness); // 4-Bytes
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffPage.OffsetToNextImageFileDirectory);
+            PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &tiffPage.OffsetToNextImageFileDirectory, tiff->Endianness); // 4-Bytes
+            PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiffPage.OffsetToNextImageFileDirectory);
         }
 
 
@@ -498,7 +498,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXTIFFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTIFFSaveToFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

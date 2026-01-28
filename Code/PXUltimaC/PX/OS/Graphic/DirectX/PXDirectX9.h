@@ -10,7 +10,7 @@
 #include <PX/Engine/ECS/Resource/Mesh/PXVertexBuffer.h>
 #include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
 #include <PX/Engine/ECS/Resource/Light/PXLight.h>
-
+#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
 
 
 PXPublic PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
@@ -48,7 +48,7 @@ PXPublic PXResult PXAPI PXDirectX9SwapIntervalGet(PXDirectX9 PXREF pxDirectX9, P
 
 PXPublic PXResult PXAPI PXDirectX9TextureMemoryAvailable(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF value);
 PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF amountOfAdapters);
-PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGPUPhysical PXREF pxGraphicDevicePhysicalList);
+PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicsCard PXREF pxGraphicDevicePhysicalList);
 
 
 //-----------------------------------------------------

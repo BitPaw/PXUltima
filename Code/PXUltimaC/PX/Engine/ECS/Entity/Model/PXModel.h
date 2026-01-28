@@ -35,7 +35,7 @@ PXModelCreateInfo;
 PXPublic PXResult PXAPI PXModelRegisterToECS();
 PXPublic PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PXREF pxModelCreateInfo);
 PXPublic PXResult PXAPI PXModelRelease(PXModel PXREF pxModel);
-PXPublic PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo);
-PXPublic PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXWindowDrawInfo PXREF pxWindowDrawInfo);
+PXPublic PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

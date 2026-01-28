@@ -1,4 +1,4 @@
-#include "PXAudio.h"
+#include "PXAudioSystem.h"
 
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Media/PXText.h>
@@ -10,23 +10,61 @@
 //#include "PXXAudio/PXXAudio.h"
 //#include "PXAudioMIDI/PXAudioMIDI.h"
 
-PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAudioSystem)
+
+
+const char PXAudioSystemText[] = "AudioSystem";
+const PXI8U PXAudioSystemTextLength = sizeof(PXAudioSystemText);
+const PXECSRegisterInfoStatic PXAudioSystemRegisterInfoStatic =
 {
+    {sizeof(PXAudioSystemText), sizeof(PXAudioSystemText), PXAudioSystemText, TextFormatASCII},
+    sizeof(PXAudioSystem),
+    __alignof(PXAudioSystem),
+    PXECSTypeSystem,
+    PXAudioSystemCreate,
+    PXAudioSystemRelease,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXAudioSystemRegisterInfoDynamic;
+
+PXResult PXAPI PXAudioSystemRegisterToECS()
+{
+    PXECSRegister(&PXAudioSystemRegisterInfoStatic, &PXAudioSystemRegisterInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXAudioSystemCreate(PXAudioSystem** pxAudioSystemREF, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo)
+{
+    PXAudioSystem* pxAudioSystem = PXNull;
+
+    if(!(pxAudioSystemREF && pxAudioSystemCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxAudioSystemCreateInfo->Info.Static = &PXAudioSystemRegisterInfoStatic;
+    pxAudioSystemCreateInfo->Info.Dynamic = &PXAudioSystemRegisterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxAudioSystemREF, pxAudioSystemCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxAudioSystem = *pxAudioSystemREF;
+    pxAudioSystem->System = pxAudioSystemCreateInfo->System;
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "Audio",
+        PXAudioSystemText,
         "Initialize",
         "---Start---"
     );
-#endif
+#endif  
 
-    PXClear(PXAudio, pxAudio);
-
-    pxAudio->System = pxAudioSystem;
-
-    switch(pxAudioSystem)
+    switch(pxAudioSystem->System)
     {
 #if OSWindows && 0
         case PXAudioSystemWindowsMIDI:
@@ -37,7 +75,7 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
         }
         case PXAudioSystemWindowsMultiMedia:
         {
-           // pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
+            // pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
             pxAudio->SystemReference = &pxAudio->MultiMedia;
             break;
         }
@@ -66,7 +104,7 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
             PXLogPrint
             (
                 PXLoggingError,
-                "Audio",
+                PXAudioSystemText,
                 "Initialize",
                 "There is no audio system"
             );
@@ -78,11 +116,11 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
 
     // Initialize
     {
-        PXAudioInitializeInfo pxAudioInitializeInfo;
-        pxAudioInitializeInfo.AudioSystem = pxAudioSystem;
-        pxAudioInitializeInfo.AudioReference = pxAudio;
-
-        const PXResult initializeResult = pxAudio->Initialize(pxAudio->SystemReference, &pxAudioInitializeInfo);
+        const PXResult initializeResult = pxAudioSystem->Initialize
+        (
+            pxAudioSystem->SystemReference,
+            pxAudioSystemCreateInfo
+        );
 
         if(PXResultOK != initializeResult)
         {
@@ -90,7 +128,7 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
             PXLogPrint
             (
                 PXLoggingError,
-                "Audio",
+                PXAudioSystemText,
                 "Initialize",
                 "Failed!"
             );
@@ -101,34 +139,36 @@ PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAu
         PXLogPrint
         (
             PXLoggingInfo,
-            "Audio",
+            PXAudioSystemText,
             "Initialize",
             "Success"
         );
 #endif
-
     }
-
-
 
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "Audio",
+        PXAudioSystemText,
         "Initialize",
         "---Done---"
     );
 #endif
 
-
     return PXResultOK;
 }
 
-PXResult PXAPI PXAudioRelease(PXAudio PXREF pxAudio)
+PXResult PXAPI PXAudioSystemRelease(PXAudioSystem PXREF pxAudioSystem)
 {
-    return PXResultOK;
+    return PXActionRefusedNotImplemented;
 }
+
+
+
+
+
+
 
 void PXAPI PXAudioSpeakerBeep(const PXI32U hz, const PXI32U time)
 {

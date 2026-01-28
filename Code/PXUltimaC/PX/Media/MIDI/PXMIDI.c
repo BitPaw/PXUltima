@@ -6,7 +6,7 @@
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
-PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMIDILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXMIDI PXREF pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
 
@@ -15,7 +15,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXI16U chunkLength = 0;
 
         {
-            const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
+            const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileCurrent, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
 
             if (!isValid)
             {
@@ -25,13 +25,13 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&chunkLength,PXTypeInt16UBE},
-            {&pxMIDI->Format,PXTypeInt16UBE},
-            {&pxMIDI->TrackListAmount,PXTypeInt16UBE},
-            {&pxMIDI->MusicSpeed,PXTypeInt16UBE}
+            {&chunkLength,PXTypeI16UBE},
+            {&pxMIDI->Format,PXTypeI16UBE},
+            {&pxMIDI->TrackListAmount,PXTypeI16UBE},
+            {&pxMIDI->MusicSpeed,PXTypeI16UBE}
         };
 
-        PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
     if (!pxMIDI->TrackListSize)
@@ -49,7 +49,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
         PXI32U chunkLength = 0;
 
         {
-            const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
+            const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileCurrent, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
 
             if (!isValid)
             {
@@ -57,43 +57,45 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             }
         }
 
-        PXFileReadI32UE(pxResourceLoadInfo->FileReference, &chunkLength, PXEndianBig);
+        PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &chunkLength, PXEndianBig);
 
         track->ID = i;
         track->EventDataSize = chunkLength;
         track->EventData = PXMemoryHeapCallocT(PXByte, chunkLength);
 
-        PXFileReadB(pxResourceLoadInfo->FileReference, track->EventData, chunkLength);
+        PXFileReadB(pxResourceLoadInfo->FileCurrent, track->EventData, chunkLength);
     }
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXMIDISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMIDISaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     PXMIDI* pxMIDI = PXNull;
+
+    PXFile* pxFile = pxResourceSaveInfo->FileCurrent;
 
     {
         const PXI16U chunkLength = 6;
         const PXTypeEntry pxDataStreamElementList[] =
         {
             {PXMIDITrackHeaderID,PXTypeDatax4},
-            {&chunkLength,PXTypeInt16UBE},
-            {&pxMIDI->Format,PXTypeInt16UBE},
-            {&pxMIDI->TrackListSize,PXTypeInt16UBE},
-            {&pxMIDI->MusicSpeed,PXTypeInt16UBE}
+            {&chunkLength,PXTypeI16UBE},
+            {&pxMIDI->Format,PXTypeI16UBE},
+            {&pxMIDI->TrackListSize,PXTypeI16UBE},
+            {&pxMIDI->MusicSpeed,PXTypeI16UBE}
         };
 
-        PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXFileWriteMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
     for (PXI16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {
         PXMIDITrack PXREF track = &pxMIDI->TrackList[i];
 
-        PXFileWriteB(pxResourceSaveInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
-        PXFileWriteI32UE(pxResourceSaveInfo->FileReference, track->EventDataSize, PXEndianBig);
-        PXFileWriteB(pxResourceSaveInfo->FileReference, track->EventData, track->EventDataSize);
+        PXFileWriteB(pxFile, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
+        PXFileWriteI32UE(pxFile, track->EventDataSize, PXEndianBig);
+        PXFileWriteB(pxFile, track->EventData, track->EventDataSize);
     }
 
     return PXResultOK;

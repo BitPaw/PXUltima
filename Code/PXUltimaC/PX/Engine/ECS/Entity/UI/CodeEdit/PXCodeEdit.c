@@ -1,6 +1,6 @@
 #include "PXCodeEdit.h"
 
-PXResult PXAPI PXCodeEditDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXCodeEditDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     return PXActionRefusedNotImplemented;
 }

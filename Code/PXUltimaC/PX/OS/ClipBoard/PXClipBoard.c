@@ -255,9 +255,9 @@ PXResult PXAPI PXClipBoardOpen(PXClipBoard PXREF clipBoard)
 #elif PXOSWindowsDestop
     HWND pxWindowID = NULL;
     const PXBool successfull = OpenClipboard(pxWindowID); // Windows 2000, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(successfull);
+    const PXResult pxResult = PXErrorCurrent(successfull);
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -270,9 +270,9 @@ PXResult PXAPI PXClipBoardClose(PXClipBoard PXREF clipBoard)
 
 #elif PXOSWindowsDestop
     const PXBool successfull = CloseClipboard(); // Windows 2000, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(successfull);
+    const PXResult pxResult = PXErrorCurrent(successfull);
 
-    return pxActionResult;
+    return pxResult;
 
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -290,9 +290,9 @@ PXResult PXAPI PXClipBoardSet(PXClipBoard PXREF clipBoard, const PXClipBoardForm
     const HGLOBAL memory = 0;
     const PXI32U formatID = PXClipBoardFormatToID(format);
     const HANDLE handle = SetClipboardData(formatID, memory); // Windows 2000, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(handle != 0);
+    const PXResult pxResult = PXErrorCurrent(handle != 0);
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -304,9 +304,9 @@ PXResult PXAPI PXClipBoardClear(PXClipBoard PXREF clipBoard)
     return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
     const PXBool successfull = EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
-    const PXResult pxActionResult = PXErrorCurrent(!successfull);
+    const PXResult pxResult = PXErrorCurrent(!successfull);
 
-    return pxActionResult;
+    return pxResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif

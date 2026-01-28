@@ -1,6 +1,6 @@
 #include "PXGraphTime.h"
 
-PXResult PXAPI PXGraphTimeDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXGraphTimeDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     /*
 

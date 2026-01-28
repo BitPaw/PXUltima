@@ -2,10 +2,10 @@
 
 #ifndef PXMultiMediaIncluded
 #define PXMultiMediaIncluded
+#include <PX/Media/PXType.h>
+#include <PX/Engine/ECS/System/PXAudioSystem.h>
 
-#include <PX/OS/Audio/PXAudio.h>
-
-PXPublic PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
+PXPublic PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioSystemCreateInfo PXREF pxAudioInitializeInfo);
 
 PXPublic PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty);
 

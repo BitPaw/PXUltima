@@ -50,7 +50,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
 
             pxADAM7->DataOutput = pxADAM7->DataInput;
 
-            const PXResult pxActionResult = PXADAM7unfilter(pxADAM7);
+            const PXResult pxResult = PXADAM7unfilter(pxADAM7);
 
             pxADAM7->DataOutput = (PXByte*)oldPosition;
 
@@ -68,7 +68,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
         {
             // we can immediately filter into the out buffer, no other steps needed
 
-            const PXResult pxActionResult = PXADAM7unfilter(pxADAM7);
+            const PXResult pxResult = PXADAM7unfilter(pxADAM7);
         }
 
         break;
@@ -102,7 +102,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
             pxADAM7sub.BitsPerPixel = pxADAM7->BitsPerPixel;
             pxADAM7sub.InterlaceMethod = pxADAM7->InterlaceMethod;
 
-            const PXResult pxActionResult = PXADAM7unfilter(&pxADAM7sub);
+            const PXResult pxResult = PXADAM7unfilter(&pxADAM7sub);
             // TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
             // move bytes instead of bits or move not at all
 
@@ -352,7 +352,7 @@ PXResult PXAPI PXADAM7unfilter(PXADAM7 PXREF pxADAM7)
         const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
         const PXByte filterType = pxADAM7->DataInput[inindex];
 
-        const PXResult pxActionResult = PXADAM7unfilterScanline
+        const PXResult pxResult = PXADAM7unfilterScanline
         (
             &pxADAM7->DataOutput[outindex],
             &pxADAM7->DataInput[inindex + 1], 

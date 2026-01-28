@@ -178,9 +178,9 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
         }
     }
 
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ModuleHandle);
+    const PXResult pxResult = PXErrorCurrent(PXNull != pxLibrary->ModuleHandle);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
         // Library couln't be opened
 
@@ -195,7 +195,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
         );
 #endif
 
-        return pxActionResult;
+        return pxResult;
     }
 
 #if PXLogEnable
@@ -246,11 +246,11 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
         FreeLibrary(pxLibrary->ModuleHandle); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
-    const PXResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxResult = PXErrorCurrent(result);
 
-    if(PXResultOK != pxActionResult)
+    if(PXResultOK != pxResult)
     {
-        return pxActionResult;
+        return pxResult;
     }
 
     pxLibrary->ModuleHandle = PXNull;
@@ -344,11 +344,11 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
 #elif OSWindows
     *libraryFunction = (void*)GetProcAddress(pxLibrary->ModuleHandle, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != *libraryFunction);
+    const PXResult pxResult = PXErrorCurrent(PXNull != *libraryFunction);
 
     // If the fetch is not important, we dont want to trigger a failure.
     {
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
             if(isImportant) // If it is not importendt, aka not an important/optional function/feature, we we dont send an error
             {
@@ -365,7 +365,7 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
 #endif
             }
 
-            return pxActionResult;
+            return pxResult;
         } 
     }
 

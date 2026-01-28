@@ -14,8 +14,10 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXGIFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
+
     PXGIF gif;
 
     PXClear(PXGIF, &gif);
@@ -23,7 +25,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     // Check Header
     {
         {
-            const PXBool validHeader = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
+            const PXBool validHeader = PXFileReadAndCompare(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
 
             if (!validHeader)
             {
@@ -35,7 +37,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
             const char* PXREF versionDataList[2] = { PXGIFVersionA, PXGIFVersionB };
             const PXSize versionSizeList[2] = { sizeof(PXGIFVersionA),  sizeof(PXGIFVersionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
-            const PXBool validVersion = PXFileReadAndCompareV(pxResourceLoadInfo->FileReference, versionDataList, versionSizeList, versionSizeListSize);
+            const PXBool validVersion = PXFileReadAndCompareV(pxFile, versionDataList, versionSizeList, versionSizeListSize);
 
             if (!validVersion)
             {
@@ -51,14 +53,14 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&gif.Width,PXTypeInt16ULE},
-                {&gif.Height,PXTypeInt16ULE},
-                {&packedFields,PXTypeInt08U},
-                {&gif.BackgroundColorIndex, PXTypeInt08U},
-                {&gif.PixelAspectRatio, PXTypeInt08U}
+                {&gif.Width,PXTypeI16ULE},
+                {&gif.Height,PXTypeI16ULE},
+                {&packedFields,PXTypeI08U},
+                {&gif.BackgroundColorIndex, PXTypeI08U},
+                {&gif.PixelAspectRatio, PXTypeI08U}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             gif.GlobalColorTableSize = packedFields & 0b00000111;
             gif.IsSorted = (packedFields & 0b00001000) >> 3;
@@ -80,15 +82,15 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 
                 const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&imageDescriptor.Separator,PXTypeInt08U},
-                    {&imageDescriptor.LeftPosition,PXTypeInt16ULE},
-                    {&imageDescriptor.TopPosition,PXTypeInt16ULE},
-                    {&imageDescriptor.Width,PXTypeInt16ULE},
-                    {&imageDescriptor.Height,PXTypeInt16ULE},
-                    {&packedFields,PXTypeInt08U}
+                    {&imageDescriptor.Separator,PXTypeI08U},
+                    {&imageDescriptor.LeftPosition,PXTypeI16ULE},
+                    {&imageDescriptor.TopPosition,PXTypeI16ULE},
+                    {&imageDescriptor.Width,PXTypeI16ULE},
+                    {&imageDescriptor.Height,PXTypeI16ULE},
+                    {&packedFields,PXTypeI08U}
                 };
 
-                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                 imageDescriptor.LocalColorTableSize = (packedFields & 0b00000111);
                 imageDescriptor.Reserved = (packedFields & 0b00011000) >> 3;
@@ -115,9 +117,11 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXGIFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXGIFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
+    PXFile PXREF pxFile = pxResourceSaveInfo->FileCurrent;
+
+    PXFileWriteB(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
 
     return PXActionRefusedNotImplemented;
 }

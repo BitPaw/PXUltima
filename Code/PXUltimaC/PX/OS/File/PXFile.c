@@ -7,6 +7,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
 
+
 //---------------------------------------------------------
 // STD-LIB
 //---------------------------------------------------------
@@ -498,7 +499,7 @@ PXSize PXAPI PXFilePathExtensionGet(const PXText PXREF filePath, PXText PXREF ex
 
     PXTextMoveByOffset(&stringResult, 1u);
 
-    const PXSize writtenBytes = PXTextCopy(&stringResult, extension);
+    const PXSize writtenBytes = PXTextCopy(extension, &stringResult);
 
     return writtenBytes;
 }
@@ -752,11 +753,11 @@ PXResult PXAPI PXFileRemove(const PXText PXREF filePath)
             const PXBool success = DeleteFileA(filePath->A);
 #endif
 
-            const PXResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxResult = PXErrorCurrent(success);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             break;
@@ -774,11 +775,11 @@ PXResult PXAPI PXFileRemove(const PXText PXREF filePath)
             const PXBool success = DeleteFileW(filePath->W);
 #endif
 
-            const PXResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxResult = PXErrorCurrent(success);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
 #endif
@@ -812,14 +813,14 @@ PXResult PXAPI PXFileRename(const PXText PXREF oldName, const PXText PXREF newNa
 #elif OSWindows
             const PXBool success = MoveFileA(oldName->A, newName->A); // Windows XP, Kernel32.dll, winbase.h
 #endif
-            const PXResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxResult = PXErrorCurrent(success);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
-            return pxActionResult;
+            return pxResult;
         }
         case TextFormatUNICODE:
         {
@@ -834,14 +835,14 @@ PXResult PXAPI PXFileRename(const PXText PXREF oldName, const PXText PXREF newNa
             const PXBool success = MoveFileW(oldName->W, newName->W); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-            const PXResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxResult = PXErrorCurrent(success);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
-            return pxActionResult;
+            return pxResult;
 
 #endif
         }
@@ -885,11 +886,11 @@ PXResult PXAPI PXFileCopy(const PXText PXREF sourceFilePath, const PXText PXREF 
             const int closeB = fclose(fileDestination);
 #elif OSWindows
             const PXBool succesfull = CopyFileA(sourceFilePath->A, destinationFilePath->A, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
-            const PXResult pxActionResult = PXErrorCurrent(succesfull);
+            const PXResult pxResult = PXErrorCurrent(succesfull);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             return PXResultOK;
@@ -905,11 +906,11 @@ PXResult PXAPI PXFileCopy(const PXText PXREF sourceFilePath, const PXText PXREF 
 
 #elif OSWindows
             const PXBool succesfull = CopyFileW(sourceFilePath->W, destinationFilePath->W, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
-            const PXResult pxActionResult = PXErrorCurrent(succesfull);
+            const PXResult pxResult = PXErrorCurrent(succesfull);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             return PXResultOK;
@@ -1686,7 +1687,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             }
 
 
-            PXFilePath(pxFile, &pxText, PXTrue);
+            //PXFilePath(pxFile, &pxText, PXTrue);
 #endif
 
 
@@ -1755,7 +1756,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             {
                 pxFile->Buffer.Adress = PXMemoryVirtualAllocate
                 (
-                    pxFile->Buffer.CursorOffsetByte,
+                    pxFile->Buffer.SizeAllocated,
                     &pxFile->Buffer.SizeAllocated,
                     PXAccessModeReadAndWrite
                 );
@@ -1763,18 +1764,19 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                 if(pxFile->Buffer.Adress)
                 {
                     // SUCCESS
-
-                    pxFile->Buffer.CursorOffsetByte = pxFile->Buffer.SizeAllocated;
                     pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
                     BOOL ok = ReadFile
                     (
                         pxFile->FileHandle, 
                         pxFile->Buffer.Data,
-                        pxFile->Buffer.CursorOffsetByte,
+                        pxFile->Buffer.SizeAllowedToUse,
                         NULL,
                         NULL
                     );
+
+                    // We want to start at the beginning of the file
+                    pxFile->Buffer.CursorOffsetByte = 0;
 
                    // PXMemoryVirtualPrefetch(pxFile->Buffer.Data, pxFile->Buffer.SizeAllowedToUse);
 
@@ -2016,9 +2018,12 @@ PXResult PXAPI PXFileClose(PXFile PXREF pxFile)
             break;
 
         case PXFileLocationModeMappedVirtual:
+        {
+#if 0
             PXMemoryVirtualRelease(pxFile->Buffer.Data, pxFile->Buffer.SizeAllocated);
+#endif
             break;
-
+        }
         case PXFileLocationModeExternal:
         {
 #if PXLogEnable
@@ -2159,22 +2164,22 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
             if(isWriteMapped)
             {
                 const BOOL flushSuccessful = FlushViewOfFile(pxFile->Buffer.Data, pxFile->Buffer.CursorOffsetByte);
-                const PXResult pxActionResult = PXErrorCurrent(flushSuccessful);
+                const PXResult pxResult = PXErrorCurrent(flushSuccessful);
 
-                if(PXResultOK != pxActionResult)
+                if(PXResultOK != pxResult)
                 {
-                    return pxActionResult;
+                    return pxResult;
                 }
             }
         }
 
         {
             const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Buffer.Data);
-            const PXResult pxActionResult = PXErrorCurrent(unmappingSucessful);
+            const PXResult pxResult = PXErrorCurrent(unmappingSucessful);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             pxFile->Buffer.Data = PXNull;
@@ -2182,11 +2187,11 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
 
         {
             const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingHandle);
-            const PXResult pxActionResult = PXErrorCurrent(closeMappingSucessful);
+            const PXResult pxResult = PXErrorCurrent(closeMappingSucessful);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
             pxFile->MappingHandle = PXHandleNotSet;
@@ -3344,11 +3349,11 @@ PXSize PXAPI PXFileReadB(PXFile PXREF pxFile, void PXREF value, const PXSize len
 #elif OSWindows
             DWORD writtenBytes = 0;
             const PXBool success = ReadFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull);
-            const PXResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxResult = PXErrorCurrent(success);
 
-            if(PXResultOK != pxActionResult)
+            if(PXResultOK != pxResult)
             {
-                return pxActionResult;
+                return pxResult;
             }
 
 #if PXFileDebugOutput
@@ -4444,11 +4449,11 @@ PXResult PXAPI PXFileTimeGet
             &fileTimeList[1],
             &fileTimeList[2]
         );
-        const PXResult pxActionResult = PXErrorCurrent(result);
+        const PXResult pxResult = PXErrorCurrent(result);
 
-        if(PXResultOK != pxActionResult)
+        if(PXResultOK != pxResult)
         {
-            return pxActionResult;
+            return pxResult;
         }
     }
 
@@ -4473,7 +4478,7 @@ PXResult PXAPI PXFileTimeGet
 
 PXResult PXAPI PXFilePath(const PXFile PXREF pxFile, PXText PXREF filePath, const PXBool doWrite)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
     /*
     #if OSUnix
@@ -4514,21 +4519,21 @@ PXResult PXAPI PXFilePath(const PXFile PXREF pxFile, PXText PXREF filePath, cons
             filePath->SizeAllocated = pxFile->FilePath.SizeAllocated;
             filePath->Format = TextFormatUTF8;
 
-            pxActionResult = PXResultOK;
+            pxResult = PXResultOK;
 
             break;
         }
         case PXFileLocationModeMappedFromDisk:
         {
             // We can translate a handle into a filepath
-            pxActionResult = PXFileNameViaHandle(pxFile, filePath);
+            pxResult = PXFileNameViaHandle(pxFile, filePath);
             break;
         }
         default:
             return PXActionInvalidStateImpossible;
     }
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXFilePathLong(PXText PXREF pxTextInput, PXText PXREF pxTextOutput)

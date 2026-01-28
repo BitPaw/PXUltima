@@ -4,13 +4,18 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/Engine/ECS/PXECS.h>
 
-PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXAVILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
+    if(!pxResourceLoadInfo)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     PXRIFF riff;
 
     // RIFF
     {
-        const PXResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
+        const PXResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileCurrent);
 
         if(PXResultOK != riffResult)
             return riffResult;
@@ -29,7 +34,7 @@ PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXAVISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXAVISaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

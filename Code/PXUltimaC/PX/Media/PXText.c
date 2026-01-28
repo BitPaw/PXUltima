@@ -1123,7 +1123,7 @@ PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF 
         if(found)
         {
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
-            //stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
+            stringResult->SizeAllocated = stringResult->SizeUsed;
             stringResult->A = stringSource->A + i + 1;
 
             return i;
@@ -1152,7 +1152,7 @@ PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF 
         if(found)
         {
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
-            //stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
+            stringResult->SizeAllocated = stringResult->SizeUsed;
             stringResult->W = stringSource->W + i + 1;
             return i;
         }
@@ -1764,9 +1764,9 @@ PXASCII PXAPI PXTextMakeCaseLower(const PXASCII c)
 }
 PXASCII PXAPI PXTextMakeCaseUpper(const PXASCII c)
 {
-    PXBool isOK = 'a' <= c && c <= 'z';
+    PXBool isLower = 'a' <= c && c <= 'z';
 
-    if(isOK)
+    if(!isLower)
     {
         return c;
     }

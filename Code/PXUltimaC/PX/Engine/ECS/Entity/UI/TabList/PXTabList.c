@@ -21,7 +21,7 @@ PXResult PXAPI PXTabListRegisterToECS()
     return PXResultOK;
 }
 
-PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXDrawInfo PXREF pxDrawInfo)
 {
     /*
     PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxWindow->ExtendedData;

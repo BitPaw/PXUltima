@@ -26,6 +26,7 @@ typedef HGLRC PXOpenGLConextID;
 #include <PX/Engine/ECS/Resource/Light/PXLight.h>
 #include <PX/Engine/ECS/System/PXRenderingSystem.h>
 #include <PX/Engine/ECS/Entity/Model/PXModel.h>
+#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
 //---------------------------
 
 
@@ -1503,7 +1504,7 @@ PXPublic PXResult PXAPI PXOpenGLDeselect(PXOpenGL PXREF openGLContext);
 PXPublic PXI64S PXAPI PXOpenGLIntergetGet(PXOpenGL PXREF openGLContext, const GLenum enumID);
 
 PXPublic PXResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL PXREF pxOpenGL, PXI32U PXREF amount);
-PXPublic PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PXI32U amount, PXGPUPhysical PXREF pxGraphicDevicePhysicalList);
+PXPublic PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PXI32U amount, PXGraphicsCard PXREF pxGraphicsCardList);
 
 PXPublic PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF PXTexture);
 

@@ -9,9 +9,9 @@
 #include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 #include <PX/Engine/ECS/Component/Material/PXMaterial.h>
 #include <PX/Engine/ECS/Resource/Shader/PXShader.h>
-#include <PX/Engine/ECS/Entity/HitBox/PXHitBox.h>
 #include <PX/Engine/ECS/Entity/Model/PXModel.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/Engine/ECS/Entity/FieldEffect/PXFieldEffect.h>
 
 typedef struct PXSprite_
 {
@@ -23,7 +23,7 @@ typedef struct PXSprite_
     PXModel* Model;
     PXTexture* Texture;
     PXMaterial* Material; // Use this instand of a texture, right?
-    PXHitBox* HitBox;
+    PXFieldEffect* HitBox;
     PXShaderProgram* ShaderProgarm;
 }
 PXSprite;
@@ -53,6 +53,9 @@ typedef struct PXSpriteCreateInfo_
 PXSpriteCreateInfo;
 
 
-PXPublic PXResult PXAPI PXSpriteCreate(PXSprite PXREF pxSprite, PXSpriteCreateInfo PXREF pxSpriteCreateInfo);
+PXPublic PXResult PXAPI PXSpriteRegisterToECS();
+PXPublic PXResult PXAPI PXSpriteCreate(PXSprite** pxSpriteREF, PXSpriteCreateInfo PXREF pxSpriteCreateInfo);
+PXPublic PXResult PXAPI PXSpriteRelease(PXSprite PXREF pxSprite);
+PXPublic PXResult PXAPI PXSpriteDraw(PXSprite PXREF pxSprite, PXDrawInfo PXREF pxDrawInfo);
 
 #endif

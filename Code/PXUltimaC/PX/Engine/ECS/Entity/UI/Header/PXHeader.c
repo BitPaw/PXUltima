@@ -10,7 +10,7 @@ pxWindowCreateInfo->WindowClassName.A = WC_HEADER;
 #endif
 */
 
-PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo)
+PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
 

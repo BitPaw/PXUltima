@@ -22,7 +22,7 @@ typedef struct PXZIP_
 }
 PXZIP;
 
-PXPublic PXResult PXAPI PXZIPLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo);
-PXPublic PXResult PXAPI PXZIPSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo);
+PXPublic PXResult PXAPI PXZIPLoadFromFile(PXECSCreateInfo PXREF PXECSCreateInfo);
+PXPublic PXResult PXAPI PXZIPSaveToFile(PXECSCreateInfo PXREF PXECSCreateInfo);
 
 #endif

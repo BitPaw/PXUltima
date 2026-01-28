@@ -210,33 +210,31 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler PXREF pxCompiler)
     PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
-PXResult PXAPI PXJavaLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXJavaLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXJavaSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXJavaSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     if(!pxResourceSaveInfo)
     {
         return PXResultRefusedParameterNull;
     }
 
-    if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
+   // if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
     {
-        return PXResultRefusedParameterInvalid;
+       // return PXResultRefusedParameterInvalid;
     }
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.CommentSingleLine = "//";
-    pxCompiler.CommentSingleLineSize = 2;
-    pxCompiler.CommentMultibleLineBegin = "/*";
-    pxCompiler.CommentMultibleLineBeginSize = 2;
-    pxCompiler.CommentMultibleLineEnd = "*/";
-    pxCompiler.CommentMultibleLineEndSize = 2;
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->ResourceTarget;
-    pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileReference;
+    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
+    PXTextFromAdressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
+    PXTextFromAdressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
+
+    //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->ResourceTarget;
+    pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileCurrent;
     pxCompiler.WriteInfo.WriteFile = PXJavaWriteFile;
     pxCompiler.WriteInfo.WriteContainer = PXJavaContainerWrite;
     pxCompiler.WriteInfo.WriteFunction = PXJavaFunctionWrite;

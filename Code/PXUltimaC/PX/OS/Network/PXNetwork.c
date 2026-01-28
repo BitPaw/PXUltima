@@ -837,7 +837,7 @@ PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
 
 PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
 {
-    PXResult pxActionResult = PXResultInvalid;
+    PXResult pxResult = PXResultInvalid;
 
     if(!(pxSocketDataInfo))
     {
@@ -891,7 +891,7 @@ PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
     {
         case 0:
         {
-            pxActionResult = PXActionRefusedConnectionClosed;
+            pxResult = PXActionRefusedConnectionClosed;
 
 #if PXLogEnable
             PXLogPrint
@@ -910,7 +910,7 @@ PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
         }
         case SOCKET_ERROR:
         {
-            pxActionResult = PXErrorCurrent(0);
+            pxResult = PXErrorCurrent(0);
 
 #if PXLogEnable
             PXLogPrint
@@ -1657,7 +1657,7 @@ PXResult PXAPI PXNetworkAdapterFetch()
 
     if(dwRetVal != NO_ERROR)
     {
-        return;
+        return PXResultInvalid;
     }
 
 
@@ -2359,9 +2359,9 @@ PXI8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
 PXResult PXAPI PXWindowsSocketAgentErrorFetch(PXNetwork PXREF pxNetwork)
 {
     const int wsaErrorID = pxNetwork->SocketSystemErrorLastGet();
-    const PXResult pxActionResult = PXWindowsSocketAgentErrorFromID(wsaErrorID);
+    const PXResult pxResult = PXWindowsSocketAgentErrorFromID(wsaErrorID);
 
-    return pxActionResult;
+    return pxResult;
 }
 
 PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID)

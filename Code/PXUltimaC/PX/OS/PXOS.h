@@ -447,14 +447,6 @@ PXPerformanceInfo;
 // Every call after will get the delta.
 PXPublic PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo);
 
-
-//---------------------------------------------------------
-// VIDEO
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxGPUPhysicalListSize);
-//---------------------------------------------------------
-
-
 PXPublic void PXAPI PXConvertAnyToFloat(void* a, const PXI32U aType, float* b);
 
 #endif

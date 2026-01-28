@@ -5,6 +5,19 @@
 #include <PX/OS/Console/PXConsole.h>
 
 const char PXTextureText[] = "Texture";
+const PXI8U PXTextureTextLength = sizeof(PXTextureText);
+const PXECSRegisterInfoStatic PXTextureRegisterInfoStatic =
+{
+    {sizeof(PXTextureText), sizeof(PXTextureText), PXTextureText, TextFormatASCII},
+    sizeof(PXTexture),
+    __alignof(PXTexture),
+    PXECSTypeEntity,
+    PXTextureCreate,
+    PXTextureRelease,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXTextureRegisterInfoDynamic;
+
 
 PXResult PXAPI PXTextureProperty(PXTexture PXREF pxTexture, PXECSProperty PXREF pxECSProperty)
 {
@@ -235,6 +248,11 @@ PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture)
 
 PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
 {
+    if(!pxTexture)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     const PXSize bbp = PXColorFormatBytePerPixel(pxTexture->Format);;
     const PXSize scanLineWidthSize = pxTexture->Width * bbp;
     const PXSize scanLinesToSwap = pxTexture->Height / 2u;
@@ -242,7 +260,7 @@ PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
 
     if(!copyBufferRow)
     {
-        return;
+        return PXActionFailedMemoryAllocation;
     }
 
     for(PXSize scanlineIndex = 0; scanlineIndex < scanLinesToSwap; scanlineIndex++)
@@ -328,19 +346,37 @@ void PXAPI PXTexturePixelSetRGB8(PXTexture PXREF pxTexture, const PXSize x, cons
     pixelData[2] = blue;
 }
 
-PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo)
+PXResult PXAPI PXTextureRegisterToECS(void)
 {
-    if(!(pxTexture && pxTextureCreateInfo))
+    PXECSRegister(&PXTextureRegisterInfoStatic, &PXTextureRegisterInfoDynamic);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXREF pxTextureCreateInfo)
+{
+    PXTexture* pxTexture = PXNull;
+
+    if(!(pxTextureREF && pxTextureCreateInfo))
     {
         return PXResultRefusedParameterNull;
     }
 
+    pxTextureCreateInfo->Info.Static = &PXTextureRegisterInfoStatic;
+    pxTextureCreateInfo->Info.Dynamic = &PXTextureRegisterInfoDynamic;
+    const PXResult pxResult = PXECSCreate(pxTextureREF, pxTextureCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxTexture = *pxTextureREF;
     pxTexture->Filter = PXRenderFilterNoFilter;
     pxTexture->LayoutNear = PXTextureLayoutNearest;
     pxTexture->LayoutFar = PXTextureLayoutNearest;
     pxTexture->WrapHeight = PXTextureWrapRepeat;
     pxTexture->WrapWidth = PXTextureWrapRepeat;
-
 
     switch(pxTextureCreateInfo->Type)
     {
@@ -349,12 +385,12 @@ PXResult PXAPI PXTextureCreate(PXTexture PXREF pxTexture, PXTextureCreateInfo PX
             // Load texture
             if(pxTextureCreateInfo->Info.FilePath.Data)
             {
-                PXResourceMoveInfo pxResourceLoadInfo;
-                PXClear(PXResourceMoveInfo, &pxResourceLoadInfo);
-                pxResourceLoadInfo.ResourceTarget = pxTexture;
-                pxResourceLoadInfo.ResourceType = PXResourceTypeTexture;
+                PXECSCreateInfo pxResourceLoadInfo;
+                PXClear(PXECSCreateInfo, &pxResourceLoadInfo);
+                //pxResourceLoadInfo.ResourceTarget = pxTexture;
+                //pxResourceLoadInfo.ResourceType = PXResourceTypeTexture;
 
-                const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxTextureCreateInfo->Info.FilePath);
+                const PXResult loadResult = PXECSLoad(pxTexture, &pxResourceLoadInfo);
 
 
                 if(PXResultOK != loadResult)

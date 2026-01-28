@@ -1,11 +1,11 @@
 #include "PXRedshiftSkeleton.h"
 
-PXResult PXAPI PXRedshiftSkeletonLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRedshiftSkeletonLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     return PXResultOK;
 }
 
-PXResult PXAPI PXRedshiftSkeletonSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRedshiftSkeletonSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
