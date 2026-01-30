@@ -1,19 +1,20 @@
-# D8 format family (`.d8g`/`.d8w`/`.d8t`/`.d8m`)
+# D8 format family (`.dat`/`.d8g`/`.d8w`/`.d8t`/`.d8m`)
 
 ## Info
 
 |||
 |:-|:-|
 |Type| Model, Mesh and Texture|
-|Format| Binary|
+|Format| Binary - 32-Bit|
 |Endianness| Little Endian|
+|Magic/Signature|-|
 |Legal|proprietary, closed source; abandonware|
 |Popularity|Custom; only in few programs|
 
 ---
 
 ## .dat - Container
-### Header
+### .dat - Container Header
 |Type|Name|Values|
 |:-|:-|:-|
 |I32U|TableEntryAmount| -  |
@@ -132,3 +133,4 @@ Expected to be a `.DDS` without the header.
 ## Links
 - [reshax.com - d8g-d8m-boh](https://reshax.com/topic/764-juiced-d8g-d8m-boh/)
 - [reshax.com - d8t-d8w](https://reshax.com/topic/1631-juiced-pc-d8t-d8w/)
+- [wiki.xentax - DAT](https://wiki.xentax.spektr.name/index.php/Juiced_DAT)
