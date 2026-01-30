@@ -10,10 +10,47 @@
 |Legal|proprietary, closed source; abandonware|
 |Popularity|Custom; only in few programs|
 
+---
+
+## .dat - Container
+### Header
+|Type|Name|Values|
+|:-|:-|:-|
+|I32U|TableEntryAmount| -  |
+|I32U|TableOffset| 4 GB max   |
+|TableEntry[]|TableEntryList| Length=TableEntryAmount |
+
+### .dat - Container Table Entry
+|Type|Name|Values|
+|:-|:-|:-|
+|I32U|Hash| Embedded file name/path, not external |
+|I32U|Offset| -   |
+|I32U|ChunksCount| - |
+|I32U|CompressedSize| Total compressed size |
+|I32U|DecompressedSize| Total uncompressed size |
+> Note:  
+> This format does not store any path directly, only the hashes!  
+> In the program we convert the paths into a hash, this reduces string bloat and compare overhead if we load or saerch for a spesific element.  
+> This is a possible source to reverse the hashes, if the programmer did not optimize string to hash at compile time but kept it as runtime code forcing the string to be percistent.
+
+### .dat - Container Table Entry Chunk
+|Type|Name|Values|
+|:-|:-|:-|
+|I32U|Offset| Position of deflate stream |
+|I32S|CompressedSize| Deflate compressed size  |
+> Note:  
+> We need to add +2 to the stream?  
+> Each chunk is seperatly encoded in its own deflate stream.  
+> Combine the result of each into one big block.
+
+---
+
 ## .d8t - Texture
 Headerless raw data.<br>
 Format is defined in a `.d8w`.<br>
 Expected to be a `.DDS` without the header.
+
+---
 
 ## .d8w - Texture Table
 ### .d8w - Texture Table Header
@@ -38,6 +75,8 @@ Expected to be a `.DDS` without the header.
 |I32U|Unknown_F| - |
 |I32U|Unknown_G| - |
 |I32U|Unknown_H| - |
+
+---
 
 ## .d8g - Geometry
 
@@ -88,6 +127,7 @@ Expected to be a `.DDS` without the header.
 |I8U|VertexType|  0x00=Pos<br>0x03=Normal<br>0x05=TexCoord<br>0x0A=Color<br>...   |
 |I8U|UVChannelIndex| 0 or 1, etc. |
 
+---
 
 ## Links
 - [reshax.com - d8g-d8m-boh](https://reshax.com/topic/764-juiced-d8g-d8m-boh/)
