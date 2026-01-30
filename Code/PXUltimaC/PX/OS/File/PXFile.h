@@ -124,6 +124,8 @@ PXPublic PXBool PXAPI PXFileRelese(PXFile PXREF pxFile);
 
 PXPublic PXBuffer* PXAPI PXFileBufferGET(PXFile PXREF pxFile);
 
+PXPublic PXBool PXAPI PXFileIsIndexInRegion(const PXFile PXREF pxFile, const PXSize index);
+
 
 PXPublic PXBool PXAPI PXFileDoesExist(const PXText PXREF pxText);
 PXPublic PXBool PXAPI PXFileDoesExistA(const char PXREF filePath);

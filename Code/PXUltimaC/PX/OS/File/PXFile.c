@@ -663,6 +663,21 @@ PXBuffer* PXAPI PXFileBufferGET(PXFile PXREF pxFile)
     return &pxFile->Buffer;
 }
 
+PXBool PXAPI PXFileIsIndexInRegion(const PXFile PXREF pxFile, const PXSize index)
+{
+    if(!pxFile)
+    {
+        return 0;
+    }
+
+    if(!pxFile->Buffer.Data)
+    {
+        return 0;
+    }
+
+    return pxFile->Buffer.SizeAllowedToUse >= index;
+}
+
 PXBool PXAPI PXFileDoesExist(const PXText PXREF pxText)
 {
     if(!pxText)
@@ -1411,7 +1426,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             PXLogPrint
             (
                 PXLoggingError,
-                "File",
+                PXFileText,
                 "Open",
                 "File info does not have any permission!? %s\n",
                 pxFileIOInfo->FilePath.A
@@ -1421,10 +1436,6 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             return PXResultRefusedParameterInvalid;
         }
     }
-
-
-    PXText pxText;
-    PXTextFromAdressA(&pxText, pxFileIOInfo->FilePath.A, pxFileIOInfo->FilePath.SizeUsed, pxFileIOInfo->FilePath.SizeUsed);
 
     switch(PXFileIOInfoFileMask & pxFileIOInfo->FlagList)
     {
@@ -1555,14 +1566,14 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                 HANDLE fileHandle = PXNull;
                 SECURITY_ATTRIBUTES* securityAttributes = PXNull;
 
-                switch(pxText.Format)
+                switch(pxFileIOInfo->FilePath.Format)
                 {
                     case TextFormatASCII:
                     case TextFormatUTF8:
                     {
                         if(PXAccessModeReadOnly == pxFile->AccessMode)
                         {
-                            const DWORD dwAttrib = GetFileAttributesA(pxText.A); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                            const DWORD dwAttrib = GetFileAttributesA(pxFileIOInfo->FilePath.A); // Windows XP (+UWP), Kernel32.dll, fileapi.h
                             const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
                             const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -1579,7 +1590,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
 
                         pxFile->FileHandle = CreateFileA // Windows XP, Kernel32.dll, fileapi.h
                         (
-                            pxText.A,
+                            pxFileIOInfo->FilePath.A,
                             desiredAccess,
                             shareMode,
                             securityAttributes,
@@ -1593,7 +1604,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                     {
                         if(PXAccessModeReadOnly == pxFile->AccessMode)
                         {
-                            const DWORD dwAttrib = GetFileAttributesW(pxText.W); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                            const DWORD dwAttrib = GetFileAttributesW(pxFileIOInfo->FilePath.W); // Windows XP (+UWP), Kernel32.dll, fileapi.h
                             const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
                             const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -1610,7 +1621,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
 
                         pxFile->FileHandle = CreateFileW // Windows XP, Kernel32.dll, fileapi.h
                         (
-                            pxText.W,
+                            pxFileIOInfo->FilePath.W,
                             desiredAccess,
                             shareMode,
                             securityAttributes,
@@ -1670,7 +1681,13 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                     FILETIME lastAccessTime;
                     FILETIME lastWriteTime;
 
-                    const BOOL fileTimeResult = GetFileTime(pxFile->FileHandle, &creationTime, &lastAccessTime, &lastWriteTime);
+                    const BOOL fileTimeResult = GetFileTime
+                    (
+                        pxFile->FileHandle, 
+                        &creationTime, 
+                        &lastAccessTime, 
+                        &lastWriteTime
+                    );
 
                     PXTimeFromOSFileTime(&pxFile->TimeCreation, &creationTime);
                     PXTimeFromOSFileTime(&pxFile->TimeAccessLast, &lastAccessTime);
@@ -1683,7 +1700,32 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             }
             else
             {
-                // Get current time or set it
+                LARGE_INTEGER size;
+                size.QuadPart = pxFileIOInfo->FileSizeRequest;
+#if 0
+
+                FILE_ALLOCATION_INFO allocInfo;
+                allocInfo.AllocationSize = size;
+                
+                const BOOL isOK = SetFileInformationByHandle
+                (
+                    pxFile->FileHandle,
+                    FileAllocationInfo, 
+                    &allocInfo,
+                    sizeof(allocInfo)
+                );
+                PXResult pxResult = PXErrorCurrent(isOK);
+#else
+
+                SetFilePointerEx(pxFile->FileHandle, size, NULL, FILE_BEGIN);
+                SetEndOfFile(pxFile->FileHandle);
+
+                pxFile->Buffer.SizeAllocated = pxFileIOInfo->FileSizeRequest;
+                pxFile->Buffer.SizeAllowedToUse = pxFileIOInfo->FileSizeRequest;
+
+#endif
+
+
             }
 
 
@@ -1952,7 +1994,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
         }
         case PXFileIOInfoFileMemory:
         {
-            const PXBool hasSource = pxFileIOInfo->Data.Data > 0;
+            const PXBool hasSource = pxFileIOInfo->Data.Data != 0;
 
             pxFile->AccessMode = pxFileIOInfo->AccessMode;
 
@@ -1965,10 +2007,11 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "File",
+                    PXFileText,
                     "Open",
-                    "Binding external memory <%p> %i B",
+                    "External <%p> to <%p> %i B",
                     pxFile->Buffer.Data,
+                    pxFile->Buffer.Data + pxFile->Buffer.SizeAllocated - 1,
                     pxFile->Buffer.SizeAllocated
                 );
 #endif
@@ -1983,7 +2026,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "File",
+                    PXFileText,
                     "Open",
                     "Created intermal memory <%p> %i B",
                     pxFile->Buffer.Data,
@@ -2397,6 +2440,7 @@ void PXAPI PXFileCursorMoveTo(PXFile PXREF pxFile, const PXSize position)
         case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
         case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
         {
+            pxFile->Buffer.CursorOffsetBit = 0;
             pxFile->Buffer.CursorOffsetByte = minimalInBoundsPosition;
             break;
         }
@@ -2416,7 +2460,7 @@ void PXAPI PXFileCursorMoveTo(PXFile PXREF pxFile, const PXSize position)
             LONG sizeLow = position & 0x00000000FFFFFFFF;
             LONG sizeHigh = (position & 0xFFFFFFFF00000000) >> 32;
 #endif
-
+            pxFile->Buffer.CursorOffsetBit = 0;
             pxFile->Buffer.CursorOffsetByte = SetFilePointer(pxFile->FileHandle, sizeLow, &sizeHigh, FILE_BEGIN); // Windows XP, Kernel32.dll, fileapi.h
 
 #endif
@@ -4051,7 +4095,7 @@ PXResult PXAPI PXFileStoreOnDiskA(PXFile PXREF pxFile, const char* fileName)
 
     DWORD writtenFiles = 0;
 
-    WriteFile(fileHandle, pxFile->Buffer.Data, pxFile->Buffer.SizeAllowedToUse, &writtenFiles, NULL);
+    WriteFile(fileHandle, pxFile->Buffer.Data, pxFile->Buffer.CursorOffsetByte, &writtenFiles, NULL);
 
     FlushFileBuffers(fileHandle);
 

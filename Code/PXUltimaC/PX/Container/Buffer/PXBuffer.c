@@ -7,6 +7,7 @@ PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
     pxBuffer->SizeAllocated = size;
     pxBuffer->SizeAllowedToUse = size;
     pxBuffer->Adress = PXMemoryHeapCalloc(PXNull, 1, size);
+    pxBuffer->IsOwned = PXTrue;
 
     PXMemorySet(pxBuffer->Adress, 0xFF, size);
 
@@ -33,13 +34,17 @@ PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
     pxBuffer->Adress = PXMemoryHeapRealloc(PXNull, pxBuffer->Data, size);
     pxBuffer->SizeAllocated = size;    
+    pxBuffer->IsOwned = PXTrue;
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer)
 {
-    PXMemoryHeapFree(PXNull, pxBuffer->Data);
+    if(pxBuffer->IsOwned)
+    {
+        PXMemoryHeapFree(PXNull, pxBuffer->Data);      
+    }
 
     PXClear(PXBuffer, pxBuffer);
 

@@ -40,6 +40,8 @@ typedef struct PXBuffer_
     // The size of the data pace in which you can move 
     // without triggering an invalid access.
     PXSize SizeAllocated;
+
+    PXBool IsOwned;
 }
 PXBuffer;
 
