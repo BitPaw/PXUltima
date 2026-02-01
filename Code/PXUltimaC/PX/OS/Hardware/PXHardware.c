@@ -162,17 +162,17 @@ PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
         };
         const PXI8U amount = sizeof(list) / sizeof(PXTypeBinding);
 
-        PXFile* pxFile = PXFileCreate();
+        PXFile* pxFile = PXNull;
 
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXFileCreateInfo pxFileOpenInfo;
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.FilePath.A = path;
         pxFileOpenInfo.FilePath.SizeAllocated = size;
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
         pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
 
-        PXFileOpen(pxFile, &pxFileOpenInfo);
+        PXFileCreate(&pxFile, &pxFileOpenInfo);
 
         for(PXI8U i = 0; i < amount; ++i)
         {
