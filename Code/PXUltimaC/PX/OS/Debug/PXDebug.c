@@ -371,7 +371,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
             PXText pxText;
             PXTextConstructNamedBufferA(&pxText, fileNameBuffer, 256);
 
-            PXFile* pxFile = PXFileCreate();
+            PXFile* pxFile = PXNull;// PXFileCreate();
             //file.FileHandle = createProcessDebugInfo->hFile;
 
             const PXResult res = PXFileName(pxFile, &pxText);
@@ -432,7 +432,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
             PXText pxText;
             PXTextConstructNamedBufferA(&pxText, fileNameBuffer, 256);
 
-            PXFile* file = PXFileCreate();
+            PXFile* file = PXNull;// PXFileCreate();
             //file.FileHandle = loadDLLDebugInfo->hFile;
 
             const PXResult res = PXFileName(file, &pxText);
