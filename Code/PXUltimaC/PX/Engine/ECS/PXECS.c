@@ -654,20 +654,16 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
         }
     }
 
-
-    PXFile* pxFile = PXFileCreate();
-    pxECSCreateInfo->FileCurrent = pxFile;
-
     // Loading and map file if possible
     {
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXFileCreateInfo pxFileOpenInfo;
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.FilePath = *pxFilePath;
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
-        const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileOpenInfo);
+        const PXResult fileLoadingResult = PXFileCreate(&pxECSCreateInfo->FileCurrent, &pxFileOpenInfo);
 
         if(PXResultOK != fileLoadingResult)
             return fileLoadingResult;
@@ -792,7 +788,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
 
 
 
-        PXFileClose(pxFile);
+        PXFileClose(pxECSCreateInfo->FileCurrent);
 
         if(PXResultOK != fileParsingResult)
         {
@@ -804,7 +800,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
                 "Load-Extract",
                 "Failed. Took:%6.3f  ROPs:%-7i <%s>",
                 pxECSCreateInfo->TimeTransphere,
-                PXFileOperationsRead(pxFile),
+                PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
                 pxFilePath->A
             );
 #endif
@@ -820,7 +816,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             "Load-Extract",
             "OK! Took:%6.3f, ROPs:%-7i PageFaults:%-7i <%s>",
             pxECSCreateInfo->TimeTransphere,
-            PXFileOperationsRead(pxFile),
+            PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
             pxPerformanceInfo.PageFaultCount,
             pxFilePath->A
         );
@@ -840,18 +836,18 @@ PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
 
     PXText* pxFilePath = &pxECSCreateInfo->FilePath;
 
-    PXFile* pxFile = PXFileCreate();
+    PXFile* pxFile = PXNull;
 
     // Loading file
     {
-        PXFileOpenInfo pxFileIOInfo;
-        PXClear(PXFileOpenInfo, &pxFileIOInfo);
+        PXFileCreateInfo pxFileIOInfo;
+        PXClear(PXFileCreateInfo, &pxFileIOInfo);
         pxFileIOInfo.FilePath = *pxFilePath;
         pxFileIOInfo.AccessMode = PXAccessModeWriteOnly;
         pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileIOInfo.FlagList = PXFileIOInfoFilePhysical | PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 
-        const PXResult fileLoadingResult = PXFileOpen(pxFile, &pxFileIOInfo);
+        const PXResult fileLoadingResult = PXFileCreate(&pxFile, &pxFileIOInfo);
 
         if(PXResultOK != fileLoadingResult)
             return fileLoadingResult;
