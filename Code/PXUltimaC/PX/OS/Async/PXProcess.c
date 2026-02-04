@@ -346,7 +346,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
         {
             case PXHandleTypeFile:
             {
-                PXFile* pxFile = PXFileCreate();
+                PXFile* pxFile = PXNull; 
                 //pxFile.FileHandle = handleCurrent;
 
                 PXText buffer;
