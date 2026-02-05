@@ -6,6 +6,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Media/PXText.h>
 #include <PX/Container/Buffer/PXBuffer.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 #if OSUnix
 #define PXPathSizeMax 260
@@ -86,8 +87,10 @@ PXFileEntry;
 #define PXFileIOInfoAllowOverrideOnCreate   (1<<6)
 
 // File IO info, how a file needs to be created or opened
-typedef struct PXFileOpenInfo_
+typedef struct PXFileCreateInfo_
 {
+    PXECSCreateInfo Info;
+
     PXText FilePath;  // Path to the file we want to use
 
     PXAccessMode AccessMode;
@@ -99,7 +102,7 @@ typedef struct PXFileOpenInfo_
 
     PXBuffer Data;
 }
-PXFileOpenInfo;
+PXFileCreateInfo;
 
 
 typedef struct PXFile_ PXFile;
@@ -119,8 +122,22 @@ PXPublic void PXAPI PXTypeEntryInfo
 
 
 //---<Utility>---------------------------------------------------------
-PXPublic PXFile* PXAPI PXFileCreate(void);
-PXPublic PXBool PXAPI PXFileRelese(PXFile PXREF pxFile);
+PXPublic PXResult PXAPI PXFileRegisterToECS();
+PXPublic PXResult PXAPI PXFileCreate(PXFile** pxFileREF, PXFileCreateInfo PXREF pxFileCreateInfo);
+
+
+typedef PXResult (PXAPI* PXFileFunction)(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo);
+
+PXPrivate PXResult PXAPI PXFilePhysical(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo);
+PXPrivate PXResult PXAPI PXFileVirtual(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo);
+PXPrivate PXResult PXAPI PXFileTemp(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo);
+PXPrivate PXResult PXAPI PXFileMemory(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo);
+
+PXPublic PXResult PXAPI PXFileRelease(PXFile PXREF pxFile);
+
+PXPublic PXResult PXAPI PXFileClose(PXFile PXREF pxFile);
+
+
 
 PXPublic PXBuffer* PXAPI PXFileBufferGET(PXFile PXREF pxFile);
 
@@ -198,11 +215,6 @@ PXPublic PXBool PXAPI PXFileKeyValueFetch(PXFile PXREF pxFile, PXTypeBinding PXR
 
 //---<Convert>---------------------------------------------------------
 PXPrivate PXI32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
-//---------------------------------------------------------------------
-
-//---<I/O>-------------------------------------------------------------
-PXPublic PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo);
-PXPublic PXResult PXAPI PXFileClose(PXFile PXREF pxFile);
 //---------------------------------------------------------------------
 
 //---<Mapping>---------------------------------------------------------
@@ -335,6 +347,9 @@ PXPublic PXSize PXAPI PXFileReadMultible(PXFile PXREF pxFile, const PXTypeEntry 
 typedef PXSize(PXAPI* PXFileIOMultibleFunction)(PXFile PXREF pxFile, void PXREF value, const PXSize length);
 
 PXPublic PXSize PXAPI PXFileIOMultible(PXFile PXREF pxFile, const PXTypeEntry PXREF pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction);
+
+
+PXPublic PXSize PXAPI PXFileRead(PXFile PXREF pxFile, PXFile PXREF pxFileOUT, const PXSize length);
 
 // Read x amounts of bytes and write into a buffer.
 // If there is no output buffer given, the cursor will just skip forward.

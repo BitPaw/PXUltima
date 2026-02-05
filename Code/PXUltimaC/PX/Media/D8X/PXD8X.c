@@ -56,6 +56,30 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
     PXD8XDat* pxD8XDat = &dummy;
 
+
+
+    // a .dat can contain a .d8w. Those need a .d8t. Lets seek if we got one
+    PXFile* texturePool = 0;
+
+    PXFileCreateInfo pxFileOpenInfo;
+    PXClear(PXFileCreateInfo, &pxFileOpenInfo);
+    pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+    pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+    pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
+
+    char text[260];
+    PXTextFromAdressA(&pxFileOpenInfo.FilePath, text, 0, sizeof(text));
+    PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central/angel north central.d8t");
+
+    PXFileCreate(&texturePool, &pxFileOpenInfo);
+
+
+
+
+
+
+
+
     PXFileReadI32U(pxFile, &pxD8XDat->TableEntryAmount);
     PXFileReadI32U(pxFile, &pxD8XDat->TableOffset);
 
@@ -198,6 +222,8 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             PXFileReadB(pxFile, pxD8XDatEntry->FileData, pxD8XDatEntry->DecompressedSize);
         }
 
+        char* extension = "unkown";
+
         PXBuffer* pxBuffer = PXFileBufferGET(pxD8XDatEntry->FileData);
         PXBool isD8W = PXTextCompareA
         (
@@ -207,6 +233,34 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             3,
             PXTextCompareRequireSameLength
         );
+        PXBool isJet = PXTextCompareA
+        (
+            pxBuffer->Data,
+            18,
+            ";; Jet Spline File",
+            18,
+            PXTextCompareRequireSameLength
+        );
+
+        PXBool isAtm = PXTextCompareA
+        (
+            pxBuffer->Data,
+            17,
+            "[BeginAtmosphere]",
+            17,
+            PXTextCompareRequireSameLength
+        );
+
+  
+
+        if(isJet)
+        {
+            extension = "spl";
+        }
+        if(isJet)
+        {
+            extension = "atm";
+        }
 
         if(isD8W)
         {
@@ -218,6 +272,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                 3,
                 PXTextCompareRequireSameLength
             );
+            extension = "d8w";
         }
     
         if(isD8W)
@@ -230,7 +285,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             PXClear(PXECSCreateInfo, &pxECSCreateInfoSub);
             pxECSCreateInfoSub.FileCurrent = pxD8XDatEntry->FileData;
 
-            PXD8WLoadFromFile(&pxECSCreateInfoSub);
+            PXD8WLoadFromFile(&pxECSCreateInfoSub, texturePool);
 
             PXFileCursorMoveTo(pxD8XDatEntry->FileData, oldPos);
         }
@@ -238,7 +293,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         char fileName[64];
         PXTextFromAdressA(&pxFileOpenInfo.FilePath, fileName, 0, sizeof(fileName));
-        PXTextPrint(&pxFileOpenInfo.FilePath, "J/Unnamed_%8x8", pxD8XDatEntry->Hash);
+        PXTextPrint(&pxFileOpenInfo.FilePath, "J/Unnamed_%8x8.%s", pxD8XDatEntry->Hash, extension);
 
         PXFileStoreOnDiskA(pxD8XDatEntry->FileData, fileName);
         PXFileClose(pxD8XDatEntry->FileData);
@@ -312,15 +367,23 @@ PXResult PXAPI PXD8GLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         PXD8GGeometryVertexBlock(&mesh->VertexBlock, pxFile);
 
         PXFileReadI32U(pxFile, &mesh->face_count);
-        PXFileReadB(pxFile, mesh->IndexList, sizeof(PXI16U) * mesh->face_count);
+        mesh->IndexListArray = PXFileDataPosition(pxFile);
+        mesh->IndexListSize = sizeof(PXI16U) * mesh->face_count;
+        PXFileCursorAdvance(pxFile, mesh->IndexListSize);
+
         PXFileReadI32U(pxFile, &mesh->node_count);
-        PXFileReadB(pxFile, mesh->nodes, sizeof(PXMatrix4x4F) * mesh->node_count);
+        mesh->NodeListAdress = PXFileDataPosition(pxFile);
+        mesh->NodeListSize = sizeof(PXMatrix4x4F) * mesh->node_count;
+        PXFileCursorAdvance(pxFile, mesh->NodeListSize);
+
     }
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
+int counter = 0;
+
+PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePool)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
@@ -331,16 +394,18 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     PXD8TextureTable* textureTable = &dummy;
 
     PXFileReadI32U(pxFile, &textureTable->TextureAmount);
-    PXFileReadI32U(pxFile, &textureTable->SetAmount);
+    PXFileReadI32U(pxFile, &textureTable->TextureSetAmount);
     PXFileReadI32U(pxFile, &textureTable->TotalSizeRequested);
 
-    textureTable->SetList = PXMemoryHeapCallocT(PXD8TextureSet, textureTable->SetAmount);
+    textureTable->SetList = PXMemoryHeapCallocT(PXD8TextureSet, textureTable->TextureSetAmount);
     textureTable->EntryList = PXMemoryHeapCallocT(PXD8TextureTableEntry, textureTable->TextureAmount);
 
+    PXI32U totalOffset = 0;
     PXI32U totalIndex = 0;
 
     // For every set..
-    for(PXI32U setIndex = 0; setIndex < textureTable->SetAmount; ++setIndex)
+    // Start at index 12
+    for(PXI32U setIndex = 0; setIndex < textureTable->TextureSetAmount; ++setIndex)
     {
         PXD8TextureSet* pxD8TextureSet = &textureTable->SetList[setIndex];
 
@@ -358,7 +423,7 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             "Texture",
             "Set (%i/%i), Amount:<%i>",
             setIndex +1,
-            textureTable->SetAmount,
+            textureTable->TextureSetAmount,
             pxD8TextureSet->TextureEntryAmount
         );
 #endif
@@ -386,20 +451,28 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             PXFileReadI32U(pxFile, &pxD8TextureTableEntry->UnknownH);
 
 
+            pxD8TextureTableEntry->Offset = totalOffset;
+            totalOffset += pxD8TextureTableEntry->RawDataSize;
+
 #if PXLogEnable
+            PXSize sizeMax = PXFileSizeToRead(pxTexturePool);
+
             PXLogPrint
             (
                 PXLoggingInfo,
                 PXD8WName,
                 "Texture",
-                "%c%c%c%c %4ix%-4i (%8i)",
+                "%c%c%c%c %4ix%-4i (%8i @ %8i/%8i <%3i>) ",
                 pxD8TextureTableEntry->PixelFormat[0],
                 pxD8TextureTableEntry->PixelFormat[1],
                 pxD8TextureTableEntry->PixelFormat[2],
                 pxD8TextureTableEntry->PixelFormat[3],
                 pxD8TextureTableEntry->TextureWidth,
                 pxD8TextureTableEntry->TextureHeight,
-                pxD8TextureTableEntry->RawDataSize
+                pxD8TextureTableEntry->RawDataSize,
+                pxD8TextureTableEntry->Offset,
+                sizeMax,
+                pxD8TextureTableEntry->Offset * 100/ sizeMax
             );
 #endif
 
@@ -421,11 +494,10 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 #endif
 
 
-
+#if 1
     for(PXI32U i = 0; i < textureTable->TextureAmount; ++i)
     {
         PXD8TextureTableEntry* pxD8TextureTableEntry = &textureTable->EntryList[i];
-
 
 
         PXFileCreateInfo pxFileCreateInfo;
@@ -433,7 +505,7 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         pxFileCreateInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileCreateInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileCreateInfo.FlagList = PXFileIOInfoFileVirtual;
-        pxFileCreateInfo.FileSizeRequest = pxD8TextureTableEntry->RawDataSize;
+        pxFileCreateInfo.FileSizeRequest = pxD8TextureTableEntry->RawDataSize+128;
 
         PXFileCreate(&pxD8TextureTableEntry->TextureFile, &pxFileCreateInfo);
 
@@ -506,20 +578,21 @@ PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         PXAssert(124 == readAbount, "Cant");
 
-        PXFileRead(pxFile, pxFileOUT, pxD8TextureTableEntry->RawDataSize);
+        PXFileCursorMoveTo(pxTexturePool, pxD8TextureTableEntry->Offset);
+        PXFileRead(pxTexturePool, pxFileOUT, pxD8TextureTableEntry->RawDataSize);
 
 
         PXText pxText;
         char fileName[64];
         PXTextFromAdressA(&pxText, fileName, 0, sizeof(fileName));
-        PXTextPrint(&pxText, "J/Q/Unnamed_UUPx%i.dds", i);
+        PXTextPrint(&pxText, "J/Q/Unnamed_UUPx%i.dds", ++counter);
 
         PXFileStoreOnDiskA(pxFileOUT, fileName);
         PXFileClose(pxFileOUT);
 
         //PXFileCursorAdvance(pxFile, &pxD8TextureTableEntry->RawDataSize);
     }
-
+#endif
 
     return PXResultOK;
 }

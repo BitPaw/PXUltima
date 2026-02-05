@@ -46,6 +46,7 @@ typedef struct PXD8TextureTableEntry_
     PXI32U UnknownG;
     PXI32U UnknownH;
 
+    PXI32U Offset;
     PXFile* TextureFile;
 }
 PXD8TextureTableEntry;
@@ -62,7 +63,7 @@ PXD8TextureSet;
 typedef struct PXD8TextureTable_
 { 
     PXI32U TextureAmount; // Total amount of textures in this file
-    PXI32U SetAmount; // Textures are grouped in sets
+    PXI32U TextureSetAmount; // Textures are grouped in sets
     PXI32U TotalSizeRequested; // All data?
 
     PXD8TextureSet* SetList;
@@ -125,6 +126,12 @@ typedef struct PXD8GeometryMesh_
     PXI16U* IndexList;
     PXI32U node_count;
     PXMatrix4x4F* nodes;
+
+    void* NodeListAdress;
+    PXSize NodeListSize;
+
+    void* IndexListArray;
+    PXSize IndexListSize;
 }
 PXD8GeometryMesh;
 
@@ -153,8 +160,7 @@ PXPublic PXResult PXAPI PXD8DatLoadFromFile(PXECSCreateInfo PXREF pxResourceLoad
 PXPrivate void PXAPI PXD8GGeometryVertexBlock(PXD8GeometryVertexBlock PXREF pxD8GeometryVertexBlock, PXFile PXREF pxFile);
 PXPrivate void PXAPI PXD8GGeometryVertexFVFParse(PXD8GeometryVertexFVF PXREF pxD8GeometryVertexFVF, PXFile PXREF pxFile);
 PXPublic PXResult PXAPI PXD8GLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
-
-PXPublic PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXD8WLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePool);
 PXPublic PXResult PXAPI PXD8TLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
 PXPublic PXResult PXAPI PXD8MLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
 
