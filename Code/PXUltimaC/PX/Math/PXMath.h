@@ -6,11 +6,11 @@
 #include <PX/Media/PXType.h>
 
 //---<Constants>---------------------------------------------------------------
-#define PXMathConstantPI 3.1415926535897932384626433832     // Pi, Archimedes' constant or Ludolph's number
-#define PXMathConstantE 2.71828182845904523536028747135266249
-#define PXMathConstantP 1.32471795724474602596090885447809734
-#define PXMathConstantA 2.50290787509589282228390287321821578
-#define PXMathConstantGravity 0.00000000006673
+PXPublic const PXF64 PXMathPI;  // Pi, Archimedes' constant or Ludolph's number
+PXPublic const PXF64 PXMathE;
+PXPublic const PXF64 PXMathP;
+PXPublic const PXF64 PXMathA;
+PXPublic const PXF64 PXMathGravity;
 //-----------------------------------------------------------------------------
 
 //---<Makro Functions>---------------------------------------------------------

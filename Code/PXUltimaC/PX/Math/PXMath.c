@@ -18,8 +18,11 @@
 
 #define PXStandardLibraryMathUse 1
 
-const PXF32 PXMathConstantPIF = PXMathConstantPI;
-const PXF64 PXMathConstantPID = PXMathConstantPI;
+const PXF64 PXMathPI = 3.1415926535897932384626433832;
+const PXF64 PXMathE = 2.71828182845904523536028747135266249;
+const PXF64 PXMathP = 1.32471795724474602596090885447809734;
+const PXF64 PXMathA = 2.50290787509589282228390287321821578;
+const PXF64 PXMathGravity = 0.00000000006673;
 
 PXMath GLOBALPXMath;
 
@@ -751,7 +754,7 @@ double PXAPI PXMathLogarithmus(int x, double exponent)
 
 double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
 {
-    return PXMathConstantGravity * ((massA * massB) / (PXMathPower(distance, 2)));
+    return PXMathGravity * ((massA * massB) / (PXMathPower(distance, 2)));
 }
 
 int PXAPI PXMathCeilingF(const PXF32 value)
@@ -1326,12 +1329,12 @@ unsigned long PXAPI PXMathFibonacci(unsigned long step)
 
 PXF64 PXAPI PXMathRadiansToDegree(const PXF64  radians)
 {
-    return (180.0 / PXMathConstantPI) * radians;
+    return (180.0 / PXMathPI) * radians;
 }
 
 PXF64 PXAPI PXMathDegreeToRadians(const PXF64  degree)
 {
-    return (PXMathConstantPI / 180.0) * degree;
+    return (PXMathPI / 180.0) * degree;
 }
 
 PXF32 PXAPI PXMathLiniarF(const PXF32 yMinimum, const PXF32 yMaximum, const PXF32 xMinimum, const PXF32 xMaximum, const PXF32 xValue)
