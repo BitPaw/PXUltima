@@ -821,9 +821,9 @@ PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize b
     for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
         samecounter += a[index] == b[index];
 
-    if(!(PXTextCompareRequireSameLength & flags))
+    if(PXTextCompareRequireSameLength & flags)
     {
-        return samecounter == index;
+        return samecounter == textSize;
     }
 
     const PXBool stillHasDatainA = textSize < aSize;
