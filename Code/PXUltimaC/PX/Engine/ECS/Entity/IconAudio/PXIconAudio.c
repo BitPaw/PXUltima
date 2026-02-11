@@ -146,8 +146,8 @@ PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXDrawInfo PXREF p
 
     // Sound waves: draw arcs centered roughly at (wx0, 0)
     // Arc from -45° to +45° (like typical speaker icon)
-    float ang0 = (float)(-PXMathConstantPI * 0.25);
-    float ang1 = (float)(+PXMathConstantPI * 0.25);
+    float ang0 = (float)(-PXMathPI * 0.25);
+    float ang1 = (float)(+PXMathPI * 0.25);
     for(int wave = 0; wave < 2; ++wave) {
         float R = (wave == 0) ? waveR1 : waveR2;
         float step = (ang1 - ang0) / (float)waveSegments;
