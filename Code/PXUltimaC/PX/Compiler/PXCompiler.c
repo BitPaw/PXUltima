@@ -952,7 +952,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 
     // Valid call
     {
-        const PXBool isValidCall = pxCompiler->ReadInfo.FileCache && pxCompiler->ReadInfo.FileInput;
+        const PXBool isValidCall = pxCompiler->ReadInfo.FileInput;
 
         if(!isValidCall)
         {
@@ -967,13 +967,13 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 
     // Settings invalid?
 
-    PXFileOpenInfo pxFileOpenInfo;
-    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+    PXFileCreateInfo pxFileOpenInfo;
+    PXClear(PXFileCreateInfo, &pxFileOpenInfo);
     pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
     pxFileOpenInfo.FileSizeRequest = PXFileRemainingSize(pxCompiler->ReadInfo.FileInput) * 8u;
     pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
-    const PXResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
+    const PXResult pxOpenResult = PXFileCreate(&pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
 
 
     PXSize currentLine = 1;
