@@ -209,6 +209,8 @@ typedef struct PXVector4F32_
         };
 
         PXF32 Data[4];
+
+        PXVector3F32 V3;
     };
 }
 PXVector4F32;
