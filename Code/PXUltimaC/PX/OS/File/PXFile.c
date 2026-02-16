@@ -2412,6 +2412,11 @@ PXSize PXAPI PXFileFindEndOfText(PXFile PXREF pxFile)
 
 void* PXAPI PXFileDataAtCursor(PXFile PXREF pxFile)
 {
+    if(!pxFile)
+    {
+        return 0;
+    }
+
     switch(pxFile->LocationMode)
     {
         case PXFileLocationModeInternal: // Memory is handled internally.
