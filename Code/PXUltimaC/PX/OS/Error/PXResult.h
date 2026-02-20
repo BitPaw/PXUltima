@@ -27,6 +27,7 @@ typedef enum PXResult_
     PXResultRefusedParameterInvalid, // [INVAL] Any given argument is invalid
 
     // Soft-Exceptions
+    PXResultRefusedNoPlaceToStore,
     PXResultRefusedNotEnoughMemory,
 
     // Hard-Exceptions
@@ -35,6 +36,7 @@ typedef enum PXResult_
     PXResultExceptionDataMisalignment,
     PXResultExceptionIllegalInstruction, // [SIGILL] Invalid or unsupported insruction executed by CPU.
     PXResultExceptionPageLost, // STATUS_IN_PAGE_ERROR
+
 
 
 
