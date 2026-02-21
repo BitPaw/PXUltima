@@ -965,6 +965,7 @@ PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap)
 void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap PXREF pxMemoryHeap)
 {
     pxMemoryHeap->HeapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    pxMemoryHeap->Allocated = 0;
 }
 
 PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF adress)
