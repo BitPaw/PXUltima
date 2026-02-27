@@ -207,17 +207,16 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
 
 PXResult PXAPI PXXMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* tokenSteam = PXFileCreate();
-
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.ReadInfo.FileCache = tokenSteam;
     //pxCompiler.Flags =
 
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
+
+    PXFile* tokenSteam = pxCompiler.ReadInfo.FileCache;
 
     while (!PXFileIsAtEnd(tokenSteam))
     {
