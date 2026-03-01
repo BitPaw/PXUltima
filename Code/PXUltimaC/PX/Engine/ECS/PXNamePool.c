@@ -2,9 +2,12 @@
 
 #include <PX/Container/Dictionary/PXDictionary.h>
 #include <PX/Media/PXText.h>
+#include <PX/OS/Memory/PXMemory.h>
 
 typedef struct PXNamePool_
 {
+    PXECSInfo Info;
+
     PXDictionaryT(PXID, void*)* NameLookup;
 }
 PXNamePool;
