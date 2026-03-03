@@ -26,7 +26,8 @@ typedef enum PXECSType_
     PXECSTypeEntity, // Spawnable
     PXECSTypeComponent, // Attachable data to entity
     PXECSTypeResource, // Data independed from an entity
-    PXECSTypeSystem
+    PXECSTypeSystem,
+    PXECSTypeContainer
 }
 PXECSType;
 
@@ -119,16 +120,25 @@ PXECSRegisterInfo;
 // Additional use is to define current storage and interactions.
 typedef struct PXECSInfo_
 {
-    //PXHierarchicalNode Hierarchy;
-
-   // PXHandle Handle;
-
     PXID ID; // Identification of this object managed by the engine itself.
 
     PXI32U Setting; // Rendering behaviour
     PXI32U Behaviour; // Depends on the type of the resource
 }
 PXECSInfo;
+
+
+typedef PXResult(PXAPI* PXECSEventCallBack)(PXECSInfo PXREF pxECSInfo);
+
+// Intereted, we need a callback so we can reverse this.
+typedef struct PXECSEventInfo_
+{
+    PXECSInfo Info;
+
+    PXECSEventCallBack EventCallBack;
+}
+PXECSEventInfo;
+
 
 
 // To prevent stale references to resources
@@ -312,6 +322,10 @@ PXPublic PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty);
 // Check if a reference has gotten stale
 PXPublic PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece);
 //---------------------------------------------------------
+
+
+
+
 
 
 
