@@ -52,7 +52,6 @@
 #include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
 #include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
 
-#include <PX/Engine/ECS/System/PXAudioSystem.h>
 #include <PX/Engine/ECS/System/PXEngine.h>
 #include <PX/Engine/ECS/System/PXRenderingSystem.h>
 
@@ -131,7 +130,7 @@ const PXECSRegisterFunction pxECSRegisterList[] =
 
     PXWindowRegisterToECS,
 
-    PXAudioSystemRegisterToECS,
+    //PXAudioSystemRegisterToECS,
     PXEngineRegisterToECS,
     PXRenderingSystemRegisterToECS,
     
@@ -143,14 +142,15 @@ const char* PXECSTypeToString(const PXECSType pxECSType)
     switch(pxECSType)
     {
         case PXECSTypeEntity:   
-            return "Enity";
+            return "Entity";
         case PXECSTypeComponent:   
             return "Component";
         case PXECSTypeResource:
             return "Resource";
         case PXECSTypeSystem: 
             return "System";
-
+        case PXECSTypeContainer:
+            return "Container";
         case PXECSTypeInvalid:
         default:
             return "Invalid";
