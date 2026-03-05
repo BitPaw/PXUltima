@@ -1,6 +1,7 @@
 #include "PXIcon.h"
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/Memory/PXMemory.h>
 
 #include <Windows.h>
 #include <shellapi.h>
@@ -13,7 +14,9 @@ const PXECSRegisterInfoStatic PXIconRegisterInfoStatic =
     sizeof(PXIcon),
     __alignof(PXIcon),
     PXECSTypeResource,
-    PXIconCreate
+    PXIconCreate,
+    PXNull,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXIconRegisterInfoDynamic;
 
