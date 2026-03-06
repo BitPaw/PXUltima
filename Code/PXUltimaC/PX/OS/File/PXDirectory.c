@@ -51,13 +51,14 @@ void PXAPI PXFileElementInfoConvertFrom
     PXI8U depth
 )
 {
-    PXText pxTextTemp;
-    PXTextFromAdressW(&pxTextTemp, findData->cFileName, PXTextUnkownLength, MAX_PATH);
-    PXTextCreateCopy(&pxFileEntry->FilePath, &pxTextTemp);
+    PXTextFromAdressW(&pxFileEntry->FilePath, findData->cFileName, PXTextUnkownLength, MAX_PATH);
 
     pxFileEntry->Type = PXFileTypeGet(findData);
     pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
+
+    // STACKCOPY!
+
 
     // TODO: Time??
 
@@ -83,9 +84,9 @@ void PXAPI PXFileElementInfoConvertFrom
 
 void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntryINPUT)
 {
-    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.EntryAmountUsed + 100;
+    pxFileEntryINPUT->ID = pxDirectorySearchCache->FilePathCache.EntryAmount + 100;
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -107,7 +108,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchC
         pxFileEntryINPUT->FilePath.SizeUsed
     );
 
-    PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
+   // PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
 
 
     /*
@@ -179,7 +180,10 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
     PXListDynamicInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXI32U), PXListDynamicSizeObject1Byte);
     PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 40);
 
-    return PXResultInvalid;
+
+    PXBufferEnsureTotal(&pxDirectorySearchCache->FilePathCache.Buffer, 4096*4);
+
+    //return PXResultInvalid;
 
     PXFileEntry pxFileEntry;
 
@@ -198,13 +202,12 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
         {
             break;
         }
-
-        PXDirectoryEntryStore(pxDirectorySearchCache, &pxFileEntry);
     }
 
     const PXBool close = PXDirectoryClose(pxDirectorySearchCache);
 
 
+#if PXLogEnable
     // Fix stale references because an reallocation could have moved the data
     for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
     {
@@ -212,26 +215,53 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
 
         PXI32U key = i+100;
 
+        PXText pxText;
+
         PXListDynamicGet
         (
             &pxDirectorySearchCache->FilePathCache, 
             &key, 
-            &pxFileEntry->FilePath.A,
-            &pxFileEntry->FilePath.SizeUsed
+            &pxText.A,
+            &pxText.SizeUsed
         );
 
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXDirectoryText,
-            "Search",
-            "ID:%3i - %s",
-            key,
-            pxFileEntry->FilePath.A
-        );
-#endif
+
+        switch(pxFileEntry->FilePath.Format)
+        {
+            case TextFormatASCII:
+            {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXDirectoryText,
+                    "Search",
+                    "ID:%3i - %s",
+                    key,
+                    pxText.A
+                );
+
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXDirectoryText,
+                    "Search",
+                    "ID:%3i - %ls",
+                    key,
+                    pxText.W
+                );
+
+                break;
+            }
+
+            default:
+                break;
+        }
     }
+#endif
 
     return PXResultOK;
 }
@@ -342,7 +372,11 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache PXREF pxDirectorySearchCache
     {
         // We will always use the UNICODE version, we cant assume ASCII.
         WIN32_FIND_DATAW searchResult;
-        const PXBool fetchSuccessful = FindNextFileW(pxDirectorySearchCache->DirectoryHandleCurrent, &searchResult);
+        const PXBool fetchSuccessful = FindNextFileW
+        (
+            pxDirectorySearchCache->DirectoryHandleCurrent,
+            &searchResult
+        );
 
         if(!fetchSuccessful)
         {
@@ -359,6 +393,8 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache PXREF pxDirectorySearchCache
         {
             continue;
         }
+
+        PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
 
         break;
     }
