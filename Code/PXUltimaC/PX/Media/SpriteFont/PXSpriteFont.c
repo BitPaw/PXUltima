@@ -470,7 +470,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont PXREF pxSpriteFont,
 
 PXResult PXAPI PXSpriteFontLoadFromFile(PXFont PXREF pxFont, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* tokenStream = PXFileCreate();
+
 
     PXSpriteFont pxSpriteFontEE;
     PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
@@ -482,7 +482,6 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXFont PXREF pxFont, PXECSCreateInfo PXR
     // Lexer
     {
         PXClear(PXCompiler, &pxCompiler);
-        pxCompiler.ReadInfo.FileCache = tokenStream;
         pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
         pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
         PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
@@ -490,6 +489,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXFont PXREF pxFont, PXECSCreateInfo PXR
         PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
     }
 
+    PXFile* tokenStream = pxCompiler.ReadInfo.FileCache;
 
     for(;;)
     {

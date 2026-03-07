@@ -57,27 +57,7 @@ void PXAPI PXFileElementInfoConvertFrom
     pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
 
-    // STACKCOPY!
-
-
-    // TODO: Time??
-
-
-    /*
-
-    // Make full path
-    {
-        pxFileElementInfo->FullPathOffset += PXTextCopyA(findData->cFileName, PXTextUnkownLength, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
-    }
-
-    if(pxFileElementInfo->Type == PXFileElementInfoTypeDictionary)
-    {
-        pxFileElementInfo->FullPathOffset += PXTextCopyA("/", 1, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
-    }
-
-    // Replace all \ with /
-    PXTextReplaceByte(pxFileElementInfo->FullPath, pxFileElementInfo->FullPathOffset, '\\', '/');
-    */
+    PXIconGetViaFilePath(&pxFileEntry->Icon, &pxFileEntry->FilePath);
 }
 
 #endif
@@ -108,7 +88,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchC
         pxFileEntryINPUT->FilePath.SizeUsed
     );
 
-   // PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
+    PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
 
 
     /*
@@ -178,7 +158,7 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
     PXListDynamicInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXI32U), PXListDynamicSizeObject1Byte);
-    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 40);
+    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 128);
 
 
     PXBufferEnsureTotal(&pxDirectorySearchCache->FilePathCache.Buffer, 4096*4);

@@ -229,7 +229,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler PXREF pxCompiler, PXI32U PXREF ve
 
 PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* tokenSteam = PXFileCreate();
+ 
 
     struct PXWaveFrontCounter
     {
@@ -274,7 +274,6 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
     PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
@@ -303,6 +302,8 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
+
+    PXFile* tokenSteam = pxCompiler.ReadInfo.FileCache;
 
     // Stage - 1 - Analyse file
 
@@ -811,7 +812,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 
                         const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, data, valuesExpected, &valuesDetected);
                                       
-#if PXLogEnable
+#if PXLogEnable && 0
                         PXLogPrint
                         (
                             PXLoggingInfo,

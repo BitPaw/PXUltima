@@ -13,7 +13,7 @@ void PXAPI PXListInitialize(PXList PXREF pxList, const PXSize dataTypeSize, cons
     if(startAmount)
     {
         // We want to preallocate memory to prepare space for data
-        PXBufferAllocate(&pxList->Buffer, startAmount);
+        PXBufferAllocate(&pxList->Buffer, pxList->ValueTypeSize * startAmount);
         pxList->EntryAmountAllocated = startAmount;
     }
 }

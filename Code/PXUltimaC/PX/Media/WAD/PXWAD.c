@@ -82,14 +82,14 @@ const PXI8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXI32U);
 
 PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile)
 {
-    PXFile* dataCompressed = PXFileCreate();
-    PXFile* dataUncompressed = PXFileCreate();
+    PXFile* dataCompressed = PXNull;
+    PXFile* dataUncompressed = PXNull;
 
-    PXFileOpenInfo pxFileOpenInfo;
+    PXFileCreateInfo pxFileOpenInfo;
 
     // Open/Wrap compressed data
     {
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
@@ -101,12 +101,12 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             pxWADEntry->CompressedSize
         );
 
-        PXFileOpen(dataCompressed, &pxFileOpenInfo);
+        PXFileCreate(dataCompressed, &pxFileOpenInfo);
     }
 
     // target
     {
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FileSizeRequest = pxWADEntry->UncompressedSize;
@@ -128,7 +128,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 #endif 
             pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-            PXFileOpen(dataUncompressed, &pxFileOpenInfo);
+            PXFileCreate(&dataUncompressed, &pxFileOpenInfo);
 
             break;
         }
@@ -175,7 +175,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             );
 #endif 
 
-            PXFileOpen(dataUncompressed, &pxFileOpenInfo);
+            PXFileCreate(dataUncompressed, &pxFileOpenInfo);
 
             PXZSTDDecompress(dataCompressed, dataUncompressed);
 

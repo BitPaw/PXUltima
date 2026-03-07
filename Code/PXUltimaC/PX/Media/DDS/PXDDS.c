@@ -2,6 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/OS/Console/PXConsole.h>
 
 const char PXDDSSignature[4] = { 'D', 'D', 'S', ' ' }; // 0x20534444
 
@@ -81,39 +82,7 @@ PXDDSPixelFormat;
 
 #define DDS_FLAGS_VOLUME 0x00200000 // DDSCAPS2_VOLUME
 
-typedef struct PXDirectDrawTexture_
-{
-    PXI32U Size;
-    PXI32U Flags;
-    PXI32U Height;
-    PXI32U Width;
-    PXI32U pitchOrLinearSize;
-    PXI32U Depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
-    PXI32U MipMapCount;
-    PXI32U ddspf; // DDS_PIXELFORMAT
-    PXI32U caps;
-    PXI32U caps2;
-    PXI32U caps3;
-    PXI32U caps4;
 
-    // DDS_HEADER_DXT10 extension
-    PXI32U GIFormatID; // DXGI_FORMAT
-    PXI32U resourceDimension;
-    PXI32U miscFlag; // See D3D11_RESOURCE_MISC_FLAG
-    PXI32U arraySize;
-
-
-    // Extra
-#if OSUnix
-#elif OSWindows
-    DXGI_FORMAT Format;
-#endif
-
-    PXI8U BitPerPixel;
-
-    PXBool IsDX10;
-}
-PXDirectDrawTexture;
 
 
 #if OSUnix
@@ -248,7 +217,7 @@ static PXI8U PXDXGIBitsPerPixel(DXGI_FORMAT fmt)
 
 #define ISBITMASK(r, g, b, a) (ddpf.RBitMask == r && ddpf.GBitMask == g && ddpf.BBitMask == b && ddpf.ABitMask == a)
 
-DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture PXREF pxDirectDrawTexture)
+DXGI_FORMAT PXDXGIFormatGet(PXDDSHeader PXREF pxDirectDrawTexture)
 {
 #if 0
     if(pxDirectDrawTexture->Flags & DDS_RGB)
@@ -444,6 +413,59 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture PXREF pxDirectDrawTexture)
 
 */
 
+const PXI32U PXDDSHeaderHeaderBinding[] =
+{
+PXTypeI32ULE,//  Size
+PXTypeI32ULE,//  Flags
+PXTypeI32ULE,//  Height
+PXTypeI32ULE,//  Width
+PXTypeI32ULE,//  PitchOrLinearSize
+PXTypeI32ULE,//  Depth
+PXTypeI32ULE,//  MipMapCount
+PXTypeText(44),// Name
+PXTypeI32ULE,//  PixelFormatSize
+PXTypeI32ULE,//  PixelFormatFlags
+PXTypeText(4),// PixelFormatID[4]
+PXTypeI32ULE,// RGBBitCount
+PXTypeI32ULE,// RBitMask
+PXTypeI32ULE,// GBitMask
+PXTypeI32ULE,// BBitMask
+PXTypeI32ULE,// ABitMask
+PXTypeI32ULE,// Caps1
+PXTypeI32ULE,// Caps2
+PXTypeI32ULE,// Caps3
+PXTypeI32ULE,// Caps4
+PXTypeI32ULE // Reserved2
+};
+const PXI8U PXDDSHeaderHeaderBindingSize = sizeof(PXDDSHeaderHeaderBinding) / sizeof(PXI32U);
+
+
+const char PXDDSKey[4][4] =
+{
+    {'D','X','T','1'},
+    {'D','X','T','3'},
+    {'D','X','T','5'},
+    {0x15,0x00,0x00,0x00}
+
+};
+const PXI8U PXDDSAmount = sizeof(PXDDSKey) / sizeof(4);
+
+const PXColorFormat PXDDSKeyFormat[4] =
+{
+    PXColorFormatDXI1,
+    PXColorFormatDXI3,
+    PXColorFormatDXI5,
+    PXColorFormatRGBAI8
+};
+
+
+PXColorFormat PXAPI PXDDSTypeDetect(const char* signature)
+{
+    PXI8U index = PXMemoryCompareC32V(signature, PXDDSKey, PXDDSAmount);
+
+    return PXDDSKeyFormat[index];
+}
+
 PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     if(!pxTexture)
@@ -451,8 +473,8 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         return PXResultOK;
     }
 
-    PXDirectDrawTexture pxDirectDrawTexture;
-    PXClear(PXDirectDrawTexture, &pxDirectDrawTexture);
+    PXDDSHeader pxDirectDrawTexture;
+    PXClear(PXDDSHeader, &pxDirectDrawTexture);
     PXFile PXREF pxFile = pxResourceLoadInfo->FileCurrent;
 
     // Check header signature
@@ -467,32 +489,23 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
     // Read Header
     {
-        const PXTypeEntry pxDataStreamElementList[] =
-        {
-            {&pxDirectDrawTexture.Size,PXTypeI32ULE},
-            {&pxDirectDrawTexture.Flags,PXTypeI32ULE},
-            {&pxDirectDrawTexture.Height,PXTypeI32ULE},
-            {&pxDirectDrawTexture.Width,PXTypeI32ULE},
-            {&pxDirectDrawTexture.pitchOrLinearSize,PXTypeI32ULE},
-            {&pxDirectDrawTexture.Depth,PXTypeI32ULE},
-            {&pxDirectDrawTexture.MipMapCount,PXTypeI32ULE},
-            {PXNull, PXTypePadding(sizeof(PXI32U) * 11u)},
-            {&pxDirectDrawTexture.ddspf,PXTypeI32ULE},
-            {&pxDirectDrawTexture.caps,PXTypeI32ULE},
-            {&pxDirectDrawTexture.caps2,PXTypeI32ULE},
-            {&pxDirectDrawTexture.caps3,PXTypeI32ULE},
-            {&pxDirectDrawTexture.caps4,PXTypeI32ULE},
-            {PXNull, PXTypePadding(sizeof(PXI32U) * 2u)}
-        };
+        const PXSize readAbount = PXFileBinding
+        (
+            pxFile, 
+            &pxDirectDrawTexture, 
+            PXDDSHeaderHeaderBinding,
+            PXDDSHeaderHeaderBindingSize, 
+            PXFileBindingRead
+        );
 
-        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        PXAssert(124 == readAbount, "Has to be");
 
 #if OSUnix
 #elif OSWindows
-        pxDirectDrawTexture.Format = PXDXGIFormatGet(&pxDirectDrawTexture);
+       // pxDirectDrawTexture.Format = PXDXGIFormatGet(&pxDirectDrawTexture);
 #endif
 
-        pxDirectDrawTexture.IsDX10 = PXI32Make('D', 'X', '1', '0') == pxDirectDrawTexture.ddspf;
+        pxDirectDrawTexture.IsDX10 = 0;// PXI32Make('D', 'X', '1', '0') == pxDirectDrawTexture.ddspf;
 
         if(pxDirectDrawTexture.MipMapCount == 0)
         {
@@ -582,10 +595,10 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         }
         else
         {
-            if(pxDirectDrawTexture.caps2 & DDS_CUBEMAP)
+            if(pxDirectDrawTexture.Caps2 & DDS_CUBEMAP)
             {
                 // We require all six faces to be defined.
-                if((pxDirectDrawTexture.caps2 & DDS_CUBEMAP_ALLFACES) != DDS_CUBEMAP_ALLFACES)
+                if((pxDirectDrawTexture.Caps2 & DDS_CUBEMAP_ALLFACES) != DDS_CUBEMAP_ALLFACES)
                 {
                     return PXResultInvalid;
                 }
@@ -705,5 +718,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
 PXResult PXAPI PXDDSSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
+
+
     return PXActionRefusedNotImplemented;
 }

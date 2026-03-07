@@ -163,7 +163,7 @@
     <ClCompile Include="PX\OS\Audio\Windows\PXCoreAudio.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXDirectSound.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXMultiMedia.c" />
-    <ClCompile Include="PX\Engine\ECS\System\PXAudioSystem.c" />
+    <ClCompile Include="PX\Engine\ECS\System\AudioSystem\PXAudioSystem.c" />
     <ClCompile Include="PX\OS\Bash\PXBash.c" />
     <ClCompile Include="PX\OS\ClipBoard\PXClipBoard.c" />
     <ClCompile Include="PX\OS\Console\PXConsole.c" />
@@ -306,6 +306,32 @@
     <ClCompile Include="PX\Engine\ECS\Entity\FieldEffect\PXFieldEffect.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\IconAudio\PXIconAudio.c" />
     <ClCompile Include="PX\Engine\ECS\Entity\IconSun\PXIconSun.c" />
+    <ClCompile Include="PX\Media\D8X\PXD8M.c" />
+    <ClCompile Include="PX\Media\JFS\PXJFS.c" />
+    <ClCompile Include="PX\Media\D8X\PXATM.c" />
+    <ClCompile Include="PX\Media\D8X\PXD8D.c" />
+    <ClCompile Include="PX\Media\D8X\PXD8G.c" />
+    <ClCompile Include="PX\Media\D8X\PXD8T.c" />
+    <ClCompile Include="PX\Media\D8X\PXD8W.c" />
+    <ClCompile Include="PX\Media\D8X\PXDLH.c" />
+    <ClCompile Include="PX\Media\D8X\PXSPL.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Scene\PXScene.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Texture\PXTexturePool.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Texture\PXTextureSet.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Model\PXModelPool.c" />
+    <ClCompile Include="PX\Engine\ECS\System\ECSEventDemuxer\PXECSEventDemuxer.c" />
+    <ClCompile Include="PX\OS\Audio\Windows\PXWASAPI.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Chorus\PXChorus.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Distortion\PXDistortion.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Flanger\PXFlanger.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Equaliser\PXEqualiser.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Reverb\PXReverb.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Compressor\PXCompressor.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Echo\PXEcho.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Gargle\PXGargle.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Noise\PXNoise.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\Weather\PXWeather.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Filter\PXAudioFilterBuffer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -471,7 +497,7 @@
     <ClInclude Include="PX\OS\Audio\Windows\PXCoreAudio.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXDirectSound.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXMultiMedia.h" />
-    <ClInclude Include="PX\Engine\ECS\System\PXAudioSystem.h" />
+    <ClInclude Include="PX\Engine\ECS\System\AudioSystem\PXAudioSystem.h" />
     <ClInclude Include="PX\OS\Bash\PXBash.h" />
     <ClInclude Include="PX\OS\ClipBoard\PXClipBoard.h" />
     <ClInclude Include="PX\OS\Console\PXConsole.h" />
@@ -613,5 +639,33 @@
     <ClInclude Include="PX\Engine\ECS\Entity\FieldEffect\PXFieldEffect.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\IconAudio\PXIconAudio.h" />
     <ClInclude Include="PX\Engine\ECS\Entity\IconSun\PXIconSun.h" />
+    <ClInclude Include="PX\Media\D8X\PXD8M.h" />
+    <ClInclude Include="PX\Media\JFS\PXJFS.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Client\PXClient.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Server\PXServer.h" />
+    <ClInclude Include="PX\Media\D8X\PXATM.h" />
+    <ClInclude Include="PX\Media\D8X\PXD8D.h" />
+    <ClInclude Include="PX\Media\D8X\PXD8G.h" />
+    <ClInclude Include="PX\Media\D8X\PXD8T.h" />
+    <ClInclude Include="PX\Media\D8X\PXD8W.h" />
+    <ClInclude Include="PX\Media\D8X\PXDLH.h" />
+    <ClInclude Include="PX\Media\D8X\PXSPL.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Scene\PXScene.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Texture\PXTexturePool.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Texture\PXTextureSet.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Model\PXModelPool.h" />
+    <ClInclude Include="PX\Engine\ECS\System\ECSEventDemuxer\PXECSEventDemuxer.h" />
+    <ClInclude Include="PX\OS\Audio\Windows\PXWASAPI.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Chorus\PXChorus.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Distortion\PXDistortion.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Flanger\PXFlanger.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Equaliser\PXEqualiser.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Reverb\PXReverb.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Compressor\PXCompressor.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Echo\PXEcho.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Gargle\PXGargle.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Noise\PXNoise.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\Weather\PXWeather.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Filter\PXAudioFilterBuffer.h" />
   </ItemGroup>
 </Project>

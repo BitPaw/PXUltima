@@ -67,6 +67,11 @@ typedef enum PXColorFormat_
     PXColorFormatBGRAF,
     PXColorFormatBGRAD,
 
+    // Direct Draw Surface extras
+    PXColorFormatDXI1,
+    PXColorFormatDXI3,
+    PXColorFormatDXI5,
+
 
     PXColorFormatYCbCrI8,
 

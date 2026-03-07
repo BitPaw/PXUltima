@@ -8,6 +8,7 @@
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
 #include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
 #include <PX/Engine/ECS/Entity/Model/PXModel.h>
+#include <PX/Engine/ECS/Resource/Scene/PXScene.h>
 
 typedef struct PXSpaceGrid_
 {
@@ -18,7 +19,7 @@ typedef struct PXSpaceGrid_
 
     PXCamera* CameraPlayer;
 
-    PXModel* ModelRender;
+    PXScene* Scene;
 }
 PXSpaceGrid;
 

@@ -1505,6 +1505,10 @@ PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize
             case TextFormatUNICODE:
             {
                 pxText->SizeAllocated = PXTextLengthW(address, sizeAllocated);
+
+                // TODO: Is this OK?
+                pxText->SizeAllocated *= 2;
+
                 break;
             }
             default:

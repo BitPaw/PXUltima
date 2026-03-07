@@ -9,8 +9,8 @@ typedef struct PXRectangleXYWHI32_
 {
     PXI32S X;
     PXI32S Y;
-    PXI32U Width;
-    PXI32U Height;
+    PXI32S Width;
+    PXI32S Height;
 }
 PXRectangleXYWHI32;
 

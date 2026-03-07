@@ -29,6 +29,8 @@ typedef struct PXModelCreateInfo_
     PXIndexBuffer IndexBuffer;
 
     PXModelForm Form;
+
+    PXSize MeshAmount;
 }
 PXModelCreateInfo;
 
@@ -37,5 +39,9 @@ PXPublic PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PX
 PXPublic PXResult PXAPI PXModelRelease(PXModel PXREF pxModel);
 PXPublic PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo);
 PXPublic PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo);
+
+PXPublic PXResult PXAPI PXModelMeshAmountSet(PXModel PXREF pxModel, const PXSize amount);
+PXPublic PXSize PXAPI PXModelMeshAmountGet(const PXModel PXREF pxModel);
+PXPublic PXMesh** PXAPI PXModelMeshGet(const PXModel PXREF pxModel, const PXSize index);
 
 #endif

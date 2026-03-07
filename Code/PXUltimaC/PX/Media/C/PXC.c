@@ -1309,13 +1309,12 @@ PXResult PXAPI PXCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     PXCodeDocument* pxDocument = 0;// (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     PXClear(PXCodeDocument, pxDocument);
 
-    PXFile* tokenSteam = PXFileCreate();
+  
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.CodeDocument = pxDocument;
     pxCompiler.ReadInfo.FileInput = pxFile;
-    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepComments | PXCompilerKeepAnalyseTypes;
 
     PXTextFromAdressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
@@ -1330,6 +1329,8 @@ PXResult PXAPI PXCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     // Lexer - Level I
     //-----------------------------------------------------
     PXCompilerLexicalAnalysis(&pxCompiler);
+
+    PXFile* tokenSteam = pxCompiler.ReadInfo.FileCache;;
 
     PXCodeDocumentElementGenerateChild(pxDocument, PXDocumentElementTypeFile, 0, &pxCodeDocumentElementRoot, PXNull);
 

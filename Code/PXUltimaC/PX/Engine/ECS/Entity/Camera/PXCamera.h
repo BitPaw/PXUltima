@@ -28,7 +28,7 @@ typedef struct PXCamera_
     PXECSInfo Info;
 
     PXVector4F32 Position;
-    PXRotor Rotation;
+    PXRotor4DF32 Rotation;
 
     PXVector3F32 LookAtPosition;
     PXVector3F32 CurrentRotation;
@@ -70,6 +70,8 @@ PXPublic PXResult PXAPI PXCameraRegisterToECS(void);
 PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo);
 PXPublic PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera);
 PXPublic PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo);
+
+PXPublic PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, float aspectRatio);
 
 //-----------
 PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);

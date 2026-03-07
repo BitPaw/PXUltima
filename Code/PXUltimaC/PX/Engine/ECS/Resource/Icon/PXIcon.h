@@ -20,10 +20,13 @@ typedef struct PXIcon_
 {
     PXECSInfo Info;
 
-    union
-    {
-        HICON IconHandle;
-    };
+#if OSUnix
+#elif OSWindows
+    HICON IconHandle;
+    HBITMAP BitMapHandle;
+#endif
+
+    PXTexture* Texture;
 }
 PXIcon;
 
@@ -43,8 +46,8 @@ PXIconCreateInfo;
 
 PXPublic PXResult PXAPI PXIconRegisterToECS();
 
-PXPublic PXResult PXAPI PXIconLoad(PXIcon PXREF pxIcon);
 PXPublic PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID);
+PXPublic PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon);
 PXPublic PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF filePath);
 PXPublic PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture);
 

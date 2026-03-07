@@ -75,7 +75,7 @@ PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDraw
 
     for(size_t i = 0; i < amount; i++)
     {
-        pxTextDrawInfo.Y -= 0.8;
+        pxTextDrawInfo.Position.Y -= 20;
 
         PXECSTypeInfo pxECSTypeInfo;
 

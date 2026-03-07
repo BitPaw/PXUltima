@@ -7,6 +7,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/Container/Buffer/PXBuffer.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
 
 #if OSUnix
 #define PXPathSizeMax 260
@@ -70,6 +71,8 @@ typedef struct PXFileEntry_
 
     PXSize Size;
     PXI8U Depth;
+
+    PXIcon Icon;
 
     PXFileElementInfoType Type;
 }

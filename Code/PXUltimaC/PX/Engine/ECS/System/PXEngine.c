@@ -32,21 +32,25 @@
 #include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
 #include <PX/Engine/ECS/Entity/UI/ECSEntityList/PXECSEntityList.h>
 
+#include <PX/Media/D8X/PXD8D.h>
+#include <PX/Engine/ECS/Resource/Scene/PXScene.h>
+#include "AudioSystem/PXAudioSystem.h"
+
+#pragma comment(lib, "dinput8.lib")
+
 PXModel* pxModel = 0;
 
 PXColorPicker* _pxColorPicker = 0;
-PXWindow* b = 0;
-PXWindow* c = 0;
+PXFileDirectory* _pxFileDirectory = 0;
 PXFooter* _pxFooter = 0;
 PXWindow* e = 0;
-PXWindow* f = 0;
 PXSpaceGrid* _pxSpaceGrid = 0;
 PXTransformView* _pxTransformView = 0;
 PXECSEntityList* _pxECSEntityList = 0;
 
 PXSkyBox* _pxSkyBox = 0;
 PXCamera* _pxCameraPlayer = 0;
-
+PXScene* _pxSceneMain;
 
 typedef struct PXEngine_
 {
@@ -64,7 +68,7 @@ typedef struct PXEngine_
     //PXKeyBoard KeyBoardCurrentInput;
     //PXMouse MouseCurrentInput;
 
-    PXAudioDevice* AudioStandardOutDevice;
+    //PXAudioDevice* AudioStandardOutDevice;
 
     void* Owner;
     PXCamera* CameraCurrent;
@@ -1439,7 +1443,7 @@ void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventInputMouseM
     pxVector3F32.Z = 0;
 
     pxEngine->CameraCurrent->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y * 0.02;
-    pxEngine->CameraCurrent->CurrentRotation.Y += pxWindowEventInputMouseMove->Delta.X * 0.02;
+    pxEngine->CameraCurrent->CurrentRotation.Y -= pxWindowEventInputMouseMove->Delta.X * 0.02;
 
     
 
@@ -1560,32 +1564,33 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
     {
         PXVector3F32Add(&move, &up);
     }
-
     if(pxWindowEventInputKeyboard->CharacterW == L'e')
     {
         PXVector3F32Substract(&move, &up);
     }
 
+
+
     if(pxWindowEventInputKeyboard->CharacterW == L'w')
+    {
+        PXVector3F32Substract(&move, &forward);       
+    }
+    if(pxWindowEventInputKeyboard->CharacterW == L's')
     {
         PXVector3F32Add(&move, &forward);
     }
 
-    if(pxWindowEventInputKeyboard->CharacterW == L'a')
-    {
-        PXVector3F32Substract(&move, &right);
-      
-    }
 
-    if(pxWindowEventInputKeyboard->CharacterW == L's')
-    {
-        PXVector3F32Substract(&move, &forward);
-    }
 
     if(pxWindowEventInputKeyboard->CharacterW == L'd')
     {
         PXVector3F32Add(&move, &right);
     }
+    if(pxWindowEventInputKeyboard->CharacterW == L'a')
+    {
+        PXVector3F32Substract(&move, &right);      
+    }
+
 
 
     PXF32 length = PXVector3F32Length(&move);
@@ -1594,23 +1599,29 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
         PXVector3F32Normalize(&move);
     }
 
-  
+
+    PXVector2F32 movementSpeed;
+    movementSpeed.X = pxCamera->WalkSpeed;
+    movementSpeed.Y = pxCamera->WalkSpeed;
+
+    PXVector2F32Multiply(&move, &movementSpeed);
+
 
     PXVector3F32Add(&pxCamera->Position, &move);
 
     //PXCameraMove(pxEngine->CameraCurrent, &move);
     //PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
 
-
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
         "PX",
         "Update",
         "CAM:\n"
-        "POS: %6.2f %6.2f %6.2f\n"
-        "ROT: %6.2f %6.2f %6.2f\n"
-        "MOV: %6.2f %6.2f %6.2f",
+        "POS: %8.2f %8.2f %8.2f\n"
+        "ROT: %8.2f %8.2f %8.2f\n"
+        "MOV: %8.2f %8.2f %8.2f",
         pxEngine->CameraCurrent->Position.X,
         pxEngine->CameraCurrent->Position.Y,
         pxEngine->CameraCurrent->Position.Z,
@@ -1621,6 +1632,7 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
         move.Y,
         move.Z
     );
+#endif
 
 
     // User input
@@ -1906,7 +1918,7 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
 
     PXAudioSystemCreateInfo pxAudioSystemCreateInfo;
     PXClear(PXAudioSystemCreateInfo, &pxAudioSystemCreateInfo);
-    pxAudioSystemCreateInfo.System = PXAudioSystemWindowsDirectSound;
+    pxAudioSystemCreateInfo.System = PXAudioSystemWindowsAudioSessionAPI;
 
     const PXResult audioInitResult = PXAudioSystemCreate(&pxEngine->Audio, &pxAudioSystemCreateInfo);
 
@@ -1915,9 +1927,11 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
         return audioInitResult;
     }
 
-    PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
+    //PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
 
     //pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
+
+    /*
 
     for(PXI32U i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; ++i)
     {
@@ -1936,9 +1950,9 @@ PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo P
     pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
 
     pxEngine->Audio->DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
-}
 
-#pragma comment(lib, "dinput8.lib")
+    */
+}
 
 PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
 {
@@ -2077,52 +2091,6 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
 
 #if 1
 
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.BackGroundColor.Red = 60;
-    pxWindowCreateInfoSub.BackGroundColor.Green = 210;
-    pxWindowCreateInfoSub.BackGroundColor.Blue = 80;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
-    // pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&b, &pxWindowCreateInfoSub);
-
-    //c = PXWindowCreateEE(pxMainWindow, 20, 120, 220, FALSE, PXWindowDockSideNone, TRUE, PXECSEntityInfoDraw);
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.BackGroundColor.Red = 210;
-    pxWindowCreateInfoSub.BackGroundColor.Green = 60;
-    pxWindowCreateInfoSub.BackGroundColor.Blue = 60;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
-    // pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&c, &pxWindowCreateInfoSub);
-
-
-
-    //e = PXWindowCreateEE(pxMainWindow, 60, 30, 180, FALSE, PXWindowDockSideNone, TRUE, PXColorPickerDraw);
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.BackGroundColor.Red = 60;
-    pxWindowCreateInfoSub.BackGroundColor.Green = 30;
-    pxWindowCreateInfoSub.BackGroundColor.Blue = 180;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
-    // pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&e, &pxWindowCreateInfoSub);
-
-    //f = PXWindowCreateEE(pxMainWindow, 80, 0, 160, FALSE, PXWindowDockSideNone, TRUE, PXSceneViewDraw);
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-    pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-    pxWindowCreateInfoSub.BackGroundColor.Red = 80;
-    pxWindowCreateInfoSub.BackGroundColor.Green = 0;
-    pxWindowCreateInfoSub.BackGroundColor.Blue = 160;
-    pxWindowCreateInfoSub.floating = FALSE;
-    pxWindowCreateInfoSub.dockSide = PXWindowDockSideLeft;
-    //pxWindowCreateInfoSub.isChild = TRUE;
-    PXWindowCreate(&f, &pxWindowCreateInfoSub);
-
-
 
     {
         //g = PXWindowCreateEE(pxMainWindow, 80, 80, 0, FALSE, PXWindowDockSideNone, TRUE, PXSpaceGridDraw);
@@ -2139,6 +2107,31 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
         PXSpaceGridCreate(&_pxSpaceGrid, &pxSpaceGridCreateInfo);
     }
 
+    // LEFT
+    {
+        PXECSEntityListCreateInfo pxECSEntityListCreateInfo;
+        PXClear(PXECSEntityListCreateInfo, &pxECSEntityListCreateInfo);
+        pxECSEntityListCreateInfo.Window.WindowParent = pxMainWindow;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Red = 0XFF;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Green = 0;
+        pxECSEntityListCreateInfo.Window.BackGroundColor.Blue = 0;
+        pxECSEntityListCreateInfo.Window.floating = FALSE;
+        pxECSEntityListCreateInfo.Window.dockSide = PXWindowDockSideLeft;
+        PXECSEntityListCreate(&_pxECSEntityList, &pxECSEntityListCreateInfo);
+    }
+    {
+        PXFileDirectoryCreateInfo pxFileDirectoryCreateInfo;
+        PXClear(PXFileDirectoryCreateInfo, &pxFileDirectoryCreateInfo);
+        pxFileDirectoryCreateInfo.Window.WindowParent = pxMainWindow;
+        pxFileDirectoryCreateInfo.Window.BackGroundColor.Red = 60;
+        pxFileDirectoryCreateInfo.Window.BackGroundColor.Green = 210;
+        pxFileDirectoryCreateInfo.Window.BackGroundColor.Blue = 80;
+        pxFileDirectoryCreateInfo.Window.floating = FALSE;
+        pxFileDirectoryCreateInfo.Window.dockSide = PXWindowDockSideLeft;
+        PXFileDirectoryCreate(&_pxFileDirectory, &pxFileDirectoryCreateInfo);
+    }
+
+    // RIGHT
     {
         PXTransformViewCrerateInfo pxTransformViewCrerateInfo;
         PXClear(PXTransformViewCrerateInfo, &pxTransformViewCrerateInfo);
@@ -2147,14 +2140,20 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
         pxTransformViewCrerateInfo.Window.BackGroundColor.Green = 80;
         pxTransformViewCrerateInfo.Window.BackGroundColor.Blue = 0;
         pxTransformViewCrerateInfo.Window.floating = FALSE;
-        pxTransformViewCrerateInfo.Window.dockSide = PXWindowDockSideLeft;
+        pxTransformViewCrerateInfo.Window.dockSide = PXWindowDockSideRight;
         pxTransformViewCrerateInfo.Position = &_pxSpaceGrid->CameraView->Position;
         PXTransformViewCreate(&_pxTransformView, &pxTransformViewCrerateInfo);
     }
-
-#endif
-
-
+    {
+        PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
+        pxWindowCreateInfoSub.WindowParent = pxMainWindow;
+        pxWindowCreateInfoSub.BackGroundColor.Red = 60;
+        pxWindowCreateInfoSub.BackGroundColor.Green = 30;
+        pxWindowCreateInfoSub.BackGroundColor.Blue = 180;
+        pxWindowCreateInfoSub.floating = FALSE;
+        pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
+        PXWindowCreate(&e, &pxWindowCreateInfoSub);
+    }  
 
     {
         PXColorPickerCreateInfo pxColorPickerCreateInfo;
@@ -2183,17 +2182,20 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
         PXFooterCreate(&_pxFooter, &pxFooterCreateInfo);
     }
 
-    {
-        PXECSEntityListCreateInfo pxECSEntityListCreateInfo;
-        PXClear(PXECSEntityListCreateInfo, &pxECSEntityListCreateInfo);
-        pxECSEntityListCreateInfo.Window.WindowParent = pxMainWindow;
-        pxECSEntityListCreateInfo.Window.BackGroundColor.Red = 0XFF;
-        pxECSEntityListCreateInfo.Window.BackGroundColor.Green = 0;
-        pxECSEntityListCreateInfo.Window.BackGroundColor.Blue = 0;
-        pxECSEntityListCreateInfo.Window.floating = FALSE;
-        pxECSEntityListCreateInfo.Window.dockSide = PXWindowDockSideLeft;
-        PXECSEntityListCreate(&_pxECSEntityList, &pxECSEntityListCreateInfo);
-    }
+
+
+
+
+
+
+#endif
+
+
+
+
+
+
+
 
     PXWindowOpenGLEnable(pxMainWindow);
     PXWindowOpenGLEnable(_pxColorPicker->WindowBase);
@@ -2201,6 +2203,8 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     PXWindowOpenGLEnable(_pxTransformView->WindowBase);
     PXWindowOpenGLEnable(_pxSpaceGrid->WindowBase);
     PXWindowOpenGLEnable(_pxECSEntityList->WindowBase);
+    PXWindowOpenGLEnable(_pxFileDirectory->WindowBase);
+    
 
     LayoutDockedEx(pxMainWindow, NULL);
 
@@ -2211,6 +2215,11 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     const char path[] = "C:/Data/WorkSpace/[GIT]/BitFireEngine/BitFireEngineIDE/Model/GismoTreeD.obj";
 
 
+
+    PXECSCreateInfo pxECSCreateInfo;
+    PXClear(PXECSCreateInfo, &pxECSCreateInfo);
+
+    PXSceneCreate(&_pxSceneMain, &pxECSCreateInfo);
 
 
 
@@ -2225,8 +2234,6 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
         &_pxCameraPlayer,
         &pxCameraCreateInfo
     );
-
-    _pxSpaceGrid->CameraPlayer = _pxCameraPlayer;
 
 
 #if 1
@@ -2243,7 +2250,44 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     PXModelCreate(&pxModel, &pxModelCreateInfo);
 #endif
 
-    _pxSpaceGrid->ModelRender = pxModel;
+
+
+
+
+#if 0
+    PXFile* pxFile = PXNull;
+
+    char tftf[260];
+
+
+    PXFileCreateInfo pxFileOpenInfo;
+    PXClear(PXFileCreateInfo, &pxFileOpenInfo);
+    pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+    pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+    pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
+
+    PXTextFromAdressA(&pxFileOpenInfo.FilePath, tftf, 0, sizeof(tftf));
+    PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central.dat");
+
+    PXFileCreate(&pxFile, &pxFileOpenInfo);
+
+
+    PXClear(PXECSCreateInfo, &pxECSCreateInfo);
+    pxECSCreateInfo.FileCurrent = pxFile;
+
+    PXD8DatLoadFromFile(_pxSceneMain, &pxECSCreateInfo);
+#endif
+
+    _pxSpaceGrid->Scene = _pxSceneMain;
+
+
+
+
+    PXSceneAddCamera(_pxSceneMain, _pxCameraPlayer);
+    //PXSceneAddModel(_pxSceneMain, _pxSpaceGrid);
+    PXSceneAddModel(_pxSceneMain, pxModel);
+
+    
 
     return PXResultOK;
 }

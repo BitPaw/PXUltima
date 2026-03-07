@@ -76,7 +76,7 @@ void PXDrawLine(PXOpenGL PXREF pxOpenGL, PXLine PXREF pxLine)
 
 void PXDrawCircle(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircle)
 {
-    const PXF32 piX2 = PXMathConstantPI * 2.0f;
+    const PXF32 piX2 = PXMathPI * 2.0f;
 
     PXColorRGBAF* colorList[2] = { pxCircle->ColorFill, pxCircle->ColorBorder };
     int modeList[2] = { GL_POLYGON, GL_LINE_LOOP };

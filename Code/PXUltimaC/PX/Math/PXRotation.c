@@ -8,7 +8,7 @@ PXI8U PXAPI PXRotorAnglesCount(const PXI8U amountOfDimensions)
     return amountOfDimensions * (amountOfDimensions - 1) / 2;
 }
 
-void PXAPI PXRotorFromEuler(PXRotor PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32)
+void PXAPI PXRotorFromEuler(PXRotorF32 PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32)
 {
     PXF32 angle = (pxEulerAngleF32->Pitch + pxEulerAngleF32->Yaw + pxEulerAngleF32->Roll) / 3.0f;
 
@@ -20,7 +20,7 @@ void PXAPI PXRotorFromEuler(PXRotor PXREF pxRotor, PXEulerAngleF32 PXREF pxEuler
     pxRotor->PlaneAngles[2] = 0.0f; // ZX
 }
 
-void PXAPI PXRotorInterpolate(PXRotor PXREF pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t)
+void PXAPI PXRotorInterpolate(PXRotorF32 PXREF pxRotorCurrent, const PXRotorF32* pxRotorTarget, const PXF32 t)
 {
     pxRotorCurrent->Scalar = PXMathLerpF32H(pxRotorCurrent->Scalar, pxRotorTarget->Scalar, t);
 
@@ -73,7 +73,7 @@ const PXVec2I8U* PXRotorPlanes[] =
     PXRotorPlanes4D
 };
 
-void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4)
+void PXAPI PXRotorToMatrix4x4(PXRotorF32 PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4)
 {   
     PXVec2I8U* planes = PXRotorPlanes[pxRotor->Dimension];
 
@@ -84,10 +84,10 @@ void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix
         int a = planes->X;
         int b = planes->Y;
 
-        float c = pxRotor->Scalar;
-        float s = pxRotor->PlaneAngles[i];
-        float temp_a = pxMatrix4x4->DataXY[a][a] * c - pxMatrix4x4->DataXY[a][b] * s;
-        float temp_b = pxMatrix4x4->DataXY[b][a] * s + pxMatrix4x4->DataXY[b][b] * c;
+        PXF32 c = pxRotor->Scalar;
+        PXF32 s = pxRotor->PlaneAngles[i];
+        PXF32 temp_a = pxMatrix4x4->DataXY[a][a] * c - pxMatrix4x4->DataXY[a][b] * s;
+        PXF32 temp_b = pxMatrix4x4->DataXY[b][a] * s + pxMatrix4x4->DataXY[b][b] * c;
         pxMatrix4x4->DataXY[a][a] = temp_a;
         pxMatrix4x4->DataXY[b][b] = temp_b;
         pxMatrix4x4->DataXY[a][b] = -s;
@@ -97,10 +97,10 @@ void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix
 
 void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatrix4x4F PXREF pxMatrix4x4)
 {
-    float w = quaternionF32->W;
-    float x = quaternionF32->X;
-    float y = quaternionF32->Y;
-    float z = quaternionF32->Z;
+    PXF32 w = quaternionF32->W;
+    PXF32 x = quaternionF32->X;
+    PXF32 y = quaternionF32->Y;
+    PXF32 z = quaternionF32->Z;
 
     PXMatrix4x4FIdentity(pxMatrix4x4);
 

@@ -1870,6 +1870,8 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
             PXWindowRectangleXYWH(pxWindow, &pxDrawInfo.RectangleXYWH);
             pxWindow->Position.Form = pxDrawInfo.RectangleXYWH;
 
+            pxDrawInfo.AspectRatio = (PXF32)pxDrawInfo.RectangleXYWH.Width / (PXF32)pxDrawInfo.RectangleXYWH.Height;
+
 #if 1
             if(pxWindow->WindowParent)
             {
@@ -2559,7 +2561,7 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
                 sizeof(RAWINPUTHEADER)
             );
 
-            PXBufferEnsure(&pxWindow->InputBuffer, size);
+            PXBufferEnsureTotal(&pxWindow->InputBuffer, size);
 
             GetRawInputData
             (
@@ -4723,73 +4725,6 @@ PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow)
     return PXResultOK;
 }
 
-PXResult PXAPI PXTextDraw(PXTextDrawInfo PXREF pxTextDrawInfo, PXOpenGL PXREF pxOpenGL, PXFont PXREF pxFont, PXText PXREF pxText)
-{
-    GLYPHMETRICSFLOAT* glythList = pxFont->GlyphMetricsFloat;
-    PXResult pxResult = PXResultOK;
-
-    glPushMatrix(); // We need to store the current matrix to use a new one
-    glScalef(20, 20, 1.0);
-
-    pxOpenGL->Binding.Translatef(pxTextDrawInfo->X, pxTextDrawInfo->Y, 0.0f);
-
-    switch(pxText->Format)
-    {
-        case TextFormatASCII:
-        {
-            for(PXSize i = 0; i < pxText->SizeUsed; ++i)
-            {
-                const char character = pxText->A[i];
-                GLYPHMETRICSFLOAT* glyth = &glythList[character];
-
-                if(0 == character)
-                {
-                    break;
-                }
-
-                // Movement is additive!             
-                pxOpenGL->Binding.CallList(pxFont->FontBase + character);
-                pxOpenGL->Binding.Translatef
-                (
-                    pxTextDrawInfo->OffsetX * glyth->gmfCellIncX,
-                    0.0f,
-                    0.0f
-                );
-            }
-
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            for(PXSize i = 0; i < pxText->SizeUsed; ++i)
-            {
-                const wchar_t character = pxText->W[i];
-
-                if(0 == character)
-                {
-                    break;
-                }
-
-                GLYPHMETRICSFLOAT* glyth = &glythList[character];
-
-                pxOpenGL->Binding.Translatef(pxTextDrawInfo->OffsetX * glyth->gmfCellIncX, 0.0f, 0.0f);
-                pxOpenGL->Binding.CallList(pxFont->FontBase + character);
-            }
-
-            break;
-        }
-        default:
-        {
-            pxResult = PXResultRefusedParameterInvalid;
-            break;
-        }
-    }
-
-    glPopMatrix();
-
-    return pxResult;
-}
-
 float hyCol = 0;
 
 PXResult PXAPI PXWindowDrawText
@@ -4799,39 +4734,14 @@ PXResult PXAPI PXWindowDrawText
 )
 {
     PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
-    PXGraphic PXREF pxGraphic = PXGraphicInstantiateGET();
+
 
     if(!(pxWindow && pxTextDrawInfo))
     {
         return PXResultRefusedParameterNull;
     }
 
-    PXOpenGL PXREF pxOpenGL = &pxGraphic->OpenGLInstance;
-    PXBrush PXREF brushText = pxGUITheme->BrushTextWhite;
     
-
-#if 1
- 
-
-
-   // float desiredSize = pxTextDrawInfo->Size * 100; // pixels
-   // float aspectRatio = width / height;
-
-  //  float xScale = desiredSize / aspectRatio;
-    //float yScale = desiredSize;
-   
-    // Y scale defines the actual text size
-    //float yScale = desiredSize * (1.0f / height) * 2.0f;
-
-    // X scale must be corrected by aspect ratio
-    //float xScale = yScale / aspectRatio;
-
-  //  glScalef(xScale, yScale, 1.0);
-
-   // glScalef(desiredSize, desiredSize, 1.0);
-
-#endif
-
     PXText pxTextFailsafe;
     PXTextFromAdressA(&pxTextFailsafe, PXTextFailsafe, PXTextFailsafeLength, PXTextFailsafeLength);
 
@@ -4846,205 +4756,15 @@ PXResult PXAPI PXWindowDrawText
     {
         case PXGraphicSystemNative:
         {
-#if OSUnix
-
-            PXRectangleXYWHI32 pxRectangleXYWHI32;
-
-            PXNativDrawRectangleParent(pxNativDraw, pxWindow, &pxRectangleXYWHI32);
-
-            int xMX = x;
-            int yMX = y;
-
-
-            if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignLeft))
-            {
-                xMX = pxRectangleXYWHI32.X + x;
-            }
-
-            if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignRight))
-            {
-                xMX = width - (pxRectangleXYWHI32.X + x);
-            }
-
-
-            if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignTop))
-            {
-                yMX = pxRectangleXYWHI32.Y + y;
-            }
-
-            if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignBottom))
-            {
-                yMX = height - (pxRectangleXYWHI32.Y + y);
-            }
-
-            if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignCenter))
-            {
-                yMX = (height / 2) - (pxRectangleXYWHI32.Y + y);
-            }
-
-
-            // For ANSI and UTF-8 strings
-            const int resultID = XDrawString
-            (
-                pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
-                pxWindow->Info.Handle.WindowHandle,
-                pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
-                xMX,
-                yMX,
-                text,
-                textSize
-            );
-#elif OSWindows
-
-            UINT format = DT_SINGLELINE | DT_NOCLIP;
-            format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignTop) * DT_TOP;
-            format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignLeft) * DT_LEFT;
-            format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignRight) * DT_RIGHT;
-            format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
-
-            if(PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignCenter))
-            {
-                format |= DT_VCENTER | DT_CENTER;
-            }
-
-            RECT rectangle = *(RECT*)&pxTextDrawInfo->WindowDrawInfo->RectangleXYWH;
-
-            rectangle.left += pxTextDrawInfo->X;
-            rectangle.top += pxTextDrawInfo->Y;
-
-            switch(targetText->Format)
-            {
-                case TextFormatASCII:
-                {
-                    const int nextHeightBBB = DrawTextExA
-                    (
-                        pxWindow->DeviceContextHandle,
-                        targetText->A,
-                        targetText->SizeUsed,
-                        &rectangle,
-                        format,
-                        PXNull
-                    ); // Windows 2000, User32.dll, winuser.h
-                    break;
-                }
-                case TextFormatUNICODE:
-                {
-                    const int nextHeightBBB = DrawTextExW
-                    (
-                        pxWindow->DeviceContextHandle,
-                        targetText->W,
-                        targetText->SizeUsed,
-                        &rectangle,
-                        format,
-                        PXNull
-                    ); // Windows 2000, User32.dll, winuser.h
-                    break;
-                }
-                default:
-                    break;
-            }       
-#endif
-
+            PXWindowDrawTextNative(pxWindow, pxTextDrawInfo);
             break;
         }
         case PXGraphicSystemOpenGL:
         {
-            PXFont* fontTitle = pxGUITheme->FontTitle;
-
-            PXWindowFontSet(pxWindow, fontTitle);
-
-            if(fontTitle)
-            {
-                if(!fontTitle->IsOK)
-                {
-                    int glyphsIndexFirst = 0;
-                    int glyphsAmount = 200;// Full Unicode range
-                    float maximumChordalDeviation = 0;
-                    float extrusion = 0; // Add to Z axis, 0=No extrusion
-
-                    fontTitle->GlyphMetricsFloat = PXMemoryHeapCallocT(GLYPHMETRICSFLOAT, glyphsAmount);
-                    fontTitle->FontBase = pxOpenGL->Binding.GenLists(glyphsAmount);
-
-                    fontTitle->IsOK = wglUseFontOutlinesW
-                    (
-                        pxWindow->DeviceContextHandle,
-                        glyphsIndexFirst,
-                        glyphsAmount,
-                        fontTitle->FontBase,
-                        maximumChordalDeviation,
-                        extrusion,
-                        WGL_FONT_POLYGONS,
-                        fontTitle->GlyphMetricsFloat
-                    ); // Ungodly slow!!
-                    PXResult pxResult = PXErrorCurrent(fontTitle->IsOK);
-
-                    if(!fontTitle->IsOK)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            float offset = 0.02;
-            //float scaling = 0.20f;
-            //float x = pxTextDrawInfo->X;
-            //float y = pxTextDrawInfo->Y;
-            //float xSpacer = 3.5;
-            
-            if(0 == pxTextDrawInfo->Size)
-            {
-                pxTextDrawInfo->Size = 1;
-            }
-
-            //pxOpenGL->Binding.Scalef(0.6, 0.6, 0.1);
-            pxOpenGL->Binding.LineWidth(2),
-                // pxOpenGL->Binding.Translatef(-1, -1, 0.0f); // Shadow offset
-
-            pxOpenGL->Binding.PushAttrib(GL_LIST_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
-            //pxOpenGL->Binding.MatrixMode(GL_MODELVIEW);
-            //pxOpenGL->Binding.PushMatrix();
-
-           // pxOpenGL->Binding.Translatef(x, y, 0.0f); // Shadow offset
-           // pxOpenGL->Binding.Scalef(xScale, yScale, 1.0);
-            pxOpenGL->Binding.Color3f(0.2, 0.2, 0.2);
-                       
-           // PXTextDraw(pxOpenGL, fontTitle, targetText);
-
-            //pxOpenGL->Binding.LoadIdentity();
-            /*
-            pxOpenGL->Binding.Translatef
-            (
-                pxTextDrawInfo->X + offset,
-                pxTextDrawInfo->Y + offset,
-                0.0f
-            ); // Main text
-            */
-           // pxOpenGL->Binding.Scalef(xScale, yScale, 1.0);
-            pxOpenGL->Binding.Color3f
-            (
-                brushText->ColorDate.Red - pxTextDrawInfo->X,
-                brushText->ColorDate.Green, 
-                brushText->ColorDate.Blue
-            );
-
-            hyCol += 0.0008;
-
-            pxOpenGL->Binding.Color3f(PXMathSinusRADF32(hyCol)+1.3, 0.2, 0.2);
-
-
-            PXTextDraw(pxTextDrawInfo,pxOpenGL, fontTitle, targetText);
-
-            //pxOpenGL->Binding.Translatef(0, 0, 0);
-            //pxOpenGL->Binding.PopMatrix();
-            pxOpenGL->Binding.PopAttrib();
-            //pxOpenGL->Binding.Flush();
-
+            PXWindowDrawTextGLFF(pxWindow, pxTextDrawInfo);
             break;
         }
-
-        default:
-            break;
-    }
+    }    
 
 #if PXLogEnable && 0
     PXLogPrint
@@ -5060,6 +4780,302 @@ PXResult PXAPI PXWindowDrawText
         targetText->A
     );
 #endif
+}
+
+PXResult PXAPI PXWindowDrawTextNative(PXWindow PXREF pxWindow, PXTextDrawInfo PXREF pxTextDrawInfo)
+{
+    PXText PXREF pxText = pxTextDrawInfo->Text;
+
+#if OSUnix
+
+    PXRectangleXYWHI32 pxRectangleXYWHI32;
+
+    PXNativDrawRectangleParent(pxNativDraw, pxWindow, &pxRectangleXYWHI32);
+
+    int xMX = x;
+    int yMX = y;
+
+
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignLeft))
+    {
+        xMX = pxRectangleXYWHI32.X + x;
+    }
+
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignRight))
+    {
+        xMX = width - (pxRectangleXYWHI32.X + x);
+    }
+
+
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignTop))
+    {
+        yMX = pxRectangleXYWHI32.Y + y;
+    }
+
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignBottom))
+    {
+        yMX = height - (pxRectangleXYWHI32.Y + y);
+    }
+
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignCenter))
+    {
+        yMX = (height / 2) - (pxRectangleXYWHI32.Y + y);
+    }
+
+
+    // For ANSI and UTF-8 strings
+    const int resultID = XDrawString
+    (
+        pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
+        pxWindow->Info.Handle.WindowHandle,
+        pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
+        xMX,
+        yMX,
+        text,
+        textSize
+    );
+#elif OSWindows
+
+    UINT format = DT_SINGLELINE | DT_NOCLIP;
+    format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
+
+    if(PXFlagIsSet(pxTextDrawInfo->Behaviour, PXWindowAllignCenter))
+    {
+        format |= DT_VCENTER | DT_CENTER;
+    }
+
+    RECT rectangle = *(RECT*)&pxTextDrawInfo->WindowDrawInfo->RectangleXYWH;
+
+    rectangle.left += pxTextDrawInfo->Position.X;
+    rectangle.top += pxTextDrawInfo->Position.Y;
+
+    switch(pxText->Format)
+    {
+        case TextFormatASCII:
+        {
+            const int nextHeightBBB = DrawTextExA
+            (
+                pxWindow->DeviceContextHandle,
+                pxText->A,
+                pxText->SizeUsed,
+                &rectangle,
+                format,
+                PXNull
+            ); // Windows 2000, User32.dll, winuser.h
+            break;
+        }
+        case TextFormatUNICODE:
+        {
+            const int nextHeightBBB = DrawTextExW
+            (
+                pxWindow->DeviceContextHandle,
+                pxText->W,
+                pxText->SizeUsed,
+                &rectangle,
+                format,
+                PXNull
+            ); // Windows 2000, User32.dll, winuser.h
+            break;
+        }
+        default:
+        { 
+            break; 
+        }
+    }
+#endif
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXWindowDrawTextGLFF(PXWindow PXREF pxWindow, PXTextDrawInfo PXREF pxTextDrawInfo)
+{
+    PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
+    PXFont PXREF fontTitle = pxGUITheme->FontTitle;
+    PXGraphic PXREF pxGraphic = PXGraphicInstantiateGET();
+    PXText PXREF pxText = pxTextDrawInfo->Text;
+
+    PXOpenGL PXREF pxOpenGL = &pxGraphic->OpenGLInstance;
+    PXBrush PXREF brushText = pxGUITheme->BrushTextWhite;
+
+    PXWindowFontSet(pxWindow, fontTitle);
+
+    if(fontTitle)
+    {
+        if(!fontTitle->IsOK)
+        {
+            int glyphsIndexFirst = 0;
+            int glyphsAmount = 200;// Full Unicode range
+            float maximumChordalDeviation = 0;
+            float extrusion = 10; // Add to Z axis, 0=No extrusion
+
+            fontTitle->GlyphMetricsFloat = PXMemoryHeapCallocT(GLYPHMETRICSFLOAT, glyphsAmount);
+            fontTitle->FontBase = pxOpenGL->Binding.GenLists(glyphsAmount);
+
+            fontTitle->IsOK = wglUseFontOutlinesW
+            (
+                pxWindow->DeviceContextHandle,
+                glyphsIndexFirst,
+                glyphsAmount,
+                fontTitle->FontBase,
+                maximumChordalDeviation,
+                extrusion,
+                WGL_FONT_POLYGONS,
+                fontTitle->GlyphMetricsFloat
+            ); // Ungodly slow!!
+            PXResult pxResult = PXErrorCurrent(fontTitle->IsOK);
+
+            if(!fontTitle->IsOK)
+            {
+                return PXResultInvalid;
+            }
+        }
+    }
+
+    float offset = 0.02;
+    //float scaling = 0.20f;
+    //float x = pxTextDrawInfo->X;
+    //float y = pxTextDrawInfo->Y;
+    //float xSpacer = 3.5;
+
+    if(0 == pxTextDrawInfo->Size)
+    {
+        pxTextDrawInfo->Size = 1;
+    }
+
+    //pxOpenGL->Binding.Scalef(0.6, 0.6, 0.1);
+    pxOpenGL->Binding.LineWidth(2),
+        // pxOpenGL->Binding.Translatef(-1, -1, 0.0f); // Shadow offset
+
+        pxOpenGL->Binding.PushAttrib(GL_LIST_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
+    //pxOpenGL->Binding.MatrixMode(GL_MODELVIEW);
+    //pxOpenGL->Binding.PushMatrix();
+
+
+    hyCol += 0.0008; 
+
+    GLYPHMETRICSFLOAT* glythList = fontTitle->GlyphMetricsFloat;
+    PXResult pxResult = PXResultOK;
+
+    for(PXI8U i = 0; i < 2; i++)
+    {
+        //glLoadIdentity();
+
+        glPushMatrix(); // We need to store the current matrix to use a new one    
+
+        switch(i)
+        {
+            case 1:
+            {
+                PXBool hasColor =
+                    (pxTextDrawInfo->Color.Red > 0) ||
+                    (pxTextDrawInfo->Color.Green > 0) ||
+                    (pxTextDrawInfo->Color.Blue > 0);
+
+                if(hasColor)
+                {
+                    pxOpenGL->Binding.Color3f
+                    (
+                        pxTextDrawInfo->Color.Red,
+                        pxTextDrawInfo->Color.Green,
+                        pxTextDrawInfo->Color.Blue
+                    );
+                }
+                else
+                {
+                    const PXF32 x = ((PXMathSinusRADF32(hyCol) + 1) / 2) * 0.20;
+
+                    pxOpenGL->Binding.Color3f(0.6 + x, 0.8, 0.8);
+                }
+
+                pxOpenGL->Binding.Translatef(pxTextDrawInfo->Position.X, pxTextDrawInfo->Position.Y, 0.0f);
+
+                break;
+            }
+            case 0:
+            {
+                pxOpenGL->Binding.Color3f(0.2f, 0.2f, 0.2f);
+                pxOpenGL->Binding.Translatef
+                (
+                    pxTextDrawInfo->Position.X + 1,
+                    pxTextDrawInfo->Position.Y - 1, 
+                    0.0f
+                );
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+
+        glScalef(15, 15, 1.0);
+
+
+        switch(pxText->Format)
+        {
+            case TextFormatASCII:
+            {
+                for(PXSize i = 0; i < pxText->SizeUsed; ++i)
+                {
+                    const char character = pxText->A[i];
+                    GLYPHMETRICSFLOAT* glyth = &glythList[character];
+
+                    if(0 == character)
+                    {
+                        break;
+                    }
+
+                    // Movement is additive!
+                    pxOpenGL->Binding.CallList(fontTitle->FontBase + character);
+                    pxOpenGL->Binding.Translatef
+                    (
+                        pxTextDrawInfo->OffsetX * glyth->gmfCellIncX,
+                        0.0f,
+                        0.0f
+                    );
+                }
+
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                for(PXSize i = 0; i < pxText->SizeUsed; ++i)
+                {
+                    const wchar_t character = pxText->W[i];
+
+                    if(0 == character)
+                    {
+                        break;
+                    }
+
+                    GLYPHMETRICSFLOAT* glyth = &glythList[character];
+
+                    pxOpenGL->Binding.Translatef(pxTextDrawInfo->OffsetX * glyth->gmfCellIncX, 0.0f, 0.0f);
+                    pxOpenGL->Binding.CallList(fontTitle->FontBase + character);
+                }
+
+                break;
+            }
+            default:
+            {
+                pxResult = PXResultRefusedParameterInvalid;
+                break;
+            }
+        }
+
+        glPopMatrix();
+    }
+
+
+    //pxOpenGL->Binding.Translatef(0, 0, 0);
+    //pxOpenGL->Binding.PopMatrix();
+    pxOpenGL->Binding.PopAttrib();
+    //pxOpenGL->Binding.Flush();
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXWindowDrawPoint(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y)
@@ -5134,7 +5150,7 @@ PXResult PXAPI PXWindowDrawLines(PXWindow PXREF pxWindow, const PXI32S x, const 
 #endif
 }
 
-PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo)
+PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
 {
     PXGraphic* pxGraphic = PXGraphicInstantiateGET();
     PXOpenGL PXREF pxOpenGL = &pxGraphic->OpenGLInstance;
@@ -5144,6 +5160,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
     PXGUITheme* pxGUITheme = PXGUIThemeGet();
     PXBrush* brushMainPrimary = pxGUITheme->BrushMainPrimary;
     PXBrush* brushMainSecoundary = pxGUITheme->BrushMainSecoundary;
+    const PXRectangleXYWHI32 PXREF pxRect = &pxDrawInfo->RectangleXYWH;
 
     PXResult pxResult = PXResultInvalid;
 
@@ -5167,9 +5184,9 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
 
             PXResult pxResult;
 
-            RECT* rect = (RECT*)&pxWindowDrawRectangleInfo->RectangleXYWH;
+            RECT* rect = (RECT*)&pxDrawInfo->RectangleXYWH;
 
-            if(pxWindowDrawRectangleInfo->Rounded)
+            if(pxDrawInfo->Rounded)
             {
                 const BOOL success = RoundRect
                 (
@@ -5189,7 +5206,7 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
                 (
                     pxWindow->DeviceContextHandle,
                     rect,
-                    pxWindowDrawRectangleInfo->Brush->BrushHandle // TODO: !!!
+                    pxDrawInfo->Brush->BrushHandle // TODO: !!!
                 ); // Windows 2000, User32.dll, winuser.h 
                 pxResult = PXErrorCurrent(0 != resultID);
             }
@@ -5205,10 +5222,10 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
                 PXRectangleText,
                 "<PXID:%-4i> L:%-4i T:%-4i R:%-4i B:%-4i",
                 pxWindow->Info.ID,
-                pxWindowDrawRectangleInfo->RectangleXYWH.X,
-                pxWindowDrawRectangleInfo->RectangleXYWH.Y,
-                pxWindowDrawRectangleInfo->RectangleXYWH.Width,
-                pxWindowDrawRectangleInfo->RectangleXYWH.Height
+                pxDrawInfo->RectangleXYWH.X,
+                pxDrawInfo->RectangleXYWH.Y,
+                pxDrawInfo->RectangleXYWH.Width,
+                pxDrawInfo->RectangleXYWH.Height
             );
 #endif
 
@@ -5216,13 +5233,8 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
         }
         case PXGraphicSystemOpenGL:
         {
-            PXRectangleVertexF32 pxRectangleVertexF32 =
-            {
-                -1 + pxWindowDrawRectangleInfo->RectangleXYWH.X,
-                -1 + pxWindowDrawRectangleInfo->RectangleXYWH.Y,
-                -1 + (pxWindowDrawRectangleInfo->RectangleXYWH.Width / (PXF32)pxWindow->Position.Form.Width) * 2,
-                -1 + (pxWindowDrawRectangleInfo->RectangleXYWH.Height / (PXF32)pxWindow->Position.Form.Height) * 2
-            };
+  
+
 
             PXGUIProperty pxGUIProperty;
             pxGUIProperty.Property = PXUIElementPropertySize;
@@ -5236,18 +5248,53 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
             pxOpenGL->Binding.Hint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 
-            // Draw gradient background
-            pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            pxOpenGL->Binding.Begin(GL_QUADS);
-            pxOpenGL->Binding.Color3bv(&brushMainPrimary->ColorDate);
-            pxOpenGL->Binding.Vertex2f(pxRectangleVertexF32.BX, pxRectangleVertexF32.BY); // +1.0f - offset, 1.0f
-            pxOpenGL->Binding.Vertex2f(pxRectangleVertexF32.AX, pxRectangleVertexF32.BY); // -1.0f + offset, 1.0f
-            pxOpenGL->Binding.Color3bv(&brushMainSecoundary->ColorDate);
-            pxOpenGL->Binding.Vertex2f(pxRectangleVertexF32.AX, pxRectangleVertexF32.AY); // -1.0f + offset, -1.0f
-            pxOpenGL->Binding.Vertex2f(pxRectangleVertexF32.BX, pxRectangleVertexF32.AY); // +1.0f - offset, -1.0f
-            pxOpenGL->Binding.End();
+            // Draws a rectangle at (x, y) with width w and height h
+   
+            /*
+                glBegin(GL_QUADS);
+                glVertex2f(pxRect->X,       pxRect->Y);      // bottom-left
+                glVertex2f(pxRect->X + pxRect->Width,   pxRect->Y);      // bottom-right
+                glVertex2f(pxRect->X + pxRect->Width,   pxRect->Y + pxRect->Height);  // top-right
+                glVertex2f(pxRect->X,       pxRect->Y + pxRect->Height);  // top-left
+                glEnd();
+                */
+            
 
-            pxOpenGL->Binding.LineWidth(1);
+
+
+            // Draw gradient background
+            GLenum renderModeList[2] = { GL_FILL , GL_LINE };
+
+            if(1)
+            {
+                pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                pxOpenGL->Binding.Begin(GL_QUADS);
+                pxOpenGL->Binding.Color3bv(&brushMainPrimary->ColorDate);
+                pxOpenGL->Binding.Vertex2f(pxRect->X, pxRect->Y); // +1.0f - offset, 1.0f
+                pxOpenGL->Binding.Vertex2f(pxRect->X + pxRect->Width, pxRect->Y); // -1.0f + offset, 1.0f
+                pxOpenGL->Binding.Color3bv(&brushMainSecoundary->ColorDate);
+                pxOpenGL->Binding.Vertex2f(pxRect->X + pxRect->Width, pxRect->Y + pxRect->Height); // -1.0f + offset, -1.0f
+                pxOpenGL->Binding.Vertex2f(pxRect->X, pxRect->Y + pxRect->Height); // +1.0f - offset, -1.0f
+                pxOpenGL->Binding.End();
+            }
+
+            if(1)
+            {
+                pxOpenGL->Binding.LineWidth(1);
+                pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                pxOpenGL->Binding.Begin(GL_QUADS);
+                pxOpenGL->Binding.Color3b(0x00, 0xFF, 0x00);
+                pxOpenGL->Binding.Vertex2f(pxRect->X, pxRect->Y); // +1.0f - offset, 1.0f
+                pxOpenGL->Binding.Vertex2f(pxRect->X + pxRect->Width, pxRect->Y); // -1.0f + offset, 1.0f     
+                pxOpenGL->Binding.Vertex2f(pxRect->X + pxRect->Width, pxRect->Y + pxRect->Height); // -1.0f + offset, -1.0f
+                pxOpenGL->Binding.Vertex2f(pxRect->X, pxRect->Y + pxRect->Height); // +1.0f - offset, -1.0f
+                pxOpenGL->Binding.End();
+            }            
+
+
+            pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, GL_FILL);          
+
+     
 
 
 #if PXLogEnable && 0
@@ -5274,33 +5321,84 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
     return pxResult;
 }
 
-PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, const int x, const int y, const int width, const int height)
+PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo, PXIcon PXREF pxIcon)
 {
-    if(!(pxWindow && pxIcon))
+    if(!(pxWindow && pxDrawInfo))
     {
         return PXResultRefusedParameterNull;
     }
 
+    if(!pxIcon)
+    {
+        PXWindowDrawRectangle(pxWindow, pxDrawInfo);
+
+        return PXResultOK;
+    }
+
+    PXRectangleXYWHI32 PXREF pxRect = &pxDrawInfo->RectangleXYWH;
+
+    switch(pxWindow->GraphicSystem)
+    {
+        case PXGraphicSystemNative:
+        {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+            return PXActionRefusedNotImplemented;
 #elif OSWindows
-    const BOOL result = DrawIconEx
-    (
-        pxWindow->DeviceContextHandle,
-        x,
-        y,
-        pxIcon->IconHandle,
-        width,
-        height,
-        0,
-        0,
-        DI_NORMAL
-    );
+            const BOOL result = DrawIconEx
+            (
+                pxWindow->DeviceContextHandle,
+                pxRect->X,
+                pxRect->Y,
+                pxIcon->IconHandle,
+                pxRect->Width,
+                pxRect->Height,
+                0,
+                0,
+                DI_NORMAL
+            );
+#else
+            return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+            break;
+        }
+        case PXGraphicSystemOpenGL:
+        {
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, pxIcon->Texture->OpenGLID);
+
+            glColor3f(1.0f, 1.0f, 1.0f); // full brightness
+
+            glBegin(GL_QUADS);
+
+            // Bottom-left
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2i(pxRect->X, pxRect->Y);
+
+            // Bottom-right
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2i(pxRect->X + pxRect->Width, pxRect->Y);
+
+            // Top-right
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2i(pxRect->X + pxRect->Width, pxRect->Y + pxRect->Height);
+
+            // Top-left
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2i(pxRect->X, pxRect->Y + pxRect->Height);
+
+            glEnd();
+
+            glDisable(GL_TEXTURE_2D);
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
 
     return PXResultOK;
-#else
-    return PXActionRefusedNotSupportedByOperatingSystem;
-#endif
 }
 
 PXResult PXAPI PXWindowMouseTrack(PXWindow PXREF window)
@@ -5777,7 +5875,6 @@ PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF p
 
         pxWindowCreateInfo->StyleFlags |= WS_OVERLAPPEDWINDOW;
     }
-
 
     // Precalculate and preo all variables.
 

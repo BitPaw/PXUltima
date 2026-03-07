@@ -105,12 +105,9 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     );
 #endif
 
-    PXFile* compiledSteam = PXFileCreate();
-
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.ReadInfo.FileCache = compiledSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
     PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
@@ -142,7 +139,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
     // Analyse -
     {
-        while(!PXFileIsAtEnd(compiledSteam))
+        while(!PXFileIsAtEnd(pxCompiler.ReadInfo.FileCache))
         {
             PXCompilerSymbolEntryExtract(&pxCompiler);
 
@@ -165,7 +162,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             }
         }
 
-        PXFileCursorToBeginning(compiledSteam);
+        PXFileCursorToBeginning(pxCompiler.ReadInfo.FileCache);
     }
 
 #if PXLogEnable
@@ -205,7 +202,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
     for(;;)
     {
-        const PXBool isAtEnd = PXFileIsAtEnd(compiledSteam);
+        const PXBool isAtEnd = PXFileIsAtEnd(pxCompiler.ReadInfo.FileCache);
 
         if(isAtEnd)
         {

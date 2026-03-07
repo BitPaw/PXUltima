@@ -5,6 +5,7 @@
 
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/Component/Material/PXMaterial.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 #include "PXBufferLayout.h"
 
 

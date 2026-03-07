@@ -88,10 +88,32 @@ PXQuaternionF32;
 
 
 
+#define PXRotor2DDimensions 2
+#define PXRotor3DDimensions 3
+#define PXRotor4DDimensions 6
 #define PXRotorNormalDimension 6
 
+
+// For 2D
+#define PXRotorAxisXY
+#define PXRotorAxisXZ
+
+// For +3D
+#define PXRotorAxisYZ
+
+// For +4D
+#define PXRotorAxisXW
+#define PXRotorAxisYW
+#define PXRotorAxisZW
+
+// 2D =  1x (XY)
+// 3D =  3x (XY, XZ; YZ)
+// 4D =  6x (XY, XZ, XW, YZ, YW, ZW)
+// 5D = 10x (XY, XZ, XW, YZ, YW, ZW, YV, ZV, WV, XV)
+
+
 // A generic Quaternion that is not limited by any amount of dimensions
-typedef struct PXRotor_
+typedef struct PXRotorF32_
 {
     // How many dimensions we can rotate with
     // 1D = Invalid
@@ -109,8 +131,28 @@ typedef struct PXRotor_
         PXF32 PlaneAngles[PXRotorNormalDimension];
     };
 }
-PXRotor;
+PXRotorF32;
 
+typedef struct PXRotor2DF32_
+{
+    PXF32 Scalar;
+    PXF32 PlaneAngles[PXRotor2DDimensions];
+}
+PXRotor2DF32;
+
+typedef struct PXRotor3DF32_
+{
+    PXF32 Scalar;
+    PXF32 PlaneAngles[PXRotor3DDimensions];
+}
+PXRotor3DF32;
+
+typedef struct PXRotor4DF32_
+{
+    PXF32 Scalar;
+    PXF32 PlaneAngles[PXRotor4DDimensions];
+}
+PXRotor4DF32;
 
 
 typedef struct PXMatrix4x4F_ PXMatrix4x4F;
@@ -118,10 +160,10 @@ typedef struct PXMatrix4x4F_ PXMatrix4x4F;
 
 PXPublic PXI8U PXAPI PXRotorAnglesCount(const PXI8U amountOfDimensions);
 
-PXPublic void PXAPI PXRotorFromEuler(PXRotor PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32);
-PXPublic void PXAPI PXRotorInterpolate(PXRotor PXREF pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t);
+PXPublic void PXAPI PXRotorFromEuler(PXRotorF32 PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32);
+PXPublic void PXAPI PXRotorInterpolate(PXRotorF32 PXREF pxRotorCurrent, const PXRotorF32* pxRotorTarget, const PXF32 t);
 
-PXPublic void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4);
+PXPublic void PXAPI PXRotorToMatrix4x4(PXRotorF32 PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4);
 
 
 

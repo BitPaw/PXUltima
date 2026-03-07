@@ -1,5 +1,7 @@
+#pragma once
 
-
+#ifndef PXDisplayIncluded
+#define PXDisplayIncluded
 
 #define PXDisplayScreenMonitorLength 32
 #define PXDisplayScreenNameLength 32
@@ -54,3 +56,5 @@ typedef struct PXDisplay_
     PXBool IsPrimary;
 }
 PXDisplay;
+
+#endif

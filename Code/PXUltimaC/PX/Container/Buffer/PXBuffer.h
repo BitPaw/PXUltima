@@ -45,11 +45,17 @@ typedef struct PXBuffer_
 }
 PXBuffer;
 
+PXPublic PXBool PXAPI PXBufferIsInBounce(const PXBuffer PXREF pxBuffer);
+PXPublic PXByte* PXAPI PXBufferData(const PXBuffer PXREF pxBuffer);
+PXPublic PXSize PXAPI PXBufferRemaining(const PXBuffer PXREF pxBuffer);
+
 PXPublic PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size);
-PXPublic PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size);
+PXPublic PXResult PXAPI PXBufferEnsureTotal(PXBuffer PXREF pxBuffer, const PXSize sizeTotal);
+PXPublic PXResult PXAPI PXBufferEnsureAdditional(PXBuffer PXREF pxBuffer, const PXSize sizeAdditionalData);
 PXPublic PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size);
 PXPublic PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer);
 PXPublic PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
 PXPublic PXResult PXAPI PXBufferCopy(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
+PXPublic PXResult PXAPI PXBufferAppend(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
 
 #endif

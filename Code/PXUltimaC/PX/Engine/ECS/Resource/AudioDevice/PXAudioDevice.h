@@ -5,6 +5,8 @@
 
 #include <PX/Media/PXType.h>
 #include <PX/Engine/ECS/Resource/Sound/PXSound.h>
+#include<PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
+#include <PX/Engine/ECS/Component/Filter/PXAudioFilterBuffer.h>
 
 
 #define PXAudioDeviceNameSize 64
@@ -80,10 +82,20 @@ typedef struct PXAudioDevice_
     union
     {
         void* GenericHandle;
+
+        // Windows MultiMedia
         struct HWAVEOUT__* WaveOutHandle; // HWAVEOUT
         struct HWAVEIN__* WaveInHandle; // HWAVEIN
+
+        // DirectSound
+        struct IDirectSoundCapture* CaptureInterface; // LPDIRECTSOUND8
+        struct IDirectSoundCapture8* CaptureInterface8;
+
+        struct IDirectSound* OutputInterface;
+        struct IDirectSound8* OutputInterface8;
     };
 
+    PXAudioFilterBuffer FilterBuffer;
 
 #if OSWindows
     union

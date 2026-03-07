@@ -360,7 +360,7 @@ PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 
 void PXAPI PXMemoryClear(void PXREF PXRestrict bufferA, const PXSize bufferASize)
 {
-    PXMemorySet(bufferA, 0u, bufferASize);
+    PXMemorySet(bufferA, 0x00, bufferASize);
 
     //ZeroMemory(bufferA, bufferASize);
 }

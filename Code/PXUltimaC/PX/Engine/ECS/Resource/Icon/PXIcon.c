@@ -5,6 +5,7 @@
 
 #include <Windows.h>
 #include <shellapi.h>
+#include <gl/GL.h>
 
 const char PXIconText[] = "Icon";
 const PXI8U PXIconTextLength = sizeof(PXIconText);
@@ -68,7 +69,7 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
 #endif
 }
 
-PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF filePath)
+PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon)
 {
 #if PXLogEnable
     PXLogPrint
@@ -78,7 +79,7 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
         "Load",
         "PXID:<%4i>, %s",
         pxIcon->Info.ID,
-        filePath->A
+        "-"
     );
 #endif
 
@@ -87,7 +88,7 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
 #elif OSWindows
     HINSTANCE instanceHandle = NULL; // predefined system icon if NULL
 
-    switch(filePath->Format)
+    switch(TextFormatASCII)
     {
         case TextFormatASCII:
         {
@@ -270,30 +271,139 @@ PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreate
     return PXResultOK;
 }
 
-PXResult PXAPI PXGUIIconGetViaFilePath(PXIcon PXREF pxIcon, const char* fileName)
+PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF filePath)
 {
-    if(!(pxIcon && fileName))
+    if(!(pxIcon && filePath))
     {
         return PXResultRefusedParameterNull;
     }
 
 #if OSUnix
     return PXActionRefusedNotImplemented;
-#elif OSWindows && 0
+#elif OSWindows
 
-    SHFILEINFOA shFileInfo;
-    PXClear(SHFILEINFOA, &shFileInfo);
+    union
+    {
+        SHFILEINFOA A;
+        SHFILEINFOW W;
+    }
+    shFileInfo;
+    const PXI8U shFileInfoSize = sizeof(shFileInfo);
+    const UINT flags = SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON;
+    PXBool fetch = 0;
 
-    const PXBool fetch = SHGetFileInfoA
-    (
-        fileName,
-        0,
-        &shFileInfo,
-        sizeof(SHFILEINFOA),
-        SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON
-    ); // Windows 2000, Shell32.dll 4.0, shellapi.h
+    PXMemoryClear(&shFileInfo, shFileInfoSize);
 
-    pxIcon->Info.Handle.IconHandle = shFileInfo.hIcon;
+    switch(filePath->Format)
+    {
+        case TextFormatASCII:
+        {
+            fetch = SHGetFileInfoA
+            (
+                filePath->A,
+                0,
+                &shFileInfo.A,
+                sizeof(SHFILEINFOA),
+                flags
+            ); // Windows 2000, Shell32.dll 4.0, shellapi.h
+            pxIcon->IconHandle = shFileInfo.A.hIcon;
+            break;
+        }
+        case TextFormatUNICODE:
+        {
+            fetch = SHGetFileInfoW
+            (
+                filePath->W,
+                0,
+                &shFileInfo.W,
+                sizeof(SHFILEINFOW),
+                flags
+            ); // Windows 2000, Shell32.dll 4.0, shellapi.h
+            pxIcon->IconHandle = shFileInfo.W.hIcon;
+            break;
+        }
+        default:
+            break;
+    }
+
+    int iconWidth = GetSystemMetrics(SM_CXICON);
+    int iconHeight = GetSystemMetrics(SM_CYICON);
+
+    // Step 2 - Convert handle to BITMAP
+    {
+        BITMAPINFO bmi = { 0 };
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = iconWidth;
+        bmi.bmiHeader.biHeight = -iconHeight; // top-down
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = BI_RGB;
+
+        PXByte* pixels = NULL;
+        HDC hdc = CreateCompatibleDC(NULL);
+        HBITMAP hBmp = CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, &pixels, NULL, 0);
+        SelectObject(hdc, hBmp);
+
+        // Draw icon into the bitmap
+        DrawIconEx
+        (
+            hdc,
+            0,
+            0, 
+            pxIcon->IconHandle,
+            iconWidth,
+            iconHeight, 
+            0,
+            NULL, 
+            DI_NORMAL
+        );
+
+        // Quicktransform
+        for(size_t i = 0; i < iconWidth * iconHeight * 4; i += 4)
+        {
+            PXByte temp = pixels[i + 0];
+
+            pixels[i + 0] = pixels[i + 2];
+           // pixels[i + 1] = pixels[i + 1];
+            pixels[i + 2] = temp;
+           // pixels[i + 0] = pixels[i + 0];
+        }
+
+
+        // COPY
+        {
+            PXTextureCreateInfo pxTextureCreateInfo;
+            PXClear(PXTextureCreateInfo, &pxTextureCreateInfo);
+            pxTextureCreateInfo.Type = PXTextureType2D;
+            pxTextureCreateInfo.Format = PXColorFormatBGRAI8;
+            pxTextureCreateInfo.Payload = pixels;
+            pxTextureCreateInfo.T2D.Width = iconWidth;
+            pxTextureCreateInfo.T2D.Height = iconHeight;
+
+            PXTextureCreate(&pxIcon->Texture, &pxTextureCreateInfo);
+        }
+
+        GLuint texID;
+        glGenTextures(1, &texID);
+        glBindTexture(GL_TEXTURE_2D, texID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGBA,
+            iconWidth,
+            iconHeight,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            pixels
+        );
+
+        pxIcon->Texture->OpenGLID = texID;
+    }
 
     return PXResultOK;
 

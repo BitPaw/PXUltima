@@ -51,6 +51,8 @@ typedef struct PXDrawInfo_
 {
     PXRectangleXYWHI32 RectangleXYWH;
 
+    PXF32 AspectRatio;
+
 #if OSUnix
     int ScreenIDHandle;
     Display* DisplayHandle;
@@ -1098,13 +1100,14 @@ typedef struct PXTextDrawInfo_
     PXDrawInfo* WindowDrawInfo;
     PXText* Text;
 
-    float X;
-    float Y;
+    PXVector2F32 Position;
 
     PXI32U Behaviour;
 
     float Size;
     float OffsetX;
+
+    PXColorRGBF Color;
 }
 PXTextDrawInfo;
 
@@ -1113,6 +1116,18 @@ PXPublic PXResult PXAPI PXWindowDrawText
     PXWindow PXREF pxWindow,
     PXTextDrawInfo PXREF pxTextDrawInfo
 );
+PXPrivate PXResult PXAPI PXWindowDrawTextNative
+(
+    PXWindow PXREF pxWindow,
+    PXTextDrawInfo PXREF pxTextDrawInfo
+);
+PXPrivate PXResult PXAPI PXWindowDrawTextGLFF
+(
+    PXWindow PXREF pxWindow,
+    PXTextDrawInfo PXREF pxTextDrawInfo
+);
+
+
 PXPublic PXResult PXAPI PXWindowDrawPoint(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y);
 PXPublic PXResult PXAPI PXWindowDrawPoints(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
 PXPublic PXResult PXAPI PXWindowDrawLine(PXWindow PXREF pxWindow, const PXI32S x1, const PXI32S y1, const PXI32S x2, const PXI32S y2);
@@ -1120,7 +1135,7 @@ PXPublic PXResult PXAPI PXWindowDrawLines(PXWindow PXREF pxWindow, const PXI32S 
 
 
 PXPublic PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
-PXPublic PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, const int x, const int y, const int width, const int height);
+PXPublic PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo, PXIcon PXREF pxIcon);
 
 
 PXPublic PXResult PXAPI PXWindowMouseTrack(PXWindow PXREF window);

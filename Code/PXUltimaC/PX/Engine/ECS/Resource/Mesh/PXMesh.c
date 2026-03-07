@@ -3,6 +3,9 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
+
+#include <gl/GL.h>
+
 #include "PXIndexBuffer.h"
 #include <PX/Math/PXMath.h>
 
@@ -126,6 +129,16 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
     }
 
     pxMesh = *pxMeshREF;
+
+
+    pxMesh->Positions = PXMemoryHeapCallocT(PXVector3F32, pxMeshCreateInfo->VertexAmount);
+    pxMesh->Normals = PXMemoryHeapCallocT(PXVector3F32, pxMeshCreateInfo->VertexAmount);
+    pxMesh->UVs = PXMemoryHeapCallocT(PXVector2F32, pxMeshCreateInfo->VertexAmount);
+
+    pxMeshCreateInfo->Positions = pxMesh->Positions;
+    pxMeshCreateInfo->Normals = pxMesh->Normals;
+    pxMeshCreateInfo->UVs = pxMesh->UVs;
+
 
     const PXBool hasFilePath = pxMeshCreateInfo->Info.FilePath.Data > 0;
 
@@ -453,11 +466,255 @@ PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCre
 
 PXResult PXAPI PXMeshRelease(PXMesh PXREF pxMesh)
 {
+    if(!pxMesh)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     return PXActionRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMeshDraw(PXMesh PXREF pxMesh, PXDrawInfo PXREF pxDrawInfo)
 {
+    if(!(pxMesh && pxDrawInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXMeshGeometry PXREF pxMeshGeometry = pxMesh->Geometry;
+
+
+#if 1
+    GLenum modfs[3] = { GL_FILL, GL_LINE , GL_POINT };
+    GLenum wwwdee[3] = { GL_TRIANGLE_STRIP, GL_LINES , GL_POINTS };
+    PXVector4F32 colorList[3] =
+    {
+        {0.3f, 0.7f, 1.0f, 0.3f},
+        {0.2f, 0.2f, 0.2f, 1.0f},
+        {1.0f, 0.2f, 0.0f, 1.0f},
+    };
+
+    PXTexture PXREF pxTexture = pxMesh->Texture;
+
+    if(pxTexture)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, pxTexture->OpenGLID);
+    }
+    else
+    {
+
+    }
+
+
+
+    glFrontFace(GL_CW);
+
+    glPointSize(5);
+    glLineWidth(5);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    float scale = 0.0005f;
+
+    glPushMatrix();
+    glTranslatef(pxMesh->Position.X* scale, pxMesh->Position.Y * scale, pxMesh->Position.Z * scale);
+
+    glScalef(scale, scale, scale);
+
+    // Enable client states
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, pxMesh->Positions);
+
+    if(pxMesh->Normals)
+    {
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glNormalPointer(GL_FLOAT, 0, pxMesh->Normals);
+    }  
+
+    if(pxMesh->UVs)
+    {
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, 0, pxMesh->UVs);
+    }    
+
+    for(size_t i = 0; i < 3; i++)
+    {
+        PXVector4F32* color = &colorList[i];
+
+        glColor4f(color->X, color->Y, color->Z, color->W);
+
+        // Draw triangles
+        glDrawElements(wwwdee[i], pxMesh->IndexAmount, GL_UNSIGNED_SHORT, pxMesh->Index);
+    }
+
+    // Disable client states
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    if(pxMesh->Normals)
+        glDisableClientState(GL_NORMAL_ARRAY);
+
+    if(pxMesh->UVs)
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
+    if(pxTexture)
+    {
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    glPopMatrix();
+#else
+
+
+
+
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer
+    (
+        3,
+        GL_FLOAT,
+        0,
+        pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data
+    );
+    glScalef(3, 3, 3);
+    glTranslatef(-20, 0, 0);
+
+    float* ddat = pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data;
+    PXSize amountff = pxMeshGeometry->VertexBufferPrime[0]->VertexData.CursorOffsetByte / sizeof(float);
+
+#if 0
+    for(size_t i = 0; i < amountff; i += 3)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Model",
+            "Color-Set",
+            "%6.2f %6.2f %6.2f",
+            ddat[i + 0],
+            ddat[i + 1],
+            ddat[i + 2]
+        );
+#endif 
+    }
+#endif
+
+
+    if(1)
+    {
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glNormalPointer
+        (
+            GL_FLOAT,
+            0,
+            pxMeshGeometry->VertexBufferPrime[1]->VertexData.Data
+        );
+
+    }
+
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    PXSize amount = pxMeshGeometry->IndexBuffer->Segment.SegmentListAmount;
+    PXIndexSegmentEntry* pxIndexSegmentEntryList = PXIndexSegmentGET(&pxMeshGeometry->IndexBuffer->Segment);
+
+    PXSize offset = 0;
+
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        PXIndexSegmentEntry* pxIndexSegmentEntry = &pxIndexSegmentEntryList[i];
+        // PXMaterial* mat = pxIndexSegmentEntry->material;
+
+         // Apply material properties
+       //  GLfloat diffuse[4] = { mat->Kd[0], mat->Kd[1], mat->Kd[2], mat->d };
+        // GLfloat ambient[4] = { mat->Ka[0], mat->Ka[1], mat->Ka[2], mat->d };
+        // GLfloat specular[4] = { mat->Ks[0], mat->Ks[1], mat->Ks[2], mat->d };
+
+       //  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+        // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+        // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+        // glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat->Ns);
+
+         // Bind texture if available
+        if(0) {
+            //glEnable(GL_TEXTURE_2D);
+           // glBindTexture(GL_TEXTURE_2D, mat->texture_id);
+        }
+        else {
+            glDisable(GL_TEXTURE_2D);
+        }
+
+        PXSize typeSize = PXTypeSizeGet(pxMeshGeometry->IndexBuffer->DataType);
+
+        // Draw this segment
+
+        //glTexCoordPointer(2, GL_FLOAT, sizeof(VertexPNT), &model->verts[0].tu);
+
+
+
+
+
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_NORMALIZE);
+
+        GLfloat lightPos[] = { 1.0f, 10.0f, 1.0f, 100.0f };
+        glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+
+        glColor3f(1.0, 1.0, 1.0);
+        glDrawArrays
+        (
+            GL_TRIANGLES,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+        glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHT0);
+        glDisable(GL_NORMALIZE);
+
+
+        glPointSize(8);
+        glColor3f(0.8, 0.2, 0.2);
+        glDrawArrays
+        (
+            GL_POINTS,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+        glLineWidth(1);
+        glColor3f(0.6, 1.0, 0.6);
+        glDrawArrays
+        (
+            GL_LINES,
+            offset,
+            pxIndexSegmentEntry->DataRange
+        );
+
+
+
+
+
+        /*
+         glDrawElements
+         (
+             GL_POINTS,
+             pxIndexSegmentEntry->DataRange,
+             GL_UNSIGNED_SHORT,
+             pxMesh->IndexBuffer->Data.Data + offset
+         );*/
+
+        offset += pxIndexSegmentEntry->DataRange * typeSize;
+    }
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif
+
     return PXActionRefusedNotImplemented;
 }
 

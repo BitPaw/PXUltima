@@ -62,19 +62,20 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
-    PXFile* tokenSteam = PXFileCreate();
+
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes | PXCompilerKeepTABs;
     PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
+
+    PXFile* tokenSteam = pxCompiler.ReadInfo.FileCache;
 #if 0
 
     unsigned int indentCounter = 0;

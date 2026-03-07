@@ -5,6 +5,7 @@
 
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/Resource/Mesh/PXBufferLayout.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 // Buffer to contain veretx data like position, normals, texturepositions, ...
 // A mesh can contain multible vertexBuffers or just one thats interleaved

@@ -1,7 +1,7 @@
 #include "PXFileDirectory.h"
 #include <PX/OS/Console/PXConsole.h>
 #include <CommCtrl.h>
-#include <PX/OS/File/PXDirectory.h>
+
 #include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
 #include <PX/Engine/PXGUI.h>
 
@@ -32,14 +32,124 @@ const PXI8U PXFileNoneLength = sizeof(PXFileNone);
 const char PXLocalPath[] = "./";
 const PXI8U PXLocalPathLength = sizeof(PXLocalPath);
 
+
+void PXAPI PXDrawEntry(PXFileDirectory PXREF pxFileDirectory, PXWindow PXREF pxWindow, PXFileEntry PXREF pxFileEntry, PXTextDrawInfo PXREF pxTextDrawInfo)
+{
+    PXText PXREF pxText = pxTextDrawInfo->Text;
+
+    //PXClear(PXTextDrawInfo, &pxTextDrawInfo);
+
+       //PXFileEntry PXREF pxFileEntry = PXListItemAtIndexGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
+
+#if 1
+       // PXIcon pxIcon;
+
+       // const PXResult iconResult = PXIconGetViaFilePath(&pxIcon, &pxFileEntry->FilePath);
+
+       // PXI32S rowY = (pxDrawInfo->RectangleXYWH.Height * (i));
+
+    PXRectangleXYWHI32 old = pxTextDrawInfo->WindowDrawInfo->RectangleXYWH;
+
+    pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.X = pxTextDrawInfo->Position.X;
+    pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Y = pxTextDrawInfo->Position.Y;
+    pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Width = 16;
+    pxTextDrawInfo->WindowDrawInfo->RectangleXYWH.Height = 16;
+
+
+    // Let's try to get the icon?
+
+
+
+    // Draw icon
+    PXWindowDrawIcon
+    (
+        pxWindow,
+        pxTextDrawInfo->WindowDrawInfo,
+        &pxFileEntry->Icon
+    );
+
+    pxTextDrawInfo->WindowDrawInfo->RectangleXYWH = old;
+#endif
+
+    int x = PXFileElementInfoTypeFile;
+
+    pxTextDrawInfo->Position.X += 20;
+
+    switch(x) // pxFileEntry->Type
+    {
+        default:
+        case PXFileElementInfoTypeFile:
+        {
+            // icon = fileIcon;
+          
+
+            pxText->Format = TextFormatUNICODE;
+
+            PXWindowDrawText(pxWindow, pxTextDrawInfo);
+
+#if 0
+
+            PXText pxA;
+            PXTextConstructFromAdressA(&pxA, pxFileEntry->FilePathData, pxFileEntry->FilePathSize, pxFileEntry->FilePathSize);
+
+            PXText pxTextB;
+            PXTextConstructBufferA(&pxTextB, 64);
+
+            PXSize extensionSize = PXFilePathExtensionGet(&pxA, &pxTextB);
+
+            if(extensionSize != 0)
+            {
+                HICON smsm = PXGUIIconGetViaExtension(pxTextB.A);
+
+                if(smsm)
+                {
+                    icon = smsm;
+                }
+            }
+#else
+
+
+
+#endif
+
+            break;
+        }
+        case PXFileElementInfoTypeDictionary:
+        {
+            //   icon = folderIcon;
+            break;
+        }
+    }
+
+    pxTextDrawInfo->Position.X -= 20;
+
+
+    // pxWindowDrawInfoSub.RectangleXYWH.X = pxDrawInfo->RectangleXYWH.X + iconSize + 8;
+    // pxWindowDrawInfoSub.RectangleXYWH.Y = pxDrawInfo->RectangleXYWH.Y + rowY;
+
+
+    // pxWindowDrawInfoSub.Content = pxFileEntry->FilePath;
+    // pxWindowDrawInfoSub.Behaviour = PXWindowAllignLeft;
+
+     /*
+     PXTextDrawInfo pxTextDrawInfo;
+     pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
+     pxTextDrawInfo.Text = &pxWindowDrawInfoSub;
+     pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
+     pxTextDrawInfo.X = 0;
+     pxTextDrawInfo.Y = 0;
+
+             PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, PXNull);
+     */
+}
+
+
 PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDrawInfo PXREF pxDrawInfo)
 {
-    PXDirectorySearchCache pxDirectorySearchCache;// = (PXDirectorySearchCache*)pxWindow->ExtendedData;
+    PXDirectorySearchCache PXREF pxDirectorySearchCache = &pxFileDirectory->DirectorySearchCache;
     
     PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
-    PXWindow* pxWindow = pxFileDirectory;
-
-    PXDrawInfo pxWindowDrawInfoSub = *pxDrawInfo;
+    PXWindow PXREF pxWindow = pxFileDirectory->WindowBase;
 
 #if PXLogEnable
     PXLogPrint
@@ -53,13 +163,19 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
 
     pxDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
 
-    PXWindowDrawRectangle3D(pxWindow, pxDrawInfo);
+   // PXWindowDrawRectangle3D(pxWindow, pxDrawInfo);
 
 
-    PXText pxTExt;
-    PXTextFromAdressA(&pxTExt, PXLocalPath, PXLocalPathLength, PXLocalPathLength);
 
-    PXDirectorySearch(&pxDirectorySearchCache, &pxTExt);
+    if(pxFileDirectory->IsDirty)
+    {
+        PXText pxTExt;
+        PXTextFromAdressA(&pxTExt, PXLocalPath, PXLocalPathLength, PXLocalPathLength);
+
+        PXDirectorySearch(pxDirectorySearchCache, &pxTExt);
+
+        pxFileDirectory->IsDirty = PXFalse;
+    }
 
 
 #if 0
@@ -70,6 +186,9 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
     pxWindowSub.Position.Form.Height = 20;
     pxWindowSub.Position.Form.X = 20;
 #endif
+
+
+#if 0
 
     PXWindowBrushSet
     (
@@ -83,101 +202,52 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
         pxGUITheme->BrushTextWhite,
         PXGUIDrawModeFront
     );
+#endif
 
     const PXSize iconSize = 16;
+    char textBuffer[128];
 
-    if(0 == pxDirectorySearchCache.EntryList.EntryAmountUsed)
-    {
-        /*
-            pxWindow.Position.Form.X + 16,
-            pxWindow->Position.Form.Y + 16,
-            pxWindow->Position.Form.Width,
-            pxWindow->Position.Form.Height,
-            buffer,
-            bufferSize,
-            PXWindowAllignLeft
-            */
-       // PXTextFromAdressA(&pxWindowDrawInfoSub.Content, PXFileNone, PXFileNoneLength, PXFileNoneLength);
+    PXText pxText;
+    PXTextFromAdressA(&pxText, textBuffer, sizeof(textBuffer), sizeof(textBuffer));
+    PXTextPrint(&pxText, "FilePath");
 
-        //PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, &pxTExt);
+    PXTextDrawInfo pxTextDrawInfo;
+    PXClear(PXTextDrawInfo, &pxTextDrawInfo);
+    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
+    pxTextDrawInfo.Position.Y -= 25;
+    pxTextDrawInfo.Position.X = pxDrawInfo->RectangleXYWH.X+5;
+    pxTextDrawInfo.Text = &pxText;
+
+    PXWindowDrawText(pxWindow, &pxTextDrawInfo);
+
+
+
+    if(0 == pxDirectorySearchCache->FilePathCache.EntryAmount)
+    {   
+        PXTextFromAdressA(&pxText, PXFileNone, sizeof(PXFileNone), sizeof(PXFileNone));
+
+        pxTextDrawInfo.Position.Y -= 20;
+      
+        PXWindowDrawText(pxWindow, &pxTextDrawInfo);
     }
 
-    for(PXSize i = 0; i < pxDirectorySearchCache.EntryList.EntryAmountUsed; ++i)
+    for(PXSize i = 0; i < pxDirectorySearchCache->FilePathCache.EntryAmount; ++i)
     {
-        PXFileEntry PXREF pxFileEntry = PXListItemAtIndexGetT(PXFileEntry, &pxDirectorySearchCache.EntryList, i);
+        pxTextDrawInfo.Position.Y -= 20;
 
-        PXIcon pxIcon;
+        PXI32U id = i+100;
 
-        const PXResult iconResult = PXIconGetViaFilePath(&pxIcon, &pxFileEntry->FilePath);
-
-        PXI32S rowY = (pxDrawInfo->RectangleXYWH.Height * (i));
-
-        PXWindowDrawIcon
+        PXListDynamicGet
         (
-            pxWindow,
-            &pxIcon,
-            2,
-            pxDrawInfo->RectangleXYWH.Y + rowY + 2,
-            iconSize,
-            iconSize
+            &pxFileDirectory->DirectorySearchCache.FilePathCache,
+            &id,
+            &pxText.A,
+            &pxText.SizeUsed
         );
 
-        switch(pxFileEntry->Type)
-        {
-            default:
-            case PXFileElementInfoTypeFile:
-            {
-               // icon = fileIcon;
+        PXFileEntry* pxFileEntry = PXListItemAtIndexGet(&pxFileDirectory->DirectorySearchCache.EntryList, i);
 
-        #if 0
-
-                PXText pxA;
-                PXTextConstructFromAdressA(&pxA, pxFileEntry->FilePathData, pxFileEntry->FilePathSize, pxFileEntry->FilePathSize);
-
-                PXText pxTextB;
-                PXTextConstructBufferA(&pxTextB, 64);
-
-                PXSize extensionSize = PXFilePathExtensionGet(&pxA, &pxTextB);
-
-                if(extensionSize != 0)
-                {
-                    HICON smsm = PXGUIIconGetViaExtension(pxTextB.A);
-
-                    if(smsm)
-                    {
-                        icon = smsm;
-                    }
-                }
-        #else
-
-
-
-        #endif
-
-                break;
-            }
-            case PXFileElementInfoTypeDictionary:
-            {
-             //   icon = folderIcon;
-                break;
-            }
-        }
-
-        pxWindowDrawInfoSub.RectangleXYWH.X = pxDrawInfo->RectangleXYWH.X + iconSize + 8;
-        pxWindowDrawInfoSub.RectangleXYWH.Y = pxDrawInfo->RectangleXYWH.Y + rowY;
-       // pxWindowDrawInfoSub.Content = pxFileEntry->FilePath;
-        pxWindowDrawInfoSub.Behaviour = PXWindowAllignLeft;
-
-        /*
-        PXTextDrawInfo pxTextDrawInfo;
-        pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
-        pxTextDrawInfo.Text = &pxWindowDrawInfoSub;
-        pxTextDrawInfo.Behaviour = PXWindowAllignLeft | PXWindowAllignTop;
-        pxTextDrawInfo.X = 0;
-        pxTextDrawInfo.Y = 0;
-
-                PXWindowDrawText(pxWindow, &pxWindowDrawInfoSub, PXNull);
-        */
+        PXDrawEntry(pxFileDirectory, pxWindow, pxFileEntry, &pxTextDrawInfo);
     }  
 
     return PXResultOK;
@@ -208,6 +278,7 @@ PXResult PXAPI PXFileDirectoryCreate(PXFileDirectory** pxFileDirectoryREF, PXFil
 
     PXWindowCreate(&pxFileDirectory->WindowBase, &pxFileDirectoryCreateInfo->Window);
 
+    pxFileDirectory->IsDirty = PXTrue;
 
    // pxWindow->Info.Behaviour |= PXECSInfoUseByEngine;
 

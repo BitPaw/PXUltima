@@ -8,7 +8,7 @@
 
 const char PXSceneViewText[] = "SceneView";
 const PXI8U PXSceneViewTextLength = sizeof(PXSceneViewText);
-const PXECSRegisterInfoStatic PXSceneRegisterInfoStatic =
+const PXECSRegisterInfoStatic PXSceneViewRegisterInfoStatic =
 {
     {sizeof(PXSceneViewText), sizeof(PXSceneViewText), PXSceneViewText, TextFormatASCII},
     sizeof(PXSceneView),
@@ -16,7 +16,7 @@ const PXECSRegisterInfoStatic PXSceneRegisterInfoStatic =
     PXECSTypeEntity,
     PXFontCreate
 };
-PXECSRegisterInfoDynamic PXSceneRegisterInfoDynamic;
+PXECSRegisterInfoDynamic PXSceneViewRegisterInfoDynamic;
 
 
 /* Window size (update these in your reshape callback) */
@@ -150,8 +150,8 @@ PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreate
 {
     PXSceneView* pxSceneView = PXNull; 
 
-    pxSceneViewCreateInfo->Info.Info.Static = &PXSceneRegisterInfoStatic;
-    pxSceneViewCreateInfo->Info.Info.Dynamic = &PXSceneRegisterInfoDynamic;
+    pxSceneViewCreateInfo->Info.Info.Static = &PXSceneViewRegisterInfoStatic;
+    pxSceneViewCreateInfo->Info.Info.Dynamic = &PXSceneViewRegisterInfoDynamic;
     PXResult pxResult = PXECSCreate(pxSceneViewREF, pxSceneViewCreateInfo);
 
     if(PXResultOK != pxResult)

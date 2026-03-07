@@ -131,7 +131,7 @@ void DrawRoundedRect(float x, float y, float w, float h, float r)
     // Top-right corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f);
+        float a = (float)i / segments * (PXMathPI / 2.0f);
         glVertex2f(x + w - r + cosf(a) * r,
                    y + h - r + sinf(a) * r);
     }
@@ -139,7 +139,7 @@ void DrawRoundedRect(float x, float y, float w, float h, float r)
     // Top-left corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + PXMathConstantPI / 2.0f;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + PXMathPI / 2.0f;
         glVertex2f(x + r + cosf(a) * r,
                    y + h - r + sinf(a) * r);
     }
@@ -147,7 +147,7 @@ void DrawRoundedRect(float x, float y, float w, float h, float r)
     // Bottom-left corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + PXMathConstantPI;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + PXMathPI;
         glVertex2f(x + r + cosf(a) * r,
                    y + r + sinf(a) * r);
     }
@@ -155,7 +155,7 @@ void DrawRoundedRect(float x, float y, float w, float h, float r)
     // Bottom-right corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + 3.0f * PXMathConstantPI / 2.0f;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + 3.0f * PXMathPI / 2.0f;
         glVertex2f(x + w - r + cosf(a) * r,
                    y + r + sinf(a) * r);
     }
@@ -173,7 +173,7 @@ void DrawRoundedRectBorder(float x, float y, float w, float h, float r, float th
     // Top-right corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f);
+        float a = (float)i / segments * (PXMathPI / 2.0f);
         glVertex2f(x + w - r + cosf(a) * r,
                    y + h - r + sinf(a) * r);
     }
@@ -181,7 +181,7 @@ void DrawRoundedRectBorder(float x, float y, float w, float h, float r, float th
     // Top-left corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + PXMathConstantPI / 2.0f;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + PXMathPI / 2.0f;
         glVertex2f(x + r + cosf(a) * r,
                    y + h - r + sinf(a) * r);
     }
@@ -189,7 +189,7 @@ void DrawRoundedRectBorder(float x, float y, float w, float h, float r, float th
     // Bottom-left corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + PXMathConstantPI;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + PXMathPI;
         glVertex2f(x + r + cosf(a) * r,
                    y + r + sinf(a) * r);
     }
@@ -197,7 +197,7 @@ void DrawRoundedRectBorder(float x, float y, float w, float h, float r, float th
     // Bottom-right corner
     for(int i = 0; i <= segments; i++)
     {
-        float a = (float)i / segments * (PXMathConstantPI / 2.0f) + 3.0f * PXMathConstantPI / 2.0f;
+        float a = (float)i / segments * (PXMathPI / 2.0f) + 3.0f * PXMathPI / 2.0f;
         glVertex2f(x + w - r + cosf(a) * r,
                    y + r + sinf(a) * r);
     }
@@ -278,16 +278,28 @@ void drawFilledCircle(float cx, float cy, float r, int segments)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-
+#include <gl/GLU.h>
 
 PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
+    PXCamera PXREF pxCamera = pxDrawInfo->Camera;
 
     float x = pxDrawInfo->RectangleXYWH.X;
     float y = pxDrawInfo->RectangleXYWH.Y;
     float width = pxDrawInfo->RectangleXYWH.Width;
     float height = pxDrawInfo->RectangleXYWH.Height;
+
+
+    float viewHeight = height; // your chosen "zoom" 
+    float viewWidth = viewHeight * pxDrawInfo->AspectRatio;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //gluPerspective(90, pxDrawInfo->AspectRatio, 0, 10000);
+    gluOrtho2D(x, viewHeight, viewWidth, y);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
 
 
@@ -327,13 +339,13 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     int idxV = 0;
     int idxC = 0;
 
-    for(int i = 0; i <= segmentAmount; ++i)
+    for(PXSize i = 0; i <= segmentAmount; ++i)
     {
-        float angle = i * angleStep;
-        float rad = angle * (3.14159265f / 180.0f);
+        PXF32 angle = i * angleStep;
+        PXF32 rad = angle * (PXMathPI / 180.0f);
 
-        float c = cosf(rad);
-        float s = sinf(rad);
+        PXF32 c = PXMathCosinusRADF32(rad);
+        PXF32 s = PXMathSinusRADF32(rad);
 
         // HSV ? RGB
         PXColorHSV hsv = { angle, 1.0f, 1.0f };
@@ -358,12 +370,6 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
         colors[idxC++] = rgb.Blue;
         colors[idxC++] = 1.0f;
     }
-
-
-
-
-
-
 
 
     // -----------------------

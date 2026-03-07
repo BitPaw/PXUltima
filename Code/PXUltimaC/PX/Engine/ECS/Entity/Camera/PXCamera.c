@@ -3,7 +3,7 @@
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Engine/PXResource.h>
-
+#include <math.h>
 
 const char PXCameraName[] = "Camera";
 const PXI8U PXCameraNameLength = sizeof(PXCameraName);
@@ -40,14 +40,14 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     }
 
     pxCamera = *pxCameraREF;
-    pxCamera->WalkSpeed = 2;
+    pxCamera->WalkSpeed = 3;// 500;
     pxCamera->ViewSpeed = 1;
     pxCamera->FollowSpeed = 0.98f;
     pxCamera->FieldOfView = 90;
     pxCamera->Height = 1;
     pxCamera->Width = 1;
     pxCamera->Near = 0.1;
-    pxCamera->Far = 100000;
+    pxCamera->Far = 100000000000.f;
 
     //PXMatrix4x4FIdentity(&camera->MatrixModel);
     //PXMatrix4x4FIdentity(&camera->MatrixView);
@@ -243,6 +243,11 @@ static void addFrustumHandles
 
 PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo)
 {
+    if(!(pxCamera && pxDrawInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     float fovY_deg = pxCamera->FieldOfView;
     float aspect = PXCameraAspectRatio(pxCamera);
     float nearD = pxCamera->Near;
@@ -334,6 +339,28 @@ PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo
     return PXActionRefusedNotImplemented;
 }
 
+#include <gl/GLU.h>
+
+PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, float aspectRatio)
+{
+    if(!pxCamera)
+    {
+        return PXResultOK;
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
+    glTranslatef(-pxCamera->Position.X, -pxCamera->Position.Y, -pxCamera->Position.Z);
+
+    return PXResultOK;
+}
+
 void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)
 {
     const PXF32 scaling = 0.005;
@@ -422,8 +449,8 @@ void PXAPI PXCameraRotate(PXCamera PXREF camera, const PXVector3F32 PXREF vector
 
     camera->CurrentRotation.Y = PXMathLimit(camera->CurrentRotation.Y, minValue, maxValue);
 
-    const PXF32 pitchRAD = PXMathDegreeToRadians(camera->CurrentRotation.Y);
-    const PXF32 yawRAD = PXMathDegreeToRadians(camera->CurrentRotation.X);
+    const PXF32 pitchRAD = camera->CurrentRotation.Y;
+    const PXF32 yawRAD = camera->CurrentRotation.X;
     const PXF32 rx = PXMathCosinusRADF32(pitchRAD) * PXMathCosinusRADF32(yawRAD);
     const PXF32 ry = PXMathSinusRADF32(pitchRAD);
     const PXF32 rz = PXMathCosinusRADF32(pitchRAD) * PXMathSinusRADF32(yawRAD);
@@ -601,6 +628,11 @@ void PXAPI PXCameraFollow(PXCamera PXREF camera, const PXF32 deltaTime)
 
 void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
 {
+    if(!camera)
+    {
+        return;
+    }
+
     const PXF32 walkSpeedSmoothed = camera->WalkSpeed * deltaTime;
     const PXF32 viewSpeedSmoothed = camera->ViewSpeed * deltaTime;
     const PXVector3F32 up = { 0,1,0 };
@@ -614,49 +646,69 @@ void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
    // PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up);
 }
 
-#include <math.h>
-
 void PXAPI PXCameraForward(const PXCamera PXREF camera, PXVector3F32 PXREF forward)
 {
-    PXRotor PXREF pxRotor = &camera->Rotation;
+    if(!(camera && forward))
+    {
+        return;
+    }
 
-    float yaw = PXMathDegreeToRadians(camera->CurrentRotation.X);
-    float pitch = PXMathDegreeToRadians(camera->CurrentRotation.Y);
+    PXRotor4DF32 PXREF pxRotor = &camera->Rotation;
+      
+    float pitch = camera->CurrentRotation.X;
+    float yaw = camera->CurrentRotation.Y;
 
-#if 1
-    forward->X = cos(pitch) * cos(yaw);
-    forward->Y = sin(pitch);
-    forward->Z = cos(pitch) * sin(yaw);
-#else
-    forward->X = sin(yaw) * cos(pitch); 
-    forward->Y = sin(pitch);
-    forward->Z = cos(yaw) * cos(pitch);
-#endif
+    if(1)
+    {
+        forward->X = sinf(yaw);
+        forward->Y = 0.0f;
+        forward->Z = cosf(yaw);
+    }
+    else
+    {
+        forward->X = sinf(yaw) * cosf(pitch);
+        forward->Y = sinf(pitch);
+        forward->Z = cosf(yaw) * cosf(pitch);
+    }
 
     PXVector3F32Normalize(forward);
 }
 
 void PXAPI PXCameraRight(const PXCamera PXREF camera, PXVector3F32 PXREF right)
 {
-    PXRotor PXREF pxRotor = &camera->Rotation;
-    float yaw = PXMathDegreeToRadians(camera->CurrentRotation.X);
+    if(!(camera && right))
+    {
+        return;
+    }
 
+    PXRotor4DF32 PXREF pxRotor = &camera->Rotation;
+    float yaw = camera->CurrentRotation.Y;
+
+#if 0
     right->X = -sin(yaw);
     right->Y = 0.0;
     right->Z = cos(yaw);
+#else
+    right->X = cosf(yaw);
+    right->Y = 0.0f;
+    right->Z = -sinf(yaw);
+#endif
 
     PXVector3F32Normalize(right);
 }
 
 void PXAPI PXCameraUp(const PXCamera PXREF camera, PXVector3F32 PXREF up)
 {
+    if(!(camera && up))
+    {
+        return;
+    }
+
     PXVector3F32 forward;
     PXVector3F32 right;
 
     PXCameraForward(camera, &forward);
     PXCameraRight(camera, &right);
 
-    PXVector3F32CrossProduct(up, &right, &forward);
-
-    PXVector3F32Normalize(up);
+    PXVector3F32CrossProduct(up, &forward, &right);
 }

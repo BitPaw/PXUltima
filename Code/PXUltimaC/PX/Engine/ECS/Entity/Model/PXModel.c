@@ -2,13 +2,15 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/OS/PXOS.h>
 #include <gl/GL.h>
 
 typedef struct PXModel_
 {
     PXECSInfo Info;
 
-    PXMesh* Mesh;
+    PXSize MeshAmount;
+    PXMesh** MeshList;
 
     //-----------------------------
     // Render info
@@ -88,11 +90,12 @@ PXResult PXAPI PXModelCreate(PXModel** pxModelREF, PXModelCreateInfo PXREF pxMod
         PXClear(PXMeshCreateInfo, &pxMeshCreateInfo);
         pxMeshCreateInfo.Info = pxModelCreateInfo->Info;
 
-        PXMeshCreate(&pxModel->Mesh, &pxMeshCreateInfo);
+        //PXMeshCreate(&pxModel->Mesh, &pxMeshCreateInfo);
     }
     else
     {
         // No path specifies, are we loading something predefined?
+        PXModelMeshAmountSet(pxModel, pxModelCreateInfo->MeshAmount);
     }
 
     return PXResultOK;
@@ -110,162 +113,44 @@ PXResult PXAPI PXModelDraw(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo)
     return PXResultOK;
 }
 
-#include <PX/OS/Console/PXConsole.h>
-
 PXResult PXAPI PXModelDrawGL(PXModel PXREF pxModel, PXDrawInfo PXREF pxDrawInfo)
 {
-    PXMesh PXREF pxMesh = pxModel->Mesh;
-    PXMeshGeometry PXREF pxMeshGeometry = pxMesh->Geometry;
-
-
-
-
-
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer
-    (
-        3,
-        GL_FLOAT,
-        0,
-        pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data
-    );
-    glScalef(3,3,3);
-    glTranslatef(-20, 0, 0);
-
-    float* ddat = pxMeshGeometry->VertexBufferPrime[0]->VertexData.Data;
-    PXSize amountff = pxMeshGeometry->VertexBufferPrime[0]->VertexData.CursorOffsetByte / sizeof(float);
-
-#if 0
-    for(size_t i = 0; i < amountff; i+=3)
+    if(!(pxModel && pxDrawInfo))
     {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Model",
-            "Color-Set",
-            "%6.2f %6.2f %6.2f",
-            ddat[i + 0],
-            ddat[i + 1],
-            ddat[i + 2]
-        );
-#endif 
-    }
-#endif
-
-
-    if(1)
-    {
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glNormalPointer
-        (
-            GL_FLOAT,
-            0,
-            pxMeshGeometry->VertexBufferPrime[1]->VertexData.Data
-        );
-
+        return PXResultRefusedParameterNull;
     }
 
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    PXSize meshAmount = pxModel->MeshAmount;    
 
-    PXSize amount = pxMeshGeometry->IndexBuffer->Segment.SegmentListAmount;
-    PXIndexSegmentEntry* pxIndexSegmentEntryList = PXIndexSegmentGET(&pxMeshGeometry->IndexBuffer->Segment);
-
-    PXSize offset = 0;
-
-    for(PXSize i = 0; i < amount; ++i)
+    for(PXSize meshIndex = 0; meshIndex < meshAmount; ++meshIndex)
     {
-        PXIndexSegmentEntry* pxIndexSegmentEntry = &pxIndexSegmentEntryList[i];
-       // PXMaterial* mat = pxIndexSegmentEntry->material;
+        PXMesh PXREF pxMesh = pxModel->MeshList[meshIndex];
 
-        // Apply material properties
-      //  GLfloat diffuse[4] = { mat->Kd[0], mat->Kd[1], mat->Kd[2], mat->d };
-       // GLfloat ambient[4] = { mat->Ka[0], mat->Ka[1], mat->Ka[2], mat->d };
-       // GLfloat specular[4] = { mat->Ks[0], mat->Ks[1], mat->Ks[2], mat->d };
-
-      //  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-       // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-       // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-       // glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat->Ns);
-
-        // Bind texture if available
-        if(0) {
-            //glEnable(GL_TEXTURE_2D);
-           // glBindTexture(GL_TEXTURE_2D, mat->texture_id);
-        }
-        else {
-            glDisable(GL_TEXTURE_2D);
-        }
-
-        PXSize typeSize = PXTypeSizeGet(pxMeshGeometry->IndexBuffer->DataType);
-
-        // Draw this segment
-       
-        //glTexCoordPointer(2, GL_FLOAT, sizeof(VertexPNT), &model->verts[0].tu);
-       
-
-
-
-
-
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_NORMALIZE);
-
-        GLfloat lightPos[] = { 1.0f, 10.0f, 1.0f, 100.0f };
-        glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-
-        glColor3f(1.0, 1.0, 1.0);
-        glDrawArrays
-        (
-            GL_TRIANGLES,
-            offset,
-            pxIndexSegmentEntry->DataRange
-        );
-
-        glDisable(GL_LIGHTING);
-        glDisable(GL_LIGHT0);
-        glDisable(GL_NORMALIZE);
-
-
-        glPointSize(8);
-        glColor3f(0.8, 0.2, 0.2);
-        glDrawArrays
-        (
-            GL_POINTS,
-            offset,
-            pxIndexSegmentEntry->DataRange
-        );
-
-        glLineWidth(1);
-        glColor3f(0.6, 1.0, 0.6);
-        glDrawArrays
-        (
-            GL_LINES,
-            offset,
-            pxIndexSegmentEntry->DataRange
-        );
-
-      
-
-
-
-       /*
-        glDrawElements
-        (
-            GL_POINTS,
-            pxIndexSegmentEntry->DataRange, 
-            GL_UNSIGNED_SHORT,
-            pxMesh->IndexBuffer->Data.Data + offset
-        );*/
-
-        offset += pxIndexSegmentEntry->DataRange * typeSize;
-    }
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        PXMeshDraw(pxMesh, pxDrawInfo);
+    }    
     
     return PXResultOK;
+}
+
+PXResult PXAPI PXModelMeshAmountSet(PXModel PXREF pxModel, const PXSize amount)
+{
+    pxModel->MeshAmount = amount;
+    pxModel->MeshList = PXMemoryHeapCallocT(PXMesh*, amount);
+
+    return PXResultOK;
+}
+
+PXSize PXAPI PXModelMeshAmountGet(const PXModel PXREF pxModel)
+{
+    return pxModel->MeshAmount;
+}
+
+PXMesh** PXAPI PXModelMeshGet(const PXModel PXREF pxModel, const PXSize index)
+{
+    if(pxModel->MeshAmount < index)
+    {
+        return PXNull;
+    }
+
+    return &pxModel->MeshList[index];
 }

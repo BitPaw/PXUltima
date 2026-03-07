@@ -315,12 +315,9 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
     );
 #endif
 
-    PXFile* compiledSteam = PXFileCreate();
-
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.ReadInfo.FileCache = compiledSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
 #if PXLogEnable

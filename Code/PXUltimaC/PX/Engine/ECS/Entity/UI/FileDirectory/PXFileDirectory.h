@@ -4,12 +4,17 @@
 #define PXFileDirectoryIncluded
 
 #include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/OS/File/PXDirectory.h>
 
 typedef struct PXFileDirectory_
 {
     PXECSInfo Info;
 
+    PXBool IsDirty;
+
     PXWindow* WindowBase;
+
+    PXDirectorySearchCache DirectorySearchCache;
 }
 PXFileDirectory;
 

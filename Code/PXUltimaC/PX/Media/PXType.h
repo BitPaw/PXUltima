@@ -507,6 +507,12 @@ typedef int PXF256;
 //typedef PXI32U PXType;
 
 
+#if 0
+typedef PXF32 PXFAudio;
+#else
+typedef PXF64 PXFAudio;
+#endif
+
 
 
 //------------------------------------------------------------------------------

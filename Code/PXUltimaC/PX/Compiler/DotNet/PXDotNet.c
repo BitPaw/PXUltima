@@ -471,17 +471,17 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
     PXDirectoryCurrentA(currentDirectory, PXPathSizeMax, &currentDirectorySize);
 
 
-    PXFile* asseblyList = PXFileCreate();
+    PXFile* asseblyList = PXNull;
 
     // We need to build string now for the next function
     {
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXFileCreateInfo pxFileOpenInfo;
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual; // No size specified, we get atleast one pagesize
             
-        PXFileOpen(asseblyList, &pxFileOpenInfo);
+        PXFileCreate(&asseblyList, &pxFileOpenInfo);
         
         PXText pxTextExtension;
         PXTextFromAdressA(&pxTextExtension, ".dll", 4, 4);

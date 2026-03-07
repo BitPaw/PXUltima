@@ -448,10 +448,10 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     //-------------------------------------------------------------------------
 
 
-    PXFile* pxZLIBStream = PXFileCreate();
+    PXFile* pxZLIBStream = PXNull;
 
-    PXFileOpenInfo pxFileOpenInfo;
-    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+    PXFileCreateInfo pxFileOpenInfo;
+    PXClear(PXFileCreateInfo, &pxFileOpenInfo);
     pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
     pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
 
@@ -468,14 +468,14 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
         pxFileOpenInfo.FlagList |= PXFileIOInfoFileMemory;
 
-        PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
+        PXFileCreate(&pxZLIBStream, &pxFileOpenInfo);
     }
     else
     {
         pxFileOpenInfo.FileSizeRequest = png->DataBlockTotalSize;
         pxFileOpenInfo.FlagList |= PXFileIOInfoFileVirtual;
 
-        PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
+        PXFileCreate(&pxZLIBStream, &pxFileOpenInfo);
 
         for(PXSize i = 0; i < png->DataBlockListAmount; i++)
         {
@@ -498,18 +498,18 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         //---------------------------------------------------------------------
 
 
-        PXFile* pxZLIBResultStream = PXFileCreate();
+        PXFile* pxZLIBResultStream = PXNull;
 
         {
             const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
 
-            PXFileOpenInfo pxFileOpenInfo;
-            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            PXFileCreateInfo pxFileOpenInfo;
+            PXClear(PXFileCreateInfo, &pxFileOpenInfo);
             pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
             pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
             pxFileOpenInfo.FileSizeRequest = expectedPXZLIBCacheSize;
 
-            const PXResult pxOpenResult = PXFileOpen(&pxZLIBResultStream, &pxFileOpenInfo);
+            const PXResult pxOpenResult = PXFileCreate(&pxZLIBResultStream, &pxFileOpenInfo);
         }
 
         const PXResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
@@ -526,7 +526,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         //---------------------------------------------------------------------
         // ADAM7
         //---------------------------------------------------------------------
-        PXFile* pxADAM7CacheOutput = PXFileCreate();
+        PXFile* pxADAM7CacheOutput = PXNull;
         PXBuffer* pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
 
         PXADAM7 pxADAM7;
@@ -543,14 +543,14 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
         {
-            PXFileOpenInfo pxFileOpenInfo;
-            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            PXFileCreateInfo pxFileOpenInfo;
+            PXClear(PXFileCreateInfo, &pxFileOpenInfo);
             pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
             pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
             pxFileOpenInfo.FileSizeRequest = expectedadam7CacheSize;
             pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
 
-            PXFileOpen(&pxADAM7CacheOutput, &pxFileOpenInfo);
+            PXFileCreate(&pxADAM7CacheOutput, &pxFileOpenInfo);
         }
 
         pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
@@ -1445,7 +1445,7 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
         PXFileWriteI32UE(pxFile, 0u, PXEndianBig); // Length
         PXFileWriteB(pxFile, "IDAT", 4u);
 
-        PXFile* pxScanlineStream = PXFileCreate();
+        PXFile* pxScanlineStream = PXNull;
         // PXFileConstruct(&pxScanlineStream);
 
         // Preprocess scanlines
@@ -1468,7 +1468,7 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
             }
         }
 
-        // PXZLIB
+        // ZLIB
         {
             PXSize cursorBefore = PXFileDataPosition(pxFile);
 

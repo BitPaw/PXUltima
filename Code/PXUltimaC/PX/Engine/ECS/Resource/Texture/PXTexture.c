@@ -116,6 +116,133 @@ PXColorFormat PXAPI PXTextureColorFormat(PXTexture PXREF pxTexture)
     return pxTexture->Format;
 }
 
+#include <PX/Math/PXMath.h>
+#include <gl/GL.h>
+
+PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize minmapLevel, const PXColorFormat pxColorFormat)
+{
+    switch(pxColorFormat)
+    {
+        case PXColorFormatDXI1:
+        {
+            // PXMathCeilingF(width / 4.0f) * PXMathCeilingF(height / 4.0f) * 8.0f;
+
+            PXSize total = 0;
+            PXSize w = width;
+            PXSize h = height;
+            
+            for(PXSize i = 0; i < minmapLevel; i++)
+            {
+                PXSize bw = PXMathCeilingF(w / 4.0f);
+                PXSize bh = PXMathCeilingF(h / 4.0f);
+
+                total += bw * bh * 8;
+
+                // Next mip level 
+                w = (w > 1) ? (w / 2) : 1; 
+                h = (h > 1) ? (h / 2) : 1; 
+            }
+
+            return total + 512;
+        }
+        case PXColorFormatDXI3:
+        case PXColorFormatDXI5:
+        {
+            // PXMathCeilingF(width / 4.0f) * PXMathCeilingF(height / 4.0f) * 16.0f;
+
+            PXSize total = 0;
+            PXSize w = width;
+            PXSize h = height;
+
+            for(PXSize i = 0; i < minmapLevel; i++)
+            {
+                PXSize bw = PXMathCeilingF(w / 4.0f);
+                PXSize bh = PXMathCeilingF(h / 4.0f);
+
+                total += bw * bh * 16;
+
+                // Next mip level 
+                w = (w > 1) ? (w / 2) : 1;
+                h = (h > 1) ? (h / 2) : 1;
+            }
+
+            return total + 512;
+        }
+        case PXColorFormatRGBI8:
+        {
+            PXSize total = 0;
+            PXSize w = width;
+            PXSize h = height;
+
+            for(PXSize i = 0; i < minmapLevel; i++)
+            {
+                total += w * h * 3;
+
+                // Next mip level 
+                w = (w > 1) ? (w / 2) : 1;
+                h = (h > 1) ? (h / 2) : 1;
+            }
+
+            return total+512;
+
+            //return width * height * 3 * sizeof(PXI8U);
+        }
+        case PXColorFormatRGBI16:
+        {
+            return width * height * 3 * sizeof(PXI16U);
+        }
+        case PXColorFormatRGBI32:
+        {
+            return width * height * 3 * sizeof(PXI32U);
+        }
+        case PXColorFormatRGBF:
+        {
+            return width * height * 3 * sizeof(PXF32);
+        }
+        case PXColorFormatRGBD:
+        {
+            return width * height * 3 * sizeof(PXF64);
+        }
+        case PXColorFormatRGBAI8:
+        {
+            PXSize total = 0;
+            PXSize w = width;
+            PXSize h = height;
+
+            for(PXSize i = 0; i < minmapLevel; i++)
+            {
+                total += w * h * 4;
+
+                // Next mip level 
+                w = (w > 1) ? (w / 2) : 1;
+                h = (h > 1) ? (h / 2) : 1;
+            }
+
+            return total+512;
+
+           // return width * height * 4 * sizeof(PXI8U);
+        }
+        case PXColorFormatRGBAI16:
+        {
+            return width * height * 4 * sizeof(PXI16U);
+        }
+        case PXColorFormatRGBAI32:
+        {
+            return width * height * 4 * sizeof(PXI32U);
+        }
+        case PXColorFormatRGBAF:
+        {
+            return width * height * 4 * sizeof(PXF32);
+        }
+        case PXColorFormatRGBAD:
+        {
+            return width * height * 4 * sizeof(PXF64);
+        }
+        default:
+            return 0;
+    }
+}
+
 void* PXAPI PXTextureDXInterface(PXTexture PXREF pxTexture)
 {
     return pxTexture->DirectXHandle;
@@ -131,6 +258,39 @@ PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture)
     PXBufferRelese(&pxTexture->PixelData);
 
     return PXResultInvalid;
+}
+
+PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture)
+{
+    GLuint texId;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+
+    pxTexture->OpenGLID = texId;
+
+    // Set filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Set wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Upload texture (RGBA8)
+    glTexImage2D
+    (
+        GL_TEXTURE_2D,
+        0,                  // level
+        GL_RGBA,            // internal format
+        pxTexture->Width,
+        pxTexture->Height,
+        0,                  // border
+        GL_RGBA,            // format of *pixels
+        GL_UNSIGNED_BYTE,   // type of *pixels
+        pxTexture->PixelData.Data
+    );
+
+    return texId;
 }
 
 PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
@@ -153,10 +313,9 @@ PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXR
     return PXResultInvalid;
 }
 
-PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height)
+PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height, const PXSize minmaps)
 {
-    const PXSize bbp = PXColorFormatBytePerPixel(format);
-    const PXSize newSize = width * height * bbp;
+    const PXSize newSize = PXTextureSize(width,height, minmaps, format);
     const PXSize oldSize = 0;// pxTexture->PixelDataSize;
 
     // Do we need to realloc?
@@ -175,45 +334,6 @@ PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat fo
         pxTexture->Format = format;
         pxTexture->Width = width;
         pxTexture->Height = height;
-
-        /*
-
-        // Set image data, so we dont have a random fully empty image with no alpha
-        // Causes wierd problems if you dont expect that.
-        if(pxMemoryHeapReallocateEventData.WasSizeIncreased)
-        {
-            switch (bbp)
-            {
-                case 3:
-                {
-                    for (PXSize i = 0; i < pxMemoryHeapReallocateEventData.PointOfNewDataSize; i += 3)
-                    {
-                        char* data = &((char*)pxMemoryHeapReallocateEventData.PointOfNewData)[i];
-
-                        data[0] = 0xFF;
-                        data[1] = 0xFF;
-                        data[2] = 0xFF;
-                    }
-                    break;
-                }
-
-                case 4:
-                {
-                    for (PXSize i = 0; i < pxMemoryHeapReallocateEventData.PointOfNewDataSize; i += 4)
-                    {
-                        char* data = &((char*)pxMemoryHeapReallocateEventData.PointOfNewData)[i];
-
-                        data[0] = 0xFF;
-                        data[1] = 0xFF;
-                        data[2] = 0xFF;
-                        data[3] = 0xFF;
-                    }
-                    break;
-                }
-            }
-        }
-        */
-
     }
 
     return PXResultOK;
@@ -285,7 +405,7 @@ PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red,
     const PXSize currentOffset = pxTexture->PixelData.CursorOffsetByte;
     PXSize dataOffset = 0;
 
-    PXTextureResize(pxTexture, PXColorFormatRGBAI8, pxTexture->Width, pxTexture->Height);
+    PXTextureResize(pxTexture, PXColorFormatRGBAI8, pxTexture->Width, pxTexture->Height, 1);
 
     dataOffset = pxTexture->PixelData.CursorOffsetByte;
 
@@ -392,7 +512,6 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
 
                 const PXResult loadResult = PXECSLoad(pxTexture, &pxResourceLoadInfo);
 
-
                 if(PXResultOK != loadResult)
                 {
 #if PXLogEnable
@@ -423,6 +542,21 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
             else
             {
                 // PXTextureCopyAsNew(PXTexture, &PXTextureCreateInfo->Image);
+                PXBool hasDimensions = 
+                    pxTextureCreateInfo->T2D.Width > 0 && 
+                    pxTextureCreateInfo->T2D.Height > 0;
+
+                if(hasDimensions)
+                {
+                    PXTextureResize
+                    (
+                        pxTexture,
+                        pxTextureCreateInfo->Format,
+                        pxTextureCreateInfo->T2D.Width,
+                        pxTextureCreateInfo->T2D.Height,
+                        pxTextureCreateInfo->T2D.Minmaps
+                    );
+                }
             }
             break;
         }

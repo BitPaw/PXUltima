@@ -429,12 +429,12 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
 
 
 
-    PXFile* pxFileCompressed = PXFileCreate();
-    PXFile* pxFileUncompressed = PXFileCreate();
+    PXFile* pxFileCompressed = PXNull;
+    PXFile* pxFileUncompressed = PXNull;
 
     {
-        PXFileOpenInfo pxFileCompressedInfo;
-        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
+        PXFileCreateInfo pxFileCompressedInfo;
+        PXClear(PXFileCreateInfo, &pxFileCompressedInfo);
 
         pxFileCompressedInfo.AccessMode = PXAccessModeReadOnly;
         pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
@@ -442,16 +442,16 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
 
         PXBufferSet(&pxFileCompressedInfo.Data, PXFileDataAtCursor(pxFile), pxTOCSectionTokens->SizeCompressed);
 
-        PXFileOpen(pxFileCompressed, &pxFileCompressedInfo);
+        PXFileCreate(&pxFileCompressed, &pxFileCompressedInfo);
 
         // Load B
-        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
+        PXClear(PXFileCreateInfo, &pxFileCompressedInfo);
 
         pxFileCompressedInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileCompressedInfo.FlagList = PXFileIOInfoFileVirtual;
         pxFileCompressedInfo.FileSizeRequest = pxTOCSectionTokens->SizeUncompressed;
-        PXFileOpen(pxFileUncompressed, &pxFileCompressedInfo);
+        PXFileCreate(&pxFileUncompressed, &pxFileCompressedInfo);
     }
 
     PXResult uncompressResult = PXLZ4Decompress(pxFileCompressed, pxFileUncompressed);
@@ -606,7 +606,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
     PXCompiler pxCompiler;
-    PXFile* tokenSteam = PXFileCreate();
+    PXFile* tokenSteam = PXNull; // PXFileCreate();
     PXUSD* pxUSD = 0;
     PXBool isPrime = 1;// !pxECSCreateInfo->ResourceLoadContainer;
     PXSize offset = 0;

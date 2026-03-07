@@ -62,7 +62,7 @@ void PXAPI FillBufferWithElectricHum(const int sampleRate, short* samples, int s
     for(int i = 0; i < sampleCount; i++)
     {
         float t = (float)i / sampleRate;
-        samples[i] = (short)(log(2 * PXMathConstantPI * frequency * t) * 3000);
+        samples[i] = (short)(log(2 * PXMathPI * frequency * t) * 3000);
     }
 }
 
@@ -240,23 +240,23 @@ void PXAPI FillBufferWithScannerBeep(short* samples, int sampleCount) {
         int phase = i % (pulseLength * 4);
         float amp = (phase < pulseLength) ? 1.0f : 0.0f;
         float t = (float)i / SAMPLE_RATE;
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * amp * 10000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * amp * 10000);
     }
 }
 
 void PXAPI FillBufferWithMagneticWobble(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float mod = sinf(2 * PXMathConstantPI * 0.5f * t); // Slow LFO
+        float mod = sinf(2 * PXMathPI * 0.5f * t); // Slow LFO
         float freq = 200.0f + mod * 50.0f;
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * 9000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * 9000);
     }
 }
 
 void PXAPI FillBufferWithBubbles(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float bubble = (rand() % 10000 < 5) ? sinf(2 * PXMathConstantPI * 400.0f * t) * 10000 : 0;
+        float bubble = (rand() % 10000 < 5) ? sinf(2 * PXMathPI * 400.0f * t) * 10000 : 0;
         samples[i] = (short)bubble;
     }
 }
@@ -264,9 +264,9 @@ void PXAPI FillBufferWithBubbles(short* samples, int sampleCount) {
 void PXAPI FillBufferWithZombieMoan(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float mod = sinf(2 * PXMathConstantPI * 0.2f * t); // LFO
+        float mod = sinf(2 * PXMathPI * 0.2f * t); // LFO
         float freq = 80.0f + mod * 10.0f;
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * 12000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * 12000);
     }
 }
 
@@ -289,7 +289,7 @@ void PXAPI FillBufferWithPsychoDrone(short* samples, int sampleCount) {
     float freq2 = 112.5f;
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float wave = sinf(2 * PXMathConstantPI * freq1 * t) + sinf(2 * PXMathConstantPI * freq2 * t);
+        float wave = sinf(2 * PXMathPI * freq1 * t) + sinf(2 * PXMathPI * freq2 * t);
         samples[i] = (short)(wave * 6000);
     }
 }
@@ -309,9 +309,9 @@ void PXAPI FillBufferWithSteamHiss(short* samples, int sampleCount) {
 void PXAPI FillBufferWithAlienSignal(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float mod = sinf(2 * PXMathConstantPI * 0.25f * t);  // slow LFO
+        float mod = sinf(2 * PXMathPI * 0.25f * t);  // slow LFO
         float freq = 300.0f + mod * 200.0f;
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * 9000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * 9000);
     }
 }
 
@@ -319,7 +319,7 @@ void PXAPI FillBufferWithAlienSignal(short* samples, int sampleCount) {
 void PXAPI FillBufferWithElectricArc(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float burst = (rand() % 10000 < 10) ? sinf(2 * PXMathConstantPI * 2000.0f * t) : 0.0f;
+        float burst = (rand() % 10000 < 10) ? sinf(2 * PXMathPI * 2000.0f * t) : 0.0f;
         samples[i] = (short)(burst * 12000);
     }
 }
@@ -330,9 +330,9 @@ void PXAPI FillBufferWithMeditationBell(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
         float env = expf(-2.0f * t);
-        float tone = sinf(2 * PXMathConstantPI * baseFreq * t) +
-            0.5f * sinf(2 * PXMathConstantPI * baseFreq * 2 * t) +
-            0.25f * sinf(2 * PXMathConstantPI * baseFreq * 3 * t);
+        float tone = sinf(2 * PXMathPI * baseFreq * t) +
+            0.5f * sinf(2 * PXMathPI * baseFreq * 2 * t) +
+            0.25f * sinf(2 * PXMathPI * baseFreq * 3 * t);
         samples[i] = (short)(tone * env * 10000);
     }
 }
@@ -341,8 +341,8 @@ void PXAPI FillBufferWithBrainwavePulse(short* samples, int sampleCount) {
     float freq = 20.0f;  // Theta wave range
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
-        float env = sinf(2 * PXMathConstantPI * 0.6f * t);  // slow amplitude modulation
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * env * 500000);
+        float env = sinf(2 * PXMathPI * 0.6f * t);  // slow amplitude modulation
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * env * 500000);
     }
 }
 
@@ -371,7 +371,7 @@ void PXAPI FillBufferWithMysticChimes(short* samples, int sampleCount) {
         float t = (float)i / SAMPLE_RATE;
         float env = expf(-3.0f * fmodf(t, 1.0f));
         float freq = baseFreq + (rand() % 5) * 110.0f;
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * env * 10000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * env * 10000);
     }
 }
 
@@ -379,7 +379,7 @@ void PXAPI FillBufferWithLaserZap(short* samples, int sampleCount) {
     for(int i = 0; i < sampleCount; i++) {
         float t = (float)i / SAMPLE_RATE;
         float freq = 2000.0f - t * 1500.0f;  // downward pitch
-        samples[i] = (short)(sinf(2 * PXMathConstantPI * freq * t) * 12000);
+        samples[i] = (short)(sinf(2 * PXMathPI * freq * t) * 12000);
     }
 }
 
@@ -407,7 +407,7 @@ void PXAPI FillBufferWithWindAndRain(short* samples, int sampleCount, float wind
         // --- Wind: filtered noise with LFO
         float rawWind = randf();
         windFilter = (1.0f - windSmooth) * windFilter + windSmooth * rawWind;
-        float gust = 0.6f + 0.4f * sinf(2 * PXMathConstantPI * 0.1f * t);  // slow LFO
+        float gust = 0.6f + 0.4f * sinf(2 * PXMathPI * 0.1f * t);  // slow LFO
         float wind = windFilter * gust * windStrength;
 
         // --- Rain: white noise + occasional drops
@@ -440,7 +440,7 @@ void PXAPI FillBufferWithWeather(short* samples, int count, float rain, float wi
         // ---------------- Wind ------------------
         float noise = randf();
         windFilter = 0.98f * windFilter + 0.02f * noise;  // low-pass
-        float gust = 0.7f + 0.3f * sinf(2 * PXMathConstantPI * 0.1f * t);  // LFO
+        float gust = 0.7f + 0.3f * sinf(2 * PXMathPI * 0.1f * t);  // LFO
         float windSample = windFilter * gust * wind * 9000;
 
         // ---------------- Rain ------------------

@@ -199,6 +199,20 @@ typedef struct PXMesh_
 
     PXSize MaterialContaierListAmount;
     PXMaterialContainer* MaterialContaierList;
+
+
+    // TEST
+    PXVector3F32* Positions;
+    PXVector3F32* Normals;
+    PXVector2F32* UVs;
+
+    PXVector4F32 Position;
+
+    PXI16U* Index;
+    PXSize IndexAmount;
+
+    PXI32U TextureID;
+    PXTexture* Texture;
 }
 PXMesh;
 
@@ -209,6 +223,13 @@ typedef struct PXMeshCreateInfo_
     PXECSCreateInfo Info;
 
     PXVector3F32 Scaling;
+
+    PXSize VertexStride;
+    PXSize VertexAmount; // Assume we do 3x3x2
+
+    PXVector3F32* Positions;
+    PXVector3F32* Normals;
+    PXVector2F32* UVs;
 }
 PXMeshCreateInfo;
 

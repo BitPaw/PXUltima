@@ -54,8 +54,8 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
 
     if(isDataPrensent)
     {
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        PXFileCreateInfo pxFileOpenInfo;
+        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
 
@@ -66,7 +66,7 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
             pxShaderProgramCreateInfo->ShaderVertex.SizeUsed
         );
 
-        PXFileOpen(pxShaderProgramCreateInfo->ShaderVertexFile, &pxFileOpenInfo);
+        PXFileCreate(&pxShaderProgramCreateInfo->ShaderVertexFile, &pxFileOpenInfo);
 
         PXBufferSet
         (
@@ -75,7 +75,7 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
             pxShaderProgramCreateInfo->ShaderPixel.SizeUsed
         );
 
-        PXFileOpen(pxShaderProgramCreateInfo->ShaderPixelFile, &pxFileOpenInfo);
+        PXFileCreate(&pxShaderProgramCreateInfo->ShaderPixelFile, &pxFileOpenInfo);
 
         pxShaderProgram->Info.Behaviour |= PXECSInfoStorageMemory;
 
@@ -83,8 +83,8 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
     }
     else // load file
     {
-        PXFileOpenInfo pxFileOpenFromPathInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenFromPathInfo);
+        PXFileCreateInfo pxFileOpenFromPathInfo;
+        PXClear(PXFileCreateInfo, &pxFileOpenFromPathInfo);
         pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
@@ -93,14 +93,22 @@ PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXSha
 
         pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateInfo->ShaderVertexFilePath;
 
-        const PXResult vertexLoadResult = PXFileOpen(pxShaderProgramCreateInfo->ShaderVertexFile, &pxFileOpenFromPathInfo);
+        const PXResult vertexLoadResult = PXFileCreate
+        (
+            &pxShaderProgramCreateInfo->ShaderVertexFile,
+            &pxFileOpenFromPathInfo
+        );
 
         if(PXResultOK != vertexLoadResult)
             return vertexLoadResult;
 
         pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateInfo->ShaderPixelFilePath;
 
-        const PXResult fragmentLoadResult = PXFileOpen(pxShaderProgramCreateInfo->ShaderPixelFile, &pxFileOpenFromPathInfo);
+        const PXResult fragmentLoadResult = PXFileCreate
+        (
+            &pxShaderProgramCreateInfo->ShaderPixelFile,
+            &pxFileOpenFromPathInfo
+        );
 
         if(PXResultOK != fragmentLoadResult)
             return fragmentLoadResult;;

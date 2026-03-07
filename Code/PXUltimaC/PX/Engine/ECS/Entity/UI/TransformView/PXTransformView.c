@@ -76,6 +76,29 @@ void DrawRect
 }
 
 
+void DrawRectWithText
+(
+    PXWindow PXREF pxWindow,
+    PXDrawInfo PXREF pxDrawInfo,
+    float x,
+    float y,
+    float w,
+    float h,
+    float r,
+    float g,
+    float b
+)
+{
+    glColor3f(r, g, b);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + w, y);
+    glVertex2f(x + w, y + h);
+    glVertex2f(x, y + h);
+    glEnd();
+}
+
+
 
 void DrawRectVA(float x, float y, float w, float h, float r, float g, float b)
 {
@@ -121,11 +144,27 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
     HDC hdc = PXWindowDCGet(pxWindow);
     PXText pxText;  
 
-    float axisBoxWidth = 50.0f;
-    float rowHeight = 80.0f;
-    float fieldWidth = 500.0f;
+    float axisBoxWidth = 25.0f;
+    float rowHeight = 20.0f;
+    float fieldWidth = 150.0f;
 
     SelectObject(hdc, theme->FontTitle->FontHandle);
+
+#if 0 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //gluPerspective(90, pxDrawInfo->AspectRatio, 0, 10000);
+    gluOrtho2D
+    (
+        pxDrawInfo->RectangleXYWH.X,
+        pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height,
+        pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width,
+        pxDrawInfo->RectangleXYWH.Y
+    );
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+#endif
+
 
    // glViewport(0,0, pxDrawInfo->RectangleXYWH.Width, pxDrawInfo->RectangleXYWH.Height);
   //  glClearColor(0.2, 0.2, 0.4, 1.0);
@@ -135,12 +174,17 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
 
 
     PXTextDrawInfo pxTextDrawInfo;
+    PXClear(PXTextDrawInfo, &pxTextDrawInfo);
     pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
     pxTextDrawInfo.Text = &pxText;
-    pxTextDrawInfo.X = pxDrawInfo->RectangleXYWH.X;
-    pxTextDrawInfo.Y = pxDrawInfo->RectangleXYWH.Y+20;
-    pxTextDrawInfo.Size = 200;
-    pxTextDrawInfo.OffsetX = 0.2;
+    //pxTextDrawInfo.X = pxDrawInfo->RectangleXYWH.X;
+    //pxTextDrawInfo.Y = pxDrawInfo->RectangleXYWH.Height;
+    //pxTextDrawInfo.Size = 200;
+    //pxTextDrawInfo.OffsetX = 0.2;
+
+    //pxTextDrawInfo.Y = 0;
+
+    pxTextDrawInfo.Position.Y -= rowHeight;
 
     PXTextFromAdressA(&pxText, title, sizeof(title), sizeof(title));
     PXWindowDrawText(pxWindow, &pxTextDrawInfo);
@@ -159,7 +203,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
 
 
    // pxTextDrawInfo.Y -= 2.0;
-    pxTextDrawInfo.X = pxDrawInfo->RectangleXYWH.X;
+    pxTextDrawInfo.Position.X = pxDrawInfo->RectangleXYWH.X;
 
     for(int i = 0; i < componentCount; i++) // componentCount
     {
@@ -170,8 +214,8 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
         (
             pxWindow,
             pxDrawInfo,
-            pxTextDrawInfo.X,
-            pxTextDrawInfo.Y,
+            pxTextDrawInfo.Position.X,
+            pxTextDrawInfo.Position.Y,
             axisBoxWidth,
             rowHeight,
             axisColors[i][0],
@@ -182,8 +226,8 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
         (
             pxWindow,
             pxDrawInfo,
-            pxTextDrawInfo.X + axisBoxWidth,
-            pxTextDrawInfo.Y,
+            pxTextDrawInfo.Position.X + axisBoxWidth,
+            pxTextDrawInfo.Position.Y,
             fieldWidth,
             rowHeight,
             0.15f,
@@ -193,24 +237,42 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
 
         //pxTextDrawInfo.Size = 2;
 
+#if 1
+
+       // pxTextDrawInfo.Y = pxDrawInfo->RectangleXYWH.Height;
+
+        float offsetVal = 25;
+
+        pxTextDrawInfo.Position.X += 2;
+        pxTextDrawInfo.Position.Y += 2;
+
         // Axis Letter
         PXTextFromAdressA(&pxText, buf, 0, sizeof(buf));
         PXTextPrint(&pxText, "%c", axisLetters[i]);
         PXWindowDrawText(pxWindow, &pxTextDrawInfo);
 
-        //pxTextDrawInfo.X += 0.25;
+        pxTextDrawInfo.Position.X -= 2;
+   
 
 
-        //pxTextDrawInfo.Y -= 2;
+
+        pxTextDrawInfo.Position.X += offsetVal;
 
         // Value
         PXTextFromAdressA(&pxText, buf, 0, sizeof(buf));
         PXTextPrint(&pxText, "%6.2f", values->Data[i]);
         PXWindowDrawText(pxWindow, &pxTextDrawInfo);
 
-       // pxTextDrawInfo.Y += 2;
+        pxTextDrawInfo.Position.X -= offsetVal;
+        pxTextDrawInfo.Position.Y -= 2;
+#endif
 
-        pxTextDrawInfo.X += fieldWidth;
+        //pxTextDrawInfo.Y = pxDrawInfo->RectangleXYWH.Y + 20;
+
+        pxTextDrawInfo.Position.X = pxDrawInfo->RectangleXYWH.X;
+        pxTextDrawInfo.Position.Y -= rowHeight;
+
+        //pxTextDrawInfo.X += fieldWidth;
     }
 
 

@@ -7,6 +7,7 @@
 #include <PX/Media/PXColor.h>
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/ECS/System/PXRenderingSystem.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 
 #define PXTexturePropertyWidth      1
@@ -177,6 +178,7 @@ typedef struct PXTextureCreate2DInfo_
 {
     PXSize Width;
     PXSize Height;
+    PXSize Minmaps;
 }
 PXTextureCreate2DInfo;
 
@@ -192,9 +194,10 @@ typedef struct PXTextureCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXTexture* Texture;
-
     PXTextureType Type;
+    PXColorFormat Format;
+
+    void* Payload; // Data that does exist before the texture. Will be copyed
 
     union
     {
@@ -207,14 +210,14 @@ PXTextureCreateInfo;
 
 
 
-
-
 PXPublic PXResult PXAPI PXTextureProperty(PXTexture PXREF pxTexture, PXECSProperty PXREF pxECSProperty);
 
 PXPublic PXSize PXAPI PXTextureHeight(PXTexture PXREF pxTexture);
 PXPublic PXSize PXAPI PXTextureWidth(PXTexture PXREF pxTexture);
 PXPublic PXSize PXAPI PXTextureDepth(PXTexture PXREF pxTexture);
 PXPublic PXColorFormat PXAPI PXTextureColorFormat(PXTexture PXREF pxTexture);
+PXPublic PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize minmapLevel, const PXColorFormat pxColorFormat);
+
 PXPublic void* PXAPI PXTextureDXInterface(PXTexture PXREF pxTexture);
 
 PXPublic PXBuffer* PXAPI PXTexturePixelData(PXTexture PXREF pxTexture);
@@ -245,6 +248,8 @@ PXPublic void PXAPI PXTexturePixelSetRGB8
 PXPublic PXResult PXAPI PXTextureRegisterToECS(void);
 PXPublic PXResult PXAPI PXTextureCreate(PXTexture** pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo);
 PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
+
+PXPublic PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture);
 
 PXPublic HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amountofchannels, void* data);
 

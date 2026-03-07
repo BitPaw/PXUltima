@@ -70,7 +70,7 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
-    PXFile* pxN64Data = PXFileCreate();
+    PXFile* pxN64Data = PXNull;
 
     PXN64 n64;
     PXClear(PXN64, &n64);
@@ -110,12 +110,12 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         {
             PXFileCursorToBeginning(pxResourceLoadInfo->FileCurrent);
 
-            PXFileOpenInfo pxFileOpenInfo;
-            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            PXFileCreateInfo pxFileOpenInfo;
+            PXClear(PXFileCreateInfo, &pxFileOpenInfo);
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
             pxFileOpenInfo.FilePath.SizeUsed = PXFileAllocatedSize(pxResourceLoadInfo->FileCurrent);
 
-            PXFileOpen(pxN64Data, &pxFileOpenInfo);
+            PXFileCreate(pxN64Data, &pxFileOpenInfo);
             PXFileByteSwap(pxN64Data, pxResourceLoadInfo->FileCurrent);
 
             pxFile = pxN64Data;
