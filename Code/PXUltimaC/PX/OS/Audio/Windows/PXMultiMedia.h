@@ -3,9 +3,12 @@
 #ifndef PXMultiMediaIncluded
 #define PXMultiMediaIncluded
 #include <PX/Media/PXType.h>
-#include <PX/Engine/ECS/System/PXAudioSystem.h>
+#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
+#include <PX/Engine/ECS/System/AudioSystem/PXAudioSystem.h>
 
-PXPublic PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioSystemCreateInfo PXREF pxAudioInitializeInfo);
+typedef struct PXAudioMultiMedia_ PXAudioMultiMedia;
+
+PXPublic PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo);
 
 PXPublic PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty);
 
