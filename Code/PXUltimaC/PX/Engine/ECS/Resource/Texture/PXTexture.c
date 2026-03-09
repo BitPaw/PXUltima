@@ -1,8 +1,8 @@
 #include "PXTexture.h"
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/PXOS.h>
-
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 
 const char PXTextureText[] = "Texture";
 const PXI8U PXTextureTextLength = sizeof(PXTextureText);
@@ -260,13 +260,13 @@ PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture)
     return PXResultInvalid;
 }
 
-PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture)
+PXResult PXAPI PXTextureRegisterGL(PXTexture PXREF pxTexture)
 {
-    GLuint texId;
-    glGenTextures(1, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
+    GLuint textureID = 0;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
-    pxTexture->OpenGLID = texId;
+    pxTexture->OpenGLID = textureID;
 
     // Set filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -275,6 +275,11 @@ PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture)
     // Set wrapping
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    GLenum format;
+    GLenum type;
+
+    PXOpenGLImageFormatToID(pxTexture->Format, &format, &type);
 
     // Upload texture (RGBA8)
     glTexImage2D
@@ -285,12 +290,14 @@ PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture)
         pxTexture->Width,
         pxTexture->Height,
         0,                  // border
-        GL_RGBA,            // format of *pixels
-        GL_UNSIGNED_BYTE,   // type of *pixels
+        format,
+        type,
         pxTexture->PixelData.Data
     );
 
-    return texId;
+    glBindTexture(GL_TEXTURE_2D, 0); // Unbind
+
+    return textureID;
 }
 
 PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
@@ -329,12 +336,10 @@ PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat fo
     }
 
     // reallocate
-    {
-        PXBufferAllocate(&pxTexture->PixelData, newSize);
-        pxTexture->Format = format;
-        pxTexture->Width = width;
-        pxTexture->Height = height;
-    }
+    PXBufferEnsureTotal(&pxTexture->PixelData, newSize);
+    pxTexture->Format = format;
+    pxTexture->Width = width;
+    pxTexture->Height = height;
 
     return PXResultOK;
 }
@@ -497,6 +502,13 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
     pxTexture->LayoutFar = PXTextureLayoutNearest;
     pxTexture->WrapHeight = PXTextureWrapRepeat;
     pxTexture->WrapWidth = PXTextureWrapRepeat;
+    pxTexture->Type = pxTextureCreateInfo->Type;
+    pxTexture->Format = pxTextureCreateInfo->Format;
+    
+    if(pxTextureCreateInfo->Payload)
+    {
+        PXBufferSet(&pxTexture->PixelData, pxTextureCreateInfo->Payload, pxTextureCreateInfo->PayloadSize);
+    }
 
     switch(pxTextureCreateInfo->Type)
     {
@@ -633,11 +645,7 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
     }
 #endif
 
-    pxTexture->Filter = PXRenderFilterNoFilter;
-    pxTexture->LayoutNear = PXTextureLayoutNearest;
-    pxTexture->LayoutFar = PXTextureLayoutNearest;
-    pxTexture->WrapHeight = PXTextureWrapRepeat;
-    pxTexture->WrapWidth = PXTextureWrapRepeat;
+
 
 #if PXLogEnable
     PXLogPrint
