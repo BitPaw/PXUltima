@@ -30,6 +30,8 @@ const char WindowsLibraryDWMAPISET[] = "DwmSetWindowAttribute";
 #endif
 
 
+const char PXEventText[] = "Event";
+
 #include <gl/GLU.h>
 const char PXTextFailsafe[] = "<missing text>";
 const PXI8U PXTextFailsafeLength = sizeof(PXTextFailsafe);
@@ -89,6 +91,7 @@ typedef struct PXWindow_
     //PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
     PXUIHoverState Hover;
     PXI32U FlagsList;
+    PXBool IsInFocus;
     //---------------------------------------
 
 
@@ -1330,6 +1333,7 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInf
             const float b = 0x20 / (float)0xFF;
 
             const GLbitfield clearFlags = 
+                GL_POLYGON_BIT |
                 GL_COLOR_BUFFER_BIT |
                 GL_DEPTH_BUFFER_BIT |
                 GL_STENCIL_BUFFER_BIT |
@@ -1338,39 +1342,14 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInf
             glClearColor(r, g, b, 1.0f);
             glClear(clearFlags); // GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
 
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
+            PXCamera pxCamera;
+            pxCamera.Rectangle = pxDrawInfo->RectangleXYWH;
 
-#if 0
-            glOrtho
-            (
-                pxDrawInfo->RectangleXYWH.X,
-                pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width,
-                pxDrawInfo->RectangleXYWH.Y,
-                pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height,
-                -1.0f,
-                +1.0f
-            );
-#else
-            glOrtho
-            (
-                pxDrawInfo->RectangleXYWH.X,
-                pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width,
-                pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height,
-                pxDrawInfo->RectangleXYWH.Y,           
-                -1.0f,
-                +1.0f
-            );
-            glScalef(1.0f,-1.0f,1.0f);
-#endif
-
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
+            PXCameraGLFPP(&pxCamera, PXCameraPerspective2D);
 
             //glDrawBuffer(GL_BACK);
             //glEnableClientState(GL_COLOR_ARRAY);
-            //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
             break;
         }
@@ -1392,6 +1371,39 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInf
         drawFunciton(pxWindow, pxDrawInfo);
     }  
 
+
+
+    if(1)
+    {
+        if(pxWindow->IsInFocus)
+        {
+            glColor3f(0.0f, 1.0f, 0.0f);
+        }
+        else
+        {
+            glColor3f(1.0f, 0.0f, 0.0f);
+        }
+
+
+        // Optional: set line width
+        glLineWidth(2.0f);
+
+        // glScalef(0.9, 0.9, 1);
+
+         // Draw rectangle as a line loop
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glBegin(GL_QUADS);
+        glVertex2f(pxDrawInfo->RectangleXYWH.X, pxDrawInfo->RectangleXYWH.Y); // bottom-left
+        glVertex2f(pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width, pxDrawInfo->RectangleXYWH.Y); // bottom-right
+        glVertex2f(pxDrawInfo->RectangleXYWH.X + pxDrawInfo->RectangleXYWH.Width, pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height); // top-right
+        glVertex2f(pxDrawInfo->RectangleXYWH.X, pxDrawInfo->RectangleXYWH.Y + pxDrawInfo->RectangleXYWH.Height); // top-left
+        glEnd();
+
+    }
+
+
+
+
     // Post render update
     switch(pxWindow->GraphicSystem)
     {
@@ -1404,7 +1416,7 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInf
         {
             glFinish();
 
-            SwapBuffers(hdc);
+            BOOL res = SwapBuffers(hdc);
 
             GLenum err = glGetError();
             if(err != GL_NO_ERROR)
@@ -1873,6 +1885,7 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
             pxDrawInfo.AspectRatio = (PXF32)pxDrawInfo.RectangleXYWH.Width / (PXF32)pxDrawInfo.RectangleXYWH.Height;
 
 #if 1
+
             if(pxWindow->WindowParent)
             {
                 PXWindowPaintPane(pxWindow, &pxDrawInfo);
@@ -2490,11 +2503,43 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
 #endif
         case WM_MOUSEMOVE:
         {
+            if(pxWindow) 
+            {
+                if(!pxWindow->IsInFocus)
+                {
+                    pxWindow->IsInFocus = PXTrue;
+
+                    //-------------------------------------
+                    // Trigger enter event
+                    pxWindowEvent.Type = PXWindowEventTypeElementFocusEnter;
+                    PXWindowEventConsumer(&pxWindowEvent);
+                    //-------------------------------------
+
+                    // Request WM_MOUSELEAVE for later, WM_MOUSEMOVE cant detect if we TAB out
+                    TRACKMOUSEEVENT tme = { 0 };
+                    tme.cbSize = sizeof(tme);
+                    tme.dwFlags = TME_LEAVE;
+                    tme.hwndTrack = windowHandle;
+                    TrackMouseEvent(&tme);
+                }
+            }
+
             pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
             pxWindowEvent.InputMouseMove.Position.X = GET_X_LPARAM(lParam); // Windows 2000, windowsx.h 
             pxWindowEvent.InputMouseMove.Position.Y = GET_Y_LPARAM(lParam); // Windows 2000, windowsx.h 
-
             PXWindowEventConsumer(&pxWindowEvent);
+
+            break;
+        }
+        case WM_MOUSELEAVE:
+        {
+            if(pxWindow->IsInFocus)
+            {
+                pxWindow->IsInFocus = PXFalse;
+
+                pxWindowEvent.Type = PXWindowEventTypeElementFocusLeave;
+                PXWindowEventConsumer(&pxWindowEvent);
+            }
 
             break;
         }
@@ -3052,23 +3097,6 @@ LRESULT CALLBACK PXWindowEventCallBack(const HWND windowHandle, const UINT event
 
             break;
         }
-        case WM_MOUSELEAVE:  // Never trigger?
-        {
-#if 1
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXWindowTextText,
-                "Event",
-                "WM_MOUSELEAVE"
-            );
-#endif
-
-            // PXNativeDrawMouseTrack(pxWindowEvent.UIElementReference);
-
-            break;
-        }
-
 
         /*
 
@@ -3310,19 +3338,48 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
 {
     // Invoke
     PXWindow PXREF pxWindow = pxWindowEvent->WindowSender;
-    PXECSInfo* pxECSInfo = (PXECSInfo*)pxWindow;
+    PXECSInfo* pxECSInfo = (PXECSInfo*)pxWindow; 
+    PXBool wantToIgnore = PXFalse;
 
     switch(pxWindowEvent->Type)
     {
-        case PXWindowEventTypeElementClick:
+        case PXWindowEventTypeElementFocusEnter:
         {
             PXLogPrint
             (
                 PXLoggingEvent,
                 PXWindowTextText,
-                "Event-Click",
-                "Sender (%0xp)",
-                pxWindowEvent->WindowSender->Info.ID
+                PXEventText,
+                "Focus-Enter, (PXID:%4i)",
+                pxWindow->Info.ID
+            );
+
+            break;
+        }
+        case PXWindowEventTypeElementFocusLeave:
+        {
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                PXWindowTextText,
+                PXEventText,
+                "Focus-Leave (PXID:%4i)",
+                pxWindow->Info.ID
+            );
+
+            break;
+        }
+        case PXWindowEventTypeElementClick:
+        {
+            wantToIgnore = PXTrue;
+
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                PXWindowTextText,
+                PXEventText,
+                "Click, <PXID:%4i>",
+                pxWindow->Info.ID
             );
 
             break;
@@ -3333,8 +3390,9 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
             (
                 PXLoggingEvent,
                 PXWindowTextText,
-                "Event-Select",
-                "ID:<%i>"
+                PXEventText,
+                "Select, <PXID:%4i>",
+                pxWindow->Info.ID
             );
             break;
         }
@@ -3348,13 +3406,15 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
 
         case PXWindowEventTypeElementMove:
         {
+            wantToIgnore = PXTrue;
+
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingEvent,
                 PXWindowTextText,
-                "Event-Move",
-                ""
+                PXEventText,
+                "Move"
             );
 #endif
 
@@ -3369,10 +3429,11 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
             (
                 PXLoggingEvent,
                 PXWindowTextText,
-                "Window-Resize",
-                "<%ix%i>",
+                PXEventText,
+                "Resize, <%ix%i> (PXID:%4i)",
                 pxWindowEventResize->Width,
-                pxWindowEventResize->Height
+                pxWindowEventResize->Height,
+                pxWindow->Info.ID
             );
 #endif
             /*
@@ -3434,6 +3495,8 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
         {
             PXWindowEventInputMouseMove* inputMouseMove = &pxWindowEvent->InputMouseMove;
 
+            wantToIgnore = PXTrue;
+
 #if 0
             PXLogPrint
             (
@@ -3454,15 +3517,16 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
         case PXWindowEventTypeInputKeyboard:
         {
             PXWindowEventInputKeyboard* inputKeyboard = &pxWindowEvent->InputKeyboard;
-
             const char* buttonState = PXKeyPressStateToString(inputKeyboard->PressState);
 
+            wantToIgnore = PXTrue;
+            
             PXLogPrint
             (
                 PXLoggingEvent,
                 PXWindowTextText,
-                "Event",
-                "PXID:<%i>, KeyBoard, VKey:%-3i (%lc), %s",
+                PXEventText,
+                "KeyBoard, PXID:<%i>, KeyBoard, VKey:%-3i (%lc), %s",
                 pxECSInfo->ID,
                 inputKeyboard->VirtualKey,
                 inputKeyboard->CharacterW,
@@ -3475,6 +3539,11 @@ PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
         {
             return PXResultRefusedParameterInvalid;
         }
+    }
+
+    if(!pxWindow->IsInFocus && wantToIgnore)
+    {
+        return PXActionCancelled;
     }
     
     if(pxWindow)
@@ -5011,7 +5080,7 @@ PXResult PXAPI PXWindowDrawTextGLFF(PXWindow PXREF pxWindow, PXTextDrawInfo PXRE
             }
         }
 
-        glScalef(15, 15, 1.0);
+        glScalef(15, -15, 1.0);
 
 
         switch(pxText->Format)
