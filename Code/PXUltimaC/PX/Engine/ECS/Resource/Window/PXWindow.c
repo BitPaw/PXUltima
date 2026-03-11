@@ -1328,9 +1328,9 @@ void PXAPI PXWindowPaintPane(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInf
             if(!openglInstance)
                 return;
 
-            const float r = 0x20 / (float)0xFF;
-            const float g = 0x20 / (float)0xFF;
-            const float b = 0x20 / (float)0xFF;
+            const PXF32 r = 0x20 / (PXF32)0xFF;
+            const PXF32 g = 0x20 / (PXF32)0xFF;
+            const PXF32 b = 0x20 / (PXF32)0xFF;
 
             const GLbitfield clearFlags = 
                 GL_POLYGON_BIT |
@@ -5080,8 +5080,7 @@ PXResult PXAPI PXWindowDrawTextGLFF(PXWindow PXREF pxWindow, PXTextDrawInfo PXRE
             }
         }
 
-        glScalef(15, -15, 1.0);
-
+        glScalef(15.0f, -15.0f, 1.0);
 
         switch(pxText->Format)
         {
@@ -5302,9 +5301,6 @@ PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF p
         }
         case PXGraphicSystemOpenGL:
         {
-  
-
-
             PXGUIProperty pxGUIProperty;
             pxGUIProperty.Property = PXUIElementPropertySize;
             PXGUIPropertyFetch(pxWindow, &pxGUIProperty, 1, PXFalse);
