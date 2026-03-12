@@ -43,7 +43,6 @@ PXModel* pxModel = 0;
 PXColorPicker* _pxColorPicker = 0;
 PXFileDirectory* _pxFileDirectory = 0;
 PXFooter* _pxFooter = 0;
-PXWindow* e = 0;
 PXSpaceGrid* _pxSpaceGrid = 0;
 PXTransformView* _pxTransformView = 0;
 PXECSEntityList* _pxECSEntityList = 0;
@@ -2143,17 +2142,7 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
         pxTransformViewCrerateInfo.Window.dockSide = PXWindowDockSideRight;
         pxTransformViewCrerateInfo.Position = &_pxSpaceGrid->CameraView->Position;
         PXTransformViewCreate(&_pxTransformView, &pxTransformViewCrerateInfo);
-    }
-    {
-        PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-        pxWindowCreateInfoSub.WindowParent = pxMainWindow;
-        pxWindowCreateInfoSub.BackGroundColor.Red = 60;
-        pxWindowCreateInfoSub.BackGroundColor.Green = 30;
-        pxWindowCreateInfoSub.BackGroundColor.Blue = 180;
-        pxWindowCreateInfoSub.floating = FALSE;
-        pxWindowCreateInfoSub.dockSide = PXWindowDockSideRight;
-        PXWindowCreate(&e, &pxWindowCreateInfoSub);
-    }  
+    } 
 
     {
         PXColorPickerCreateInfo pxColorPickerCreateInfo;
