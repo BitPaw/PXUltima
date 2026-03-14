@@ -1117,15 +1117,13 @@ PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x)
 
 PXF32 PXAPI PXMathCosinusDEGF32(const PXF32 x)
 {
-    const float PI = 3.14159265358979323846f; 
-    float rad = x * (PI / 180.0f); 
+    float rad = x * (PXMathPI / 180.0f); 
     return PXMathCosinusRADF32(rad);
 }
 
 PXF64 PXAPI PXMathCosinusDEGF64(const PXF64 x)
 {
-    const float PI = 3.14159265358979323846f;
-    float rad = x * (PI / 180.0f);
+    float rad = x * (PXMathPI / 180.0f);
     return PXMathCosinusRADF32(rad);
 }
 
