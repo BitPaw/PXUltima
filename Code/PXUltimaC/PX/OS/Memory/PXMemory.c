@@ -563,7 +563,7 @@ PXI8U PXAPI PXMemoryCompareI16V_AVX512(const PXI16U PXREF dataList, const PXI8U 
         }
 
         // We found a match!
-        const PXI8U match_index = 63 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
+        const PXI8U match_index = 31 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
 
         return i + match_index; // Index of first hit
     }
