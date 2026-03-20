@@ -43,8 +43,7 @@ typedef struct PXCamera_
     PXCameraPerspective Perspective;
 
     PXF32 FieldOfView;
-    PXI32S Height;
-    PXI32S Width;
+    PXRectangleXYWHI32 Rectangle;
     PXF32 Near;
     PXF32 Far;
 
@@ -71,7 +70,7 @@ PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInf
 PXPublic PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera);
 PXPublic PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo);
 
-PXPublic PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, float aspectRatio);
+PXPublic PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspective cameraPerspective);
 
 //-----------
 PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);
