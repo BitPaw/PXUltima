@@ -407,7 +407,17 @@ PXPublic void PXAPI PXMemorySet(void PXREF PXRestrict bufferA, const PXByte valu
 // Compare
 //---------------------------------------------------------
 
-PXPublic PXI8U PXAPI PXMemoryCompareI8V(const PXI8U PXREF textList, const PXI8U listAmount, const PXI8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V_Strait(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V_MMX(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V_SSE2(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V_AVX512(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value);
+
+PXPublic PXI8U PXAPI PXMemoryCompareI16V(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI16V_Strait(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI16V_MMX(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI16V_SSE2(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI16V_AVX512(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value);
 
 // Compare a list of 4-byte text elements.
 // Return the index of the first match
