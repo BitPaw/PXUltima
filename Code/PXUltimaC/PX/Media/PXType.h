@@ -994,7 +994,6 @@ typedef enum PXResult_ PXResult;
 
 typedef struct PXDrawInfo_ PXDrawInfo;
 typedef struct PXDictionary_ PXDictionary;
-typedef struct PXDrawInfo_ PXDrawInfo;
 typedef struct PXBuffer_ PXBuffer;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
