@@ -31,6 +31,7 @@
 #include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
 #include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
 #include <PX/Engine/ECS/Entity/UI/ECSEntityList/PXECSEntityList.h>
+#include <PX/Engine/ECS/System/Input/PXInputSystem.h>
 
 #include <PX/Media/D8X/PXD8D.h>
 #include <PX/Engine/ECS/Resource/Scene/PXScene.h>
@@ -1179,6 +1180,8 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
     PXWindowRedraw(_pxFooter->WindowBase);
     PXWindowRedraw(_pxTransformView->WindowBase);
     PXWindowRedraw(_pxSpaceGrid->WindowBase);
+    PXWindowRedraw(_pxECSEntityList->WindowBase);
+    PXWindowRedraw(_pxFileDirectory->WindowBase);
 
 
     //Sleep(1);
@@ -1611,7 +1614,7 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventInputKey
     //PXCameraMove(pxEngine->CameraCurrent, &move);
     //PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
 
-#if PXLogEnable && 0
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -2276,7 +2279,7 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     //PXSceneAddModel(_pxSceneMain, _pxSpaceGrid);
     PXSceneAddModel(_pxSceneMain, pxModel);
 
-    
+    _pxTransformView->CameraSelected = pxEngine->CameraCurrent;
 
     return PXResultOK;
 }
@@ -2316,9 +2319,6 @@ PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCreateInfo PXR
 
     return PXResultOK;
 }
-
-#include <PX/Engine/ECS/System/Input/PXInputSystem.h>
-
 
 PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
 {
