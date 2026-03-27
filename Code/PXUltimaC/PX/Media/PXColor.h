@@ -140,6 +140,8 @@ typedef struct PXColorRGBF_
 }
 PXColorRGBF;
 
+PXPublic PXBool PXAPI PXColorRGBFIsBlack(const PXColorRGBF PXREF pxColorRGBF);
+
 typedef struct PXColorRGBAF_
 {
     union
