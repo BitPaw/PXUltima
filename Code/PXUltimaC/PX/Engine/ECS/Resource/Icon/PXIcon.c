@@ -2,10 +2,13 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 
+#if OSWindows
 #include <Windows.h>
 #include <shellapi.h>
-#include <gl/GL.h>
+#include <shlwapi.h>
+#endif
 
 const char PXIconText[] = "Icon";
 const PXI8U PXIconTextLength = sizeof(PXIconText);
@@ -53,6 +56,17 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
     PXClear(SHSTOCKICONINFO, &stockIconInfo);
     stockIconInfo.cbSize = sizeof(SHSTOCKICONINFO);
 
+    /*
+    
+Folder up	SIID_UP
+Back	SIID_BACK
+Forward	SIID_FORWARD
+Refresh	SIID_REFRESH
+Folder	SIID_FOLDER
+Open folder	SIID_FOLDEROPEN
+Drive	SIID_DRIVEFIXED
+Desktop	SIID_DESKTOPPC
+    */
     const HRESULT resultFile = SHGetStockIconInfo
     (
         SIID_DOCNOASSOC,
@@ -62,6 +76,30 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
     const PXResult pxResult = PXErrorFromHRESULT(resultFile);
 
     pxIcon->IconHandle = PXNull;
+
+
+
+    /*
+    * // Note: This is not recommended, as IDs are not stable across versions!
+    HMODULE hShell = LoadLibraryA("shell32.dll");
+    if(!hShell)
+        return NULL;
+
+    return (HICON)LoadImageA(
+        hShell,
+        MAKEINTRESOURCEA(resource_id),
+        IMAGE_ICON,
+        size,
+        size,
+        LR_SHARED
+    );
+    */
+
+
+
+
+
+
 
     return pxResult;
 #else
@@ -328,6 +366,7 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
 
     int iconWidth = GetSystemMetrics(SM_CXICON);
     int iconHeight = GetSystemMetrics(SM_CYICON);
+    PXSize totalSize = 0;
 
     // Step 2 - Convert handle to BITMAP
     {
@@ -338,6 +377,8 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
         bmi.bmiHeader.biPlanes = 1;
         bmi.bmiHeader.biBitCount = 32;
         bmi.bmiHeader.biCompression = BI_RGB;
+
+        totalSize = (bmi.bmiHeader.biBitCount / 8) * iconWidth * iconHeight;
 
         PXByte* pixels = NULL;
         HDC hdc = CreateCompatibleDC(NULL);
@@ -359,6 +400,7 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
         );
 
         // Quicktransform
+#if 0
         for(size_t i = 0; i < iconWidth * iconHeight * 4; i += 4)
         {
             PXByte temp = pixels[i + 0];
@@ -368,41 +410,23 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
             pixels[i + 2] = temp;
            // pixels[i + 0] = pixels[i + 0];
         }
-
+#endif
 
         // COPY
         {
             PXTextureCreateInfo pxTextureCreateInfo;
             PXClear(PXTextureCreateInfo, &pxTextureCreateInfo);
             pxTextureCreateInfo.Type = PXTextureType2D;
-            pxTextureCreateInfo.Format = PXColorFormatBGRAI8;
+            pxTextureCreateInfo.Format = PXColorFormatRGBAI8;
             pxTextureCreateInfo.Payload = pixels;
+            pxTextureCreateInfo.PayloadSize = totalSize;
             pxTextureCreateInfo.T2D.Width = iconWidth;
             pxTextureCreateInfo.T2D.Height = iconHeight;
 
             PXTextureCreate(&pxIcon->Texture, &pxTextureCreateInfo);
         }
 
-        GLuint texID;
-        glGenTextures(1, &texID);
-        glBindTexture(GL_TEXTURE_2D, texID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            iconWidth,
-            iconHeight,
-            0,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            pixels
-        );
-
-        pxIcon->Texture->OpenGLID = texID;
+        PXTextureRegisterGL(pxIcon->Texture);
     }
 
     return PXResultOK;
