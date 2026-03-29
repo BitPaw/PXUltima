@@ -197,6 +197,7 @@ typedef struct PXTextureCreateInfo_
     PXTextureType Type;
     PXColorFormat Format;
 
+    PXSize PayloadSize;
     void* Payload; // Data that does exist before the texture. Will be copyed
 
     union
@@ -249,7 +250,7 @@ PXPublic PXResult PXAPI PXTextureRegisterToECS(void);
 PXPublic PXResult PXAPI PXTextureCreate(PXTexture** pxTexture, PXTextureCreateInfo PXREF pxTextureCreateInfo);
 PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
 
-PXPublic PXResult PXAPI PXTextureMakeGL(PXTexture PXREF pxTexture);
+PXPublic PXResult PXAPI PXTextureRegisterGL(PXTexture PXREF pxTexture);
 
 PXPublic HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amountofchannels, void* data);
 
