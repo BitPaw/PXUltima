@@ -44,8 +44,8 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     pxCamera->ViewSpeed = 1;
     pxCamera->FollowSpeed = 0.98f;
     pxCamera->FieldOfView = 90;
-    pxCamera->Height = 1;
-    pxCamera->Width = 1;
+    pxCamera->Rectangle.Height = 1;
+    pxCamera->Rectangle.Width = 1;
     pxCamera->Near = 0.1;
     pxCamera->Far = 100000000000.f;
 
@@ -341,22 +341,57 @@ PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo
 
 #include <gl/GLU.h>
 
-PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, float aspectRatio)
+PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspective cameraPerspective)
 {
     if(!pxCamera)
     {
         return PXResultOK;
     }
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
-    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
-    glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
-    glTranslatef(-pxCamera->Position.X, -pxCamera->Position.Y, -pxCamera->Position.Z);
+    const PXRectangleXYWHI32 PXREF pxRectangle = &pxCamera->Rectangle;
+
+    switch(cameraPerspective)
+    {
+        case PXCameraPerspective2D:
+        {
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+
+            glOrtho
+            (
+                pxRectangle->X, // Left
+                pxRectangle->X + pxRectangle->Width, // Right
+                pxRectangle->Y + pxRectangle->Height, // Top
+                pxRectangle->Y, // Bottom
+                -1.0f,
+                +1.0f
+            );
+            
+            // Why did we add this???
+            //glScalef(1.0f, -1.0f, 1.0f);
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+ 
+            break;
+        }
+        case PXCameraPerspective3D:
+        {
+            const PXF32 aspectRatio = pxRectangle->Width / pxRectangle->Height;
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
+            glTranslatef(-pxCamera->Position.X, -pxCamera->Position.Y, -pxCamera->Position.Z);
+
+            break;
+        }
+    }
 
     return PXResultOK;
 }
@@ -370,8 +405,10 @@ void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize 
     const PXF32 top = (height / 2.0f) * scaling;
 
     camera->Perspective = PXCameraPerspective2D;
-    camera->Width = width;
-    camera->Height = height;
+    camera->Rectangle.X = 0;
+    camera->Rectangle.Y = 0;
+    camera->Rectangle.Width = width;
+    camera->Rectangle.Height = height;
     camera->Near = nearPlane;
     camera->Far = farPlane;
 
@@ -400,15 +437,15 @@ void PXAPI PXCameraAspectRatioChange(PXCamera PXREF camera, const PXSize width, 
         return;
     }
 
-    camera->Width = width;
-    camera->Height = height;
+    camera->Rectangle.Width = width;
+    camera->Rectangle.Height = height;
 
     PXCameraViewChange(camera, camera->Perspective);
 }
 
 PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera)
 {
-    return (PXF32)camera->Width / (PXF32)camera->Height;
+    return (PXF32)camera->Rectangle.Width / (PXF32)camera->Rectangle.Height;
 }
 
 void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective cameraPerspective)
@@ -419,7 +456,7 @@ void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective c
     {
         case PXCameraPerspective2D:
         {
-            PXCameraViewChangeToOrthographic(camera, camera->Width, camera->Height, camera->Near, camera->Far);
+            PXCameraViewChangeToOrthographic(camera, camera->Rectangle.Width, camera->Rectangle.Height, camera->Near, camera->Far);
             break;
         }
 
