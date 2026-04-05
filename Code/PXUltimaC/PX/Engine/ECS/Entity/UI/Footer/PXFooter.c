@@ -66,6 +66,8 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo
 #endif
 
     pxDrawInfo->Brush = pxGUITheme->BrushMainPrimary;
+    pxDrawInfo->RectangleXYWH.Width = 150;
+    pxDrawInfo->RectangleXYWH.Height = 20;
 
     PXWindowDrawRectangle3D
     (
@@ -98,19 +100,15 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo
     );
 
 
-
-    PXTextDrawInfo pxTextDrawInfo;
-    PXClear(PXTextDrawInfo, &pxTextDrawInfo);
-    pxTextDrawInfo.WindowDrawInfo = pxDrawInfo;
-    pxTextDrawInfo.Text = &pxText;
-    pxTextDrawInfo.Behaviour = PXWindowAllignCenter;
-    pxTextDrawInfo.Size = 20;
-    pxTextDrawInfo.OffsetX = 0.2;
+    pxDrawInfo->Text = &pxText;
+    pxDrawInfo->Behaviour |= PXWindowAllignCenter;
+    pxDrawInfo->Size = 20;
+    pxDrawInfo->OffsetX = 0.2;
 
     PXWindowDrawText
     (
         pxWindow,
-        &pxTextDrawInfo
+        pxDrawInfo
     );
 #endif
 
