@@ -97,7 +97,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
         );
 #endif
 
-        PXTaskStateChangeRemote(pxThreadPool, pxTask, PXExecuteStateFailed);
+        PXTaskStateChangeRemote(pxThreadPool, pxTask, PXECSFlagStateFAILED);
 
         return PXActionRefusedMissingCallBack;
     }
@@ -137,7 +137,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
         );
 #endif
 
-        PXTaskStateChangeRemote(pxThreadPool, pxTask, PXExecuteStateFailed);
+        PXTaskStateChangeRemote(pxThreadPool, pxTask, PXECSFlagStateFAILED);
 
         return pxTask->FunctionReturnCode;
     }
@@ -154,7 +154,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
     );
 #endif
 
-    PXTaskStateChangeRemote(pxThreadPool, pxTask, PXExecuteStateFinished);
+    PXTaskStateChangeRemote(pxThreadPool, pxTask, PXECSFlagStateCOMPLETED);
 
     PXThreadYieldToOtherThreads();
 
@@ -489,28 +489,9 @@ void NTAPI PXWindowsVistaPTP_WORK_CALLBACK(PTP_CALLBACK_INSTANCE Instance, PVOID
 }
 #endif
 
-const char* PXExecuteStateToString(const PXI32U behaviour)
-{
-    switch(PXExecuteStateMask & behaviour)
-    {
-        case PXExecuteStateInvalid: return "Invalid";
-        case PXExecuteStateReady: return "Ready";
-        case PXExecuteStateReserve: return "Reserve";
-        case PXExecuteStateRunning: return "Running";
-        case PXExecuteStateWaiting: return "Wait";
-        case PXExecuteStateSuspended: return "Suspended";
-        case PXExecuteStateFailed: return "Failed";
-        case PXExecuteStateFinished: return "Finished";
-
-        default:
-            return "Error";
-    }
-}
-
 void PXAPI PXTaskStateChange(PXTask PXREF pxTask, const PXI32U newState)
 {
-    pxTask->Info.Behaviour &= ~PXExecuteStateMask;
-    pxTask->Info.Behaviour |= newState;
+    PXECSInfoStateSet(&pxTask->Info, newState);
 }
 
 void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask PXREF pxTask, const PXI32U newState)
@@ -553,11 +534,11 @@ PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXRE
     {
         PXTask PXREF pxTaskCurrent = PXListItemAtIndexGetT(PXTask, &pxThreadPool->TaskQueue, i);
 
-        const PXBool doDoWork = PXExecuteStateRunning == (PXExecuteStateMask & pxTaskCurrent->Info.Behaviour);
+        const PXBool doDoWork = PXECSFlagStateRUNNING == PXECSInfoStateGet(&pxTaskCurrent->Info);
 
         if(doDoWork)
         {
-            PXTaskStateChange(pxTaskCurrent, PXExecuteStateReserve);
+            PXTaskStateChange(pxTaskCurrent, PXECSFlagStateREADY);
 
             PXCopy(PXTask, pxTaskCurrent, pxTask);
 
@@ -611,10 +592,12 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
 
             PXBool isFree = 0;
 
-            switch(PXExecuteStateMask & pxTask->Info.Behaviour)
+            PXI8U state = PXECSInfoStateGet(&pxTask->Info);
+            
+            switch(state)
             {
-                case PXExecuteStateInvalid:
-                case PXExecuteStateReady:
+                case PXECSFlagStateINITIALIZING:
+                case PXECSFlagStateREADY:
                     isFree = PXTrue;
                     break;
             }
@@ -640,13 +623,14 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
     }    
 
     // Add data
-    pxTaskTarget->Info.Behaviour = behaviour;
     pxTaskTarget->FunctionX1Adress = function;
     pxTaskTarget->ArgumentObject1 = parameter1;
     pxTaskTarget->ArgumentObject2 = parameter2;
     pxTaskTarget->FunctionReturnCode = PXActionWaitOnResult;
 
-    PXTaskStateChange(pxTaskTarget, PXExecuteStateRunning);
+    PXECSInfoFlagAdd(&pxTaskTarget->Info, behaviour);
+
+    PXTaskStateChange(pxTaskTarget, PXECSFlagStateRUNNING);
 
     PXLockRelease(&pxThreadPool->TaskLock);
 
@@ -702,7 +686,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
 
         if(isSuspensed)
         {
-            PXThreadStateChange(pxThread, PXExecuteStateRunning);
+            PXThreadStateChange(pxThread, PXECSFlagStateRUNNING);
             break;
         }
     }
@@ -742,11 +726,12 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
     {
         PXTask pxTask;
         PXClear(PXTask, &pxTask);
-        pxTask.Info.Behaviour = behaviour;
         pxTask.FunctionX1Adress = function;
         pxTask.ArgumentObject1 = parameter1;
         pxTask.ArgumentObject2 = parameter2;
         pxTask.FunctionReturnCode = PXActionWaitOnResult;
+
+        PXECSInfoFlagAdd(&pxTask.Info, behaviour);
 
         return PXThreadPoolTaskInvoke(pxThreadPool, &pxTask);
     }
@@ -831,7 +816,7 @@ PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** lis
             pxTask->Info.ID = ++pxThreadPool->TaskCounter;
             list[i] = pxTask->Info.ID;
 
-            PXTaskStateChange(pxTask, PXExecuteStateReserve);
+            PXTaskStateChange(pxTask, PXECSFlagStateREADY);
         }
     }
 
