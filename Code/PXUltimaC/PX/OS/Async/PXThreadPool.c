@@ -435,7 +435,7 @@ PXResult PXAPI PXThreadPoolWaitForSpesific(PXThreadPool* pxThreadPool, PXI32U* l
                 continue;
             }
 
-            PXBool isDone = PXExecuteStateFinished == (PXExecuteStateMask & pxTask->Info.Behaviour);
+            PXBool isDone = PXECSInfoStateEqual(&pxTask->Info, PXECSFlagStateCOMPLETED);
 
             if(isDone)
             {
@@ -469,7 +469,7 @@ PXResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool PXREF pxThreadPool)
     {
         PXTask PXREF pxTask = PXListItemAtIndexGetT(PXTask, &pxThreadPool->TaskQueue, i);
 
-        const PXBool doDoWork = PXTaskExecuteSYNC & pxTask->Info.Behaviour;
+        const PXBool doDoWork = PXTaskExecuteSYNC & pxTask->Info.FlagListSettings;
 
         if(!doDoWork)
         {
