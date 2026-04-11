@@ -2,6 +2,11 @@
 
 #include <PX/Math/PXMath.h>
 
+PXBool PXAPI PXColorRGBFIsBlack(const PXColorRGBF PXREF pxColorRGBF)
+{
+    return pxColorRGBF->Blue == 0 && pxColorRGBF->Green == 0 && pxColorRGBF->Red == 0;
+}
+
 PXI32U PXAPI PXColorI32FromBGR(const PXI8U r, const PXI8U g, const PXI8U b)
 {
     return b + (g << 8) | (r << 16);
