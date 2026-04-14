@@ -112,7 +112,7 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
     PXECSCreate(pxThreadREF, pxThreadCreateInfo);
 
     pxThread = *pxThreadREF;
-    pxThread->Info.Behaviour = pxThreadCreateInfo->Behaviour;
+    PXECSInfoFlagAdd(&pxThread->Info, pxThreadCreateInfo->Behaviour);
 
 #if OSUnix
 
@@ -136,10 +136,12 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
     DWORD dwCreationFlags = 0;
     LPDWORD lpThreadId = &pxThread->ThreadID;
 
-    if(PXThreadBehaviourCreateSuspended & pxThread->Info.Behaviour)
+    const PXBool createSuspended = PXThreadBehaviourCreateSuspended & pxThread->Info.FlagListSettings;
+
+    if(createSuspended)
     {
         dwCreationFlags |= CREATE_SUSPENDED;
-        pxThread->Info.Behaviour |= PXExecuteStateSuspended;
+        PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateSUSPENDED);
     }
 
     if(!pxThreadCreateInfo->TargetProcessHandle) //  Target own process
@@ -188,9 +190,9 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
         return threadCreateResult;
     }
 
-    if(!(PXThreadBehaviourCreateSuspended & pxThread->Info.Behaviour))
+    if(!createSuspended)
     {
-        pxThread->Info.Behaviour |= PXExecuteStateRunning;
+        PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateRUNNING);
     }
 
     // Name thread if possible
@@ -779,17 +781,17 @@ PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThrea
 
     switch(pxThreadState)
     {
-        case PXExecuteStateWaiting:
+        case PXECSFlagStateWAITING:
         { 
             PXThreadWait(pxThread);
             break;
         }
-        case PXExecuteStateRunning:
+        case PXECSFlagStateRUNNING:
         {
             PXThreadResume(pxThread);
             break;
         }
-        case PXExecuteStateSuspended:
+        case PXECSFlagStateSUSPENDED:
         {
             PXThreadSuspend(pxThread);
             break;
@@ -1158,14 +1160,13 @@ PXI32U PXAPI PXThreadCurrentID()
 
 PXResult PXAPI PXThreadResume(PXThread PXREF pxThread)
 {
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateRunning;
+    PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateRUNNING);
 
 #if OSUnix
     return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-    const PXProcessThreadHandle threadHandle = pxThread->ThreadHandle;
+    const HANDLE threadHandle = pxThread->ThreadHandle;
     const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxResult = PXErrorCurrent(-1 != suspendCount);
 
@@ -1192,8 +1193,7 @@ PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
 {
     const PXProcessThreadHandle threadHandle = pxThread->ThreadHandle;
 
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateSuspended;
+    PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateSUSPENDED);
 
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -1223,8 +1223,7 @@ PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
 
 PXResult PXAPI PXThreadWait(PXThread PXREF pxThread)
 {
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateWaiting;
+    PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateWAITING);
 
     pxThread->ReturnResultCode = 0; // Reset Code
 
