@@ -100,7 +100,6 @@ PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF app
         PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXDebugerLoopText, 0, PXDebugerLoopTextLength);
         pxThreadCreateInfo.ThreadFunction = PXDebugLoop;
         pxThreadCreateInfo.Parameter = pxDebug;
-        pxThreadCreateInfo.Behaviour = PXThreadBehaviourDefault;
 
         const PXResult result = PXThreadCreate(&pxDebug->EventListenLoop, &pxThreadCreateInfo);
 
