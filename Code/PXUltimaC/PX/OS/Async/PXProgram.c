@@ -94,7 +94,6 @@ PXResult PXAPI PXProgramExecute(PXProgram PXREF program)
         PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXExecuteName, 0, PXExecuteNameLengh);
         pxThreadCreateInfo.ThreadFunction = PXProgramExecuteThreadFunction;
         pxThreadCreateInfo.Parameter = program;
-        pxThreadCreateInfo.Behaviour = PXThreadBehaviourDefault;
 
         const PXResult actionResult = PXThreadCreate(&program->WorkingThread, &pxThreadCreateInfo);
 
