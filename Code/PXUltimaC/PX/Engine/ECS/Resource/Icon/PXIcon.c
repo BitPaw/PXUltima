@@ -24,11 +24,10 @@ const PXECSRegisterInfoStatic PXIconRegisterInfoStatic =
 };
 PXECSRegisterInfoDynamic PXIconRegisterInfoDynamic;
 
-PXResult PXAPI PXIconRegisterToECS()
+void PXAPI PXIconRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
-    PXECSRegister(&PXIconRegisterInfoStatic, &PXIconRegisterInfoDynamic);
-
-    return PXResultOK;
+    pxECSRegisterInfo->InfoStatic = &PXIconRegisterInfoStatic;
+    pxECSRegisterInfo->InfoDynamic = &PXIconRegisterInfoDynamic;
 }
 
 PXResult PXAPI PXGUIIconLoad(PXIcon PXREF pxIcon)
