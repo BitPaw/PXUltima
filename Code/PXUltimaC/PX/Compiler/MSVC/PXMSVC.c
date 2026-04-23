@@ -91,7 +91,7 @@ PXResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC PXREF pxCompilerMSVC)
   //memcpy_s(pxCompilerMSVC->CompilerPathLibrarySearch, 700, libraryList, sizeof(libraryList));
     //    memcpy_s(pxCompilerMSVC->CompilerPathLibraryFile, 1024, libraryFileList, sizeof(libraryFileList));
 
-    return 0;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, const char* fileName)
@@ -138,7 +138,7 @@ PXResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, const 
 
     PXBashExecuteA(buffer, offset, PXNull, 0, PXNull, PXFalse);
 
-    return 1;
+    return PXResultOK;
 }
 
 PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
@@ -236,7 +236,7 @@ PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, int flags
         }
         default:
         {
-            return 0;
+            return PXResultRefusedParameterInvalid;
         }
     }
 
@@ -244,7 +244,7 @@ PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, int flags
 
     PXBashExecuteA(buffer, offset, PXNull, 0, PXNull, PXFalse);
 
-    return 0;
+    return PXResultOK;
 }
 
 #if 0
