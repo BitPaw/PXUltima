@@ -23,6 +23,7 @@
 #define ExtensionMaxSize 256 //_MAX_EXT
 #endif
 
+typedef struct PXFile_ PXFile;
 
 typedef enum PXFileElementInfoType_
 {
@@ -108,9 +109,6 @@ typedef struct PXFileCreateInfo_
 PXFileCreateInfo;
 
 
-typedef struct PXFile_ PXFile;
-
-
 PXPublic PXBool PXAPI PXDirectoryIsRootFolder(const char* directory);
 PXPublic PXBool PXAPI PXDirectoryIsCurrentFolder(const char* directory);
 PXPublic PXBool PXAPI PXDirectoryIsDotFolder(const char* directory);
@@ -125,7 +123,7 @@ PXPublic void PXAPI PXTypeEntryInfo
 
 
 //---<Utility>---------------------------------------------------------
-PXPublic PXResult PXAPI PXFileRegisterToECS();
+PXPublic void PXAPI PXFileRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXFileCreate(PXFile** pxFileREF, PXFileCreateInfo PXREF pxFileCreateInfo);
 
 
