@@ -1011,6 +1011,7 @@ typedef struct PXNativDraw_ PXNativDraw;
 typedef struct PXTask_ PXTask;
 typedef struct PXThread_ PXThread;
 typedef struct PXThreadPool_ PXThreadPool;
-
+//typedef struct PXGameCard_ PXGameCard;
+typedef struct PXGameCard_ PXGameCard;
 
 #endif
