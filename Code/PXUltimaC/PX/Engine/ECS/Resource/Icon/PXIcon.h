@@ -44,7 +44,7 @@ typedef struct PXIconCreateInfo_
 }
 PXIconCreateInfo;
 
-PXPublic PXResult PXAPI PXIconRegisterToECS();
+PXPublic void PXAPI PXIconRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 PXPublic PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID);
 PXPublic PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon);
