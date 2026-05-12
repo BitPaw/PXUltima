@@ -647,11 +647,10 @@ void PXAPI PXTypeEntryInfo(PXTypeEntry PXREF pxFileDataElementType, PXText PXREF
     PXTextPrint(dataType, "%s%i%s", textType, size, textTypeExtra);
 }
 
-PXResult PXAPI PXFileRegisterToECS()
+void PXAPI PXFileRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
-    PXECSRegister(&PXFileRegisterInfoStatic, &PXFileRegisterInfoDynamic);
-
-    return PXResultOK;
+    pxECSRegisterInfo->InfoStatic = &PXFileRegisterInfoStatic;
+    pxECSRegisterInfo->InfoDynamic = &PXFileRegisterInfoDynamic;
 }
 
 PXResult PXAPI PXFileCreate(PXFile** pxFileREF, PXFileCreateInfo PXREF pxFileCreateInfo)
