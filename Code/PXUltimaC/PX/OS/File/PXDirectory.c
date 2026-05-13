@@ -158,7 +158,7 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
     PXListDynamicInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXI32U), PXListDynamicSizeObject1Byte);
-    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 128);
+    PXListCreate(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 128);
 
 
     PXBufferEnsureTotal(&pxDirectorySearchCache->FilePathCache.Buffer, 4096*4);
