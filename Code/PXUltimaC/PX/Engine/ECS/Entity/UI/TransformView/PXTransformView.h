@@ -24,7 +24,7 @@ typedef struct PXTransformViewCrerateInfo_
 }
 PXTransformViewCrerateInfo;
 
-PXPublic PXResult PXAPI PXTransformViewRegisterToECS();
+PXPublic void PXAPI PXTransformViewRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 PXPublic PXResult PXAPI PXTransformViewCreate(PXTransformView** pxTransformViewREF, PXTransformViewCrerateInfo PXREF pxTransformViewCrerateInfo);
 PXPublic PXResult PXAPI PXTransformViewRelease(PXTransformView PXREF pxTransformView);
