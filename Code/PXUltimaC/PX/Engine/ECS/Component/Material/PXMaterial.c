@@ -63,8 +63,8 @@ PXResult PXAPI PXMaterialCreate(PXMaterial PXREF pxMaterial, PXMaterialCreateInf
     {
         PXMaterial PXREF pxMaterialCurrent = &pxMaterial[materialIndex];
 
-        pxMaterialCurrent->Info.ID = PXIDGenerate();
-        pxMaterialCurrent->Info.Behaviour |= PXECSInfoRender;
+        PXECSInfoIDGenerate(&pxMaterialCurrent->Info);   
+        PXECSInfoFlagStateAdd(&pxMaterialCurrent->Info, PXECSFlagBehaviourCanRender);
 
         keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
     }
