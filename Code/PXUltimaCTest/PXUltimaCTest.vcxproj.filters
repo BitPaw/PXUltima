@@ -15,11 +15,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="..\[Export]\PXUltimaC\64B-Windows-Debug\PXUltima.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="mainx.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\[Export]\PXUltimaC\64B-Windows-Debug\PXUltima.dll" />
   </ItemGroup>
 </Project>

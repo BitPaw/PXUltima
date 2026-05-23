@@ -163,9 +163,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="mainx.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PXUltimaC\PXUltimaC.vcxproj">
       <Project>{7c1a58aa-dd3c-4b5d-9fec-43657f95e234}</Project>
     </ProjectReference>
@@ -178,6 +175,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mainx.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
