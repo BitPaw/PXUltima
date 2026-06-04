@@ -4,7 +4,7 @@
 #define PXKnowlegeGraphIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Media/PXDocument.h>
+#include <PX/Type/PXDocument.h>
 
 typedef struct PXKnowlegeGraphNode_
 {
