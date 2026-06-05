@@ -3,7 +3,7 @@
 #ifndef PXTreeBehaviourDEFINED
 #define PXTreeBehaviourDEFINED
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 typedef void (PXAPI* PXTreeBehaviourNodeCallBack)(void* owner);
 
