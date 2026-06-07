@@ -3,7 +3,7 @@
 #ifndef PXListLinkedIncludedD
 #define PXListLinkedIncludedD
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 #define PXListLinkedNodeNotUsed (PXSize)-1
 #define PXListLinkedNodeNoNext (PXSize)0
@@ -51,7 +51,7 @@ PXPublic PXBool PXAPI PXListLinkedFixedNodeNext(PXListLinkedFixed PXREF linkedLi
 
 //PXPublic PXBool PXListLinkedFixedNodeFetch(PXListLinkedFixed PXREF linkedListFixed, void PXREF element);
 
-PXPrivate PXBool PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed PXREF linkedListFixed);
+PXPrivate PXSize PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed PXREF linkedListFixed);
 PXPrivate PXBool PXAPI PXListLinkedFixedIsDataEmbedded(const PXListLinkedFixed PXREF linkedListFixed);
 PXPrivate PXSize PXAPI PXListLinkedFixedNodeStride(const PXListLinkedFixed PXREF linkedListFixed);
 PXPrivate void* PXAPI PXListLinkedFixedNodeEmptySlotFetch(const PXListLinkedFixed PXREF linkedListFixed);
