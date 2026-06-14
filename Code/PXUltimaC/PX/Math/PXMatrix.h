@@ -3,7 +3,7 @@
 #ifndef PXMatrixIncluded
 #define PXMatrixIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Math/PXVector.h>
 
 #define XAxisX 0
@@ -70,7 +70,7 @@ typedef struct PXMatrix4x4F_
             PXF32 WW;
         };
 
-        PXF32 Data[16];
+        PXF32 Data4[16];
 
         PXF32 DataXY[4][4];
     };
