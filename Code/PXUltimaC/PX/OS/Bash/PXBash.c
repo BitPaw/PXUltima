@@ -1,6 +1,6 @@
 #include "PXBash.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 
 #include <stdlib.h>
 #include <stdio.h>
