@@ -4,9 +4,9 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Engine/PXGUI.h>
 #include <PX/Math/PXMath.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Time/PXStopWatch.h>
-#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/Type/PXProcessor.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
@@ -158,7 +158,7 @@ PXI8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVerte
 
 PXResult PXAPI PXResourcePropertyIO
 (
-    PXECSInfo PXREF PXECSInfo,
+    PXECSInfo PXREF pxECSInfo,
     PXECSProperty PXREF pxECSProperty, 
     const PXI8U mode,
     const PXBool doWrite
@@ -173,8 +173,7 @@ PXResult PXAPI PXResourcePropertyIO
             if(doWrite)
             {
                // PXListDynamicAdd(&_pxResourceManager.NameCache, &PXECSInfo->ID, pxText->A, pxText->SizeUsed);
-
-                PXECSInfo->Behaviour |= PXECSInfoHasSource;
+                PXECSInfoFlagStateAdd(pxECSInfo, PXECSFlagHasSource);
             }
             else
             {
@@ -357,3 +356,9 @@ void PXAPI PXRectangleXYWHI32ToVertex(const PXRectangleXYWHI32 PXREF pxRectangle
     pxRectangleVertexF32->AY = 1.0f - ((float)pxRectangleXYWHI32->Y / screenSize->Y) * 2.0f - pxRectangleVertexF32->BY / 2.0f;
 }
 
+PXBool PXAPI PXRectangleXYWHI32ContainsPoint(PXRectangleXYWHI32 PXREF pxRectangle, const float x, const float y)
+{
+    return 
+        (x >= pxRectangle->X) && (x < pxRectangle->X + pxRectangle->Width) &&
+        (y >= pxRectangle->Y) && (y < pxRectangle->Y + pxRectangle->Height);
+}
