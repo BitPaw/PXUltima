@@ -452,7 +452,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
         {
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {pxSectionTableCurrent->Name.Data, PXTypeDatax8},
+                {pxSectionTableCurrent->Name.Data4, PXTypeDatax8},
                 {&pxSectionTableCurrent->VirtualSize,PXTypeI32ULE},
                 {&pxSectionTableCurrent->VirtualAddress,PXTypeI32ULE},
                 {&pxSectionTableCurrent->SectionRawDataSize,PXTypeI32ULE},
@@ -468,14 +468,14 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 
             //assert(readBytes == 40u);
 
-            if(pxSectionTableCurrent->Name.Data[0] != '.')
+            if(pxSectionTableCurrent->Name.Data4[0] != '.')
             {
                 // Illegal?
             }
 
-            PXMemoryMove(&pxSectionTableCurrent->Name.Data[1], 7, &pxSectionTableCurrent->Name.Data[0], 8);
+            PXMemoryMove(&pxSectionTableCurrent->Name.Data4[1], 7, &pxSectionTableCurrent->Name.Data4[0], 8);
 
-            pxSectionTableCurrent->Type = PXMemoryCompareSVI8(&pxSectionTableCurrent->Name.Data, PXCOFFSectionList, PXCOFFSectionListSize, PXCOFFSectionListAmount);
+            pxSectionTableCurrent->Type = PXMemoryCompareSVI8(&pxSectionTableCurrent->Name.Data4, PXCOFFSectionList, PXCOFFSectionListSize, PXCOFFSectionListAmount);
 
 
            // pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
@@ -497,7 +497,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 "%25s : %i\n"
                 "%25s : %i\n",
 
-                pxSectionTableCurrent->Name.Data,
+                pxSectionTableCurrent->Name.Data4,
                 sectionID + 1,
                 pxCOFF->Header.NumberOfSections,
 
