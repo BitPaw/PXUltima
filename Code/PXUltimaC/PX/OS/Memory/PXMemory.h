@@ -1,7 +1,7 @@
 #ifndef PXMemoryIncluded
 #define PXMemoryIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 typedef struct PXSymbol_ PXSymbol;
 
@@ -403,6 +403,14 @@ PXPublic void PXAPI PXMemorySet(void PXREF PXRestrict bufferA, const PXByte valu
 
 
 
+
+
+
+// To avoid anyoing casting syntax and compiler complaining.
+PXPublic void* PXAPI PXMemoryAddressAdd(const void PXREF addressA, const void PXREF addressB);
+
+
+
 //---------------------------------------------------------
 // Compare
 //---------------------------------------------------------
@@ -447,7 +455,21 @@ PXPublic PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, cons
 
 // Returns 1 if correct, 0 if not.
 // This function is not like memcmp that returns -1, 0, and 1!
-PXPublic PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
+PXPublic PXBool PXAPI PXMemoryCompare
+(
+    const void* PXRestrict bufferA, 
+    const PXSize bufferASize, 
+    const void* PXRestrict bufferB, 
+    const PXSize bufferBSize,
+    const PXBool expectEqualSize
+);
+
+PXPublic PXBool PXAPI PXMemoryCompareN
+(
+    const void* PXRestrict bufferA,
+    const void* PXRestrict bufferB,
+    const PXSize bufferSize
+);
 
 //---------------------------------------------------------
 

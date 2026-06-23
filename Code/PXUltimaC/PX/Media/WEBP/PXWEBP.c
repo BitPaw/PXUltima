@@ -33,7 +33,7 @@ PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
     {
         PXI32UCluster chunkID;
 
-        PXFileReadB(pxFile, chunkID.Data, 4u);
+        PXFileReadB(pxFile, chunkID.Data4, 4u);
 
         switch (chunkID.Value)
         {

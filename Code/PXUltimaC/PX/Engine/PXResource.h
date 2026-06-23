@@ -4,28 +4,27 @@
 #define PXResourceManagerIncludedd
 
 #include <PX/OS/Error/PXResult.h>
-#include <PX/Media/PXColor.h>
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Math/PXMatrix.h>
 #include <PX/OS/File/PXFileFormat.h>
-
-#include <stdarg.h>
+#include <PX/Math/PXMatrix.h>
+#include <PX/Type/PXColor.h>
+#include <PX/Type/PXIcon.h>
+#include <PX/Type/PXFont.h>
+#include <PX/Type/PXWindow.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXSprite.h>
+#include <PX/Type/PXShader.h>
+#include <PX/Type/PXMonitor.h>
+#include <PX/Type/PXCamera.h>
+#include <PX/Type/PXRectangle.h>
 
 #if OSUnix
 #include <stdio.h>
 #include <X11/X.h> // X11 XID, ulong 8 Byte
 #include <X11/Xlib.h> // XDisplay
 #endif
-#include "ECS/Resource/Icon/PXIcon.h"
-#include "ECS/Resource/Font/PXFont.h"
-#include "ECS/Resource/Window/PXWindow.h"
-#include "ECS/Resource/Texture/PXTexture.h"
-#include "ECS/Entity/Sprite/PXSprite.h"
-#include "ECS/Resource/Shader/PXShader.h"
-#include "ECS/Resource/Monitor/PXMonitor.h"
-#include "ECS/Resource/Window/PXWindow.h"
-#include "ECS/Entity/Camera/PXCamera.h"
-#include "ECS/Component/Rectangle/PXRectangle.h"
+
+#include <stdarg.h>
 
 typedef enum PXGraphicResourceLocation_
 {

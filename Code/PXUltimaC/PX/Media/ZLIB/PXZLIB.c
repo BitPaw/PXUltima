@@ -79,8 +79,73 @@ PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressio
     }
 }
 
+#include <zlib/zlib.h>
+
+#pragma comment(lib, "zlibstatic.lib")
+
 PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam)
 {
+    PXBuffer* pxBufferIN = PXFileBufferGET(pxInputSteam);
+    PXBuffer* pxBufferOUT = PXFileBufferGET(pxOutputSteam);
+
+    switch(pxBufferIN->Data4[0])
+    {
+        case 0x78:
+        {
+            // Format OK
+            break;
+        }
+        case 0x1F:
+        {
+            return PXActionRefuedImageFormatInvalid;
+        }
+        default:
+        {
+            // Can be a deflate stream, lets try to strip the ZLIB header
+            PXFileCursorAdvance(pxInputSteam, 2);
+            break;
+        }
+    }
+
+#if 1
+
+
+
+    // Start with a guess for output size
+    size_t buf_size = pxBufferIN->SizeAllowedToUse * 4;
+    unsigned char* out = pxBufferOUT->Data4;
+
+    z_stream strm = { 0 };
+    strm.next_in = (Bytef*)pxBufferIN->Data4;
+    strm.avail_in = pxBufferIN->SizeAllowedToUse;
+
+    inflateInit(&strm);
+
+    while(1) {
+        strm.next_out = out + strm.total_out;
+        strm.avail_out = buf_size - strm.total_out;
+
+        int ret = inflate(&strm, Z_NO_FLUSH);
+
+        if(ret == Z_STREAM_END) 
+            break;
+
+        if(ret != Z_OK) {
+            inflateEnd(&strm);
+            //free(out);
+            return PXEndianInvalid;
+        }
+
+        // Need more space
+        buf_size *= 2;
+        //out = realloc(out, buf_size);
+    }
+
+    inflateEnd(&strm);
+
+    pxBufferOUT->CursorOffsetByte = strm.total_out;
+
+#else
     PXZLIB PXZLIB;
 
     const PXSize headerSize = 2u;
@@ -178,6 +243,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
     }
 
     PXFileReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, PXEndianBig);
+#endif
 
     return PXResultOK;
 }

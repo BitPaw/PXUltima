@@ -13,47 +13,48 @@
 
 
 // Resources
-#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
-#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
-#include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
-#include <PX/Engine/ECS/Resource/Display/PXDisplay.h>
-#include <PX/Engine/ECS/Resource/Font/PXFont.h>
-#include <PX/Engine/ECS/Resource/FrameBuffer/PXFrameBuffer.h>
-#include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
-#include <PX/Engine/ECS/Resource/Monitor/PXMonitor.h>
-#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
-#include <PX/Engine/ECS/Resource/Timer/PXTimer.h>
-#include <PX/Engine/ECS/Resource/Video/PXVideo.h>
-#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
-#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
-
 #include <PX/Container/ListDynamic/PXListDynamic.h>
+#include <PX/Type/PXAudioDevice.h>
+#include <PX/Type/PXSound.h>
+#include <PX/Type/PXBrush.h>
+#include <PX/Type/PXDisplay.h>
+#include <PX/Type/PXFont.h>
+#include <PX/Type/PXFrameBuffer.h>
+#include <PX/Type/PXIcon.h>
+#include <PX/Type/PXMesh.h>
+#include <PX/Type/PXMonitor.h>
+#include <PX/Type/PXShader.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXTimer.h>
+#include <PX/Type/PXVideo.h>
+#include <PX/Type/PXWindow.h>
+#include <PX/Type/PXGraphicsCard.h>
+#include <PX/Type/PXAudioEmitter.h>
+#include <PX/Type/PXAudioListener.h>
+#include <PX/Type/PXCamera.h>
+#include <PX/Type/PXFieldEffect.h>
+#include <PX/Type/PXGizmo.h>
+#include <PX/Type/PXIconAudio.h>
+#include <PX/Type/PXIconSun.h>
+#include <PX/Type/PXLightDirectional.h>
+#include <PX/Type/PXLightPoint.h>
+#include <PX/Type/PXLightSpot.h>
+#include <PX/Type/PXModel.h>
+#include <PX/Type/PXSkyBox.h>
+#include <PX/Type/PXSpaceGrid.h>
+#include <PX/Type/PXSprite.h>
+#include <PX/Type/PXTesseract.h>
+#include <PX/Engine/UI/PXECSEntityInfo.h>
+#include <PX/Engine/UI/PXTabList.h>
+#include <PX/Engine/UI/PXTransformView.h>
+#include <PX/Engine/UI/PXFileDirectory.h>
+#include <PX/Engine/UI/PXColorPicker.h>
+#include <PX/Engine/UI/PXFooter.h>
+#include <PX/Engine/UI/PXECSEntityList.h>
 
-#include <PX/Engine/ECS/Entity/AudioEmitter/PXAudioEmitter.h>
-#include <PX/Engine/ECS/Entity/AudioListener/PXAudioListener.h>
-#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
-#include <PX/Engine/ECS/Entity/FieldEffect/PXFieldEffect.h>
-#include <PX/Engine/ECS/Entity/Gizmo/PXGizmo.h>
-#include <PX/Engine/ECS/Entity/IconAudio/PXIconAudio.h>
-#include <PX/Engine/ECS/Entity/IconSun/PXIconSun.h>
-#include <PX/Engine/ECS/Entity/LightDirectional/PXLightDirectional.h>
-#include <PX/Engine/ECS/Entity/LightPoint/PXLightPoint.h>
-#include <PX/Engine/ECS/Entity/LightSpot/PXLightSpot.h>
-#include <PX/Engine/ECS/Entity/Model/PXModel.h>
-#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
-#include <PX/Engine/ECS/Entity/SpaceGrid/PXSpaceGrid.h>
-#include <PX/Engine/ECS/Entity/Sprite/PXSprite.h>
-#include <PX/Engine/ECS/Entity/Tesseract/PXTesseract.h>
-#include <PX/Engine/ECS/Entity/UI/ECSEntityInfo/PXECSEntityInfo.h>
-#include <PX/Engine/ECS/Entity/UI/TabList/PXTabList.h>
-#include <PX/Engine/ECS/Entity/UI/TransformView/PXTransformView.h>
-#include <PX/Engine/ECS/Entity/UI/FileDirectory/PXFileDirectory.h>
-#include <PX/Engine/ECS/Entity/UI/ColorPicker/PXColorPicker.h>
-
-#include <PX/Engine/ECS/System/PXEngine.h>
-#include <PX/Engine/ECS/System/PXRenderingSystem.h>
+#include <PX/Engine/PXEngine.h>
+#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Engine/PXAudioSystem.h>
 
 
 
@@ -90,7 +91,7 @@ PXECS _pxECS;
 const PXECSRegisterFunction pxECSRegisterList[] =
 {
     PXAudioListenerRegisterToECS,
-    PXAudioEmitterRegisterToECS,
+    PXAudioEmitteRegisterToECS,
     PXCameraRegisterToECS,
     PXFieldEffectRegisterToECS,
     PXGizmoRegisterToECS,
@@ -109,8 +110,9 @@ const PXECSRegisterFunction pxECSRegisterList[] =
 
     PXVertexBufferRegisterToECS,
     PXIndexBufferRegisterToECS,
-    PXCameraRegisterToECS,
-
+    PXAudioDeviceRegisterToECS,
+    PXTexturePoolRegisterToECS,
+    PXFooterRegisterToECS,
     PXMeshGeometryRegisterToECS,
     PXColorPickerRegisterToECS,
     PXTabListRegisterToECS,
@@ -124,15 +126,20 @@ const PXECSRegisterFunction pxECSRegisterList[] =
     PXThreadRegisterToECS,
     PXBrushRegisterToECS,
     PXFontRegisterToECS,
-    PXFrameBufferRegisterToECS,
+    PXFrameBuffeRegisterToECS,
     PXIconRegisterToECS,
     PXMeshRegisterToECS,
+
+    PXECSEntityListRegisterToECS,
+    PXDictionaryRegisterToECS,
+    PXTextureRegisterToECS,
 
     PXWindowRegisterToECS,
 
     //PXAudioSystemRegisterToECS,
     PXEngineRegisterToECS,
     PXRenderingSystemRegisterToECS,
+    PXAudioSystemRegisterToECS
     
 };
 const PXI16U _pxECSRegisterListAmount = sizeof(pxECSRegisterList) / sizeof(PXECSRegisterFunction);
@@ -157,34 +164,114 @@ const char* PXECSTypeToString(const PXECSType pxECSType)
     }
 }
 
-PXResult PXAPI PXECSRegister
-(
-    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
-    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
-)
+void PXAPI PXECSInfoIDGenerate(PXECSInfo PXREF pxECSInfo)
 {
+    pxECSInfo->ID = PXIDGenerate();
+}
+
+void PXAPI PXECSInfoFlagStateAdd(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    pxECSInfo->FlagListState |= pxECSFlagList;
+}
+
+void PXAPI PXECSInfoFlagStateRemove(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    pxECSInfo->FlagListState &= ~pxECSFlagList;
+}
+
+PXBool PXAPI PXECSInfoFlagStateCheck(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    return pxECSInfo->FlagListState & pxECSFlagList > 0;
+}
+
+void PXAPI PXECSInfoFlagSettingsAdd(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    pxECSInfo->FlagListSettings |= pxECSFlagList;
+}
+
+void PXAPI PXECSInfoFlagSettingsRemove(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    pxECSInfo->FlagListSettings &= ~pxECSFlagList;
+}
+
+PXBool PXAPI PXECSInfoFlagSettingsCheck(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    return pxECSInfo->FlagListSettings & pxECSFlagList > 0;
+}
+
+PXI8U PXAPI PXECSInfoStateEqual(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    return PXECSInfoStateGet(pxECSInfo) == pxECSFlagList;
+}
+
+PXI8U PXAPI PXECSInfoStateGet(const PXECSInfo PXREF pxECSInfo)
+{
+    return pxECSInfo->FlagListState & PXECSFlagStateMask;
+}
+
+void PXAPI PXECSInfoStateSet(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList)
+{
+    pxECSInfo->FlagListState &= ~PXECSFlagStateMask;
+    pxECSInfo->FlagListState |= pxECSFlagList;
+}
+
+const char* PXECSStateList[] = 
+{
+ "INVALID"
+ "INITIALIZING",
+ "READY",
+ "RUNNING",
+ "WAITING",
+ "SUSPENDED",
+ "COMPLETED",
+ "FAILED",
+ "MARKED_FOR_DELETE",
+ "DELETED",
+ "UNLOADED",
+ "LOADING",
+ "STALE",
+ "RECOVERING",
+ "DISABLED",
+ "RESERVED",
+ "RESERVED0",
+ "RESERVED1"
+};
+
+
+const char* PXAPI PXExecuteStateToString(const PXI32U behaviour)
+{
+    const PXI8U index = PXECSFlagStateMask & behaviour;
+
+    return PXECSStateList[index];
+}
+
+PXResult PXAPI PXECSRegister(PXECSRegisterInfo PXREF pxECSRegisterInfo)
+{
+    const PXECSRegisterInfoStatic PXREF infoStatic = pxECSRegisterInfo->InfoStatic;
+    PXECSRegisterInfoDynamic PXREF infoDynamic = pxECSRegisterInfo->InfoDynamic;
+
     // We need a uniqe ID to register
-    pxECSRegisterInfoDynamic->ID = PXIDGenerate();
+    infoDynamic->ID = PXIDGenerate();
 
     // We cant trust the pointer from beeing safe to store
     // It must be stored seperately
     PXNamePoolStore
     (
-        pxECSRegisterInfoDynamic->ID, 
-        &pxECSRegisterInfoStatic->NameOfType,
-        &pxECSRegisterInfoStatic->NameOfType
+        infoDynamic->ID,
+        &infoStatic->NameOfType,
+        &infoStatic->NameOfType
     );
 
-    PXAssert(pxECSRegisterInfoStatic->TypeSize >= sizeof(PXECSInfo), "Used ECS object is missing info");
+    PXAssert(infoStatic->TypeSize >= sizeof(PXECSInfo), "Used ECS object is missing info");
 
 
 
     // Registration of the type in our system
-    PXECSTypeInfo pxECSTypeInfo;
-    pxECSTypeInfo.Static = pxECSRegisterInfoStatic;
-    pxECSTypeInfo.Dynamic = pxECSRegisterInfoDynamic;
+    PXECSRegisterInfo pxECSTypeInfo;
+    pxECSTypeInfo.InfoStatic = infoStatic;
+    pxECSTypeInfo.InfoDynamic = infoDynamic;
 
-    PXResult pxResult = PXDictionaryEntryAdd(_pxECS.LookupType, &pxECSRegisterInfoDynamic->ID, &pxECSTypeInfo);
+    PXResult pxResult = PXDictionaryEntryAdd(_pxECS.LookupType, &infoDynamic->ID, &pxECSTypeInfo);
 
 
     //-----------------------
@@ -194,9 +281,9 @@ PXResult PXAPI PXECSRegister
     PXText pxTextModule;
     PXTextFromAdressA(&pxTextModule, buffer, 0, sizeof(buffer));
 
-    PXLibraryNameFromAdress(PXNull, &pxTextModule, pxECSRegisterInfoStatic->CreateCallback);
+    PXLibraryNameFromAdress(PXNull, &pxTextModule, infoStatic->CreateCallback);
 
-    const char* typeName = PXECSTypeToString(pxECSRegisterInfoStatic->Type);
+    const char* typeName = PXECSTypeToString(infoStatic->Type);
 
     PXLogPrint
     (
@@ -204,10 +291,10 @@ PXResult PXAPI PXECSRegister
         PXECSText,
         "Register",
         "0d%4.4i_%s:%4.4i_%-20s - %s",
-        pxECSRegisterInfoDynamic->ID,
+        infoDynamic->ID,
         pxTextModule.A,
-        pxECSRegisterInfoStatic->TypeSize,
-        pxECSRegisterInfoStatic->NameOfType.A,
+        infoStatic->TypeSize,
+        infoStatic->NameOfType.A,
         typeName
     );
 #endif
@@ -257,7 +344,7 @@ PXResult PXAPI PXECSInit(void)
     PXDictionaryCreateInfo pxDictionaryCreateInfo;
     PXClear(PXDictionaryCreateInfo, &pxDictionaryCreateInfo);
     pxDictionaryCreateInfo.KeySize = sizeof(PXID);
-    pxDictionaryCreateInfo.ValueSize = sizeof(PXECSTypeInfo);
+    pxDictionaryCreateInfo.ValueSize = sizeof(PXECSRegisterInfo);
     pxDictionaryCreateInfo.ValueLocality = PXDictionaryValueLocalityInternalEmbedded;
 
     PXDictionaryCreate(&_pxECS.LookupType, &pxDictionaryCreateInfo);
@@ -295,7 +382,15 @@ PXResult PXAPI PXECSInit(void)
         );
 #endif
 
-        PXResult pxResult = pxECSRegisterList[i]();
+        PXECSRegisterInfo pxECSRegisterInfo;
+        PXClear(PXECSRegisterInfo, &pxECSRegisterInfo);
+
+        // Fetch static and dynamic type info
+        pxECSRegisterList[i](&pxECSRegisterInfo);
+
+        // register data
+        PXResult pxResult = PXECSRegister(&pxECSRegisterInfo);
+     
 
         if(PXResultOK != pxResult)
         {
@@ -405,7 +500,7 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
     return PXResultInvalid;
 }
 
-PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece)
+PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece)
 {
     if(!(pxDictionary && pxECSReferece)) // Is this NULL?
     {
@@ -434,13 +529,13 @@ PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSRefere
     // [STALE REFERENCE DETECTED]
     // Search to detect valid object
 
+    PXDictionaryEntry pxDictionaryEntry;
+    pxDictionaryEntry.KeyAddress = &pxECSReferece->ExpectedID;
+    pxDictionaryEntry.KeySize = sizeof(PXID);
+    pxDictionaryEntry.ValueAdress = &pxECSReferece->Element;
+    pxDictionaryEntry.ValueSize = sizeof(PXECSInfo*);
 
-    PXResult pxResult = PXDictionaryEntryFind
-    (
-        pxDictionary, 
-        &pxECSReferece->ExpectedID,
-        &pxECSReferece->Element
-    );
+    PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxDictionaryEntry);
 
     if(PXResultOK != pxResult)
     {
@@ -533,9 +628,10 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
         PXLoggingAllocation,
         PXECSText,
         "Create",
-        "%s (PXID:%4i, %s)",
+        "%s (PXID:%4i, %.*s)",
         name,
         pxID,
+        pxECSCreateInfo->Name.SizeUsed,
         pxECSCreateInfo->Name.A
     );
 #endif 
@@ -548,7 +644,7 @@ PXSize PXAPI PXECSTypeAmount(void)
     return PXDictionaryEntryAmount(_pxECS.LookupType);
 }
 
-PXResult PXAPI PXECSTypeGet(PXECSTypeInfo PXREF pxECSTypeInfo, const PXSize index)
+PXResult PXAPI PXECSTypeGet(PXECSRegisterInfo PXREF pxECSTypeInfo, const PXSize index)
 {
     PXDictionaryEntry pxDictionaryEntry;
 
@@ -559,7 +655,7 @@ PXResult PXAPI PXECSTypeGet(PXECSTypeInfo PXREF pxECSTypeInfo, const PXSize inde
         return pxResult;
     }
 
-    *pxECSTypeInfo = *(PXECSTypeInfo*)pxDictionaryEntry.Value;
+    *pxECSTypeInfo = *(PXECSRegisterInfo*)pxDictionaryEntry.ValueAdress;
 
     return PXResultOK;
 }
@@ -580,7 +676,7 @@ PXResult PXAPI PXECSEntryGet(PXECSReferece PXREF pxECSReferece, const PXSize ind
         return pxResult;
     }
 
-    *pxECSReferece = *(PXECSReferece*)pxDictionaryEntry.Value;
+    *pxECSReferece = *(PXECSReferece*)pxDictionaryEntry.ValueAdress;
 
     return PXResultOK;
 }
@@ -597,7 +693,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
     // parameter valid check
     {
         PXBool textValid = 
-            pxFilePath->Data &&
+            pxFilePath->Data4 &&
             pxFilePath->SizeUsed;
 
         if(!textValid)

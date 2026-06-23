@@ -76,14 +76,14 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Container/List/PXList.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Async/PXAwait.h>
 #include <PX/OS/Graphic/PXGraphic.h>
 #include <PX/OS/File/PXDirectory.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
-#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/Type/PXProcessor.h>
 #include "ECS/PXECS.h"
 
 

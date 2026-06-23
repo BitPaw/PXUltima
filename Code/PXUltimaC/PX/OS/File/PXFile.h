@@ -4,10 +4,10 @@
 #define PXFileIncluded
 
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Media/PXText.h>
 #include <PX/Container/Buffer/PXBuffer.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
+#include <PX/Type/PXText.h>
+#include <PX/Type/PXIcon.h>
 
 #if OSUnix
 #define PXPathSizeMax 260

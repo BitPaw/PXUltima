@@ -4,10 +4,10 @@
 #define PXGUIIncluded
 
 #include <PX/Engine/PXResource.h>
-#include "ECS/Resource/Font/PXFont.h"
-#include "ECS/Resource/Brush/PXBrush.h"
-#include "ECS/Component/Rectangle/PXRectangle.h"
-#include "ECS/Entity/UI/ColorPicker/PXColorPicker.h"
+#include <PX/Type/PXFont.h>
+#include <PX/Type/PXBrush.h>
+#include <PX/Type/PXRectangle.h>
+#include <PX/Engine/UI/PXColorPicker.h>
 
 typedef struct PXGUITheme_
 {

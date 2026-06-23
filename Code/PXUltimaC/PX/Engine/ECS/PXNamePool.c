@@ -1,7 +1,7 @@
 #include "PXNamePool.h"
 
 #include <PX/Container/Dictionary/PXDictionary.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 
 typedef struct PXNamePool_
@@ -32,14 +32,29 @@ PXResult PXAPI PXNamePoolStore(const PXID pxID, const PXText* pxText, PXText* px
     (
         _pxNamePool.NameLookup, 
         &pxID,
-        pxText->Data,
+        pxText->Data4,
         pxText->SizeUsed
-    );
+    ); 
+
+    return pxResult;
+}
+
+PXResult PXAPI PXNamePoolGet(const PXID pxID, PXText PXREF pxText)
+{
+    PXDictionaryEntry pxDictionaryEntry;
+    pxDictionaryEntry.KeyAddress = &pxID;
+    pxDictionaryEntry.KeySize = sizeof(PXID);
+    pxDictionaryEntry.ValueAdress = 0;
+    pxDictionaryEntry.ValueSize = 0;
+
+    PXResult pxResult = PXDictionaryEntryFind(_pxNamePool.NameLookup, &pxDictionaryEntry);
 
     if(PXResultOK != pxResult)
     {
         return pxResult;
-    }    
+    }
 
-    return PXResultOK;
+    PXTextFromAdressA(pxText, (char*)pxDictionaryEntry.ValueAdress, pxDictionaryEntry.ValueSize, pxDictionaryEntry.ValueSize);
+
+    return pxResult;
 }

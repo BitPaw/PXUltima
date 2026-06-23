@@ -4,75 +4,137 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/Engine/ECS/PXECS.h>
 
-PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
-{
-    if (!(line && size))
-    {
-        return PXYAMLLineTypeInvalid;
-    }
-
-    const unsigned char id = *(const unsigned char PXREF)line;
-
-    switch (id)
-    {
-    case '#':
-        return PXYAMLLineTypeComment;
-
-    case ':':
-        return PXYAMLLineTypeKeyValueSeperator;
-
-    case '>':
-        return PXYAMLLineTypeNotationStyleExtendedLine;
-
-    case '|':
-        return PXYAMLLineTypeNotationStyleBlock;
-
-    case '-':
-    {
-        const unsigned char* data = (unsigned char*)line + 1;
-        const PXI16U checkA = PXI16Make('-', '-');
-        const PXI16U checkB = PXI16Make(data[0], data[1]);
-        const PXBool isSeperator = checkA == checkB;
-
-        if (isSeperator)
-        {
-            return PXYAMLLineTypeSeperator;
-        }
-        else
-        {
-            return PXYAMLLineTypeListElement;
-        }
-    }
-    }
-
-    // unkown thing detected, check if it is a declaration
-    {
-        const char expectedColon = ((char*)line)[size - 1];
-        const PXBool isColon = ':' == expectedColon;
-
-        if (isColon)
-        {
-            return PXYAMLLineTypeKeyDeclare;
-        }
-    }
-
-    return PXYAMLLineTypeUnkown;
-}
-
-PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
 
 
     PXCompiler pxCompiler;
+
     PXClear(PXCompiler, &pxCompiler);
     //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
-    pxCompiler.Flags = PXCompilerKeepAnalyseTypes | PXCompilerKeepTABs;
+    pxCompiler.Flags = 
+        PXCompilerKeepAnalyseTypes | 
+        PXCompilerDOMGenerate |
+        PXCompilerKeepNewLine |
+        PXCompilerKeepWhiteSpace |
+        PXCompilerKeepComments;
+    //pxCompiler.DOM = pxDOM;
     PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
+
+
+
+    while(PXCompilerSymbolEntryExtract(&pxCompiler))
+    {
+        PXCompilerSymbolEntry PXREF symbolCurrent = PXCompilerSymbolEntryCurrent(&pxCompiler);
+
+        switch(symbolCurrent->ID)
+        {
+            case PXCompilerSymbolLexerGeneric:
+            {
+                // Store generic symbol
+                PXCompilerSymbolEntry pxSymbolSliceKey = *symbolCurrent;  
+
+                PXBool isColonNext = PXCompilerSymbolEntryPeekCheck(&pxCompiler, PXCompilerSymbolLexerColon);
+
+                if(!isColonNext)
+                {
+                    break;
+                }         
+
+                // remove ":"
+                PXCompilerSymbolEntryForward(&pxCompiler);
+
+                // Possible whitespace
+                PXBool iswhiteSpace = PXCompilerSymbolEntryPeekCheck(&pxCompiler, PXCompilerSymbolLexerWhiteSpace);
+
+                if(iswhiteSpace)
+                {
+                    PXCompilerSymbolEntryForward(&pxCompiler);
+                }
+
+                PXBool isNewLine = PXCompilerSymbolEntryPeekCheck(&pxCompiler, PXCompilerSymbolLexerNewLine);
+
+                if(isNewLine)
+                {
+                    // nested key: "pad:"
+
+                    // Store class
+                    PXDOMObjectAdd(pxDOM, &pxCompiler.DOMPrefixStack, &pxSymbolSliceKey);
+
+                    // remove new line
+                    PXCompilerSymbolEntryForward(&pxCompiler);
+                }
+                else
+                {
+                    // key-value: "bottom: 750"
+                    PXCompilerSymbolEntry pxSymbolSliceValue = *symbolCurrent; 
+
+                    PXDOMPropertyAdd
+                    (
+                        pxDOM,
+                        &pxCompiler.DOMPrefixStack,
+                        &pxSymbolSliceKey,
+                        &pxSymbolSliceValue
+                    );
+
+                    // Remove value
+                    PXCompilerSymbolEntryForward(&pxCompiler);
+                }
+
+                break;
+            }
+            case PXCompilerSymbolLexerNewLine:
+            {
+               
+
+                break;
+            }
+            case PXCompilerSymbolLexerWhiteSpace:
+            {
+                PXI16U newIndent = symbolCurrent->Size;
+                PXI16U oldIndent = PXDOMPrefixIndentCurrent(&pxCompiler.DOMPrefixStack);
+
+                PXBool isSame = newIndent == oldIndent;
+                PXBool isDeeper = newIndent > oldIndent;
+
+                if(isSame)
+                {
+                    break;
+                }
+
+                if(isDeeper) 
+                {
+                    pxCompiler.DOMPrefixStack.indentDepth++;
+                    pxCompiler.DOMPrefixStack.indentStack[pxCompiler.DOMPrefixStack.indentDepth] = newIndent;
+                }
+                else if(newIndent < oldIndent) 
+                {
+                    while(pxCompiler.DOMPrefixStack.indentDepth > 0 && pxCompiler.DOMPrefixStack.indentStack[pxCompiler.DOMPrefixStack.indentDepth] > newIndent)
+                    {
+                        pxCompiler.DOMPrefixStack.indentDepth--;
+                        pxCompiler.DOMPrefixStack.prefixDepth--;
+                        //pxCompiler.DOMPrefixStack.objectDepth--;
+                    }
+
+                    if(pxCompiler.DOMPrefixStack.indentStack[pxCompiler.DOMPrefixStack.indentDepth] != newIndent) 
+                    {
+                        // This means indentation is invalid (YAML requires matching sibling indent)
+                        // You can error or normalize depending on your design
+                        DebugBreak();
+                    }
+                }              
+
+                break;
+            }
+            default:
+                break;
+        }
+    }
 
 
     PXFile* tokenSteam = pxCompiler.ReadInfo.FileCache;
@@ -319,7 +381,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     return PXResultOK;
 }
 
-PXResult PXAPI PXYAMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXYAMLSaveToFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

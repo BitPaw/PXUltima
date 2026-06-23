@@ -107,7 +107,7 @@ PXResult PXAPI PXTreeBFindUnindexed(PXTreeB PXREF pxTreeB, const void PXREF key,
 
         PXTreeBValueIndex(pxTreeB, i, &keyCurrent, &valueCurrent);
 
-        PXBool isTarget = PXMemoryCompare(key, pxTreeB->KeySize, keyCurrent, pxTreeB->KeySize);
+        PXBool isTarget = PXMemoryCompareN(key, keyCurrent, pxTreeB->KeySize);
 
         if (!isTarget)
         {

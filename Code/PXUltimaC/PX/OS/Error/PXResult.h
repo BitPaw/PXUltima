@@ -3,7 +3,7 @@
 #ifndef PXResultIncluded
 #define PXResultIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 // Refused => User error
 // Invalid => State errorPXActionRefusedArgumentInvalid

@@ -1,6 +1,6 @@
 #include "PXFTP.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 
 const char PXFTPUser[4] = { 'U', 'S', 'E', 'R' };
 const char PXFTPPassword[4] = { 'P', 'A', 'S', 'S' };

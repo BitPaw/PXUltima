@@ -96,7 +96,7 @@ PXBool PXAPI PXListLinkedFixedNodeNext(PXListLinkedFixed PXREF linkedListFixed, 
     return PXYes;
 }
 
-PXBool PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed PXREF linkedListFixed)
+PXSize PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed PXREF linkedListFixed)
 {
     const PXBool isDataEmbedded = PXListLinkedFixedIsDataEmbedded(linkedListFixed);
 

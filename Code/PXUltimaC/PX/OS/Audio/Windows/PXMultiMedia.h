@@ -2,9 +2,9 @@
 
 #ifndef PXMultiMediaIncluded
 #define PXMultiMediaIncluded
-#include <PX/Media/PXType.h>
-#include <PX/Engine/ECS/Resource/AudioDevice/PXAudioDevice.h>
-#include <PX/Engine/ECS/System/AudioSystem/PXAudioSystem.h>
+#include <PX/Type/PXType.h>
+#include <PX/Type/PXAudioDevice.h>
+#include <PX/Engine/PXAudioSystem.h>
 
 typedef struct PXAudioMultiMedia_ PXAudioMultiMedia;
 

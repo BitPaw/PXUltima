@@ -9,7 +9,7 @@
 #include <PX/OS/Network/PXServer.h>
 
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Time/PXTime.h>
 #include <PX/Container/Dictionary/PXDictionary.h>
 

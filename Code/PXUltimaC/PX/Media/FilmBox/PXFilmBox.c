@@ -39,7 +39,7 @@ typedef struct PXFilmBoxProperty_
     union
     {
         PXFilmBoxNodeRecordArray Array;
-        PXFilmBoxNodeRecordData Data;
+        PXFilmBoxNodeRecordData Data4;
     };
 
     PXI8U Typecode;
@@ -124,9 +124,9 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
         if(pxFilmBoxProperty->Typecode == 'S' || pxFilmBoxProperty->Typecode == 'R')
         {
             // string ro raw data
-            PXFileReadI32U(pxFile, &pxFilmBoxProperty->Data.Length);
-            pxFilmBoxProperty->Data.Data = (char*)PXFileDataAtCursor(pxFile);
-            PXFileCursorAdvance(pxFile, pxFilmBoxProperty->Data.Length);
+            PXFileReadI32U(pxFile, &pxFilmBoxProperty->Data4.Length);
+            pxFilmBoxProperty->Data4.Data = (char*)PXFileDataAtCursor(pxFile);
+            PXFileCursorAdvance(pxFile, pxFilmBoxProperty->Data4.Length);
 
 
 
@@ -135,7 +135,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
 
             if(pxFilmBoxProperty->Typecode == 'S')
             {
-                PXTextCopyA(pxFilmBoxProperty->Data.Data, pxFilmBoxProperty->Data.Length, cacheB, 64);
+                PXTextCopyA(pxFilmBoxProperty->Data4.Data, pxFilmBoxProperty->Data4.Length, cacheB, 64);
             }
             else
             {
@@ -187,8 +187,8 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
     }
     else
     {
-        pxFilmBoxProperty->Data.Length = dataTypeSize;
-        pxFilmBoxProperty->Data.Data = (char*)PXFileDataAtCursor(pxFile);
+        pxFilmBoxProperty->Data4.Length = dataTypeSize;
+        pxFilmBoxProperty->Data4.Data = (char*)PXFileDataAtCursor(pxFile);
 
         // Not an array
 #if PXLogEnable
@@ -201,7 +201,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
         PXTextConstructNamedBufferA(&dataContent, dataContentBuffer, 64);
 
         PXTypeEntry pxFileDataElementType;
-        pxFileDataElementType.Adress = pxFilmBoxProperty->Data.Data;
+        pxFileDataElementType.Adress = pxFilmBoxProperty->Data4.Data;
         pxFileDataElementType.Type = pxFilmBoxProperty->PXType;
 
         PXTypeEntryInfo(&pxFileDataElementType, &dataType, &dataContent);

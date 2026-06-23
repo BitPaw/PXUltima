@@ -3,7 +3,7 @@
 #ifndef PXServerIncluded
 #define PXServerIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Network/PXSocket.h>
 

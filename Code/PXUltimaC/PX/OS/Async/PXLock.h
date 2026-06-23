@@ -25,7 +25,7 @@ PXLockCreateInfo;
 typedef PXResult(PXAPI* PXLockFunction)(PXLock PXREF pxLock);
 typedef PXResult(PXAPI* PXLockEnterFunction)(PXLock PXREF pxLock, const PXBool forceEntering);
 
-PXPublic PXResult PXAPI PXLockRegisterToECS();
+PXPublic void PXAPI PXLockRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 PXPublic PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreateInfo);
 PXPublic PXResult PXAPI PXLockDelete(PXLock PXREF lock);

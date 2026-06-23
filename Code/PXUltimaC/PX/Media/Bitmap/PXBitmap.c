@@ -317,7 +317,7 @@ PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
 
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        PXByte* data = pixelData->Data + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
+        PXByte* data = pixelData->Data4 + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding
@@ -431,7 +431,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
 
         for(PXSize row = imageDataLayout.RowAmount - 1; row != (PXSize)-1; --row)
         {
-            const PXByte PXREF dataInsertPoint = pxBuffer->Data + (imageDataLayout.RowImageDataSize * row);
+            const PXByte PXREF dataInsertPoint = pxBuffer->Data4 + (imageDataLayout.RowImageDataSize * row);
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {

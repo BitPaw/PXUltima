@@ -244,7 +244,7 @@ PXResult PXAPI PXUSDLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     );
 #endif
 
-    char* text = PXFileDataAtCursor(pxFile);
+    char* text = (char*)PXFileDataAtCursor(pxFile);
 
     switch(*text) // Unsafe
     {
@@ -374,7 +374,7 @@ PXResult PXAPI PXUSDCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             PXFileReadI64U(pxFile, &pxTOCSection->Tokens.NumberOfTokens);
 
-            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);    
+            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data4);    
 
             const PXBool isAlligned = PXFileCursorIsAt(pxFile, pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
         }
@@ -982,7 +982,7 @@ void PXAPI PXUSDAParseEntryProperty(PXUSDA PXREF pxUSDA, PXUSDEntry PXREF pxUSDE
                     break;
                 }
 
-                PXUSDAParseEntryPropertyListFunction[index](pxUSDEntry, pxCompiler);                
+                PXUSDAParseEntryPropertyListFunction[index](pxUSDEntry, pxCompiler);
 
                 break;
             }

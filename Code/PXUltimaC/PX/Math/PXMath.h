@@ -3,7 +3,7 @@
 #ifndef PXMathIncluded
 #define PXMathIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 //---<Constants>---------------------------------------------------------------
 PXPublic const PXF64 PXMathPI;  // Pi, Archimedes' constant or Ludolph's number

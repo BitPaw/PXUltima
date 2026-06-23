@@ -73,7 +73,7 @@ void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF
 
 void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize)
 {
-    PXByte* dataAdress = pxListDynamic->Buffer.Data;
+    PXByte* dataAdress = pxListDynamic->Buffer.Data4;
 
     if(!dataAdress)
     {
@@ -82,7 +82,7 @@ void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF 
 
     for(PXSize i = 0; i < pxListDynamic->EntryAmount; i++)
     {
-        const PXBool isTarget = PXMemoryCompare(dataAdress, pxListDynamic->KeySize, key, pxListDynamic->KeySize);
+        const PXBool isTarget = PXMemoryCompareN(dataAdress, key, pxListDynamic->KeySize);
                
         dataAdress += pxListDynamic->KeySize;
 
@@ -138,7 +138,7 @@ void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF 
 
 void PXAPI PXListDynamicClearAll(PXListDynamic PXREF pxListDynamic)
 {
-    PXMemoryClear(&pxListDynamic->Buffer.Data, pxListDynamic->Buffer.SizeAllowedToUse);
+    PXMemoryClear(&pxListDynamic->Buffer.Data4, pxListDynamic->Buffer.SizeAllowedToUse);
     pxListDynamic->EntryAmount = 0;
 }
 
@@ -163,12 +163,12 @@ void* PXAPI PXListDynamicInsertFind(PXListDynamic PXREF pxListDynamic)
 
     for(PXSize index = 0; index < pxBuffer->SizeAllowedToUse; ++index)
     {
-        PXByte* data = &pxBuffer->Data[index];
+        PXByte* data = &pxBuffer->Data4[index];
 
         PXSize payLoadSize = 0;
         PXI64U emptyKey = 0;
 
-        const PXBool isTarget = PXMemoryCompare(data, pxListDynamic->KeySize, &emptyKey, pxListDynamic->KeySize);
+        const PXBool isTarget = PXMemoryCompareN(data, &emptyKey, pxListDynamic->KeySize);
    
         if(isTarget)
         {

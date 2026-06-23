@@ -11,7 +11,7 @@
 #include <PX/OS/Library/PXLibrary.h>
 #include <PX/OS/Async/PXThread.h>
 #include "Async/PXLock.h"
-#include <PX/Engine/ECS/Reflection/PXReflection.h>
+#include <PX/Reflection/PXReflection.h>
 
 typedef enum PXSymbolType_
 {
@@ -238,7 +238,7 @@ PXPublic void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess);
 PXPublic PXResult PXAPI PXProcessMemoryWrite
 (
     const PXProcessHandle pxProcessHandle,
-    const void* baseAddress,
+    void* baseAddress,
     const void* bufferData,
     const PXSize bufferSizeMax,
     PXSize PXREF bufferSizeWritten

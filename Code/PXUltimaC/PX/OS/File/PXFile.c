@@ -1,6 +1,6 @@
 #include "PXFile.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Engine/PXResource.h>
@@ -453,11 +453,11 @@ PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure
 
 PXResult PXAPI PXFilePathCombine(PXText PXREF fullPath, PXFilePathStructure PXREF pxFilePathStructure)
 {
-    PXAppend(fullPath, &pxFilePathStructure->Drive);
-    PXAppend(fullPath, &pxFilePathStructure->Directory);
-    PXAppend(fullPath, &pxFilePathStructure->FileName);
-    PXAppendA(fullPath, ".", 1);
-    PXAppend(fullPath, &pxFilePathStructure->Extension);
+    PXTextAppend(fullPath, &pxFilePathStructure->Drive);
+    PXTextAppend(fullPath, &pxFilePathStructure->Directory);
+    PXTextAppend(fullPath, &pxFilePathStructure->FileName);
+    PXTextAppendA(fullPath, ".", 1);
+    PXTextAppend(fullPath, &pxFilePathStructure->Extension);
 
     fullPath->A[fullPath->SizeUsed] = '\0';
     return PXResultOK;
@@ -1104,7 +1104,7 @@ PXResult PXAPI PXFilePhysical(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFile
             BOOL ok = ReadFile
             (
                 pxFile->FileHandle,
-                pxFile->Buffer.Data,
+                pxFile->Buffer.Data4,
                 pxFile->Buffer.SizeAllowedToUse,
                 NULL,
                 NULL
@@ -1196,7 +1196,7 @@ PXResult PXAPI PXFilePhysical(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFile
                 "Mapping",
                 "OK, %s -> <%p> with %s/s for <%s>",
                 permissionText,
-                pxFile->Buffer.Data,
+                pxFile->Buffer.Data4,
                 pxTextbps.A,
                 pxFileCreateInfo->FilePath.A
             );
@@ -1288,7 +1288,7 @@ PXResult PXAPI PXFileTemp(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCrea
 
 PXResult PXAPI PXFileMemory(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCreateInfo)
 {
-    const PXBool hasSource = pxFileCreateInfo->Data.Data != 0;
+    const PXBool hasSource = pxFileCreateInfo->Data.Data4 != 0;
 
     pxFile->AccessMode = pxFileCreateInfo->AccessMode;
 
@@ -1304,8 +1304,8 @@ PXResult PXAPI PXFileMemory(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCr
             PXFileText,
             "Open",
             "External <%p> to <%p> %i B",
-            pxFile->Buffer.Data,
-            pxFile->Buffer.Data + pxFile->Buffer.SizeAllocated - 1,
+            pxFile->Buffer.Data4,
+            pxFile->Buffer.Data4 + pxFile->Buffer.SizeAllocated - 1,
             pxFile->Buffer.SizeAllocated
         );
 #endif
@@ -1323,7 +1323,7 @@ PXResult PXAPI PXFileMemory(PXFile PXREF pxFile, PXFileCreateInfo PXREF pxFileCr
             PXFileText,
             "Open",
             "Created intermal memory <%p> %i B",
-            pxFile->Buffer.Data,
+            pxFile->Buffer.Data4,
             pxFile->Buffer.SizeAllocated
         );
 #endif
@@ -1413,7 +1413,7 @@ PXBool PXAPI PXFileIsIndexInRegion(const PXFile PXREF pxFile, const PXSize index
         return 0;
     }
 
-    if(!pxFile->Buffer.Data)
+    if(!pxFile->Buffer.Data4)
     {
         return 0;
     }
@@ -1756,12 +1756,12 @@ PXResult PXAPI PXFilePathRelativeFromFile(const PXFile PXREF pxFile, const PXTex
             }
         }
 
-        PXAppend(resultPath, &pxFilePathStructureBefore.Drive);
-        PXAppend(resultPath, &pxFilePathStructureBefore.Directory);
-        PXAppend(resultPath, &pxFilePathStructureAfter.Directory);
-        PXAppend(resultPath, &pxFilePathStructureAfter.FileName);
-        PXAppendA(resultPath, ".", 1);
-        PXAppend(resultPath, &pxFilePathStructureAfter.Extension);
+        PXTextAppend(resultPath, &pxFilePathStructureBefore.Drive);
+        PXTextAppend(resultPath, &pxFilePathStructureBefore.Directory);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.Directory);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.FileName);
+        PXTextAppendA(resultPath, ".", 1);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.Extension);
     }
     else
     {
@@ -1822,7 +1822,7 @@ PXBool PXAPI PXFileDataAvailable(const PXFile PXREF pxFile)
         case PXFileLocationModeMappedVirtual:
         case PXFileLocationModeMappedFromDisk:
         {
-            return pxFile->Buffer.Data && (pxFile->Buffer.CursorOffsetByte <= pxFile->Buffer.SizeAllocated);
+            return pxFile->Buffer.Data4 && (pxFile->Buffer.CursorOffsetByte <= pxFile->Buffer.SizeAllocated);
         }
         case PXFileLocationModeDirectCached:
         case PXFileLocationModeDirectUncached:
@@ -2242,7 +2242,7 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
             "%20s : <%s>",
             "Mapping-ID", (int)pxFile->MappingHandle,
             "Size", pxText.A,
-            "Data", pxFile->Buffer.Data, pxFile->Buffer.CursorOffsetByte, pxFile->Buffer.SizeAllowedToUse,
+            "Data", pxFile->Buffer.Data4, pxFile->Buffer.CursorOffsetByte, pxFile->Buffer.SizeAllowedToUse,
             "Path", pxTextFilePath.A
         );
 #endif
@@ -2251,7 +2251,7 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
         {
             if(isWriteMapped)
             {
-                const BOOL flushSuccessful = FlushViewOfFile(pxFile->Buffer.Data, pxFile->Buffer.CursorOffsetByte);
+                const BOOL flushSuccessful = FlushViewOfFile(pxFile->Buffer.Data4, pxFile->Buffer.CursorOffsetByte);
                 const PXResult pxResult = PXErrorCurrent(flushSuccessful);
 
                 if(PXResultOK != pxResult)
@@ -2262,7 +2262,7 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
         }
 
         {
-            const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Buffer.Data);
+            const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Buffer.Data4);
             const PXResult pxResult = PXErrorCurrent(unmappingSucessful);
 
             if(PXResultOK != pxResult)
@@ -2270,7 +2270,7 @@ PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile)
                 return pxResult;
             }
 
-            pxFile->Buffer.Data = PXNull;
+            pxFile->Buffer.Data4 = PXNull;
         }
 
         {
@@ -2335,7 +2335,7 @@ PXSize PXAPI PXFileRemainingSize(const PXFile PXREF pxFile)
 
 PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile PXREF pxFile, const void PXREF adress)
 {
-    return ((PXSize)pxFile->Buffer.Data - (PXSize)adress) - pxFile->Buffer.SizeAllowedToUse;
+    return ((PXSize)pxFile->Buffer.Data4 - (PXSize)adress) - pxFile->Buffer.SizeAllowedToUse;
 }
 
 PXBool PXAPI PXFileIsAtEnd(const PXFile PXREF pxFile)
@@ -2366,9 +2366,9 @@ PXBool PXAPI PXFileAssureFreeSize(PXFile PXREF pxFile, const PXSize amount)
         {
             pxFile->Buffer.SizeAllocated = pxFile->Buffer.SizeAllowedToUse * 2;
             pxFile->Buffer.SizeAllowedToUse = pxFile->Buffer.SizeAllocated;
-            pxFile->Buffer.Data = (PXByte*)PXMemoryVirtualReallocate(pxFile->Buffer.Data, pxFile->Buffer.SizeAllowedToUse);
+            pxFile->Buffer.Data4 = (PXByte*)PXMemoryVirtualReallocate(pxFile->Buffer.Data4, pxFile->Buffer.SizeAllowedToUse);
 
-            success = pxFile->Buffer.Data > 0;
+            success = pxFile->Buffer.Data4 > 0;
 
             break;
         }
@@ -2398,7 +2398,7 @@ PXBool PXAPI PXFileAssureFreeSize(PXFile PXREF pxFile, const PXSize amount)
 PXSize PXAPI PXFileFindEndOfText(PXFile PXREF pxFile)
 {
     const void PXREF startIndex = PXFileDataAtCursor(pxFile);
-    const void PXREF targetAdress = PXMemoryLocateFirst(pxFile->Buffer.Data, '\0', pxFile->Buffer.SizeAllowedToUse);
+    const void PXREF targetAdress = PXMemoryLocateFirst(pxFile->Buffer.Data4, '\0', pxFile->Buffer.SizeAllowedToUse);
     const PXSize offset = (PXSize)targetAdress - (PXSize)startIndex;
 
     return offset;
@@ -2417,7 +2417,7 @@ void* PXAPI PXFileDataAtCursor(PXFile PXREF pxFile)
         case PXFileLocationModeExternal: // Memory is stored outside this object
         case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
         case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
-            return (PXAdress)pxFile->Buffer.Data + pxFile->Buffer.CursorOffsetByte;
+            return (PXAdress)pxFile->Buffer.Data4 + pxFile->Buffer.CursorOffsetByte;
 
         case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
         case PXFileLocationModeDirectUncached: // Read & Write operations are directly put into
@@ -2598,7 +2598,7 @@ PXSize PXAPI PXFileSkipEndOfLineCharacters(PXFile PXREF pxFile)
     {
         char character = 0;
         PXFileCursorPeek(pxFile, &character, sizeof(char));
-        const PXBool advance = PXTextIsEmpty(character) || PXTextIsTab(character) || PXTextIsEndOfLine(character);
+        const PXBool advance = /*PXTextIsEmpty(character) || PXTextIsTab(character) || */PXTextIsEndOfLine(character);
 
         if(!advance)
         {
@@ -2652,7 +2652,7 @@ PXSize PXAPI PXFileReadNextLineInto(PXFile PXREF pxFile, void* exportBuffer, con
         PXFileCursorAdvance(pxFile, 1u);
     }
 
-    const char* dataPoint = (char*)pxFile->Buffer.Data + dataPositionBefore;
+    const char* dataPoint = (char*)pxFile->Buffer.Data4 + dataPositionBefore;
     const PXSize dataPositionAfter = pxFile->Buffer.CursorOffsetByte;
     const PXSize length = dataPositionAfter - dataPositionBefore;
 
@@ -3398,6 +3398,11 @@ PXSize PXAPI PXFileRead(PXFile PXREF pxFile, PXFile PXREF pxFileOUT, const PXSiz
 
 PXSize PXAPI PXFileReadB(PXFile PXREF pxFile, void PXREF value, const PXSize length)
 {
+    if(!(pxFile && value && length))
+    {
+        return 0;
+    }
+
     ++(pxFile->CounterOperationsRead);
 
     if(!value)
@@ -3538,13 +3543,13 @@ PXSize PXAPI PXFileByteSwap(PXFile PXREF pxFileTarget, PXFile PXREF pxFileSource
     pxFileTarget->Buffer.CursorOffsetByte = PXFileReadB
     (
         pxFileSource, 
-        pxFileTarget->Buffer.Data,
+        pxFileTarget->Buffer.Data4,
         pxFileSource->Buffer.SizeAllocated
     );
 
     for(PXSize i = 0; i < pxFileTarget->Buffer.SizeAllowedToUse; i += 2)
     {
-        PXByte* cursor = &pxFileTarget->Buffer.Data[i];
+        PXByte* cursor = &pxFileTarget->Buffer.Data4[i];
         PXByte* cursorA = &cursor[0];
         PXByte* cursorB = &cursor[1];
 
@@ -3571,7 +3576,7 @@ PXBool PXAPI PXFileReadAndCompare(PXFile PXREF pxFile, const void* value, const 
     const void* currentPosition = PXFileDataAtCursor(pxFile);
     const PXSize readableSize = PXFileRemainingSize(pxFile);
 
-    const PXBool result = PXMemoryCompare(currentPosition, readableSize, value, length);
+    const PXBool result = PXMemoryCompare(currentPosition, readableSize, value, length, PXTrue);
 
     if(result)
     {
@@ -3590,7 +3595,7 @@ PXBool PXAPI PXFileReadAndCompareV(PXFile PXREF pxFile, const void* PXREF value,
     {
         const void* text = value[i];
         const PXSize size = valueElementSizeList[i];
-        const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size);
+        const PXBool result = PXMemoryCompare(currentPosition, readableSize, text, size, PXTrue);
 
         if(result)
         {
@@ -4038,7 +4043,7 @@ PXSize PXAPI PXFileWriteC(PXFile PXREF pxFile, const char character)
 
 PXSize PXAPI PXFileWriteText(PXFile PXREF pxFile, PXText PXREF pxText)
 {
-    return PXFileWriteB(pxFile, pxText->Data, pxText->SizeUsed);
+    return PXFileWriteB(pxFile, pxText->Data4, pxText->SizeUsed);
 }
 
 PXSize PXAPI PXFileWriteA(PXFile PXREF pxFile, const char PXREF text, const PXSize textSize)
@@ -4155,7 +4160,7 @@ PXResult PXAPI PXFileStoreOnDiskA(PXFile PXREF pxFile, const char* fileName)
 
     DWORD writtenFiles = 0;
 
-    WriteFile(fileHandle, pxFile->Buffer.Data, pxFile->Buffer.CursorOffsetByte, &writtenFiles, NULL);
+    WriteFile(fileHandle, pxFile->Buffer.Data4, pxFile->Buffer.CursorOffsetByte, &writtenFiles, NULL);
 
     FlushFileBuffers(fileHandle);
 
@@ -4346,7 +4351,7 @@ PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSi
             }
 #endif
 
-            pxFile->Buffer.Data = (PXByte*)MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
+            pxFile->Buffer.Data4 = (PXByte*)MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
             (
                 pxFile->MappingHandle,
                 desiredAccess,
@@ -4354,7 +4359,7 @@ PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSi
                 fileOffsetLow,
                 numberOfBytesToMap
             );
-            const PXResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Buffer.Data);
+            const PXResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Buffer.Data4);
 
             if(PXResultOK != viewMappingResult)
             {
@@ -4388,7 +4393,7 @@ PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSi
 
     if(prefetch)
     {
-        PXMemoryVirtualPrefetch(pxFile->Buffer.Data, pxFile->Buffer.SizeAllowedToUse);
+        PXMemoryVirtualPrefetch(pxFile->Buffer.Data4, pxFile->Buffer.SizeAllowedToUse);
     }
 
     PXI64U stop = PXTimeCounterStampGet();
@@ -4464,7 +4469,7 @@ PXSize PXAPI PXFilePeekBits(PXFile PXREF pxFile, const PXSize amountOfBits)
     unsigned char* b = a + 1;
     unsigned char* c = a + 2;
     unsigned char* d = a + 3;
-    unsigned char* maxAdress = (unsigned char*)pxFile->Buffer.Data + (pxFile->Buffer.SizeAllowedToUse - 1);
+    unsigned char* maxAdress = (unsigned char*)pxFile->Buffer.Data4 + (pxFile->Buffer.SizeAllowedToUse - 1);
 
     unsigned int ai = a > maxAdress ? 0 : *a;
     unsigned int bi = b > maxAdress ? 0 : *b;

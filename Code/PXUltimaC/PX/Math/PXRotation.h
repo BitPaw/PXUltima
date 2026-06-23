@@ -3,7 +3,7 @@
 #ifndef PXRotationIncluded
 #define PXRotationIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 
 // Classic angles of rotation
@@ -26,7 +26,7 @@ typedef struct PXEulerAngle3F32_
             PXF32 Z;
         };
 
-        PXF32 Data[3];
+        PXF32 Data4[3];
     };
 }
 PXEulerAngleF32;
@@ -53,7 +53,7 @@ typedef struct PXEulerAngle4F32_
             PXF32 W;
         };
 
-        PXF32 Data[4];
+        PXF32 Data4[4];
     };
 }
 PXEulerAngle4F32;
@@ -80,7 +80,7 @@ typedef struct PXQuaternionF32_
             PXF32 Z;
         };
 
-        PXF32 Data[4];
+        PXF32 Data4[4];
     };
 }
 PXQuaternionF32;

@@ -3,10 +3,10 @@
 #ifndef PXSoftwareRenderIncluded
 #define PXSoftwareRenderIncluded
 
-#include <PX/Media/PXType.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXType.h>
+#include <PX/Type/PXText.h>
 #include <PX/Engine/PXResource.h>
-#include <PX/Engine/ECS/Resource/Font/PXFont.h>
+#include <PX/Type/PXFont.h>
 
 typedef struct PXSoftwareRender_
 {

@@ -80,6 +80,7 @@
     <ClCompile Include="PX\Engine\PXMod.c" />
     <ClCompile Include="PX\Engine\PXRenderingSystem.c" />
     <ClCompile Include="PX\Engine\PXResource.c" />
+    <ClCompile Include="PX\Engine\PXUI.c" />
     <ClCompile Include="PX\Engine\Rule\PXRule.c" />
     <ClCompile Include="PX\Engine\Rule\PXRuleSet.c" />
     <ClCompile Include="PX\Engine\Rule\PXRuleSystem.c" />
@@ -321,6 +322,7 @@
     <ClCompile Include="PX\Type\PXCursor.c" />
     <ClCompile Include="PX\Type\PXDisplay.c" />
     <ClCompile Include="PX\Type\PXDocument.c" />
+    <ClCompile Include="PX\Type\PXDOM.c" />
     <ClCompile Include="PX\Type\PXDrawScript.c" />
     <ClCompile Include="PX\Type\PXFieldEffect.c" />
     <ClCompile Include="PX\Type\PXFont.c" />
@@ -431,6 +433,7 @@
     <ClInclude Include="PX\Engine\PXMod.h" />
     <ClInclude Include="PX\Engine\PXRenderingSystem.h" />
     <ClInclude Include="PX\Engine\PXResource.h" />
+    <ClInclude Include="PX\Engine\PXUI.h" />
     <ClInclude Include="PX\Engine\Rule\PXRule.h" />
     <ClInclude Include="PX\Engine\Rule\PXRuleSet.h" />
     <ClInclude Include="PX\Engine\Rule\PXRuleSystem.h" />
@@ -660,6 +663,7 @@
     <ClInclude Include="PX\Service\PXTCPService.h" />
     <ClInclude Include="PX\Service\PXUDPService.h" />
     <ClInclude Include="PX\Service\SBP\PXSBP.h" />
+    <ClInclude Include="PX\Type\PXDOM.h" />
     <ClInclude Include="PX\Type\PXAudioDevice.h" />
     <ClInclude Include="PX\Type\PXAudioEmitter.h" />
     <ClInclude Include="PX\Type\PXAudioListener.h" />

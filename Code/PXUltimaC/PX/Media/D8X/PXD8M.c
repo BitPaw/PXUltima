@@ -1,6 +1,4 @@
 #include "PXD8M.h"
-
-
 #include <compressapi.h>
 #include <PX/Media/DDS/PXDDS.h>
 #include <ddraw.h>

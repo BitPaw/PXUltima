@@ -1,6 +1,6 @@
 #include "PXID3.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/File/PXFile.h>
 
 const char PXID3HeaderSignature[3] = { 'I','D','3' };
@@ -287,7 +287,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
             {
                 PXI32UCluster sizeCluster;
 
-                PXFileReadB(pxFile, sizeCluster.Data, 4u);
+                PXFileReadB(pxFile, sizeCluster.Data4, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -327,7 +327,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
                     PXI32U frameSize = 0;
                     PXI16U frameFlags = 0;
 
-                    PXFileReadB(pxFile, indentifier.Data, 4u);
+                    PXFileReadB(pxFile, indentifier.Data4, 4u);
                     PXFileReadI32UE(pxFile, &frameSize, PXEndianBig);
                     PXFileReadI16UE(pxFile, &frameFlags, PXEndianBig);
 

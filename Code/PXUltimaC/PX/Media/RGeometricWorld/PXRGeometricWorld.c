@@ -3,7 +3,7 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/Type/PXMesh.h>
 
 
 const char PXRGeometryText[] = "RGeometricWorld";

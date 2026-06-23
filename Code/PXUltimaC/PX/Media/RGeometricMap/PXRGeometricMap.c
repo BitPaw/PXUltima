@@ -4,7 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/Type/PXMesh.h>
 
 
 const char PXRGeometricMapText[] = "RGeometricMap";
@@ -63,8 +63,8 @@ void PXAPI PXRGeometricMapMeshEnvironmentAssetChannel(PXEnvironmentAssetChannel 
     PXFileReadI32U(pxFile, &pxEnvironmentAssetChannel->TextureNameSize);
     PXFileReadA(pxFile, pxEnvironmentAssetChannel->TextureName, pxEnvironmentAssetChannel->TextureNameSize);
 
-    PXFileReadB(pxFile, pxEnvironmentAssetChannel->TextureScale.Data, sizeof(PXVector2F32));
-    PXFileReadB(pxFile, pxEnvironmentAssetChannel->TextureBias.Data, sizeof(PXVector2F32));
+    PXFileReadB(pxFile, pxEnvironmentAssetChannel->TextureScale.Data4, sizeof(PXVector2F32));
+    PXFileReadB(pxFile, pxEnvironmentAssetChannel->TextureBias.Data4, sizeof(PXVector2F32));
 }
 
 
@@ -268,7 +268,7 @@ void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeo
     }
 
     PXFileReadB(pxFile, pxRGeometricMapMesh->BoundingBox, sizeof(PXVector3F32) * 2); // 6x float
-    PXFileReadB(pxFile, pxRGeometricMapMesh->Transform.Data, sizeof(PXF32) * 16); // 16x float
+    PXFileReadB(pxFile, pxRGeometricMapMesh->Transform.Data4, sizeof(PXF32) * 16); // 16x float
     PXFileReadI8U(pxFile, &pxRGeometricMapMesh->EnvironmentQualityFilterFlags);
 
     if(pxRGeometricMap->Header.Version >= 7 && pxRGeometricMap->Header.Version <= 12) 
@@ -304,7 +304,7 @@ void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeo
 
     if(pxRGeometricMap->UseSeparatePointLights && pxRGeometricMap->Header.Version < 7)
     {
-        PXFileReadB(pxFile, pxRGeometricMapMesh->PointLight.Data, sizeof(PXVector3F32));
+        PXFileReadB(pxFile, pxRGeometricMapMesh->PointLight.Data4, sizeof(PXVector3F32));
     }
 
     if(pxRGeometricMap->Header.Version < 9)
@@ -347,8 +347,8 @@ void PXAPI PXRGeometricMapMeshLoad(PXRGeometricMap PXREF pxRGeometricMap, PXRGeo
             PXFileReadA(pxFile, name, nameLength);
         }
 
-        PXFileReadB(pxFile, pxRGeometricMapMesh->BakedPaintScale.Data, sizeof(PXVector2F32));
-        PXFileReadB(pxFile, pxRGeometricMapMesh->BakedPaintBias.Data, sizeof(PXVector2F32));
+        PXFileReadB(pxFile, pxRGeometricMapMesh->BakedPaintScale.Data4, sizeof(PXVector2F32));
+        PXFileReadB(pxFile, pxRGeometricMapMesh->BakedPaintBias.Data4, sizeof(PXVector2F32));
     }
     //-----------------------------------------------------
 }
@@ -611,9 +611,9 @@ PXResult PXAPI PXRGeometricMapLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadI
             PXVector3F32 plane[2];
             PXVector3F32 normal;
 
-            PXFileReadB(pxFile, transform.Data, sizeof(PXMatrix4x4F));
-            PXFileReadB(pxFile, transform.Data, sizeof(PXVector3F32)*2);
-            PXFileReadB(pxFile, normal.Data, sizeof(PXVector3F32));
+            PXFileReadB(pxFile, transform.Data4, sizeof(PXMatrix4x4F));
+            PXFileReadB(pxFile, transform.Data4, sizeof(PXVector3F32)*2);
+            PXFileReadB(pxFile, normal.Data4, sizeof(PXVector3F32));
 
            // this._planarReflectors.Add(PlanarReflector.ReadFromMapGeometry(br));
         }        

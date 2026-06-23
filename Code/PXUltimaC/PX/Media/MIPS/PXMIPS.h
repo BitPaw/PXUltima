@@ -3,7 +3,7 @@
 #ifndef PXMIPSIncluded
 #define PXMIPSIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 
 #define PXMIPSOPCodeNormal  0b00000000
@@ -303,7 +303,7 @@ typedef struct PXMIPSProcessor_
     PXMIPSTInstructionFunction* CorpocessorList;
 
     void* ROMOffsetVirtual;
-    void* ROMOffsetActual;
+    const void* ROMOffsetActual;
     PXSize ROMOffsetCurrent;
     PXSize ROMOffsetMaximal;
 
@@ -342,13 +342,18 @@ PXCodeSegment;
 
 typedef struct PXMIPSTInstruction_
 {
-    PXI8U* Adress;
-    PXI8U* AdressVirtual;
+    PXByte* Adress;
+    PXByte* AdressVirtual;
     PXI16U Immediate;
 
     PXI32U OperationCode;
 
-    PXMIPSInstructionType Type;
+    union
+    {
+        PXMIPSInstructionType Type;
+        PXI32U TypeID;
+    };
+
 
     PXI8U RegisterSourceID;
     PXI8U RegisterTargetID; // target register ID
@@ -470,6 +475,7 @@ PXMIPSMemoryRegion;
 
 PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAdress);
 
+PXPrivate void PXAPI PXMIPSProgramCounterAdvance(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize amount);
 
 
 PXPublic void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);

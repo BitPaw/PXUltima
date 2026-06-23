@@ -475,7 +475,14 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
 
         for(size_t i = 0; i < PXVideoFormatAmount; i++)
         {
-            const PXBool isEqual = PXMemoryCompare(PXVideoFormatList[i].ID, sizeof(GUID), &videoFormat, sizeof(GUID));
+            const PXBool isEqual = PXMemoryCompare
+            (
+                PXVideoFormatList[i].ID,
+                sizeof(GUID),
+                &videoFormat,
+                sizeof(GUID),
+                PXTrue
+            );
 
             if(isEqual)
             {

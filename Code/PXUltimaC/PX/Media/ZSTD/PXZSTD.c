@@ -40,9 +40,9 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
 
     pxBufferOUT->CursorOffsetByte = ZSTD_decompress
     (
-        pxBufferOUT->Data,
+        pxBufferOUT->Data4,
         pxBufferOUT->SizeAllocated,
-        pxBufferIN->Data,
+        pxBufferIN->Data4,
         pxBufferIN->SizeAllocated
     );
 

@@ -3,9 +3,10 @@
 #ifndef PXCompilerIncluded
 #define PXCompilerIncluded
 
-#include <PX/Engine/PXResource.h>
+#include <PX/Type/PXType.h>
+#include <PX/Type/PXText.h>
 
-#define PXCompilerDEBUG 1
+#define PXCompilerDEBUG 0
 
 
 //--------------------------------------------------------
@@ -23,7 +24,7 @@
 #define PXCompilerSymbolLexerTab                4 // '\t'
 #define PXCompilerSymbolLexerEmpty              5 // Signals a deleted or allignment element
 #define PXCompilerSymbolLexerComment            6 // "//... or #..."
-#define PXCompilerSymbolLexerGeneric            7 // Strings that are jet to be analysed
+#define PXCompilerSymbolLexerGeneric            7 // Strings that are yet to be analysed
 
 #define PXCompilerSymbolLexerBrackedRoundOpen   8 // '('
 #define PXCompilerSymbolLexerBrackedRoundClose  9 // ')'
@@ -91,9 +92,12 @@ typedef struct PXCompilerSymbolEntry_
         PXF64 F64;
         PXI64S I64S;
         PXI64U I64U;
+
+        char Data8[8];
 #endif
 
-        char Data[4]; // Can be used to embedd something
+        char Data4[4]; // Can be used to embedd something
+        char Data2[2];
 
         PXF32 F32;
         PXI32S I32S;
@@ -182,6 +186,28 @@ PXCompilerWriteInfo;
 #define PXCompilerKeepAnalyseTypes (1 << 3)
 #define PXCompilerKeepNewLine (1 << 4)
 #define PXCompilerInterpretNewLineAsWhiteSpace (1 << 5)
+#define PXCompilerDOMGenerate (1 << 6) // Structure to hold  nested key-value data
+
+
+
+typedef struct PXCompiler_ PXCompiler;
+
+
+
+// TODO: MOVE!!
+typedef struct PXDOMPrefixStack_
+{
+    PXI16U prefixStack[64];
+    PXI16U prefixDepth;
+
+    PXI16U indentStack[32];
+    PXI16U indentDepth;
+
+    PXI16U objectStack[32];
+    PXI16U objectDepth;
+}
+PXDOMPrefixStack;
+
 
 typedef struct PXCompiler_
 {
@@ -202,17 +228,23 @@ typedef struct PXCompiler_
 
     PXSize SymbolsRead;
 
-    //PXBool IntrepredNewLineAsWhiteSpace;
-    //PXBool IntrepredTabsAsWhiteSpace;
-    //PXBool DoPrintOutput;
+    PXDOMPrefixStack DOMPrefixStack;
+    //PXDOM* DOM;
 }
 PXCompiler;
+
 
 
 PXPublic PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler);
 
 
+
+
 PXPublic const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer);
+
+PXPublic void PXAPI PXCompilerSymbolValueToString(const PXCompilerSymbolEntry PXREF pxCompilerSymbolEntry, PXText PXREF pxText);
+
+
 
 PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXCompiler PXREF pxCompiler, const PXCompilerSymbolEntry PXREF compilerSymbolEntry);
 
@@ -240,6 +272,8 @@ PXPublic PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler PXREF pxCo
 
 // Fetch next symbol and consume symbol
 PXPublic PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler PXREF pxCompiler);
+
+PXPublic PXCompilerSymbolEntry* PXAPI PXCompilerSymbolEntryCurrent(const PXCompiler PXREF pxCompiler);
 
 // Without fetching the symbol, consume it.
 PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler PXREF pxCompiler);

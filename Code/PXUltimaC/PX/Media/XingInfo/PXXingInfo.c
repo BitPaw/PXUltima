@@ -13,8 +13,8 @@ PXResult PXAPI PXXingInfoParse(PXXingInfo PXREF xingInfo, PXFile PXREF PXFile)
 
         PXFileReadB(PXFile, indetifier, 4u);
 
-        const PXBool isInfo = PXMemoryCompare(PXXingInfoSignatureInfo, 4, indetifier, 4);
-        const PXBool isXing = PXMemoryCompare(PXXingInfoSignatureXing, 4, indetifier, 4);
+        const PXBool isInfo = PXMemoryCompareN(PXXingInfoSignatureInfo, indetifier, 4);
+        const PXBool isXing = PXMemoryCompareN(PXXingInfoSignatureXing, indetifier, 4);
 
         const PXBool validHeader = isInfo || isXing;
 

@@ -60,7 +60,7 @@ typedef struct PXWAD_
 
     union
     {
-        char Data[1];
+        char Data4[1];
         PXWADVersion1 Version1;
         PXWADVersion2 Version2;
         PXWADVersion3 Version3;

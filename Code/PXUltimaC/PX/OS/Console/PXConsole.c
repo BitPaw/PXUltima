@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Time/PXTime.h>
 #include <PX/OS/Debug/PXDebug.h>

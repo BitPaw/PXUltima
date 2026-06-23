@@ -1,8 +1,8 @@
 #include "PXCSharp.h"
 
 #include <PX/Media/C/PXC.h>
-#include <PX/Media/PXText.h>
-#include <PX/Media/PXDocument.h>
+#include <PX/Type/PXText.h>
+#include <PX/Type/PXDocument.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/Engine/ECS/PXECS.h>

@@ -665,7 +665,7 @@ PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF px
     pxX86Iterator.InstructionCurrent = 0;
     pxX86Iterator.Data = pxFile;
 
-    PXListInitialize(&pxX86Iterator.Stack, sizeof(PXByte), 1024);
+    PXListCreate(&pxX86Iterator.Stack, sizeof(PXByte), 1024);
 
     for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
     { 

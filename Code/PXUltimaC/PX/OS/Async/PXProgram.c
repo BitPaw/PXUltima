@@ -10,7 +10,7 @@
 #include <process.h>
 #endif
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 
 const char PXExecuteName[] = "PXProgramExecute";

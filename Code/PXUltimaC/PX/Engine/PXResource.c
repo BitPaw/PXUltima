@@ -345,15 +345,31 @@ void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32 PXREF pxRectangl
     pxRectangleLTRBI32->Bottom = pxRectangleXYWHI32->Y + pxRectangleXYWHI32->Height;
 }
 
+void PXAPI PXRectangleXYWHIFromLTRBI32(PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXRectangleLTRBI32 PXREF pxRectangleLTRBI32)
+{
+    pxRectangleXYWHI32->X = pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Y = pxRectangleLTRBI32->Top;
+    pxRectangleXYWHI32->Width = pxRectangleLTRBI32->Right - pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Height = pxRectangleLTRBI32->Bottom - pxRectangleLTRBI32->Top;
+}
+
 void PXAPI PXRectangleXYWHI32ToVertex(const PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXVector2F32 PXREF screenSize, PXRectangleVertexF32 PXREF pxRectangleVertexF32)
 {
     // Convert width and height to normalized scale
-    pxRectangleVertexF32->BX = (float)pxRectangleXYWHI32->Width / screenSize->X * 2.0f;
-    pxRectangleVertexF32->BY = (float)pxRectangleXYWHI32->Height / screenSize->Y * 2.0f;
+    pxRectangleVertexF32->BX = (PXF32)pxRectangleXYWHI32->Width / screenSize->X * 2.0f;
+    pxRectangleVertexF32->BY = (PXF32)pxRectangleXYWHI32->Height / screenSize->Y * 2.0f;
 
     // Convert x and y to normalized coordinates (OpenGL origin is center)
-    pxRectangleVertexF32->AX = ((float)pxRectangleXYWHI32->X / screenSize->X) * 2.0f - 1.0f + pxRectangleVertexF32->BX / 2.0f;
-    pxRectangleVertexF32->AY = 1.0f - ((float)pxRectangleXYWHI32->Y / screenSize->Y) * 2.0f - pxRectangleVertexF32->BY / 2.0f;
+    pxRectangleVertexF32->AX = ((PXF32)pxRectangleXYWHI32->X / screenSize->X) * 2.0f - 1.0f + pxRectangleVertexF32->BX / 2.0f;
+    pxRectangleVertexF32->AY = 1.0f - ((PXF32)pxRectangleXYWHI32->Y / screenSize->Y) * 2.0f - pxRectangleVertexF32->BY / 2.0f;
+}
+
+void PXAPI PXRectangleXYWHI32AddLTRBI32(PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXRectangleLTRBI32 PXREF pxRectangleLTRBI32)
+{
+    pxRectangleXYWHI32->X += pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Y += pxRectangleLTRBI32->Top;
+    pxRectangleXYWHI32->Width -= (pxRectangleLTRBI32->Left + pxRectangleLTRBI32->Right);
+    pxRectangleXYWHI32->Height -= (pxRectangleLTRBI32->Top + pxRectangleLTRBI32->Bottom);
 }
 
 PXBool PXAPI PXRectangleXYWHI32ContainsPoint(PXRectangleXYWHI32 PXREF pxRectangle, const float x, const float y)

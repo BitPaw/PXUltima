@@ -887,7 +887,7 @@ void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess)
 PXResult PXAPI PXProcessMemoryWrite
 (
     const PXProcessHandle pxProcessHandle,
-    const void* baseAddress,
+    void* baseAddress,
     const void* bufferData,
     const PXSize bufferSizeMax,
     PXSize PXREF bufferSizeWritten

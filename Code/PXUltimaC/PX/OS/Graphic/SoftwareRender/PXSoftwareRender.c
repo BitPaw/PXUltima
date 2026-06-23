@@ -16,9 +16,9 @@ void PXAPI PXSoftwareRenderDrawRectangle(PXTexture PXREF image, const PXSize x, 
         {
             const PXSize index = cx * bytePerPixel + cy * image->Width * bytePerPixel;
 
-            (image->PixelData.Data)[index + 0] = red;
-            (image->PixelData.Data)[index + 1] = green;
-            (image->PixelData.Data)[index + 2] = blue;
+            (image->PixelData.Data4)[index + 0] = red;
+            (image->PixelData.Data4)[index + 1] = green;
+            (image->PixelData.Data4)[index + 2] = blue;
         }
     }
 }
@@ -109,8 +109,8 @@ void PXAPI PXTextureMerge(PXTexture PXREF image, const PXSize x, const PXSize y,
             const PXSize indexSource = (cx + x) * sourceBytesPerPixel + (cy + y) * image->Width * sourceBytesPerPixel;
             const PXSize indexTarget = (cx + insertX) * targetBytesPerPixel + (cy + insertY) * imageInsert->Width * targetBytesPerPixel;
 
-            unsigned char* source = (image->PixelData.Data) + indexSource;
-            unsigned char* target = (imageInsert->PixelData.Data) + indexTarget;
+            unsigned char* source = (image->PixelData.Data4) + indexSource;
+            unsigned char* target = (imageInsert->PixelData.Data4) + indexTarget;
 
             if (targetBytesPerPixel == 4)
             {

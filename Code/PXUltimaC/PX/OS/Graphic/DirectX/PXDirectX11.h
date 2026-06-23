@@ -4,9 +4,9 @@
 #define PXDirectX11Included
 
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXVertexBuffer.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
-#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
+#include <PX/Type/PXVertexBuffer.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXGraphicsCard.h>
 
 PXPublic PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
 PXPublic PXResult PXAPI PXDirectX11Release(PXDirectX11 PXREF pxDirectX11);

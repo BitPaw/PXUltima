@@ -1,17 +1,16 @@
 #include "PXWavefront.h"
 
 #include <PX/Compiler/PXCompiler.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXIndexBuffer.h>
-
-#include <PX/Engine/ECS/Resource/Mesh/PXMeshGeometry.h>
+#include <PX/Type/PXMesh.h>
+#include <PX/Type/PXIndexBuffer.h>
+#include <PX/Type/PXMeshGeometry.h>
 
 #define PXWavefrontDetectMaterial 0
 
@@ -625,9 +624,9 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
        // counter.DataNormal = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
        // counter.DataTexture = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
 
-        counter.DataVertex = pxMesh->Geometry->VertexBufferPrime[0]->VertexData.Data;
-        counter.DataNormal = pxMesh->Geometry->VertexBufferPrime[1]->VertexData.Data;
-        counter.DataTexture = pxMesh->Geometry->VertexBufferPrime[2]->VertexData.Data;
+        counter.DataVertex = pxMesh->Geometry->VertexBufferPrime[0]->VertexData.Data4;
+        counter.DataNormal = pxMesh->Geometry->VertexBufferPrime[1]->VertexData.Data4;
+        counter.DataTexture = pxMesh->Geometry->VertexBufferPrime[2]->VertexData.Data4;
 
         //counter.IndexVertex = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
         //counter.IndexNormal = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
@@ -1011,7 +1010,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 
             for(size_t i = 0; i < amount; ++i)
             {
-                PXI16U* dataIN = pxIndexBufferOLD->Data.Data;
+                PXI16U* dataIN = pxIndexBufferOLD->Data.Data4;
                 PXSize indexPosition = dataIN[i*3+0];
                 PXSize indexNormal = dataIN[i * 3 + 1];
                 PXSize indexTexture = dataIN[i * 3 + 2];

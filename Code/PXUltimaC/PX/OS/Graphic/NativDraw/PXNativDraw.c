@@ -31,11 +31,11 @@ const char PXDrawText[] = "Draw";
 
 #endif
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/Math/PXCollision.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Input/PXInput.h>
-#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Type/PXWindow.h>
 
 #include "assert.h"
 
@@ -619,6 +619,7 @@ PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow
                 sizeFetchInfo.Property = PXUIElementPropertySize;
                 sizeFetchInfo.UpdateType = PXWindowPropertyUpdateTypeRead;
 
+#if 0
                 PXNativDrawWindowProperty(pxNativDraw, pxWindowParrent, &sizeFetchInfo, 1);
 
                 PXWindowPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
@@ -632,8 +633,8 @@ PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow
                 pxUIElementPositionCalulcateInfo.WindowWidth = sizeFetchInfo.Size.Width;
                 pxUIElementPositionCalulcateInfo.WindowHeight = sizeFetchInfo.Size.Height;
 
-                PXWindowPositionCalculcate(pxWindow, &pxUIElementPositionCalulcateInfo);
-
+                //PXWindowPositionCalculcate(pxWindow, &pxUIElementPositionCalulcateInfo);
+#endif
 
 
                 // If the window is an actual window, we will have bad allignment if we use MoveWindow
@@ -695,7 +696,7 @@ PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow
                 }
 
 
-#if PXLogEnable
+#if PXLogEnable && 0
                 PXLogPrint
                 (
                     PXLoggingInfo,

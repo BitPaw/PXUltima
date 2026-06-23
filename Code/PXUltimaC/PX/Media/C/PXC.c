@@ -2,8 +2,8 @@
 
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Media/PXText.h>
-#include <PX/Media/PXDocument.h>
+#include <PX/Type/PXText.h>
+#include <PX/Type/PXDocument.h>
 #include <PX/OS/PXOS.h>
 #include <PX/Engine/ECS/PXECS.h>
 
@@ -976,12 +976,13 @@ void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXRE
         PXCodeDocumentElement* parent = (PXCodeDocumentElement*)pxCodeDocumentElement->Hierachy.Parrent;
 
         PXBool check = PXMemoryCompare
-                       (
-                           name,
-                           nameSize,
-                           parent->NameSpaceAdress,
-                           parent->NameSpaceSize
-                       );
+        (
+            name,
+            nameSize,
+            parent->NameSpaceAdress,
+            parent->NameSpaceSize,
+            PXTrue
+        );
 
         if(check)
         {
@@ -1006,16 +1007,14 @@ void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXRE
                 classSize = parent->NameShortSize;
             }
 
-
-
-
             check = PXMemoryCompare
-                    (
-                        pxCodeDocumentElement->NameClassAdress,
-                        pxCodeDocumentElement->NameClassSize,
-                        className,
-                        classSize
-                    );
+            (
+                pxCodeDocumentElement->NameClassAdress,
+                pxCodeDocumentElement->NameClassSize,
+                className,
+                classSize,
+                PXTrue
+            );
 
             if(check)
             {
@@ -1030,12 +1029,13 @@ void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXRE
             if(pxCodeDocumentElement->Type == PXDocumentElementTypeEnumMember)
             {
                 check = PXMemoryCompare
-                        (
-                            pxCodeDocumentElement->NameShortAdress,
-                            pxCodeDocumentElement->NameShortSize,
-                            parent->NameShortAdress,
-                            parent->NameShortSize
-                        );
+                (
+                    pxCodeDocumentElement->NameShortAdress,
+                    pxCodeDocumentElement->NameShortSize,
+                    parent->NameShortAdress,
+                    parent->NameShortSize,
+                    PXTrue
+                );
 
                 if(check)
                 {

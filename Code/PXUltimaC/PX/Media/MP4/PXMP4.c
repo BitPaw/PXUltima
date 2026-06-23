@@ -104,7 +104,7 @@ PXResult PXAPI PXMP4LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         PXI32UCluster typePrimaryID;
 
         PXFileReadI32UE(&pxFile, &chunkSize, PXEndianBig);
-        PXFileReadB(&pxFile, typePrimaryID.Data, 4u);
+        PXFileReadB(&pxFile, typePrimaryID.Data4, 4u);
 
         const PXSize positionPrediction = PXFileDataPosition(pxFile) + chunkSize - 8;
         const PXM4AChunkID typePrimary = PXMP4ChunkFromID(typePrimaryID.Value);

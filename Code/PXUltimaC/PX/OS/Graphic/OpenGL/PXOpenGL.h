@@ -5,6 +5,15 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
+#include <PX/Type/PXShader.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXDrawScript.h>
+#include <PX/Type/PXLight.h>
+#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Type/PXModel.h>
+#include <PX/Type/PXGraphicsCard.h>
+
+
 
 #define PXOpenGLForceLegacy 0
 
@@ -20,13 +29,7 @@ typedef GLXContext PXOpenGLConextID;
 #define PXOpenGLAPI APIENTRY
 typedef HGLRC PXOpenGLConextID;
 #endif
-#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
-#include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
-#include <PX/Engine/ECS/Resource/Light/PXLight.h>
-#include <PX/Engine/ECS/System/PXRenderingSystem.h>
-#include <PX/Engine/ECS/Entity/Model/PXModel.h>
-#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
+
 //---------------------------
 
 
@@ -1471,7 +1474,7 @@ PXOpenGL;
 //--------------------------------------------------------
 // Internal conversion
 //--------------------------------------------------------
-PXPrivate PXI32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXI32U PXREF imageFormat, PXI32U PXREF dataFormat);
+PXPublic PXI32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXI32U PXREF imageFormat, PXI32U PXREF dataFormat);
 PXPrivate PXI32U PXAPI PXOpenGLRenderModeToID(const PXDrawMode pxGraphicDrawMode);
 PXPrivate PXI32U PXAPI PXOpenGLTextureTypeToID(const PXTextureType pxGraphicTextureType);
 PXPrivate PXI32U PXAPI PXOpenGLShaderTypeToID(const PXShaderType pxGraphicShaderType);
@@ -1489,6 +1492,18 @@ PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXI32U versionID);
 //---<Utility>-------------------------------------------------------------
 PXPublic void PXAPI PXOpenGLConstruct(PXOpenGL PXREF openGLContext);
 PXPublic void PXAPI PXOpenGLDestruct(PXOpenGL PXREF openGLContext);
+
+// Function used to be a callback for errors directly from the OpenGL thread, driver.
+PXPublic void PXOpenGLAPI PXOpenGLErrorCallback
+(
+    const GLenum source, 
+    const GLenum type, 
+    const GLuint id,
+    const GLenum severity, 
+    const GLsizei length, 
+    const char PXREF message, 
+    const void PXREF userParam
+);
 
 
 PXPublic void PXAPI PXOpenGLSet(PXOpenGL PXREF openGLContext, const PXOpenGL PXREF openGLContextSoure);
@@ -1541,7 +1556,7 @@ PXPublic void PXAPI PXOpenGLTextureParameterF(PXOpenGL PXREF openGLContext, cons
 
 PXPublic void PXAPI PXOpenGLBlendingMode(PXOpenGL PXREF pxOpenGL, const PXBlendingMode pxBlendingMode);
 
-PXPublic void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum type, const GLuint id, const GLenum severity, const GLsizei length, const char PXREF message, const void PXREF userParam);
+
 //-------------------------------------------------------------------------
 
 // render

@@ -4,7 +4,7 @@
 #define PXD8DIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Engine/ECS/Resource/Scene/PXScene.h>
+#include <PX/Type/PXScene.h>
 
 
 typedef struct PXD8XArchiveEntry_

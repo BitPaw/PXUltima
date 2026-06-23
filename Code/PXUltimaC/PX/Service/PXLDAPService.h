@@ -3,7 +3,7 @@
 #ifndef PXLDAPIncluded
 #define PXLDAPIncluded
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Library/PXLibrary.h>
 

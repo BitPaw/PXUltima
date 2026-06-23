@@ -4,14 +4,19 @@
 #define PXGraphicIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Media/PXColor.h>
+#include <PX/Type/PXColor.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 #include <PX/OS/Graphic/Vulcan/PXVulcan.h>
-#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+#include <PX/Type/PXShader.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Type/PXModel.h>
+#include <PX/Type/PXDrawScript.h>
+#include <PX/Type/PXLight.h>
+#include <PX/Type/PXGraphicsCard.h>
 
 
 #define PXShaderNotRegisterd (unsigned int)-1

@@ -6,7 +6,7 @@
 #endif
 
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Graphic/PXGraphic.h>
 #include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
@@ -18,6 +18,19 @@
 #include "PXDirectX12.h"
 
 const char PXDirectXText[] = "DirectX";
+
+
+const PXGraphicInitializeFunction _directXSolutions[5] =
+{
+    PXDirectX12Initialize,
+    PXDirectX11Initialize,
+    PXDirectX10x1Initialize,
+    PXDirectX10Initialize,
+    PXDirectX9Initialize
+};
+const PXSize _directXSolutionsAmount = sizeof(_directXSolutions) / sizeof(PXGraphicInitializeFunction);
+
+
 
 PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
@@ -55,15 +68,6 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         );
 #endif
 
-        const PXSize amountOfSolutions = 2;
-        const PXGraphicInitializeFunction directXSolutions[5] =
-        {
-            PXDirectX12Initialize,
-            PXDirectX11Initialize,
-            PXDirectX10x1Initialize,
-            PXDirectX10Initialize,
-            PXDirectX9Initialize
-        };
         const void* directXSolutionsObject[5] =
         {
             &pxDirectX->X12,
@@ -73,11 +77,11 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             &pxDirectX->X9
         };
 
-        for(PXSize i = 0; i < amountOfSolutions; ++i)
+        for(PXSize i = 0; i < _directXSolutionsAmount; ++i)
         {
             PXClear(PXDirectX, pxDirectX);
 
-            pxGraphic->Initialize = directXSolutions[i];
+            pxGraphic->Initialize = _directXSolutions[i];
             pxDirectX->DXTargetAPI = directXSolutionsObject[i];
 
 #if PXLogEnable
@@ -88,7 +92,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
                 "Initialize",
                 "Calling spesific API. Try <%i/%i>",
                 i+1,
-                amountOfSolutions
+                _directXSolutionsAmount
             );
 #endif
 
@@ -104,7 +108,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
                     "Initialize",
                     "Creation try successful <%i/%i>",
                     i + 1,
-                    amountOfSolutions
+                    _directXSolutionsAmount
                 );
 #endif
 
@@ -120,7 +124,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
                 "Initialize",
                 "Failed try <%i/%i>",
                 i + 1,
-                amountOfSolutions
+                _directXSolutionsAmount
             );
         }
 

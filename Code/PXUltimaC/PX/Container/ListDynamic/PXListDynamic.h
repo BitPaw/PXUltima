@@ -3,7 +3,7 @@
 #ifndef PXListDynamicIncludedd
 #define PXListDynamicIncludedd
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Container/Buffer/PXBuffer.h>
 
 #define PXListDynamicSizeObject1Byte 1

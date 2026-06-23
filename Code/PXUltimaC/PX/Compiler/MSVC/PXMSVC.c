@@ -1,7 +1,7 @@
 #include "PXMSVC.h"
 
 #include <PX/OS/Bash/PXBash.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 

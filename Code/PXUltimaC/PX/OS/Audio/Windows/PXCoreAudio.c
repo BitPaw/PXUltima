@@ -39,7 +39,124 @@ DEFINE_GUID(IID_IAudioRenderClient, 0xf294acfc, 0x3146, 0x4483, 0xa7, 0xbf, 0xad
 
 
 
+
+typedef struct PXAudioXSystem_
+{
+    PXLibrary XSystemLibrary;
+
+    struct IXAudio2* XAudioInterface;
+    void* XAudioMasterVoice;
+}
+PXAudioXSystem;
+
+
+typedef struct PXCoreAudio_
+{
+    // Core Audio
+    struct IMMDeviceEnumerator* AudioDeviceEnumerator; // IMMDeviceEnumerator*
+    struct IMMDevice* AudioDevice; // IMMDevice;
+
+    // WSA-API
+    struct IAudioClient* AudioClient;
+
+    // XAudio
+    struct IXAudio2* XAudio2API;
+}
+PXCoreAudio;
+
+
 PXCoreAudio _pxCoreAudio;
+
+
+
+
+
+/*
+
+
+
+#include "ecs_audio.h"
+
+/* Forward declarations of your internal WASAPI structs * /
+typedef struct WasapiState {
+    /* IMMDevice, IAudioClient, IAudioRenderClient, etc. * /
+    void* dummy;
+} WasapiState;
+
+static AudioResult wasapi_init(AudioContext* ctx, void* backend_config) {
+    (void)backend_config;
+    WasapiState* st = (WasapiState*)malloc(sizeof(WasapiState));
+    if(!st) return AUDIO_ERROR_OUT_OF_MEMORY;
+    /* Initialize COM, enumerate device, configure IAudioClient, etc. * /
+    ctx->backend_state = st;
+    return AUDIO_OK;
+}
+
+static void wasapi_shutdown(AudioContext* ctx) {
+    if(!ctx || !ctx->backend_state) return;
+    WasapiState* st = (WasapiState*)ctx->backend_state;
+    /* Release COM objects, uninit COM, etc. * /
+    free(st);
+    ctx->backend_state = NULL;
+}
+
+static AudioResult wasapi_device_create(AudioContext* ctx, ECSElement_AudioDevice* dev) {
+    (void)ctx; (void)dev;
+    /* Configure format, buffer size, etc. * /
+    return AUDIO_OK;
+}
+
+static void wasapi_device_destroy(AudioContext* ctx, ECSElement_AudioDevice* dev) {
+    (void)ctx; (void)dev;
+}
+
+static AudioResult wasapi_start(AudioContext* ctx) {
+    (void)ctx;
+    /* Start IAudioClient, spawn render thread or use callback * /
+    return AUDIO_OK;
+}
+
+static void wasapi_stop(AudioContext* ctx) {
+    (void)ctx;
+    /* Stop IAudioClient * /
+}
+
+static AudioResult wasapi_render(AudioContext* ctx, float* out_buffer, size_t frames) {
+    /* Call generic engine render, then write into WASAPI buffer * /
+    return audio_render_block(ctx, out_buffer, frames);
+}
+
+static const AudioBackend g_wasapi_backend = {
+    AUDIO_BACKEND_WASAPI,
+    wasapi_init,
+    wasapi_shutdown,
+    wasapi_device_create,
+    wasapi_device_destroy,
+    wasapi_start,
+    wasapi_stop,
+    wasapi_render
+};
+
+const AudioBackend* audio_backend_wasapi(void) {
+    return &g_wasapi_backend;
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 {
@@ -72,55 +189,6 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 
         if(PXResultOK != initializeResult) 
             return initializeResult;
-    }
-
-
-    //const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
-    //const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
-    //const IID IID_IAudioClient = __uuidof(IAudioClient);
-    //const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
-  
-
-    // Get default audio device
-    {
-#if PXLanguageCPP
-        resultID = CoCreateInstance
-        (
-            CLSID_MMDeviceEnumerator,
-            NULL,
-            CLSCTX_ALL,
-            IID_IMMDeviceEnumerator,
-            (void**)&_pxCoreAudio.AudioDeviceEnumerator
-        );
-#else
-        resultID = CoCreateInstance
-        (
-            &CLSID_MMDeviceEnumerator,
-            NULL,
-            CLSCTX_ALL,
-            &IID_IMMDeviceEnumerator,
-            (void**)&_pxCoreAudio.AudioDeviceEnumerator
-        );
-#endif
-
-
-
-#if PXLanguageCPP
-        resultID = _pxCoreAudio.AudioDeviceEnumerator->GetDefaultAudioEndpoint
-        (
-            eRender, 
-            eConsole,
-            &_pxCoreAudio.AudioDevice
-        );
-#else
-        resultID = _pxCoreAudio.AudioDeviceEnumerator->lpVtbl->GetDefaultAudioEndpoint
-        (
-            _pxCoreAudio.AudioDeviceEnumerator,
-            eRender,
-            eConsole,
-            &_pxCoreAudio.AudioDevice
-        );
-#endif
     }
 
     // Create XAudio2 API interface

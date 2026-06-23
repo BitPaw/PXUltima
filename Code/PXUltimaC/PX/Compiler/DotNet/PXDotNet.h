@@ -4,7 +4,7 @@
 #define PXDotNetIncludedd
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Media/PXVersion.h>
+#include <PX/Type/PXVersion.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 

@@ -3,7 +3,7 @@
 #ifndef PXLogIncluded
 #define PXLogIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 
 #include <stdarg.h>

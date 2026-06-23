@@ -391,7 +391,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {signature.Data, PXTypeDatax4},
+                {signature.Data4, PXTypeDatax4},
                 {&classID,PXTypeI08U},
                 {&dataID,PXTypeI08U},
                 {&versionID,PXTypeI08U},
@@ -403,7 +403,14 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             {
-                const PXBool isValidSignature = PXMemoryCompare(signature.Data, 4u, PXELFSignature, sizeof(PXELFSignature));
+                const PXBool isValidSignature = PXMemoryCompare
+                (
+                    signature.Data4, 
+                    4u,
+                    PXELFSignature, 
+                    sizeof(PXELFSignature),
+                    PXTrue
+                );
 
                 if (!isValidSignature)
                 {

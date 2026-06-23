@@ -3,27 +3,9 @@
 #ifndef PXYAMLIncluded
 #define PXYAMLIncluded
 
-#include <PX/Engine/PXResource.h>
+#include <PX/Type/PXDOM.h>
 
-typedef enum PXYAMLLineType_
-{
-    PXYAMLLineTypeInvalid,
-    PXYAMLLineTypeUnkown,
-    PXYAMLLineTypeComment,
-    PXYAMLLineTypeKeyDeclare,
-    PXYAMLLineTypeKeyValueSeperator,
-    PXYAMLLineTypeKeyValueDeclare,
-
-    PXYAMLLineTypeListElement,
-    PXYAMLLineTypeSeperator,
-    PXYAMLLineTypeNotationStyleBlock,
-    PXYAMLLineTypeNotationStyleExtendedLine
-}
-PXYAMLLineType;
-
-PXPrivate PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size);
-
-PXPublic PXResult PXAPI PXYAMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXYAMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXYAMLSaveToFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

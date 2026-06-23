@@ -3,7 +3,7 @@
 #ifndef PXCollisionIncluded
 #define PXCollisionIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Math/PXVector.h>
 
 typedef enum PXCollisionBodyType_

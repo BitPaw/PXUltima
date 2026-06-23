@@ -3,18 +3,15 @@
 #ifndef PXEntityIncludedd
 #define PXEntityIncludedd
 
-#include <PX/Engine/ID/PXID.h>
+#include <PX/Engine/PXID.h>
 #include <PX/OS/File/PXFileFormat.h>
-
-
-
-
 
 // Base object for inheritence
 typedef struct PXECSCreateInfo_ PXECSCreateInfo;
 typedef struct PXECSInfo_ PXECSInfo;
+typedef struct PXECSRegisterInfo_ PXECSRegisterInfo;
 
-typedef PXResult(PXAPI* PXECSRegisterFunction)();
+typedef void(PXAPI* PXECSRegisterFunction)(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 typedef PXResult(PXAPI* PXECSCreateFunction)(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
 typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo);
 typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxECSInfo, PXDrawInfo PXREF pxDrawInfo);
@@ -36,51 +33,89 @@ PXPublic const char* PXECSTypeToString(const PXECSType pxECSType);
 
 
 
-
-
-#define PXECSInfoIdentityMask    0b0000000000001111
-#define PXECSInfoExist           0b0000000000000001 // Indicate if resource is valid
-#define PXECSInfoActive          0b0000000000000010 // Is it interactable or does it tick?
-#define PXECSInfoRender          0b0000000000000100 // Shall it be rendered?
-#define PXECSInfoSelected        0b0000000000001000
-
-#define PXECSInfoStorageMask     0b0000000011110000
-#define PXECSInfoStorageDrive    0b0000000000010000 // Resource is in permanent storage
-#define PXECSInfoStorageCached   0b0000000000100000 // Resource is in semi-permanent cache (temp file)
-#define PXECSInfoStorageMemory   0b0000000001000000 // Resource exists in RAM
-#define PXECSInfoStorageDevice   0b0000000010000000 // Resource exists in spesific device
-
-#define PXECSInfoNameMask        0b0000001100000000
-#define PXECSInfoHasName         0b0000000100000000 // Is the name stored
-#define PXECSInfoHasSource       0b0000001000000000 // Is resource loaded from a path, if yes, path is cached.
-
-#define PXECSInfoUseByMask       0b0001100000000000
-#define PXECSInfoUseByOS         0b0000000000000000
-#define PXECSInfoUseByUser       0b0000100000000000
-#define PXECSInfoUseByEngine     0b0001000000000000
-#define PXECSInfoUseByUndefined  0b0001100000000000
-
-#define PXECSInfoPermissionMask    0b1110000000000000
-#define PXECSInfoPermissionREAD    0b1000000000000000
-#define PXECSInfoPermissionWRITE   0b0100000000000000
-#define PXECSInfoPermissionEXECUTE 0b0010000000000000
-
-
-#define PXECSInfoConstData PXECSInfoPermissionREAD | PXECSInfoStorageMemory | PXECSInfoExist | PXECSInfoActive | PXECSInfoRender
-
-#define PXECSInfoOK              PXECSInfoExist | PXECSInfoActive | PXECSInfoRender
-#define PXECSInfoNoRender              PXECSInfoExist | PXECSInfoActive
+//------------------------------------------------------------------------
+// How is it? 4-bits
+#define PXECSFlagStateMask              0b00000000000000000000000000001111
+#define PXECSFlagStateINVALID           0b00000000000000000000000000000000 // Resource does not exist. Not created or deleted
+#define PXECSFlagStateINITIALIZING      0b00000000000000000000000000000001 // Resource is in its init phase
+#define PXECSFlagStateREADY             0b00000000000000000000000000000010 // Resource is OK and ready to be used
+#define PXECSFlagStateRUNNING           0b00000000000000000000000000000011 // Resource is currently running
+#define PXECSFlagStateWAITING           0b00000000000000000000000000000100 // Waits for another resource
+#define PXECSFlagStateSUSPENDED         0b00000000000000000000000000000101 // Start in a stopped state or was stopped 
+#define PXECSFlagStateCOMPLETED         0b00000000000000000000000000000110 // Processing done, result can be fetched
+#define PXECSFlagStateFAILED            0b00000000000000000000000000000111 // Was killed by crash or intentionally.
+#define PXECSFlagStateMARKED_FOR_DELETE 0b00000000000000000000000000001000 // Marked for deleting
+#define PXECSFlagStateDELETED           0b00000000000000000000000000001011 // Resource deleted
+#define PXECSFlagStateUNLOADED          0b00000000000000000000000000001010
+#define PXECSFlagStateLOADING           0b00000000000000000000000000001001
+#define PXECSFlagStateSTALE             0b00000000000000000000000000001110
+#define PXECSFlagStateRECOVERING        0b00000000000000000000000000001111
+#define PXECSFlagStateDISABLED          0b00000000000000000000000000001100
+#define PXECSFlagStateRESERVED          0b00000000000000000000000000001101
+#define PXECSFlagStateRESERVED0         0b00000000000000000000000000001110
+#define PXECSFlagStateRESERVED1         0b00000000000000000000000000001111
+//------------------------------------------------------------------------
 
 
 
+//------------------------------------------------------------------------
+// Permission - 4-bit
+#define PXECSInfoPermissionMask         0b00000000000000000000000001110000
+#define PXECSInfoPermissionREAD         0b00000000000000000000000000010000
+#define PXECSInfoPermissionWRITE        0b00000000000000000000000000100000
+#define PXECSInfoPermissionEXECUTE      0b00000000000000000000000001000000
+
+#define PXECSFlagStateDirty             0b00000000000000000000000010000000 // Needs refresh on updated data
+//------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------
+// Where stored
+#define PXECSFlagStorageMask            0b00000000000000000000111100000000
+#define PXECSFlagStorageDrive           0b00000000000000000000000100000000 // Resource is in permanent storage
+#define PXECSFlagStorageCached          0b00000000000000000000001000000000 // Resource is in semi-permanent cache (temp file)
+#define PXECSFlagStorageMemory          0b00000000000000000000010000000000 // Resource exists in RAM
+#define PXECSFlagStorageDevice          0b00000000000000000000100000000000 // Resource exists in spesific device
+//------------------------------------------------------------------------
+// Who created?
+#define PXECSInfoUseByMask              0b00000000000000001111000000000000
+#define PXECSInfoUseByOS                0b00000000000000000001000000000000
+#define PXECSInfoUseByUser              0b00000000000000000010000000000000
+#define PXECSInfoUseByEngine            0b00000000000000000100000000000000
+#define PXECSInfoUseByUndefined         0b00000000000000001000000000000000
+//------------------------------------------------------------------------
+#define PXECSFlagBehaviourisOK          0b00000000000000010000000000000000 // ..?
+#define PXECSFlagBehaviourEnabled       0b00000000000000010000000000000000 // Not update but state of self, like ON/OFF
+#define PXECSFlagBehaviourActive        0b00000000000000100000000000000000 // Participates in updates
+#define PXECSFlagBehaviourCanRender     0b00000000000001000000000000000000
+#define PXECSFlagBehaviourHidden        0b00000000000010000000000000000000 // Can or will be rendered
+//------------------------------------------------------------------------
+#define PXECSFlagBehaviourSelectable    0b00000000000100000000000000000000 // 
+#define PXECSFlagBehaviourSelected      0b00000000001000000000000000000000
+#define PXECSFlagBehaviourTARGETABLE    0b00000000010000000000000000000000 // 
+#define PXECSFlagBehaviourTargeted      0b00000000100000000000000000000000
+//------------------------------------------------------------------------
+#define PXECSFlagBehaviourPERSISTENT    0b00000001000000000000000000000000 // Entity survives scene changes
+#define PXECSFlagBehaviourINTERACTABLE  0b00000010000000000000000000000000
+#define PXECSFlagBindingIsKnown         0b00000100000000000000000000000000
+#define PXECSFlagBindingIsOK            0b00001000000000000000000000000000
+//------------------------------------------------------------------------
+// Has name, source path?
+#define PXECSFlagNameMask               0b00010000000000000000000000000000
+#define PXECSFlagHasName                0b00100000000000000000000000000000 // Is the name stored
+#define PXECSFlagHasSource              0b01000000000000000000000000000000 // Is resource loaded from a path, if yes, path is cached.
+#define PXECSFlagUndefinedA             0b10000000000000000000000000000000
+//------------------------------------------------------------------------
 
 
 
+//#define PXECSInfoConstData PXECSInfoPermissionREAD | PXECSInfoStorageMemory | PXECSInfoExist | PXECSInfoActive | PXECSInfoRender
+
+//#define PXECSInfoOK              PXECSInfoExist | PXECSInfoActive | PXECSInfoRender
+//#define PXECSInfoNoRender              PXECSInfoExist | PXECSInfoActive
 
 
-
-
-
+typedef PXI32U PXECSFlagList;
 
 
 
@@ -108,12 +143,31 @@ typedef struct PXECSRegisterInfoDynamic_
 }
 PXECSRegisterInfoDynamic;
 
+
+typedef struct PXECSRegisterInfo_
+{
+    const PXECSRegisterInfoStatic* InfoStatic;
+    PXECSRegisterInfoDynamic* InfoDynamic;
+}
+PXECSRegisterInfo;
+
+#if 0
 typedef struct PXECSRegisterInfo_
 {
     PXECSRegisterInfoStatic Static;
     PXECSRegisterInfoDynamic Dynamic;
 }
 PXECSRegisterInfo;
+
+typedef struct PXECSTypeInfo_
+{
+    PXECSRegisterInfoStatic* Static;
+    PXECSRegisterInfoDynamic* Dynamic;
+}
+PXECSTypeInfo;
+#endif
+
+
 
 
 // Internal engine identification
@@ -122,10 +176,22 @@ typedef struct PXECSInfo_
 {
     PXID ID; // Identification of this object managed by the engine itself.
 
-    PXI32U Setting; // Rendering behaviour
-    PXI32U Behaviour; // Depends on the type of the resource
+    PXECSFlagList FlagListState;
+    PXECSFlagList FlagListSettings;
 }
 PXECSInfo;
+
+PXPublic void PXAPI PXECSInfoIDGenerate(PXECSInfo PXREF pxECSInfo);
+
+PXPublic void PXAPI PXECSInfoFlagStateAdd(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic void PXAPI PXECSInfoFlagStateRemove(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic PXBool PXAPI PXECSInfoFlagStateCheck(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+
+PXPublic void PXAPI PXECSInfoFlagSettingsAdd(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic void PXAPI PXECSInfoFlagSettingsRemove(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic PXBool PXAPI PXECSInfoFlagSettingsCheck(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+
+
 
 
 typedef PXResult(PXAPI* PXECSEventCallBack)(PXECSInfo PXREF pxECSInfo);
@@ -139,6 +205,11 @@ typedef struct PXECSEventInfo_
 }
 PXECSEventInfo;
 
+
+PXPublic PXI8U PXAPI PXECSInfoStateEqual(const PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic PXI8U PXAPI PXECSInfoStateGet(const PXECSInfo PXREF pxECSInfo);
+PXPublic void PXAPI PXECSInfoStateSet(PXECSInfo PXREF pxECSInfo, const PXECSFlagList pxECSFlagList);
+PXPublic const char* PXAPI PXExecuteStateToString(const PXI32U behaviour);
 
 
 // To prevent stale references to resources
@@ -169,12 +240,7 @@ typedef struct PXECSReferece_
 PXECSReferece;
 
 
-typedef struct PXECSTypeInfo_
-{
-    PXECSRegisterInfoStatic* Static;
-    PXECSRegisterInfoDynamic* Dynamic;
-}
-PXECSTypeInfo;
+
 
 
 
@@ -202,7 +268,6 @@ typedef struct PXECSProperty_
     PXBool DoWrite;
 }
 PXECSProperty;
-
 
 
 //---------------------------------------------------------
@@ -279,7 +344,7 @@ PXPublic PXResult PXAPI PXECSInit(void);
 PXPublic PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
 
 PXPublic PXSize PXAPI PXECSTypeAmount(void);
-PXPublic PXResult PXAPI PXECSTypeGet(PXECSTypeInfo PXREF pxECSTypeInfo, const PXSize index);
+PXPublic PXResult PXAPI PXECSTypeGet(PXECSRegisterInfo PXREF pxECSTypeInfo, const PXSize index);
 PXPublic PXSize PXAPI PXECSEntryAmount(void);
 PXPublic PXResult PXAPI PXECSEntryGet(PXECSReferece PXREF pxECSReferece, const PXSize index);
 //---------------------------------------------------------
@@ -290,15 +355,7 @@ PXPublic PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXR
 
 // Purpose: Register types for the ECS so that we can spawn 
 // them as or add them as components to entities
-PXPublic PXResult PXAPI PXECSRegister
-(
-    const PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
-    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
-);
-
-
-
-
+PXPublic PXResult PXAPI PXECSRegister(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 
 PXPublic PXResult PXAPI PXECSElementToString
@@ -320,15 +377,7 @@ PXPublic PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty);
 //---------------------------------------------------------
 
 // Check if a reference has gotten stale
-PXPublic PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece);
+PXPublic PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece);
 //---------------------------------------------------------
-
-
-
-
-
-
-
-
 
 #endif

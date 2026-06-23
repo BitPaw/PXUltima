@@ -16,7 +16,7 @@ typedef struct PXTriangleF16_
             PXVector3F16 C;
         };
 
-        PXVector3F16 Data[3];
+        PXVector3F16 Data4[3];
     };
 }
 PXTriangleF16;
@@ -32,7 +32,7 @@ typedef struct PXTriangleF32_
             PXVector3F32 C;
         };
 
-        PXVector3F32 Data[3];
+        PXVector3F32 Data4[3];
     };
 }
 PXTriangleF32;
@@ -48,7 +48,7 @@ typedef struct PXTriangleF64_
             PXVector3F64 C;
         };
 
-        PXVector3F64 Data[3];
+        PXVector3F64 Data4[3];
     };
 }
 PXTriangleF64;

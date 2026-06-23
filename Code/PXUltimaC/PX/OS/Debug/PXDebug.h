@@ -3,8 +3,8 @@
 #ifndef PXDebugINLCUDE
 #define PXDebugINLCUDE
 
-#include <PX/Media/PXType.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXType.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Async/PXProcess.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Error/PXResult.h>

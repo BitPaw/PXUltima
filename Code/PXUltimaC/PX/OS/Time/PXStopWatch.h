@@ -3,7 +3,7 @@
 #ifndef PXStopWatchIncluded
 #define PXStopWatchIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/OS/Time/PXTime.h>
 
 typedef struct PXStopWatch_

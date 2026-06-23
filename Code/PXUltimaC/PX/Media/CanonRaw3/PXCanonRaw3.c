@@ -89,7 +89,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
     const PXTypeEntry pxDataStreamElementList[] =
     {
         {&pxCanonRaw3Chunk->SizeTotal, PXTypeI32UBE},
-        {pxCanonRaw3Chunk->ID.Data, PXTypeDatax4}
+        {pxCanonRaw3Chunk->ID.Data4, PXTypeDatax4}
     };
 
     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -112,7 +112,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
         "CanonRaw3",
         "Parse",
         "Chunk %4.4s Size:%iB",
-        pxCanonRaw3Chunk->ID.Data,
+        pxCanonRaw3Chunk->ID.Data4,
         pxCanonRaw3Chunk->SizeTotal
     );
 #endif
@@ -123,9 +123,9 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
     {
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXTypeDatax4},
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data4, PXTypeDatax4},
             {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXTypeI32UBE},
-            {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXTypeDatax4}
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data4, PXTypeDatax4}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

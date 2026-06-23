@@ -3,7 +3,7 @@
 #ifndef PXAwaitIncluded
 #define PXAwaitIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 
 typedef struct PXAwaitInfo_
 {

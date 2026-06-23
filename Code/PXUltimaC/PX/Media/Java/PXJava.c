@@ -1,6 +1,6 @@
 #include "PXJava.h"
 
-#include <PX/Media/PXDocument.h>
+#include <PX/Type/PXDocument.h>
 #include <PX/Compiler/PXCompiler.h>
 
 char PXJavaKeyWordPublic[] = "public";

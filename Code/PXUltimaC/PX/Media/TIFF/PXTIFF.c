@@ -215,7 +215,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxR
         {
             PXI16UCluster headerTag;
 
-            PXFileReadB(pxResourceLoadInfo->FileCurrent, headerTag.Data, 2u);
+            PXFileReadB(pxResourceLoadInfo->FileCurrent, headerTag.Data4, 2u);
 
             switch (headerTag.Value)
             {

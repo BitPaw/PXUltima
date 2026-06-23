@@ -11,8 +11,8 @@
 
 //-----------------------------------------------
 
-#include <PX/Media/PXType.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXType.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Error/PXActionResult.h>

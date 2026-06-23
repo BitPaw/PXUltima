@@ -3,7 +3,7 @@
 #ifndef PXLibraryIncluded
 #define PXLibraryIncluded
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Async/PXProcess.h>
 
 

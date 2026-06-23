@@ -4,7 +4,7 @@
 #define PXDialogIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -185,7 +185,7 @@ PXResult PXAPI PXD8WLoadFromFile(PXTexturePool PXREF pxTexturePool, PXECSCreateI
             PXAssert(pxTexture->PixelData.SizeAllocated >= pxD8TextureTableEntry->RawDataSize, "Should be equal");
 
             PXFileCursorMoveTo(pxTexturePoolFile, pxD8TextureTableEntry->Offset);
-            PXFileReadB(pxTexturePoolFile, pxTexture->PixelData.Data, pxD8TextureTableEntry->RawDataSize);
+            PXFileReadB(pxTexturePoolFile, pxTexture->PixelData.Data4, pxD8TextureTableEntry->RawDataSize);
             //-------------------------------------------------
         }
     }

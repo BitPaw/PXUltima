@@ -5,9 +5,9 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/Math/PXVector.h>
-#include <PX/Engine/ECS/Resource/FrameBuffer/PXFrameBuffer.h>
-#include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
-#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Type/PXFrameBuffer.h>
+#include <PX/Type/PXBrush.h>
+#include <PX/Type/PXWindow.h>
 #include <PX/Engine/PXGUI.h>
 
 

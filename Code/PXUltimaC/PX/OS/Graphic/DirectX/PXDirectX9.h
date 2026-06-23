@@ -4,13 +4,14 @@
 #define PXDirectX9Included
 
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
-#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXIndexBuffer.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
-#include <PX/Engine/ECS/Resource/Mesh/PXVertexBuffer.h>
-#include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
-#include <PX/Engine/ECS/Resource/Light/PXLight.h>
-#include <PX/Engine/ECS/Resource/GraphicsCard/PXGraphicsCard.h>
+#include <PX/Type/PXCamera.h>
+#include <PX/Type/PXIndexBuffer.h>
+#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXVertexBuffer.h>
+#include <PX/Type/PXDrawScript.h>
+#include <PX/Type/PXLight.h>
+#include <PX/Type/PXGraphicsCard.h>
+#include <PX/Engine/PXRenderingSystem.h>
 
 
 PXPublic PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);

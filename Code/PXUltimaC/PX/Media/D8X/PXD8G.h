@@ -4,10 +4,10 @@
 #ifndef PXD8GIncluded
 #define PXD8GIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Math/PXMatrix.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Entity/Model/PXModel.h>
+#include <PX/Type/PXModel.h>
 
 #define PXD8GeometryVertexTypeInvalid 0
 #define PXD8GeometryVertexTypeVerticesSprites 1

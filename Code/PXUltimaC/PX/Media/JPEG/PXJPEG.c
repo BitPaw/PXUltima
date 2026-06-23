@@ -1,7 +1,7 @@
 #include "PXJPEG.h"
 
 #include <PX/Math/PXMath.h>
-#include <PX/Media/PXColor.h>
+#include <PX/Type/PXColor.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
@@ -857,7 +857,7 @@ PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
     buffer.numBits = 0; // number of valid bits (the right-most bits)
 
     // just convert image data from void*
-    const PXByte* pixels = pxTexture->PixelData.Data;
+    const PXByte* pixels = pxTexture->PixelData.Data4;
 
     // break down the image into 8x8 blocks and convert from RGB or grayscale to YCbCr color space
     PXF32 Y[8][8], Cb[8][8], Cr[8][8];

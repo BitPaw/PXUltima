@@ -349,6 +349,8 @@
     <ClCompile Include="PX\Algorithm\Noise\PXNoise.c" />
     <ClCompile Include="PX\Algorithm\Reverb\PXReverb.c" />
     <ClCompile Include="PX\Algorithm\Weather\PXWeather.c" />
+    <ClCompile Include="PX\Engine\PXUI.c" />
+    <ClCompile Include="PX\Type\PXDOM.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -700,5 +702,7 @@
     <ClInclude Include="PX\Algorithm\Noise\PXNoise.h" />
     <ClInclude Include="PX\Algorithm\Reverb\PXReverb.h" />
     <ClInclude Include="PX\Algorithm\Weather\PXWeather.h" />
+    <ClInclude Include="PX\Engine\PXUI.h" />
+    <ClInclude Include="PX\Type\PXDOM.h" />
   </ItemGroup>
 </Project>

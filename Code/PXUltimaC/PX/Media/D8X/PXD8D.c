@@ -5,7 +5,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/D8X/PXD8W.h>
 #include <PX/Media/D8X/PXD8G.h>
-#include <PX/Engine/ECS/Entity/Model/PXModelPool.h>
+#include <PX/Type/PXModelPool.h>
 
 const char PXD8DText[] = "D8D";
 
@@ -100,9 +100,9 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
         PXFileReadI32U(pxFile, &pxD8XDatEntry->Hash);
         PXFileReadI32U(pxFile, &pxD8XDatEntry->Offset);
-        PXFileReadI32U(pxFile, &pxD8XDatEntry->ChunksCount);
-        PXFileReadI32U(pxFile, &pxD8XDatEntry->CompressedSize);
-        PXFileReadI32U(pxFile, &pxD8XDatEntry->DecompressedSize);
+        PXFileReadI32S(pxFile, &pxD8XDatEntry->ChunksCount);
+        PXFileReadI32S(pxFile, &pxD8XDatEntry->CompressedSize);
+        PXFileReadI32S(pxFile, &pxD8XDatEntry->DecompressedSize);
 
 
 #if PXLogEnable
@@ -173,7 +173,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
                     PXBufferSet
                     (
                         &pxFileOpenInfo.Data,
-                        (PXSize)PXFileDataAtCursor(pxFile), // +2??
+                        PXFileDataAtCursor(pxFile), // +2??
                         compressedSize// - 2
                     );
                     PXFileCreate(&pxFileChunk, &pxFileOpenInfo);
@@ -213,7 +213,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
         PXBuffer* pxBuffer = PXFileBufferGET(pxD8XDatEntry->FileData);
         PXBool isD8W = PXTextCompareA
         (
-            &pxBuffer->Data[28],
+            &pxBuffer->TextA[28],
             3,
             "DXT",
             3,
@@ -221,7 +221,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
         );
         PXBool isJet = PXTextCompareA
         (
-            pxBuffer->Data,
+            pxBuffer->TextA,
             18,
             ";; Jet Spline File",
             18,
@@ -230,7 +230,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
         PXBool isAtm = PXTextCompareA
         (
-            pxBuffer->Data,
+            pxBuffer->TextA,
             17,
             "[BeginAtmosphere]",
             17,
@@ -252,7 +252,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
         {
             isD8W = PXTextCompareA
             (
-                &pxBuffer->Data[76],
+                &pxBuffer->TextA[76],
                 3,
                 "DXT",
                 3,
@@ -297,7 +297,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
         for(PXSize meshIndex = 0; meshIndex < meshAmount; ++meshIndex)
         {
-            PXMesh PXREF pxMesh = PXModelMeshGet(pxModel, meshIndex);;
+            PXMesh PXREF pxMesh = PXModelMeshGet(pxModel, meshIndex);
 
             pxMesh->Texture = PXTexturePoolTextureGet(pxScene->TexturePool, pxMesh->TextureID);
         }

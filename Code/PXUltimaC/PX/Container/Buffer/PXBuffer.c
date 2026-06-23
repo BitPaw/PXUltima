@@ -17,7 +17,7 @@ PXByte* PXAPI PXBufferData(const PXBuffer PXREF pxBuffer)
         return PXNull;
     }
 
-    return &pxBuffer->Data[pxBuffer->CursorOffsetByte];
+    return &pxBuffer->Data4[pxBuffer->CursorOffsetByte];
 }
 
 PXSize PXAPI PXBufferRemaining(const PXBuffer PXREF pxBuffer)
@@ -46,7 +46,7 @@ PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
 
 PXResult PXAPI PXBufferEnsureTotal(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-    if(!pxBuffer->Data) // Do we have data?
+    if(!pxBuffer->Data4) // Do we have data?
     {
         return PXBufferAllocate(pxBuffer, size);
     }
@@ -76,7 +76,7 @@ PXResult PXAPI PXBufferEnsureAdditional(PXBuffer PXREF pxBuffer, const PXSize si
 
 PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
-    pxBuffer->Adress = PXMemoryHeapRealloc(PXNull, pxBuffer->Data, size);
+    pxBuffer->Adress = PXMemoryHeapRealloc(PXNull, pxBuffer->Data4, size);
     pxBuffer->SizeAllocated = size;    
     pxBuffer->IsOwned = PXTrue;
 
@@ -87,7 +87,7 @@ PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer)
 {
     if(pxBuffer->IsOwned)
     {
-        PXMemoryHeapFree(PXNull, pxBuffer->Data);      
+        PXMemoryHeapFree(PXNull, pxBuffer->Data4);      
     }
 
     PXClear(PXBuffer, pxBuffer);

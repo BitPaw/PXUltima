@@ -13,7 +13,7 @@
 
 #include <PX/Math/PXMatrix.h>
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/Type/PXProcessor.h>
 #include <PX/OS/Console/PXConsole.h>
 
 #define PXStandardLibraryMathUse 1

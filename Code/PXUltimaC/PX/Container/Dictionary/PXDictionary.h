@@ -3,7 +3,7 @@
 #ifndef PXDictionaryDEFINED
 #define PXDictionaryDEFINED
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Container/List/PXList.h>
 #include <PX/Engine/ECS/PXECS.h>
 
@@ -29,8 +29,10 @@ PXDictionary;
 
 typedef struct PXDictionaryEntry_
 {
-    void* Key;
-    void* Value;
+    const void* KeyAddress;
+    PXSize KeySize;
+    void* ValueAdress;
+    PXSize ValueSize;
 }
 PXDictionaryEntry;
 
@@ -44,7 +46,7 @@ typedef struct PXDictionaryCreateInfo_
 }
 PXDictionaryCreateInfo;
 
-PXPublic PXResult PXAPI PXDictionaryRegisterToECS();
+PXPublic void PXAPI PXDictionaryRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXDictionaryCreate(PXDictionary** pxDictionaryREF, PXDictionaryCreateInfo PXREF pxDictionaryCreateInfo);
 PXPublic PXResult PXAPI PXDictionaryRelease(PXDictionary PXREF pxDictionary);
 
@@ -58,7 +60,7 @@ PXPublic void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSi
 PXPublic PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const void* key, void** value);
 PXPublic PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void* key, const void* value);
 PXPublic PXResult PXAPI PXDictionaryEntryAddRange(PXDictionary PXREF pxDictionary, const void* key, const void* value, const PXSize valueSize);
-PXPublic PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void PXREF key, void* PXREF valueResult);
+PXPublic PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, PXDictionaryEntry PXREF pxDictionaryEntry);
 
 PXPublic PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** key, const void** value, const PXSize amount);
 PXPublic void PXAPI PXDictionaryRemove(PXDictionary PXREF dictionary, const void* key);

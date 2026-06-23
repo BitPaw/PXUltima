@@ -1,6 +1,6 @@
 #include "PXTranslator.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/File/PXFile.h>
 
 // English <=> German translate

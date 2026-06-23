@@ -3,9 +3,9 @@
 #ifndef PXD8WIncluded
 #define PXD8WIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Resource/Texture/PXTexturePool.h>
+#include <PX/Type/PXTexturePool.h>
 
 
 typedef struct PXD8TextureTableEntry_

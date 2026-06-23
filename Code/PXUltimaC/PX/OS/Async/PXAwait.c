@@ -81,7 +81,12 @@ PXBool PXAPI PXAwaitChange(PXAwaitInfo PXREF pxAwaitInfo)
 
     for(;;)
     {
-        const PXBool isSame = PXMemoryCompare(pxAwaitInfo->DataTarget, pxAwaitInfo->DataSize, pxAwaitInfo->DataExpect, pxAwaitInfo->DataSize);
+        const PXBool isSame = PXMemoryCompareN
+        (
+            pxAwaitInfo->DataTarget,
+            pxAwaitInfo->DataExpect, 
+            pxAwaitInfo->DataSize
+        );
 
         if(isSame)
         {

@@ -1,12 +1,11 @@
 #include "PXMTL.h"
 
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
-
-#include <PX/Engine/ECS/Component/Material/PXMaterial.h>
+#include <PX/Type/PXMaterial.h>
 #include <PX/Engine/ECS/PXNamePool.h>
 
 const char PXMTLName[] = "MTL";
@@ -347,7 +346,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                         break;
                 }
 
-                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector->Data, colorVectorSize, &valuesDetected);
+                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector->Data4, colorVectorSize, &valuesDetected);
 
                 if(!listParsed)
                 {

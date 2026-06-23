@@ -7,6 +7,7 @@
 #include <PX/OS/PXOS.h>
 #include <PX/Container/List/PXList.h>
 #include <PX/OS/Async/PXLock.h>
+#include <PX/Container/List/PXList.h>
 
 #define PXThreadPoolUsePXIMPLForce  1
 #define PXThreadPoolUsePXIMPL       ((OSUnix || (OSWindows && !WindowsAtleastVista)) || PXThreadPoolUsePXIMPLForce)
@@ -163,6 +164,15 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
 
 PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
 {
+#if 0
+    PXResult pxResult = PXECSRefCheck(PXNull, pxThreadPool);
+
+    if(PXResultOK != pxResult)
+    {
+        return 0;
+    }
+#endif
+
     for(;;)
     {
 #if PXLogEnable
@@ -292,7 +302,7 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
     PXLockCreate(&pxThreadPool->TaskLock, &pxLockCreateInfo);
 
     // Create task buffer
-    PXListInitialize(&pxThreadPool->TaskQueue, sizeof(PXTask), 0);
+    PXListCreate(&pxThreadPool->TaskQueue, sizeof(PXTask), 0);
     pxThreadPool->TaskQueue.EntryGrowthOnAllocation += 512;
     pxThreadPool->TaskCounter = 1000;
 
@@ -303,7 +313,7 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
     PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
     pxThreadCreateInfo.ThreadFunction = PXThreadPoolProcessASYNC;
     pxThreadCreateInfo.Parameter = pxThreadPool;
-    pxThreadCreateInfo.Behaviour = PXThreadBehaviourCreateSuspended;
+    pxThreadCreateInfo.CreateSuspended = PXTrue;
 
     PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, nameBuffer, 0, sizeof(pxThreadCreateInfo.Info.Name));
     
@@ -618,17 +628,20 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
             PXClear(PXTask, &pxTask);
 
             pxTask.Info.ID = ++pxThreadPool->TaskCounter;
-            pxTaskTarget = PXListAddT(PXTask, &pxThreadPool->TaskQueue, &pxTask);
+
+            PXListEntry pxListEntry = PXListAdd(&pxThreadPool->TaskQueue, &pxTask);
+
+            pxTaskTarget = (PXTask*)pxListEntry.Address;
         }
     }    
 
     // Add data
-    pxTaskTarget->FunctionX1Adress = function;
+    pxTaskTarget->FunctionAdress = function;
     pxTaskTarget->ArgumentObject1 = parameter1;
     pxTaskTarget->ArgumentObject2 = parameter2;
     pxTaskTarget->FunctionReturnCode = PXActionWaitOnResult;
 
-    PXECSInfoFlagAdd(&pxTaskTarget->Info, behaviour);
+    PXECSInfoFlagStateAdd(&pxTaskTarget->Info, behaviour);
 
     PXTaskStateChange(pxTaskTarget, PXECSFlagStateRUNNING);
 
@@ -731,7 +744,7 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
         pxTask.ArgumentObject2 = parameter2;
         pxTask.FunctionReturnCode = PXActionWaitOnResult;
 
-        PXECSInfoFlagAdd(&pxTask.Info, behaviour);
+        PXECSInfoFlagStateAdd(&pxTask.Info, behaviour);
 
         return PXThreadPoolTaskInvoke(pxThreadPool, &pxTask);
     }
@@ -811,7 +824,9 @@ PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** lis
 
         for(PXSize i = 0; i < amount; ++i)
         {
-            PXTask PXREF pxTask = PXListAddT(PXTask, &pxThreadPool->TaskQueue, PXNull);
+            PXListEntry pxListEntry = PXListAdd(&pxThreadPool->TaskQueue, PXNull);
+
+            PXTask PXREF pxTask = (PXTask*)pxListEntry.Address;
 
             pxTask->Info.ID = ++pxThreadPool->TaskCounter;
             list[i] = pxTask->Info.ID;

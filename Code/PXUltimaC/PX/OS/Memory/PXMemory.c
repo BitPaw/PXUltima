@@ -3,7 +3,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/PXOS.h>
 #include <PX/Container/Dictionary/PXDictionary.h>
 
@@ -176,7 +176,13 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
     PXMemorySymbolLookup PXREF pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
     PXSymbolMemory* symbolMemory = PXNull;
 
-    PXResult pxResult = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
+    PXDictionaryEntry pxDictionaryEntry;
+    pxDictionaryEntry.KeyAddress = &adress;
+    pxDictionaryEntry.KeySize = sizeof(PXSymbolMemory);
+    pxDictionaryEntry.ValueAdress = &symbolMemory;
+    pxDictionaryEntry.ValueSize;
+
+    PXResult pxResult = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &pxDictionaryEntry);
 
     PXClear(PXSymbol, pxSymbol);
 
@@ -402,9 +408,24 @@ void PXAPI PXMemorySet(void PXREF PXRestrict buffer, const PXByte value, const P
 
 #include <immintrin.h>
 
+void* PXAPI PXMemoryAddressAdd(const void PXREF addressA, const void PXREF addressB)
+{
+    return (void*)((PXSize)addressA + (PXSize)addressB);
+}
+
 PXI8U PXAPI PXMemoryCompareI8V(const PXI8U PXREF textList, const PXI8U listAmount, const PXI8U value)
 {
-    return 0;
+    for(PXI8U i = 0; i < listAmount; ++i)
+    {
+        const PXBool isMatch = textList[i] == value;
+
+        if(isMatch)
+        {
+            return i;
+        }
+    }
+
+    return 0xFFu;
 }
 
 PXI8U PXAPI PXMemoryCompareI8V_Strait(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value)
@@ -799,15 +820,45 @@ PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize 
     return equalSum == bufferASize;
 }
 
-PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
+PXBool PXAPI PXMemoryCompare
+(
+    const void* PXRestrict bufferA, 
+    const PXSize bufferASize,
+    const void* PXRestrict bufferB,
+    const PXSize bufferBSize,
+    const PXBool expectEqualSize
+)
 {
-    const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
+    PXSize bufferSize = 0;
+
+    if(expectEqualSize)
+    {
+        if(bufferASize == bufferBSize)
+        {
+            bufferSize = bufferASize;
+        }
+        else
+        {
+            return PXFalse;         
+        }
+    }
+    else
+    {
+        bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
+    }
 
     if(bufferSize == 0)
     {
         return PXFalse;
     }
 
+    const PXBool result = PXMemoryCompareN(bufferA, bufferB, bufferSize);
+
+    return result;
+}
+
+PXBool PXAPI PXMemoryCompareN(const void* PXRestrict bufferA, const void* PXRestrict bufferB, const PXSize bufferSize)
+{
 #if MemoryAssertEnable
     assert(bufferA);
     assert(bufferB);
@@ -861,9 +912,9 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
 #else
     PXSize equalSum = 0;
 
-    for (PXSize counter = bufferSize; counter; --counter)
+    for(PXSize counter = bufferSize; counter; --counter)
     {
-        equalSum += ((PXAdress)bufferA)[counter-1] == ((PXAdress)bufferB)[counter-1];
+        equalSum += ((PXAdress)bufferA)[counter - 1] == ((PXAdress)bufferB)[counter - 1];
     }
 
     return equalSum == bufferSize;

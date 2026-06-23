@@ -29,19 +29,6 @@ typedef struct IUnknown IUnknown;
 
 typedef PXThreadResult(PXOSAPI* ThreadFunction)(void PXREF data);
 
-
-// PXThreadState
-
-#define PXExecuteStateMask (0x00FF0000)
-#define PXExecuteStateInvalid     0<<16 // Resource does not exist. Not created or deleted
-#define PXExecuteStateReady       1<<16 // Resource is inizialized ready to be used
-#define PXExecuteStateReserve     2<<16 // Resource is taken by a handler and will be executed
-#define PXExecuteStateRunning     3<<16 // Resource is currently running
-#define PXExecuteStateWaiting     4<<16 // Resource waits for another resource
-#define PXExecuteStateSuspended   5<<16 // Resource 
-#define PXExecuteStateFailed      6<<16
-#define PXExecuteStateFinished    7<<16 // Resource is done
-
 PXPublic const char* PXExecuteStateToString(const PXI32U behaviour);
 
 
@@ -122,6 +109,7 @@ typedef struct PXTask_
     union
     {
         // Task function that is to be executed
+        void* FunctionAdress;
         PXThreadX1CallFunction FunctionX1Adress;
         PXThreadX2CallFunction FunctionX2Adress;
     };
@@ -304,10 +292,6 @@ PXThreadContext;
 typedef struct PXThread_ PXThread;
 
 
-#define PXThreadBehaviourDefault            0
-#define PXThreadBehaviourCreateSuspended    (1<<8)
-#define PXThreadStartOnAdd                  (1<<10)
-
 typedef struct PXThreadCreateInfo_
 {
     PXECSCreateInfo Info;
@@ -316,14 +300,14 @@ typedef struct PXThreadCreateInfo_
     PXProcessHandle TargetProcessHandle;
     ThreadFunction ThreadFunction;
     void* Parameter;
-    PXI32U Behaviour;
+    
+    PXBool CreateSuspended; // When thread is started, it is not running
+
 }
 PXThreadCreateInfo;
 
 
-
-
-PXPublic PXResult PXAPI PXThreadRegisterToECS();
+PXPublic void PXAPI PXThreadRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 PXPublic void PXAPI PXThreadDestruct(PXThread PXREF pxThread);
 

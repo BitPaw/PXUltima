@@ -27,7 +27,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {signature.Data, PXTypeDatax4},
+            {signature.Data4, PXTypeDatax4},
             {&page.Version, PXTypeI08U},
             {&page.HeaderType, PXTypeI08U},
             {&page.GranulePosition, PXTypeI32UBE},
@@ -39,7 +39,14 @@ PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-        const PXBool validHeaderSignature = PXMemoryCompare(signature.Data, 4u, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
+        const PXBool validHeaderSignature = PXMemoryCompare
+        (
+            signature.Data4,
+            4u,
+            PXOGGHeaderSignature, 
+            sizeof(PXOGGHeaderSignature),
+            PXTrue
+        );
 
         if (!validHeaderSignature)
         {

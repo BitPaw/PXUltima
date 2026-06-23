@@ -7,7 +7,6 @@
 #include <PX/Media/CRC32/PXCRC32.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Time/PXTime.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
@@ -531,7 +530,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
-        pxADAM7.DataInput = pxBuffer->Data;
+        pxADAM7.DataInput = pxBuffer->Data4;
         //pxADAM7.DataOutput = PXTexture->PixelData;
         //pxADAM7.OutputSize = PXTexture->PixelDataSize;
         pxADAM7.InputSize = pxBuffer->SizeAllowedToUse;
@@ -555,7 +554,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
         pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
 
-        pxADAM7.DataOutput = pxBuffer->Data;
+        pxADAM7.DataOutput = pxBuffer->Data4;
         pxADAM7.OutputSize = pxBuffer->SizeAllocated;
 
         const PXResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
@@ -1127,7 +1126,7 @@ PXSize PXAPI preProcessScanlines
     PXSize width = PXTextureWidth(pxTexture);
     PXSize height = PXTextureHeight(pxTexture);
     PXSize bpp = PXColorFormatBitsPerPixel(pxTexture->Format);
-    const PXByte* in = pxTexture->PixelData.Data;
+    const PXByte* in = pxTexture->PixelData.Data4;
 
 
     /*

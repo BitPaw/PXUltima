@@ -81,7 +81,8 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstru
             offset
         );
 #endif
-        (PXSize)pxMIPSProcessor->ProgramCounter += (PXSize)pxMIPSBranch->Address;
+
+        PXMIPSProgramCounterAdvance(pxMIPSProcessor, (PXSize)pxMIPSBranch->Address);
     }
     else // Dont jump
     {
@@ -450,8 +451,8 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 
     PXMIPSTInstruction pxMIPSTInstruction;
     pxMIPSTInstruction.IncrmentCounter = PXTrue;
-    pxMIPSTInstruction.Adress = (void*)((PXSize)pxMIPSProcessor->ROMOffsetActual + (PXSize)pxMIPSProcessor->ProgramCounter);
-    pxMIPSTInstruction.AdressVirtual = (PXI8U*)((PXSize)pxMIPSProcessor->ROMOffsetVirtual + (PXSize)pxMIPSProcessor->ProgramCounter);
+    pxMIPSTInstruction.Adress = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetActual, pxMIPSProcessor->ProgramCounter);
+    pxMIPSTInstruction.AdressVirtual = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetVirtual, pxMIPSProcessor->ProgramCounter);
 
     // instruction is big endian, to use our bit extraction, we need to swap it
 
@@ -469,12 +470,13 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
             pxMIPSTInstruction.AdressVirtual
         );
 #endif
-        (PXSize)pxMIPSProcessor->ProgramCounter += instructionWidth;
+
+        PXMIPSProgramCounterAdvance(pxMIPSProcessor, instructionWidth);
 
         return;
     }
 
-    pxMIPSTInstruction.Type             = (pxMIPSTInstruction.OperationCode & 0b11111100000000000000000000000000) >> 26;
+    pxMIPSTInstruction.TypeID           = (pxMIPSTInstruction.OperationCode & 0b11111100000000000000000000000000) >> 26;
     pxMIPSTInstruction.RegisterSourceID = (pxMIPSTInstruction.OperationCode & 0b00000011111000000000000000000000) >> 21;
     pxMIPSTInstruction.RegisterTargetID = (pxMIPSTInstruction.OperationCode & 0b00000000000111110000000000000000) >> 16;
     pxMIPSTInstruction.Immediate        = (pxMIPSTInstruction.OperationCode & 0b00000000000000001111111111111111) >> 0;
@@ -499,7 +501,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 
     // Next command
     // MIPS always has 4-Byte commands
-    (PXSize)pxMIPSProcessor->ProgramCounter += (pxMIPSTInstruction.IncrmentCounter * instructionWidth);
+    PXMIPSProgramCounterAdvance(pxMIPSProcessor, pxMIPSTInstruction.IncrmentCounter * instructionWidth);
 }
 
 
@@ -544,7 +546,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
 
     const PXSize virtualAdress = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 
-    void* realAdressOffset = PXMIPSTranslateVirtualAdress(pxMIPSProcessor, virtualAdress); // Virtual adress to actual pointer
+    void* realAdressOffset = PXMIPSTranslateVirtualAdress(pxMIPSProcessor, (void*)virtualAdress); // Virtual adress to actual pointer
     void* value = &pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID]; // Adress of value to store
 
     const PXSize typeSize = datatype & PXTypeSizeMask;
@@ -817,10 +819,10 @@ PXResult PXAPI PXMIPSTranslate(PXMIPSProcessor PXREF pxMIPSProcessor, const PXBy
     };
 
 
-    pxMIPSProcessor->GeneralInstructionList = instructionGeneralLookup;
-    pxMIPSProcessor->SpecialInstructionList = instructionSpecialLookup;
-    pxMIPSProcessor->REGIMMInstructionList = instructionRegimmLookup;
-    pxMIPSProcessor->CorpocessorList = instructioncoprocLookup;
+    pxMIPSProcessor->GeneralInstructionList = (PXMIPSTInstructionFunction*)instructionGeneralLookup;
+    pxMIPSProcessor->SpecialInstructionList = (PXMIPSTInstructionFunction*)instructionSpecialLookup;
+    pxMIPSProcessor->REGIMMInstructionList  = (PXMIPSTInstructionFunction*)instructionRegimmLookup;
+    pxMIPSProcessor->CorpocessorList        = (PXMIPSTInstructionFunction*)instructioncoprocLookup;
 
     for(;;)
     {
@@ -850,7 +852,7 @@ void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor PXREF pxMIPSProcesso
    // pxMIPSInstructionCoProcessor.ProcessorID = pxMIPSTInstruction->Type & 0b11;
     pxMIPSTInstruction->CoProcessorID = pxMIPSTInstruction->Type & 0b11;
 
-    pxMIPSTInstruction->Type = instructionID | PXMIPSOPCodeCOPz;
+    pxMIPSTInstruction->TypeID = instructionID | PXMIPSOPCodeCOPz;
     pxMIPSTInstruction->RegisterDestinationID = (pxMIPSTInstruction->Immediate & 0b1111100000000000) >> 11; // Can also be FS? for PXF32s
 
     PXMIPSInstructionPrint(pxMIPSTInstruction);
@@ -871,8 +873,7 @@ void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor PXREF pxMIPSProcessor)
     );
 #endif
 
-    (PXSize)pxMIPSProcessor->ProgramCounter += 4; // go to next instuction
-
+    PXMIPSProgramCounterAdvance(pxMIPSProcessor, 4);// go to next instuction
     PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
 }
 
@@ -1011,6 +1012,13 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, 
     return (void*)translatedAdress;
 }
 
+void PXAPI PXMIPSProgramCounterAdvance(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize amount)
+{
+    const PXSize newProgramCounter = (PXSize)pxMIPSProcessor->ProgramCounter + 4;
+
+    pxMIPSProcessor->ProgramCounter = (void*)newProgramCounter;
+}
+
 void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
 #if PXLogEnable
@@ -1027,10 +1035,10 @@ void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor PXREF pxMIPSProcessor, PXMI
 
 void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    const PXI8U instructionID                 =  pxMIPSTInstruction->Immediate & 0b0000000000111111;
+    const PXI8U instructionID                   =  pxMIPSTInstruction->Immediate & 0b0000000000111111;
     pxMIPSTInstruction->ShiftAmount             = (pxMIPSTInstruction->Immediate & 0b0000011111000000) >> 6;
     pxMIPSTInstruction->RegisterDestinationID   = (pxMIPSTInstruction->Immediate & 0b1111100000000000) >> 11;
-    pxMIPSTInstruction->Type                    = instructionID | PXMIPSOPCodeSpecial;
+    pxMIPSTInstruction->TypeID                  = instructionID | PXMIPSOPCodeSpecial;
 
     PXMIPSInstructionPrint(pxMIPSTInstruction);
 
@@ -1043,7 +1051,7 @@ void PXAPI PXMIPSInstructionREGIMM(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPS
 {
     const PXI8U instructionID = pxMIPSTInstruction->RegisterTargetID;
 
-    pxMIPSTInstruction->Type = instructionID | PXMIPSOPCodeREGIMM;
+    pxMIPSTInstruction->TypeID = instructionID | PXMIPSOPCodeREGIMM;
 
     const PXMIPSTInstructionFunction specialinstructionFunction = pxMIPSProcessor->REGIMMInstructionList[instructionID]; // Direct ID lookup
 

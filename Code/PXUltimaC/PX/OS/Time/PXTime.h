@@ -3,7 +3,7 @@
 #ifndef PXTimeIncluded
 #define PXTimeIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <time.h>
 
 #define PXYearMask        0b00000000000000000000000000000000

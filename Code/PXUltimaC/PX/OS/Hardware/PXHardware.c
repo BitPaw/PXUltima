@@ -166,7 +166,7 @@ PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
 
         PXFileCreateInfo pxFileOpenInfo;
         PXClear(PXFileCreateInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.FilePath.A = path;
+        pxFileOpenInfo.FilePath.AC = path;
         pxFileOpenInfo.FilePath.SizeAllocated = size;
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
@@ -184,7 +184,7 @@ PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
 
             pxTypeBindingEntry->Name = buffer;
 
-            PXFileKeyValueFetch(&pxFile, pxTypeBindingEntry);
+            PXFileKeyValueFetch(pxFile, pxTypeBindingEntry);
         }
 
         PXFileClose(pxFile);

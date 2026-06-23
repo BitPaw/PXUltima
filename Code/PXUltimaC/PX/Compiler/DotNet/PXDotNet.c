@@ -30,7 +30,7 @@
 #include <PX/OS/File/PXDirectory.h>
 #include <PX/OS/PXOS.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/PXVersion.h>
+#include <PX/Type/PXVersion.h>
 
 const char CSharpCoreClrPath[] = "C:/Program Files/dotnet/shared/Microsoft.NETCore.App";
 const PXI8U CSharpCoreClrPathSize = sizeof(CSharpCoreClrPath)-1;
@@ -510,12 +510,12 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 
                 const PXSize expectedGrouth = versionFolderSize + pxFileEntry.FilePath.SizeUsed + 2;
 
-                PXFileAssureFreeSize(&asseblyList, expectedGrouth);
+                PXFileAssureFreeSize(asseblyList, expectedGrouth);
 
-                PXFileWriteA(&asseblyList, versionFolder, versionFolderSize);
-                PXFileWriteC(&asseblyList, '/');
-                PXFileWriteText(&asseblyList, &pxFileEntry.FilePath);
-                PXFileWriteC(&asseblyList, ';');
+                PXFileWriteA(asseblyList, versionFolder, versionFolderSize);
+                PXFileWriteC(asseblyList, '/');
+                PXFileWriteText(asseblyList, &pxFileEntry.FilePath);
+                PXFileWriteC(asseblyList, ';');
             } 
             while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
 

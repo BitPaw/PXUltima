@@ -2,8 +2,8 @@
 
 #include <PX/OS/Error/PXResult.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/Salsa20/PXSalsa20.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Media/Salsa20/PXSalsa20.h>
 #include <PX/Engine/ECS/PXECS.h>
 
 const char PXSignature[8] = "TAff0100";
@@ -159,7 +159,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             PXSalsa20 pxSalsa20;
             PXClear(PXSalsa20, &pxSalsa20);
 
-            pxSalsa20.KeyData = PXFastFileKey;
+            pxSalsa20.KeyData = (char*)PXFastFileKey;
             pxSalsa20.KeyLength = sizeof(PXFastFileKey);
 
             for(;;)

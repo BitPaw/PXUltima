@@ -4,7 +4,6 @@
 #define PXWavefrontIncluded
 
 #include <PX/Engine/PXResource.h>
-
 #include <PX/Media/MTL/PXMTL.h>
 
 #define PXWavefrontNameSize 64u

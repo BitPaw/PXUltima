@@ -66,7 +66,7 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
         //-------------------------------------------------
         // Header
         PXFileReadI32U(pxFile, &mesh->TextureID);
-        PXFileReadB(pxFile, mesh->Position.Data, sizeof(float) * 4);
+        PXFileReadB(pxFile, mesh->Position.Data4, sizeof(float) * 4);
         PXFileReadI32U(pxFile, &mesh->RadiusBoundingSphere);
         PXFileReadI32U(pxFile, &mesh->DistanceLevelOfDetailMin);
         PXFileReadI32U(pxFile, &mesh->DistanceLevelOfDetailMax);

@@ -84,6 +84,117 @@ typedef MMRESULT(WINAPI* PXmixerGetLineControlsW)(HMIXEROBJ hmxobj, LPMIXERLINEC
 typedef MMRESULT(WINAPI* PXmixerGetControlDetailsA)(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails);
 typedef MMRESULT(WINAPI* PXmixerGetControlDetailsW)(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails);
 
+
+
+
+typedef struct PXAudioMultiMedia_
+{
+    PXLibrary MultiMediaLibrary;
+
+    void* WaveOutGetDevCapsA;
+    void* WaveOutGetDevCapsW;
+    void* WaveOutGetNumDevs;
+    void* WaveOutGetVolume;
+    void* WaveOutSetVolume;
+    void* WaveOutGetErrorA;
+    void* WaveOutGetErrorW;
+    void* WaveOutOpen;
+    void* WaveOutClose;
+    void* WaveOutPrepareHeader;
+    void* WaveOutUnprepareHeader;
+    void* WaveOutWrite;
+    void* WaveOutPause;
+    void* WaveOutRestart;
+    void* WaveOutReset;
+    void* WaveOutBreakLoop;
+    void* WaveOutGetPosition;
+    void* WaveOutGetPitch;
+    void* WaveOutSetPitch;
+    void* WaveOutGetPlaybackRate;
+    void* WaveOutSetPlaybackRate;
+    void* WaveOutGetID;
+    void* WaveOutMessage;
+    void* WaveInGetNumDevs;
+    void* WaveInGetDevCapsA;
+    void* WaveInGetDevCapsW;
+    void* WaveInGetErrorA;
+    void* WaveInGetErrorW;
+    void* WaveInOpen;
+    void* WaveInClose;
+    void* WaveInPrepareHeader;
+    void* WaveInUnprepareHeader;
+    void* WaveInAddBuffer;
+    void* WaveInStart;
+    void* WaveInStop;
+    void* WaveInReset;
+    void* WaveInGetPosition;
+    void* WaveInGetID;
+    void* WaveInMessage;
+    void* MidiOutGetNumDevs;
+    void* MidiStreamOpen;
+    void* MidiStreamClose;
+    void* MidiStreamProperty;
+    void* MidiStreamPosition;
+    void* MidiStreamOut;
+    void* MidiStreamPause;
+    void* MidiStreamRestart;
+    void* MidiStreamStop;
+    void* MidiConnect;
+    void* MidiDisconnect;
+    void* MidiOutGetDevCapsA;
+    void* MidiOutGetDevCapsW;
+    void* MidiOutGetVolume;
+    void* MidiOutSetVolume;
+    void* MidiOutGetErrorA;
+    void* MidiOutGetErrorW;
+    void* MidiOutOpen;
+    void* MidiOutClose;
+    void* MidiOutPrepareHeader;
+    void* MidiOutUnprepareHeader;
+    void* MidiOutShortMsg;
+    void* MidiOutLongMsg;
+    void* MidiOutReset;
+    void* MidiOutCachePatches;
+    void* MidiOutCacheDrumPatches;
+    void* MidiOutGetID;
+    void* MidiOutMessage;
+    void* MidiInGetNumDevs;
+    void* MidiInGetDevCapsA;
+    void* MidiInGetDevCapsW;
+    void* MidiInGetErrorA;
+    void* MidiInGetErrorW;
+    void* MidiInOpen;
+    void* MidiInClose;
+    void* MidiInPrepareHeader;
+    void* MidiInUnprepareHeader;
+    void* MidiInAddBuffer;
+    void* MidiInStart;
+    void* MidiInStop;
+    void* MidiInReset;
+    void* MidiInGetID;
+    void* MidiInMessage;
+    void* AuxGetNumDevs;
+    void* AuxGetDevCapsA;
+    void* AuxGetDevCapsW;
+    void* AuxSetVolume;
+    void* AuxGetVolume;
+    void* AuxOutMessage;
+    void* MixerGetNumDevs;
+    void* MixerGetDevCapsA;
+    void* MixerGetDevCapsW;
+    void* MixerOpen;
+    void* MixerClose;
+    void* MixerMessage;
+    void* MixerGetLineInfoA;
+    void* MixerGetLineInfoW;
+    void* MixerGetID;
+    void* MixerGetLineControlsA;
+    void* MixerGetLineControlsW;
+    void* MixerGetControlDetailsA;
+    void* MixerGetControlDetailsW;
+}
+PXAudioMultiMedia;
+
 #endif
 
 
@@ -91,14 +202,9 @@ typedef MMRESULT(WINAPI* PXmixerGetControlDetailsW)(HMIXEROBJ hmxobj, LPMIXERCON
 const char PXWindowsMMText[] = "WIN-MM";
 PXAudioMultiMedia _pxAudioMultiMedia;
 
-PXResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* PXREF pxAudioMultiMedia, PXAudioSystemCreateInfo PXREF pxAudioInitializeInfo)
+PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo)
 {
-    PXClear(PXAudioMultiMedia, &_pxAudioMultiMedia);
-
-    if(pxAudioMultiMedia)
-    {
-        *pxAudioMultiMedia = &_pxAudioMultiMedia;
-    }
+    
 
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;

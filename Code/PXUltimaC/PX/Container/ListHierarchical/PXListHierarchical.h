@@ -3,7 +3,7 @@
 #ifndef PXHierarchicalNodeIncluded
 #define PXHierarchicalNodeIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 
 typedef enum PXHierarchicalNodeDirection_

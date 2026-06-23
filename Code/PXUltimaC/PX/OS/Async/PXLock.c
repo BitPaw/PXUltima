@@ -55,16 +55,15 @@ const PXECSRegisterInfoStatic PXLockRegisterInfoStatic =
     __alignof(PXLock),
     PXECSTypeResource,
     PXLockCreate,
-    PXNull,
+    PXLockDelete,
     PXNull
 };
 PXECSRegisterInfoDynamic PXLockRegisterInfoDynamic;
 
-PXResult PXAPI PXLockRegisterToECS()
+void PXAPI PXLockRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
-    PXECSRegister(&PXLockRegisterInfoStatic, &PXLockRegisterInfoDynamic);
-
-    return PXResultOK;
+    pxECSRegisterInfo->InfoStatic = &PXLockRegisterInfoStatic;
+    pxECSRegisterInfo->InfoDynamic = &PXLockRegisterInfoDynamic;
 }
 
 PXResult PXAPI PXLockCreate(PXLock** pxLockREF, PXLockCreateInfo PXREF pxLockCreateInfo)

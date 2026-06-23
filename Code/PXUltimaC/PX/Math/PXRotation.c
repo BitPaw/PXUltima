@@ -241,7 +241,7 @@ void PXAPI PXQuaternionLerp
         // Linear interpolation for very close quaternions
         for(int i = 0; i < 4; ++i)
         {
-            res.Data[i] = PXMathLerpF32H(a->Data[i], q2copy.Data[i], t);
+            res.Data4[i] = PXMathLerpF32H(a->Data4[i], q2copy.Data4[i], t);
         }
     }
     else
@@ -256,7 +256,7 @@ void PXAPI PXQuaternionLerp
 
         for(int i = 0; i < 4; ++i)
         {
-            res.Data[i] = s0 * a->Data[i] + s1 * q2copy.Data[i];
+            res.Data4[i] = s0 * a->Data4[i] + s1 * q2copy.Data4[i];
         }
     }
 

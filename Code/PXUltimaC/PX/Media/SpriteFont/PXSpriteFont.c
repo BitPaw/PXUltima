@@ -1,12 +1,12 @@
 #include "PXSpriteFont.h"
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/PXOS.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Engine/ECS/Resource/Font/PXFont.h>
+#include <PX/Type/PXFont.h>
 
 void PXAPI PXSpriteFontParseInfo(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
 void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
@@ -713,7 +713,14 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
         case 10:
         {
             const char buffer[] = "lineHeight";
-            const PXBool isEqual = PXMemoryCompare(buffer, sizeof(buffer) - 1, line, fileDataSize);
+            const PXBool isEqual = PXMemoryCompare
+            (
+                buffer, 
+                sizeof(buffer) - 1,
+                line,
+                fileDataSize,
+                PXTrue
+            );
 
             if(isEqual)
             {

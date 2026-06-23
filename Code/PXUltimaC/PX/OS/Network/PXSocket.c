@@ -2,7 +2,7 @@
 
 #if PXSocketUSE
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMath.h>
 #include <stdio.h>

@@ -38,11 +38,14 @@ typedef HRESULT(WINAPI* PXD3D11CreateDeviceAndSwapChain)
 
 PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
+    PXResult pxResult = PXResultInvalid;
+
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
     PXD3D11CreateDeviceAndSwapChain createDeviceAndSwapChain = PXNull;
+    HRESULT resultID = 0;   
 
 #if PXLogEnable
     PXLogPrint
@@ -196,7 +199,7 @@ PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicIni
         dxGISwapChainDescription.OutputWindow = PXWindowHandleGet(pxGraphicInitializeInfo->WindowReference);
         dxGISwapChainDescription.Windowed = 1u;
 
-        const HRESULT resultID = createDeviceAndSwapChain // D3D11CreateDevice()
+        resultID = createDeviceAndSwapChain // D3D11CreateDevice()
         (
             PXNull, // &pxDirectX->VideoAdapter,
             dxDriverType,
@@ -211,7 +214,7 @@ PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicIni
             &featureLevelResult,
             &pxDirectX11->Context
         );
-        const PXResult result = PXErrorFromHRESULT(resultID);
+        pxResult = PXErrorFromHRESULT(resultID);
 
 #if PXLogEnable
         PXLogPrint
@@ -227,22 +230,41 @@ PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicIni
 
     // xxxx
     {
-        const HRESULT getBufferResult = pxDirectX11->SwapChain->lpVtbl->GetBuffer
+#if PXLanguageCPP
+        resultID = pxDirectX11->SwapChain->GetBuffer
+        (
+            0,
+            IID_ID3D11Texture2D,
+            &pxDirectX11->FrameBuffer
+        );
+#else
+        resultID = pxDirectX11->SwapChain->lpVtbl->GetBuffer
         (
             pxDirectX11->SwapChain,
             0,
             &IID_ID3D11Texture2D,
             &pxDirectX11->FrameBuffer
         );
+#endif
 
-        const HRESULT createRenderResultID = pxDirectX11->Device->lpVtbl->CreateRenderTargetView
+
+
+#if PXLanguageCPP
+        resultID = pxDirectX11->Device->CreateRenderTargetView
+        (
+            pxDirectX11->FrameBuffer,
+            0,
+            &pxDirectX11->RenderTargetView
+        );
+#else
+        resultID = pxDirectX11->Device->lpVtbl->CreateRenderTargetView
         (
             pxDirectX11->Device,
             pxDirectX11->FrameBuffer,
             0,
             &pxDirectX11->RenderTargetView
         );
-
+#endif
         //pxDirectX11->FrameBuffer->lpVtbl->Release();
     }
 
@@ -265,6 +287,10 @@ PXResult PXAPI PXDirectX11Release(PXDirectX11 PXREF pxDirectX)
 }
 PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTextureInfo PXREF pxGraphicTexturInfo)
 {
+    PXTexture PXREF pxTexture = *pxGraphicTexturInfo->TextureReference;
+    HRESULT resultID = 0;
+    PXResult pxResult = PXResultInvalid;
+
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
 
@@ -278,13 +304,11 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
             {
                 case PXTextureType1D:
                 {
-                    PXTexture* pxTexture1D = (PXTexture*)pxGraphicTexturInfo->TextureReference;
-
                     D3D11_TEXTURE1D_DESC desc;
-                    desc.Width = pxTexture1D->Width;
+                    desc.Width = pxTexture->Width;
                     desc.MipLevels = 0;// static_cast<UINT>(mipCount);
                     desc.ArraySize = 0;//static_cast<UINT>(arraySize);
-                    desc.Format = 0;
+                    desc.Format = DXGI_FORMAT_UNKNOWN;
                     desc.Usage = D3D11_USAGE_DEFAULT;
                     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
                     desc.CPUAccessFlags = 0;
@@ -295,18 +319,28 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
                     initialData.SysMemPitch = 0;
                     initialData.SysMemSlicePitch = 0;
 
-                    const HRESULT createTextureResult = pxDirectX11->Device->lpVtbl->CreateTexture1D
+#if PXLanguageCPP
+                    resultID = pxDirectX11->Device->CreateTexture1D
+                    (
+                        &desc,
+                        &initialData,
+                        &pxTexture->Texture1D_11
+                    );
+#else
+                    resultID = pxDirectX11->Device->lpVtbl->CreateTexture1D
                     (
                         pxDirectX11->Device,
                         &desc,
                         &initialData,
-                        &pxTexture1D->Texture1D_11
+                        &pxTexture->Texture1D_11
                     );
-                    const PXBool success = SUCCEEDED(createTextureResult);
+#endif
 
-                    if(!success)
+                    pxResult = PXErrorFromHRESULT(resultID);
+
+                    if(PXResultOK != pxResult)
                     {
-                        return PXActionFailedRegister;
+                        return pxResult;
                     }
 
 #if 0
@@ -339,8 +373,6 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
                 }
                 case PXTextureType2D:
                 {
-                    PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
-
                     D3D11_TEXTURE2D_DESC textureDescription;
                     textureDescription.Width = PXTextureWidth(pxTexture);
                     textureDescription.Height = PXTextureHeight(pxTexture);
@@ -360,14 +392,23 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
                     pInitialData.SysMemPitch = 0;
                     pInitialData.SysMemSlicePitch = 0;
 
-                    const HRESULT resultID = pxDirectX11->Device->lpVtbl->CreateTexture2D
+#if PXLanguageCPP
+                    resultID = pxDirectX11->Device->CreateTexture2D
+                    (
+                        &textureDescription,
+                        &pInitialData,
+                        &pxTexture->Texture2D_11
+                    );
+#else
+                    resultID = pxDirectX11->Device->lpVtbl->CreateTexture2D
                     (
                         pxDirectX11->Device,
                         &textureDescription,
                         &pInitialData,
-                        pxTexture->Texture2D_11
+                        &pxTexture->Texture2D_11
                     );
-                    const PXResult pxResult = PXErrorFromHRESULT(resultID);
+#endif
+                    pxResult = PXErrorFromHRESULT(resultID);
 
 
 #if 0
@@ -430,8 +471,6 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
                 }
                 case PXTextureType3D:
                 {
-                    PXTexture PXREF pxTexture = pxGraphicTexturInfo->TextureReference;
-
                     D3D11_TEXTURE3D_DESC textureDescription;
                     textureDescription.Width = PXTextureWidth(pxTexture);
                     textureDescription.Height = PXTextureHeight(pxTexture);
@@ -501,8 +540,6 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexture
                     }
                 case PXTextureTypeCube:
                 {
-                    PXTexture PXREF pxTexture = pxGraphicTexturInfo->TextureReference;
-
                     // ???
 
                     break;
@@ -544,12 +581,22 @@ PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBA
 #elif OSWindows
         const PXF32 rgba[4] = { pxColorRGBAF->Red, pxColorRGBAF->Green, pxColorRGBAF->Blue, pxColorRGBAF->Alpha };
 
+#if PXLanguageCPP
+        pxDirectX11->Context->ClearRenderTargetView
+        (
+            pxDirectX11->RenderTargetView,
+            rgba
+        );
+#else
         pxDirectX11->Context->lpVtbl->ClearRenderTargetView
         (
             pxDirectX11->Context,
             pxDirectX11->RenderTargetView,
             rgba
         );
+#endif
+
+
         return PXResultOK;
 
 #endif
@@ -570,11 +617,20 @@ PXResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11 PXREF pxDirectX11, PXVe
 
         // Fill in the subresource data.
         D3D11_SUBRESOURCE_DATA InitData;
-        InitData.pSysMem = pxVertexBuffer->VertexData.Data;
+        InitData.pSysMem = pxVertexBuffer->VertexData.Data4;
         InitData.SysMemPitch = 0;
         InitData.SysMemSlicePitch = 0;
 
         // Create the vertex buffer.
+
+#if PXLanguageCPP
+        const HRESULT resultID = pxDirectX11->Device->CreateBuffer
+        (
+            &bufferDesc,
+            &InitData,
+            &pxVertexBuffer->Buffer_11
+        );
+#else
         const HRESULT resultID = pxDirectX11->Device->lpVtbl->CreateBuffer
         (
             pxDirectX11->Device,
@@ -582,6 +638,9 @@ PXResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11 PXREF pxDirectX11, PXVe
             &InitData,
             &pxVertexBuffer->Buffer_11
         );
+#endif
+
+
         const PXResult pxResult = PXErrorFromHRESULT(resultID);
 
 #endif
@@ -594,19 +653,43 @@ PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXS
         return PXActionRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
+    PXResult pxResult = PXResultInvalid;
+    HRESULT resultID = 0;
+
         for(PXSize i = 0; i < amount; ++i)
         {
             PXShader PXREF pxShader = &shaderList[i];
             PXBuffer PXREF pxBuffer = PXFileBufferGET(pxShader->ShaderFile);
-            ID3DBlob PXREF shaderCode = (ID3DBlob*)pxBuffer->Data;
-            const void PXREF shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
-            const SIZE_T bytecodeLength = shaderCode->lpVtbl->GetBufferSize(shaderCode);
+            ID3DBlob PXREF shaderCode = (ID3DBlob*)pxBuffer->Data4;
+
+            const void PXREF shaderBytecode = 
+#if PXLanguageCPP
+                shaderCode->GetBufferPointer();
+#else
+                shaderCode->lpVtbl->GetBufferPointer(shaderCode);
+#endif
+
+            const SIZE_T bytecodeLength =
+#if PXLanguageCPP
+                shaderCode->GetBufferSize();
+#else
+                shaderCode->lpVtbl->GetBufferSize(shaderCode);
+#endif
 
             switch(pxShader->Type)
             {
                 case PXShaderTypeVertex:
                 {
-                    const HRESULT resultID = pxDirectX11->Device->lpVtbl->CreateVertexShader
+#if PXLanguageCPP
+                    resultID = pxDirectX11->Device->CreateVertexShader
+                    (
+                        shaderBytecode,
+                        bytecodeLength,
+                        PXNull,
+                        &pxShader->VertexShader_11
+                    );
+#else
+                    resultID = pxDirectX11->Device->lpVtbl->CreateVertexShader
                     (
                         pxDirectX11->Device,
                         shaderBytecode,
@@ -614,13 +697,24 @@ PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXS
                         PXNull,
                         &pxShader->VertexShader_11
                     );
-                    const PXResult pxResult = PXErrorFromHRESULT(resultID);
+#endif
+
+                    pxResult = PXErrorFromHRESULT(pxResult);
 
                     break;
                 }
                 case PXShaderTypePixel:
                 {
-                    const HRESULT result = pxDirectX11->Device->lpVtbl->CreatePixelShader
+#if PXLanguageCPP
+                    resultID = pxDirectX11->Device->CreatePixelShader
+                    (
+                        shaderBytecode,
+                        bytecodeLength,
+                        PXNull,
+                        &pxShader->PixelShader_11
+                    );
+#else
+                    resultID = pxDirectX11->Device->lpVtbl->CreatePixelShader
                     (
                         pxDirectX11->Device,
                         shaderBytecode,
@@ -628,6 +722,8 @@ PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXS
                         PXNull,
                         &pxShader->PixelShader_11
                     );
+#endif
+                    pxResult = PXErrorFromHRESULT(pxResult);
 
                     break;
                 }

@@ -3,7 +3,7 @@
 #ifndef PXUserIncluded
 #define PXUserIncluded
 
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Error/PXResult.h>
 
 typedef enum PXUserEnviromentFolderID_

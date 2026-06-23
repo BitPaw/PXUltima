@@ -94,7 +94,14 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadI
 #endif
 
         // if this is not a DOS file, yeet
-        const PXBool isValidFile = PXMemoryCompare(pxDOSHeader->Magic, sizeof(PXDOSHeaderSignatore), PXDOSHeaderSignatore, sizeof(PXDOSHeaderSignatore));
+        const PXBool isValidFile = PXMemoryCompare
+        (
+            pxDOSHeader->Magic,
+            sizeof(PXDOSHeaderSignatore),
+            PXDOSHeaderSignatore,
+            sizeof(PXDOSHeaderSignatore),
+            PXTrue
+        );
 
         if (!isValidFile)
         {

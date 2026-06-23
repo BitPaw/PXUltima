@@ -294,7 +294,7 @@ PXResult PXAPI PXWADLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     PXFileBinding
     (
         pxFile,
-        pxWAD.Data,
+        pxWAD.Data4,
         dataList,
         amount,
         PXFileBindingRead

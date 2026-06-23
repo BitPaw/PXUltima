@@ -503,7 +503,7 @@ PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShad
 
         const HRESULT resultID = pxD3DCompile // d3dcompiler_47.dll, d3dcompiler.h
         (
-            pxBuffer->Data,
+            pxBuffer->Data4,
             pxBuffer->SizeAllowedToUse,
             &pxTextFileName.A, // Name?
             PXNull, // Makro count?
@@ -1429,11 +1429,20 @@ PXResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9 PXREF pxDirectX9, con
 #elif OSWindows
     const DWORD flagID = 0;// PXDirectXVertexFormatFromPXVertexBufferFormat(pxVertexBufferFormat);
 
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->SetFVF
+    (
+        flagID
+    );
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetFVF
     (
         pxDirectX9->Device,
         flagID
     );
+#endif
+
+
 #endif
 
     return PXResultOK;
@@ -1445,11 +1454,19 @@ PXResult PXAPI PXDirectX9VertexFixedFunctionGet(PXDirectX9 PXREF pxDirectX9, voi
 #elif OSWindows
     DWORD flagID = 0;
 
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->GetFVF
+    (
+        &flagID
+    );
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetFVF
     (
         pxDirectX9->Device,
         &flagID
     );
+#endif
+
 #endif
 
     return PXResultOK;
@@ -1459,6 +1476,16 @@ PXResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9 PXREF pxDirectX9, const PXI3
 {
 #if OSUnix
 #elif OSWindows
+
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->SetStreamSource
+    (
+        StreamNumber,
+        pxVertexBuffer->Buffer_9,
+        OffsetInBytes,
+        Stride
+    );
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetStreamSource
     (
         pxDirectX9->Device,
@@ -1467,6 +1494,9 @@ PXResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9 PXREF pxDirectX9, const PXI3
         OffsetInBytes,
         Stride
     );
+#endif
+
+
 #endif
 
     return PXResultOK;
@@ -1537,7 +1567,13 @@ PXResult PXAPI PXDirectX9LightSet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxL
             return PXResultRefusedParameterInvalid;
     }
 
+
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->SetLight(index, &d3dLight9);
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetLight(pxDirectX9->Device, index, &d3dLight9);
+#endif
+
 
 #endif
 
@@ -1550,7 +1586,11 @@ PXResult PXAPI PXDirectX9LightGet(PXDirectX9 PXREF pxDirectX9, PXLight PXREF pxL
 #elif OSWindows
     BOOL enableBool = 0;
 
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->GetLightEnable(index, &enableBool);
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetLightEnable(pxDirectX9->Device, index, &enableBool);
+#endif
 
     pxLight->Enabled = enableBool;
     // *enable = enableBool;
@@ -1563,7 +1603,12 @@ PXResult PXAPI PXDirectX9LightEnableSet(PXDirectX9 PXREF pxDirectX9, PXLight PXR
 {
 #if OSUnix
 #elif OSWindows
+
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->LightEnable(index, enable);
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->LightEnable(pxDirectX9->Device, index, enable);
+#endif
 
     pxLight->Enabled = enable;
 #endif
@@ -1577,7 +1622,12 @@ PXResult PXAPI PXDirectX9LightEnableGet(PXDirectX9 PXREF pxDirectX9, PXLight PXR
 #elif OSWindows
     D3DLIGHT9 d3dLight9;
 
+#if PXLanguageCPP
+    const HRESULT result = pxDirectX9->Device->GetLight(index, &d3dLight9);
+#else
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetLight(pxDirectX9->Device, index, &d3dLight9);
+#endif
+
 
     pxLight->Diffuse[0] = d3dLight9.Diffuse.r;
     pxLight->Diffuse[1] = d3dLight9.Diffuse.g;
@@ -1718,7 +1768,12 @@ PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXIndexB
 {
 #if OSUnix
 #elif OSWindows
+    UINT length = 0;
+    DWORD usage = 0;
     D3DFORMAT dataFormat = D3DFMT_UNKNOWN;
+    D3DPOOL pool = D3DPOOL_DEFAULT;
+    IDirect3DIndexBuffer9** indexBuffer = &pxIndexBuffer->Buffer_9;
+    HANDLE* sharedHandle = PXNull;
 
     // fetch format
     {
@@ -1748,16 +1803,30 @@ PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9, PXIndexB
         }
     }
 
+#if PXLanguageCPP
+    const HRESULT bufferCreateResult = pxDirectX9->Device->CreateIndexBuffer
+    (
+        length,
+        usage,
+        dataFormat,
+        pool,
+        indexBuffer,
+        sharedHandle
+    );
+#else
     const HRESULT bufferCreateResult = pxDirectX9->Device->lpVtbl->CreateIndexBuffer
     (
-        pxDirectX9->Device,
-        0,//pxIndexBuffer->DataIndexSizeSegment,
-        0,
+        pxDirectX9,
+        length,
+        usage,
         dataFormat,
-        0,
-        &pxIndexBuffer->Buffer_9,
-        PXNull
+        pool,
+        indexBuffer,
+        sharedHandle
     );
+#endif
+
+
 #endif
 
     // Fill data
@@ -1975,7 +2044,7 @@ D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXDrawMode PXGraphicDrawMod
         case PXDrawModeTriangleFAN:
             return D3DPT_TRIANGLEFAN;
         default:
-            return 0; // Invalid mode does not exist!
+            return (D3DPRIMITIVETYPE)0; // Invalid mode does not exist!
     }
 }
 #endif

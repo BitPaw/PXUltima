@@ -2,7 +2,7 @@
 
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 
 #include <errno.h> // POSIX

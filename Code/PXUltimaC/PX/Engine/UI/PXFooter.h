@@ -1,0 +1,29 @@
+#pragma once
+
+#ifndef PXFooterIncluded
+#define PXFooterIncluded
+
+#include <PX/Type/PXWindow.h>
+
+typedef struct PXFooter_
+{
+    PXECSInfo Info;
+
+    PXWindow* WindowBase;
+}
+PXFooter;
+
+typedef struct PXFooterCreateInfo_
+{
+    PXECSCreateInfo Info;
+
+    PXWindowCreateInfo Window;
+}
+PXFooterCreateInfo;
+
+PXPublic void PXAPI PXFooterRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
+
+PXPublic PXResult PXAPI PXFooterCreate(PXFooter** pxFooterREF, PXFooterCreateInfo PXREF pxFooterCreateInfo);
+PXPublic PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo);
+
+#endif

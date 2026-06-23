@@ -42,15 +42,16 @@ const PXECSRegisterInfoStatic PXThreadRegisterInfoStatic =
     sizeof(PXThread),
     __alignof(PXThread),
     PXECSTypeResource,
-    PXThreadCreate
+    PXThreadCreate,
+    PXThreadDestruct,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXThreadRegisterInfoDynamic;
 
-PXResult PXAPI PXThreadRegisterToECS()
+void PXAPI PXThreadRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
-    PXECSRegister(&PXThreadRegisterInfoStatic, &PXThreadRegisterInfoDynamic);
-
-    return PXResultOK;
+    pxECSRegisterInfo->InfoStatic = &PXThreadRegisterInfoStatic;
+    pxECSRegisterInfo->InfoDynamic = &PXThreadRegisterInfoDynamic;
 }
 
 // Note, TerminateThread() should not be used, it can lead to a memory leak in Windows-XP
@@ -109,10 +110,15 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
 
     pxThreadCreateInfo->Info.Static = &PXThreadRegisterInfoStatic;
     pxThreadCreateInfo->Info.Dynamic = &PXThreadRegisterInfoDynamic;
-    PXECSCreate(pxThreadREF, pxThreadCreateInfo);
+    PXResult pxResult = PXECSCreate(pxThreadREF, pxThreadCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
     pxThread = *pxThreadREF;
-    PXECSInfoFlagAdd(&pxThread->Info, pxThreadCreateInfo->Behaviour);
+    //PXECSInfoFlagStateAdd(&pxThread->Info, pxThreadCreateInfo->);
 
 #if OSUnix
 
@@ -129,31 +135,30 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
 #elif OSWindows
 
 
-    LPSECURITY_ATTRIBUTES lpThreadAttributes = PXNull;
-    SIZE_T dwStackSize = 0;
-    LPTHREAD_START_ROUTINE lpStartAddress = (LPTHREAD_START_ROUTINE)pxThreadCreateInfo->ThreadFunction;
-    LPVOID lpParameter = (LPVOID)pxThreadCreateInfo->Parameter;
-    DWORD dwCreationFlags = 0;
-    LPDWORD lpThreadId = &pxThread->ThreadID;
+    LPSECURITY_ATTRIBUTES threadAttributes = PXNull;
+    SIZE_T stackSize = 0;
+    LPTHREAD_START_ROUTINE startAddress = (LPTHREAD_START_ROUTINE)pxThreadCreateInfo->ThreadFunction;
+    LPVOID parameter = (LPVOID)pxThreadCreateInfo->Parameter;
+    DWORD creationFlags = 0;
+    LPDWORD threadId = &pxThread->ThreadID;
 
-    const PXBool createSuspended = PXThreadBehaviourCreateSuspended & pxThread->Info.FlagListSettings;
+    const PXBool createSuspended = pxThreadCreateInfo->CreateSuspended;
 
     if(createSuspended)
     {
-        dwCreationFlags |= CREATE_SUSPENDED;
-        PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateSUSPENDED);
+        creationFlags |= CREATE_SUSPENDED;
     }
 
     if(!pxThreadCreateInfo->TargetProcessHandle) //  Target own process
     {
         pxThread->ThreadHandle = CreateThread
         (
-            lpThreadAttributes,
-            dwStackSize,
-            lpStartAddress,
-            lpParameter,
-            dwCreationFlags,
-            lpThreadId
+            threadAttributes,
+            stackSize,
+            startAddress,
+            parameter,
+            creationFlags,
+            threadId
         ); // Windows NT (+UWP), Kernel32.dll, processthreadsapi.h
     }
     else
@@ -161,12 +166,12 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
         pxThread->ThreadHandle = CreateRemoteThread // Windows XP, Kernel32.dll, processthreadsapi.h
         (
             pxThreadCreateInfo->TargetProcessHandle,
-            lpThreadAttributes,
-            dwStackSize,
-            lpStartAddress,
-            lpParameter,
-            dwCreationFlags,
-            lpThreadId
+            threadAttributes,
+            stackSize,
+            startAddress,
+            parameter,
+            creationFlags,
+            threadId
         );
     }
    
@@ -190,13 +195,19 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
         return threadCreateResult;
     }
 
-    if(!createSuspended)
+    if(createSuspended)
+    {
+        PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateSUSPENDED);
+    }
+    else
     {
         PXECSInfoStateSet(&pxThread->Info, PXECSFlagStateRUNNING);
     }
 
     // Name thread if possible
     PXThreadNameSet(pxThread, &pxThreadCreateInfo->Info.Name);
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode)
@@ -980,7 +991,7 @@ PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug,PXThread PXREF pxThread, PX
     // [DLLL]
     if(hasFullName)
     {
-        PXAppendF
+        PXTextAppendF
         (
             threadName,
             "[%s] %s - %s:%i",
@@ -993,7 +1004,7 @@ PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug,PXThread PXREF pxThread, PX
     }
     else
     {
-        PXAppendF
+        PXTextAppendF
         (
             threadName,
             "[%s] %s",
@@ -1309,13 +1320,16 @@ PXResult PXAPI PXThreadYieldToOtherThreads()
 #elif OSWindows
     // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
 
-#if 0
-    Sleep(0);
-    pxResult = PXResultOK;
-#else
+    // Yield to any thread in the same core.
     const BOOL switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+
+    if(!switchSuccessful)
+    {
+        // Yield to any process that is ready
+        Sleep(0);
+    }
+
     pxResult = PXResultOK; // cant fail
-#endif
 
 #else
     pxResult = PXActionNotSupportedByOperatingSystem;

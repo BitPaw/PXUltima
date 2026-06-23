@@ -1,7 +1,7 @@
 #include "PXDirectory.h"
 
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/PXText.h>
+#include <PX/Type/PXText.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Container/ListDynamic/PXListDynamic.h>
 #include <PX/OS/Memory/PXMemory.h>
@@ -80,11 +80,11 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchC
 
     // String is owned by stack, we need to realloc it!
     // Hijack adress, create
-    pxFileEntryINPUT->FilePath.Data = PXListDynamicAdd
+    pxFileEntryINPUT->FilePath.Data4 = PXListDynamicAdd
     (
         &pxDirectorySearchCache->FilePathCache,
         &pxFileEntryINPUT->ID, 
-        pxFileEntryINPUT->FilePath.Data,
+        pxFileEntryINPUT->FilePath.Data4,
         pxFileEntryINPUT->FilePath.SizeUsed
     );
 
@@ -880,7 +880,7 @@ PXResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDire
         return PXResultOK;
     }
 
-    const PXSize fullSize = PXAppend(pxTextSpecialFolder, pxTextFileName);
+    const PXSize fullSize = PXTextAppend(pxTextSpecialFolder, pxTextFileName);
 
     if (fullSize == 0)
     {

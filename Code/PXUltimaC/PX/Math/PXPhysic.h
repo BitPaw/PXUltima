@@ -3,7 +3,7 @@
 #ifndef PXPhysicIncluded
 #define PXPhysicIncluded
 
-#include <PX/Media/PXType.h>
+#include <PX/Type/PXType.h>
 #include <PX/Math/PXVector.h>
 #include <PX/Math/PXMatrix.h>
 
