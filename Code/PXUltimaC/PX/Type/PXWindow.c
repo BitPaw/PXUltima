@@ -32,7 +32,6 @@ const char WindowsLibraryDWMAPISET[] = "DwmSetWindowAttribute";
 
 const char PXEventText[] = "Event";
 
-#include <gl/GLU.h>
 const char PXTextFailsafe[] = "<missing text>";
 const PXI8U PXTextFailsafeLength = sizeof(PXTextFailsafe);
 
@@ -394,834 +393,6 @@ PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow)
     //isOK = wglMakeCurrent(pxWindow->DeviceContextHandle, 0);
 
     return PXResultOK;
-}
-
-static void LayoutDockedAA(PXWindow PXREF pxWindow)
-{
-    RECT rc = PXWindowRectOf(pxWindow->WindowHandle);
-    int leftX = rc.left;
-    int rightX = rc.right;
-    int topY = rc.top;
-    int bottomY = rc.bottom;
-    const int bandW = 260;  // left/right band width
-    const int bandH = 180;  // top band height
-
-    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT))
-    {
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p)
-            continue;
-
-        RECT r = { 0 };
-        switch(p->State.DockSide) {
-            case PXWindowDockSideLeft:
-                r.left = leftX;
-                r.right = leftX + bandW;
-                r.top = rc.top;
-                r.bottom = rc.bottom;
-                leftX += bandW;
-                break;
-            case PXWindowDockSideRight:
-                r.left = rightX - bandW;
-                r.right = rightX;
-                r.top = rc.top;
-                r.bottom = rc.bottom;
-                rightX -= bandW;
-                break;
-            case PXWindowDockSideTop:
-                r.left = rc.left;
-                r.right = rc.right;
-                r.top = topY;
-                r.bottom = topY + bandH;
-                topY += bandH;
-                break;
-            case PXWindowDockSideBottom:
-                r.left = rc.left;
-                r.right = rc.right;
-                r.top = bottomY - bandH;
-                r.bottom = bottomY;
-                bottomY -= bandH;
-                break;
-
-            default:
-                r = rc;
-                break;
-        }
-        MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-    }
-}
-
-void LayoutDockedGOOD(PXWindow PXREF pxWindow)
-{
-    RECT rc = PXWindowRectOf(pxWindow->WindowHandle);
-    int leftX = rc.left;
-    int rightX = rc.right;
-    int topY = rc.top;
-    int bottomY = rc.bottom;
-
-    const int bandW = 260;  // left/right band width (could be per-pane)
-    const int bandH = 180;  // top/bottom band height (could be per-pane)
-
-    // PASS 1: LEFT/RIGHT
-    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p) continue;
-
-        RECT r;
-        switch(p->State.DockSide) {
-            case PXWindowDockSideLeft:
-                r.left = leftX; r.right = leftX + bandW;
-                r.top = rc.top; r.bottom = rc.bottom; // full height
-                leftX += bandW;
-                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-                break;
-            case PXWindowDockSideRight:
-                r.left = rightX - bandW; r.right = rightX;
-                r.top = rc.top; r.bottom = rc.bottom; // full height
-                rightX -= bandW;
-                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-                break;
-            default:
-                break;
-        }
-    }
-
-    // PASS 2: TOP/BOTTOM — use remaining width [leftX, rightX]
-    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p) continue;
-
-        RECT r;
-        switch(p->State.DockSide) {
-            case PXWindowDockSideTop:
-                r.left = leftX; r.right = rightX;
-                r.top = topY;   r.bottom = topY + bandH;
-                topY += bandH;
-                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-                break;
-            case PXWindowDockSideBottom:
-                r.left = leftX; r.right = rightX;
-                r.top = bottomY - bandH; r.bottom = bottomY;
-                bottomY -= bandH;
-                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-                break;
-            default:
-                break;
-        }
-    }
-
-    // PASS 3: CENTER (or default)
-    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p) continue;
-
-        if(p->State.DockSide == PXWindowDockSideNone /*DOCK_FILL  or your default/none enum */) {
-            RECT r = { leftX, topY, rightX, bottomY };
-            MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
-        }
-    }
-}
-
-// -----------------------------
-// Types from your current model
-// -----------------------------
-
-// Defaults
-static DockLayoutConfig DockDefaultConfig(void)
-{
-    DockLayoutConfig cfg;
-    cfg.defaultBandW = 260;
-    cfg.defaultBandH = 180;
-    cfg.defaultSpacing = 8;
-    cfg.padLeft = (BoxInsets){ 8, 8, 8, 8 };
-    cfg.padRight = (BoxInsets){ 8, 8, 8, 8 };
-    cfg.padTop = (BoxInsets){ 8, 8, 8, 8 };
-    cfg.padBottom = (BoxInsets){ 8, 8, 8, 8 };
-    cfg.padCenter = (BoxInsets){ 8, 8, 8, 8 };
-    cfg.centerVertical = TRUE;
-    return cfg;
-}
-
-// -----------------------------
-// Styles to reduce overdraw
-// -----------------------------
-void InitDockContainerStyles(PXWindow PXREF pxWindow)
-{
-    HWND hwnd = pxWindow->WindowHandle;
-
-    LONG_PTR st = GetWindowLongPtr(hwnd, GWL_STYLE);
-    st |= WS_CLIPCHILDREN;           // parent won't draw under children
-    SetWindowLongPtr(hwnd, GWL_STYLE, st);
-
-    SetWindowPos
-    (
-        hwnd,
-        NULL,
-        0,
-        0,
-        0,
-        0,
-        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE
-    );
-}
-
-static void InitDockChildStyles(PXWindow PXREF pxWindow)
-{
-    HWND hwnd = pxWindow->WindowHandle;
-    LONG_PTR st = GetWindowLongPtr(hwnd, GWL_STYLE);
-    st |= WS_CLIPSIBLINGS;           // siblings avoid overdrawing each other
-    SetWindowLongPtr(hwnd, GWL_STYLE, st);
-}
-
-// -----------------------------
-// Utility
-// -----------------------------
-static int clamp_nonneg(int v) { return v < 0 ? 0 : v; }
-static int CountVisiblePanes(HWND hParent)
-{
-    int total = 0;
-    for(HWND child = GetWindow(hParent, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
-        if(!IsWindowVisible(child)) continue;
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p || p->State.Floating) continue;
-        ++total;
-    }
-    return total;
-}
-
-
-
-static int CollectSide(HWND hParent, PXWindowDockSide side, Paneref* buf, int cap)
-{
-    int n = 0;
-    for(HWND child = GetWindow(hParent, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
-        if(!IsWindowVisible(child)) continue;
-        PXWindow* p = PXWindowFromHandle(child);
-        if(!p || p->State.Floating) continue;
-        if(p->State.DockSide != side) continue;
-        if(n < cap) { buf[n].h = child; buf[n].p = p; }
-        ++n;
-    }
-    return n;
-}
-
-// -----------------------------
-// Axis distribution with margin & padding
-// -----------------------------
-// Distributes space along the stack axis among panes.
-// vertical = TRUE: axis = Y (heights vary), width = area width.
-// vertical = FALSE: axis = X (widths vary), height = area height.
-//
-// We compute each pane's SLOT size (the space it consumes along the axis).
-// SLOT size includes: marginBefore + content + marginAfter + paddingBefore + paddingAfter.
-// The rectangle given to the child will then be SLOT rect inset by margins and padding.
-static void DistributeAxisWithBox(Paneref* arr, int n, int availableAxis, int spacing,
-                                  BOOL vertical, int* outSlotSizes /* n */)
-{
-    int gaps = (n > 1 ? spacing * (n - 1) : 0);
-
-    // Sum fixed segment (fixedLong + margins + padding) and total weight
-    int totalFixed = 0;
-    double totalWeight = 0.0;
-
-    for(int i = 0; i < n; ++i) {
-        PXWindow* p = arr[i].p;
-        PXI32S mBefore = vertical ? p->Layout.Margin.Top : p->Layout.Margin.Left;
-        PXI32S mAfter = vertical ? p->Layout.Margin.Bottom : p->Layout.Margin.Right;
-        PXI32S padBefore = vertical ? p->Layout.Padding.Top : p->Layout.Padding.Left;
-        PXI32S padAfter = vertical ? p->Layout.Padding.Bottom : p->Layout.Padding.Right;
-        PXI32S axisExtra = mBefore + mAfter + padBefore + padAfter;
-
-        if(p->fixedLong > 0) {
-            totalFixed += p->fixedLong + axisExtra;
-        }
-        else {
-            totalWeight += (p->weight > 0.0 ? p->weight : 1.0);
-            // axisExtra will be added per pane to slot later
-        }
-    }
-
-    int remaining = availableAxis - totalFixed - gaps;
-    if(remaining < 0) remaining = 0;
-
-    // Assign slots: content from weights for flexible panes, plus margins/padding
-    for(int i = 0; i < n; ++i) {
-        PXWindow* p = arr[i].p;
-        PXI32S mBefore = vertical ? p->Layout.Margin.Top : p->Layout.Margin.Left;
-        PXI32S mAfter = vertical ? p->Layout.Margin.Bottom : p->Layout.Margin.Right;
-        PXI32S padBefore = vertical ? p->Layout.Padding.Top : p->Layout.Padding.Left;
-        PXI32S padAfter = vertical ? p->Layout.Padding.Bottom : p->Layout.Padding.Right;
-        int axisExtra = mBefore + mAfter + padBefore + padAfter;
-
-        int content = 0;
-        if(p->fixedLong > 0) {
-            content = p->fixedLong;
-        }
-        else {
-            double w = (p->weight > 0.0 ? p->weight : 1.0);
-            content = (totalWeight > 0.0) ? (int)floor((w / totalWeight) * (double)remaining + 0.5) : 0;
-        }
-
-        // Min constraint along axis applies to content
-        if(vertical) {
-            int minH = (p->minH > 0 ? p->minH : (p->headerH > 0 ? p->headerH : 0));
-            if(content < minH) content = minH;
-        }
-        else {
-            int minW = (p->minW > 0 ? p->minW : 0);
-            if(content < minW) content = minW;
-        }
-
-        outSlotSizes[i] = clamp_nonneg(content + axisExtra);
-    }
-
-    // Fix rounding to consume exactly availableAxis
-    int sum = gaps;
-    for(int i = 0; i < n; ++i) sum += outSlotSizes[i];
-    int diff = availableAxis - sum;
-    if(diff != 0 && n > 0) {
-        // Adjust the last flexible pane's slot if possible; otherwise the last pane
-        for(int i = n - 1; i >= 0; --i) {
-            PXWindow* p = arr[i].p;
-            if(p->fixedLong <= 0) {
-                outSlotSizes[i] = clamp_nonneg(outSlotSizes[i] + diff);
-                return;
-            }
-        }
-        outSlotSizes[n - 1] = clamp_nonneg(outSlotSizes[n - 1] + diff);
-    }
-}
-
-// Apply a stack inside 'area' with margins/padding.
-static void ApplyStackWithBox
-(
-    HWND hParent,
-    HDWP* phdwp,
-    RECT area, 
-    BOOL vertical,
-    Paneref* arr,
-    int n,
-    int spacing
-)
-{
-    const UINT SWP_FLAGS = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER;
-    int axisLen = vertical ? (area.bottom - area.top) : (area.right - area.left);
-    if(axisLen < 0) axisLen = 0;
-
-    // Compute SLOT sizes (including margins/padding)
-    int* slotSizes = (int*)HeapAlloc(GetProcessHeap(), 0, sizeof(int) * (n > 0 ? n : 1));
-    if(!slotSizes) return;
-
-    DistributeAxisWithBox(arr, n, axisLen, spacing, vertical, slotSizes);
-
-    // Cursor along axis
-    int cursor = vertical ? area.top : area.left;
-
-    for(int i = 0; i < n; ++i) {
-        PXWindow* p = arr[i].p;
-
-        // Effective spacing for this pane (allow per-pane override)
-        int sp = (p->spacing > 0 ? p->spacing : spacing);
-
-        // Margins/padding
-        int mL = p->Layout.Margin.Left;
-        int mT = p->Layout.Margin.Top;
-        int mR = p->Layout.Margin.Right;
-        int mB = p->Layout.Margin.Bottom;
-
-        int padL = p->Layout.Padding.Left;
-        int padT = p->Layout.Padding.Top;
-        int padR = p->Layout.Padding.Right;
-        int padB = p->Layout.Padding.Bottom;
-
-        // SLOT rect (includes margins and padding)
-        int x = area.left;
-        int   y = area.top;
-        int    w = area.right - area.left;
-        int   h = area.bottom - area.top;
-
-        
-        if(vertical) 
-        {
-            y = cursor;
-            h = slotSizes[i];
-        }
-        else 
-        {
-            x = cursor;
-            w = slotSizes[i];
-        }
-
-        // Apply margins to SLOT (outside gaps)
-        x += mL; y += mT; w -= (mL + mR); h -= (mT + mB);
-        w = clamp_nonneg(w); h = clamp_nonneg(h);
-
-        // Apply padding (inner inset into the rect we pass to child)
-        x += padL; y += padT; w -= (padL + padR); h -= (padT + padB);
-        w = clamp_nonneg(w); h = clamp_nonneg(h);
-
-        // Final min constraints (ensure the rect is not smaller than minW/minH)
-        if(p->minW > 0 && w < p->minW) w = p->minW;
-        if(p->minH > 0 && h < p->minH) h = p->minH;
-
-        if(*phdwp) 
-        {
-            *phdwp = DeferWindowPos(*phdwp, arr[i].h, NULL, x, y, w, h, SWP_FLAGS);
-        }
-        else 
-        {
-            MoveWindow(arr[i].h, x, y, w, h, TRUE);
-        }
-
-        // Advance cursor by SLOT size + spacing (spacing is outside panes)
-        cursor += slotSizes[i] + (i + 1 < n ? sp : 0);
-    }
-
-    HeapFree(GetProcessHeap(), 0, slotSizes);
-}
-
-// Inset a rect by BoxInsets (band-level padding)
-static RECT InsetRectBy(RECT r, BoxInsets in)
-{
-    r.left += in.l;
-    r.top += in.t;
-    r.right -= in.r;
-    r.bottom -= in.b;
-    if(r.right < r.left)   r.right = r.left;
-    if(r.bottom < r.top)   r.bottom = r.top;
-    return r;
-}
-
-// -----------------------------
-// Main layout (multi-pass)
-// -----------------------------
-void LayoutDockedEx(PXWindow PXREF pxWindow, const DockLayoutConfig* pCfg)
-{
-#if PXWindowLayoutCalc
-    return;
-#endif
-
-    if(!(pxWindow && pCfg))
-    {
-        return;
-    }
-
-    DockLayoutConfig cfg = pCfg ? *pCfg : DockDefaultConfig();
-
-    RECT rc = PXWindowRectOf(pxWindow->WindowHandle);
-    int leftX = rc.left;
-    int rightX = rc.right;
-    int topY = rc.top;
-    int bottomY = rc.bottom;
-
-    int total = CountVisiblePanes(pxWindow->WindowHandle);
-
-    if(total <= 0) 
-        return;
-
-    HDWP hdwp = BeginDeferWindowPos(total);
-    const int spacingDefault = cfg.defaultSpacing;
-
-    Paneref* buf = (Paneref*)HeapAlloc(GetProcessHeap(), 0, sizeof(Paneref) * (total > 0 ? total : 1));
-    if(!buf)
-    {
-        if(hdwp)
-            EndDeferWindowPos(hdwp); return;
-    }
-
-    // -----------------------------
-    // PASS 1: LEFT band(s)
-    // -----------------------------
-    {
-        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideLeft, buf, total);
-
-        if(n > 0) 
-        {
-            int bandW = cfg.defaultBandW;
-            for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
-
-            RECT band = (RECT){ leftX, topY, leftX + bandW, bottomY };
-            // Band-level padding:
-            band = InsetRectBy(band, cfg.padLeft);
-
-            leftX += bandW; // consume thickness regardless of inner padding
-
-            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
-        }
-    }
-
-    // -----------------------------
-    // PASS 1: RIGHT band(s)
-    // -----------------------------
-    {
-        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideRight, buf, total);
-        if(n > 0) {
-            int bandW = cfg.defaultBandW;
-            for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
-
-            RECT band = (RECT){ rightX - bandW, topY, rightX, bottomY };
-            band = InsetRectBy(band, cfg.padRight);
-
-            rightX -= bandW;
-
-            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
-        }
-    }
-
-    // -----------------------------
-    // PASS 2: TOP band(s) — use remaining width
-    // -----------------------------
-    {
-        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideTop, buf, total);
-        if(n > 0) {
-            int bandH = cfg.defaultBandH;
-            for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
-
-            RECT band = (RECT){ leftX, topY, rightX, topY + bandH };
-            band = InsetRectBy(band, cfg.padTop);
-
-            topY += bandH;
-
-            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
-        }
-    }
-
-    // -----------------------------
-    // PASS 2: BOTTOM band(s)
-    // -----------------------------
-    {
-        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideBottom, buf, total);
-
-        if(n > 0) 
-        {
-            int bandH = cfg.defaultBandH;
-            for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
-
-            RECT band = (RECT){ leftX, bottomY - bandH, rightX, bottomY };
-            band = InsetRectBy(band, cfg.padBottom);
-
-            bottomY -= bandH;
-
-            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
-        }
-    }
-
-    // -----------------------------
-    // PASS 3: CENTER / FILL (DOCK_NONE)
-    // -----------------------------
-    {
-        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideNone, buf, total);
-        RECT remain = (RECT){ leftX, topY, rightX, bottomY };
-        remain = InsetRectBy(remain, cfg.padCenter);
-
-        if(n > 0) {
-            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, remain, cfg.centerVertical /* orientation */, buf, n, spacingDefault);
-        }
-    }
-
-    HeapFree(GetProcessHeap(), 0, buf);
-
-    if(hdwp)
-        EndDeferWindowPos(hdwp);
-
-    PXWindowEventPoll(pxWindow);
-
-    // InvalidateRect(pxWindow->WindowHandle, 0, 0);
-    // UpdateWindow(pxWindow->WindowHandle);
-    // ShowWindow(pxWindow->WindowHandle, SW_MINIMIZE);
-    // ShowWindow(pxWindow->WindowHandle, SW_SHOW);
-}
-
-BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S)
-{
-    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
-
-    if(!pxWindowRoot)
-        return FALSE;
-
-    RECT rc; GetClientRect(pxWindowRoot->WindowHandle, &rc);
-
-    POINT tl = { rc.left, rc.top },
-        br = { rc.right, rc.bottom };
-
-    ClientToScreen(pxWindowRoot->WindowHandle, &tl);
-    ClientToScreen(pxWindowRoot->WindowHandle, &br);
-
-    RECT scr = { tl.x, tl.y, br.x, br.y };
-
-    POINT point = *(POINT*)pxVector2I32S;
-
-    return PtInRect(&scr, point);
-}
-
-PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S)
-{
-    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
-
-    RECT rectangle;
-    GetClientRect(pxWindowRoot->WindowHandle, &rectangle);
-    POINT topLeft = { rectangle.left, rectangle.top };
-    POINT botomRight = { rectangle.right, rectangle.bottom };
-
-    ClientToScreen(pxWindowRoot->WindowHandle, &topLeft);
-    ClientToScreen(pxWindowRoot->WindowHandle, &botomRight);
-
-#if 0
-
-    int marginX = (botomRight.x - topLefe.x) / 4;
-    int marginY = (botomRight.y - topLefe.y) / 4;
-
-    int limitDockSideTop = topLefe.y + marginY;
-    int limitDockSideBottom = botomRight.y - marginY;
-    int limitDockSideLeft = topLefe.x + marginX;
-    int limitDockSideRight = botomRight.x - marginX;
-
-    PXBool dockSideTop = (pxVector2I32S->Y < limitDockSideTop);
-    PXBool dockSideBottom = (pxVector2I32S->Y > limitDockSideBottom);
-    PXBool dockSideLeft = (pxVector2I32S->X < limitDockSideLeft);
-    PXBool dockSideRight = (pxVector2I32S->X > limitDockSideRight);
-#else
-
-    int marginX = (topLeft.x + botomRight.x) / 2;
-    int marginY = (topLeft.y + botomRight.y) / 2;
-
-    if(pxVector2I32S->Y < marginY)
-        return PXWindowDockSideTop;
-
-    int deadOffsetY = marginX / 2;
-    int deadOffsetX = marginY / 2;
-
-    int limitDockSideTop = deadOffsetY;
-    int limitDockSideBottom = deadOffsetX;
-    int limitDockSideLeft = marginY + deadOffsetY;
-    int limitDockSideRight = marginX + deadOffsetX;
-
-
-    PXBool dockSideTop = (pxVector2I32S->Y < limitDockSideTop);
-    PXBool dockSideLeft = (pxVector2I32S->X < limitDockSideBottom);
-    PXBool dockSideBottom = (pxVector2I32S->Y > limitDockSideLeft);
-    PXBool dockSideRight = (pxVector2I32S->X > limitDockSideRight);
-
-
-
-#endif
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXWindowTextText,
-        "Dock-PX",
-        "\n"
-        "%20s : %i, %i, M:%i,%i\n"
-        "%20s : %i, %i < %i\n"
-        "%20s : %i, %i > %i\n"
-        "%20s : %i, %i < %i\n"
-        "%20s : %i, %i > %i",
-        "Position", pxVector2I32S->X, pxVector2I32S->Y, marginX, marginY,
-        "Top", dockSideTop, pxVector2I32S->Y, limitDockSideTop,
-        "Bottom", dockSideBottom, pxVector2I32S->Y, limitDockSideBottom,
-        "Left", dockSideLeft, pxVector2I32S->X, limitDockSideLeft,
-        "Right", dockSideRight, pxVector2I32S->X, limitDockSideRight
-    );
-#endif
-
-    if(dockSideBottom)
-        return PXWindowDockSideBottom;
-
-    if(dockSideRight)
-        return PXWindowDockSideRight;
-
-    if(dockSideLeft)
-        return PXWindowDockSideLeft;
-
-    if(dockSideTop)
-        return PXWindowDockSideTop;
-
-    return PXWindowDockSideNone;
-}
-
-/* ---- Overlay helpers --------------------------------------------------- */
-
-RECT PXAPI OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side)
-{
-    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
-
-    RECT m = PXWindowRectOf(pxWindowRoot->WindowHandle);
-    POINT tl = { m.left, m.top }, br = { m.right, m.bottom };
-    // Convert to screen for DockSide calc, but overlay is drawn in client coords.
-    // The rect we return is in MAIN CLIENT COORDS (used in PaintMain).
-
-    RECT r = { 0 };
-
-    SubSegment(&m, &r, side);
-
-    return r;
-}
-
-void PXAPI PXWindowShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side)
-{
-    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
-
-    if(!pxWindowRoot)
-        return;
-
-    gOverlay.active = TRUE;
-    gOverlay.side = side;
-    gOverlay.rect = OverlayRectForSide(pxWindow, side);
-    InvalidateRect(pxWindowRoot->WindowHandle, NULL, FALSE);
-}
-
-void PXAPI PXWindowHideDockOverlay(PXWindow PXREF pxWindow)
-{
-    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
-
-    if(!pxWindowRoot)
-        return;
-
-    if(gOverlay.active) {
-        gOverlay.active = FALSE;
-        InvalidateRect(pxWindowRoot->WindowHandle, NULL, FALSE);
-    }
-}
-
-void PXAPI PXWindowTearOffToFloating(PXWindow* pxWindow, POINT startScreen)
-{
-    if(pxWindow->State.Floating)
-        return;
-
-    PXBool reactGL = pxWindow->RenderContext > 0;
-
-    PXWindowDestroy(pxWindow);
-
-    PXWindowCreateInfo pxWindowCreateInfo;
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
-    pxWindowCreateInfo.State.Floating = TRUE;
-    pxWindowCreateInfo.State.DockSide = PXWindowDockSideNone;
-    pxWindowCreateInfo.WindowParent = PXNull;
-    //pxWindowCreateInfo.isChild = FALSE;
-
-    PXWindowCreate(&pxWindow, &pxWindowCreateInfo);
-
-    if(reactGL)
-    {
-        PXWindowOpenGLEnable(pxWindow);
-    }
-
-    RECT wr; GetWindowRect(pxWindow->WindowHandle, &wr);
-    int w = wr.right - wr.left, h = wr.bottom - wr.top;
-    MoveWindow(pxWindow->WindowHandle, startScreen.x - w / 2, startScreen.y - pxWindow->headerH / 2, w, h, TRUE);
-    ShowWindow(pxWindow->WindowHandle, SW_SHOWNORMAL);
-
-    ReleaseCapture();
-    SendMessageW(pxWindow->WindowHandle, WM_SYSCOMMAND, SC_MOVE | 0x0002, 0); // start system drag
-}
-
-void PXAPI PXWindowDockBackToChild(PXWindow* pxWindow, PXWindowDockSide side)
-{
-    if(pxWindow->State.Floating)
-        return;
-
-    PXBool reactGL = pxWindow->RenderContext > 0;
-
-    PXWindowDestroy(pxWindow);
-
-    PXWindowCreateInfo pxWindowCreateInfo;
-    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
-    pxWindowCreateInfo.WindowParent = PXWindowParentGet(pxWindow);
-    pxWindowCreateInfo.State.Floating = FALSE;
-    pxWindowCreateInfo.State.DockSide = side;
-    //pxWindowCreateInfo.isChild = PXTrue;
-
-    PXWindowCreate(&pxWindow, &pxWindowCreateInfo);
-
-    if(reactGL)
-    {
-        PXWindowOpenGLEnable(pxWindow);
-    }
-
-    LayoutDockedEx(pxWindow, NULL);
-}
-
-/* ---- Painting ---------------------------------------------------------- */
-
-void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha) {
-    int w = rc.right - rc.left, h = rc.bottom - rc.top;
-    if(w <= 0 || h <= 0) return;
-
-    HDC mem = CreateCompatibleDC(hdc);
-    HBITMAP bmp = CreateCompatibleBitmap(hdc, w, h);
-    HGDIOBJ oldBmp = SelectObject(mem, bmp);
-
-    HBRUSH br = CreateSolidBrush(color);
-    RECT fill = { 0,0,w,h };
-    FillRect(mem, &fill, br);
-    DeleteObject(br);
-
-    BLENDFUNCTION bf = { AC_SRC_OVER, 0, alpha, 0 };
-    AlphaBlend(hdc, rc.left, rc.top, w, h, mem, 0, 0, w, h, bf);
-
-    SelectObject(mem, oldBmp);
-    DeleteObject(bmp);
-    DeleteDC(mem);
-}
-
-void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov)
-{
-    if(!ov->active) return;
-
-    RECT rScreen = ov->rect;
-    // Adorner_ShowAt(&gAdorner, rScreen);
-
-    // return;
-
-     // Translucent aqua block
-    PXWindowDrawAlphaRect(hdc, ov->rect, RGB(80, 170, 200), 120);
-    //Rectangle(hdc, ov->rect.left, ov->rect.top, ov->rect.right, ov->rect.bottom);
-
-    // Triangle arrow pointing into the block
-    POINT tri[3];
-    const int m = 16; // arrow size/padding
-    switch(ov->side) {
-        case PXWindowDockSideLeft:
-            tri[0].x = ov->rect.right - m; tri[0].y = (ov->rect.top + ov->rect.bottom) / 2;
-            tri[1].x = ov->rect.right - m - 18; tri[1].y = tri[0].y - 12;
-            tri[2].x = ov->rect.right - m - 18; tri[2].y = tri[0].y + 12;
-            break;
-        case PXWindowDockSideRight:
-            tri[0].x = ov->rect.left + m; tri[0].y = (ov->rect.top + ov->rect.bottom) / 2;
-            tri[1].x = ov->rect.left + m + 18; tri[1].y = tri[0].y - 12;
-            tri[2].x = ov->rect.left + m + 18; tri[2].y = tri[0].y + 12;
-            break;
-        case PXWindowDockSideTop:
-            tri[0].x = (ov->rect.left + ov->rect.right) / 2; tri[0].y = ov->rect.bottom - m;
-            tri[1].x = tri[0].x - 12; tri[1].y = ov->rect.bottom - m - 18;
-            tri[2].x = tri[0].x + 12; tri[2].y = ov->rect.bottom - m - 18;
-            break;
-        case PXWindowDockSideBottom:
-            tri[0].x = (ov->rect.left + ov->rect.right) / 2; tri[0].y = ov->rect.top + m;
-            tri[1].x = tri[0].x - 12; tri[1].y = ov->rect.top + m + 18;
-            tri[2].x = tri[0].x + 12; tri[2].y = ov->rect.top + m + 18;
-            break;
-
-        default: return;
-    }
-    HBRUSH triBr = CreateSolidBrush(RGB(250, 250, 0));
-    HGDIOBJ oldBr = SelectObject(hdc, triBr);
-    HPEN triPen = CreatePen(PS_SOLID, 2, RGB(0xFF, 0, 0));
-    HGDIOBJ oldPen = SelectObject(hdc, triPen);
-    Polygon(hdc, tri, 3);
-    SelectObject(hdc, oldPen); DeleteObject(triPen);
-    SelectObject(hdc, oldBr);  DeleteObject(triBr);
-
-    // Border around the block
-    HPEN pen = CreatePen(PS_DASH, 3, RGB(0, 120, 200));
-    HGDIOBJ old = SelectObject(hdc, pen);
-    // SetPolyFillMode(hdc, );
-    // Rectangle(hdc, ov->rect.left, ov->rect.top, ov->rect.right, ov->rect.bottom);
-    SelectObject(hdc, old);
-    DeleteObject(pen);
 }
 
 
@@ -3308,36 +2479,6 @@ void PXAPI PXWindowRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
     pxECSRegisterInfo->InfoStatic = &PXWindowRegisterInfoStatic;
     pxECSRegisterInfo->InfoDynamic = &PXWindowRegisterInfoDynamic;
-}
-
-HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow)
-{
-    if(!pxWindow)
-    {
-        return PXNull;
-    }
-
-    if(!pxWindow->WindowHandle)
-    {
-        return PXNull;
-    }
-
-    if(pxWindow->DeviceContextHandle)
-    {
-        return pxWindow->DeviceContextHandle;
-    }
-
-    pxWindow->DeviceContextHandle = GetDC(pxWindow->WindowHandle);
-
-    // Sometimes we do want NULL? How to handle this??
-    //PXAssert(pxWindow->DeviceContextHandle, "The device context can only be NULL if the window handle is invalid");
-
-    return pxWindow->DeviceContextHandle;
-}
-
-HWND PXAPI PXWindowHandleGet(PXWindow PXREF pxWindow)
-{
-    return pxWindow->WindowHandle;
 }
 
 PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent)
@@ -7590,17 +6731,43 @@ const char* PXWindowDockSideToString(const PXWindowDockSide pxWindowDockSide)
     return PXWindowDockSideString[pxWindowDockSide];
 }
 
-RECT PXAPI PXWindowRectOf(HWND h)
+#if OSUnix
+#elif OSWindows
+HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow)
 {
-    RECT r;
-    GetClientRect(h, &r);
-    return r;
+    if(!pxWindow)
+    {
+        return PXNull;
+    }
+
+    if(!pxWindow->WindowHandle)
+    {
+        return PXNull;
+    }
+
+    if(pxWindow->DeviceContextHandle)
+    {
+        return pxWindow->DeviceContextHandle;
+    }
+
+    pxWindow->DeviceContextHandle = GetDC(pxWindow->WindowHandle);
+
+    // Sometimes we do want NULL? How to handle this??
+    //PXAssert(pxWindow->DeviceContextHandle, "The device context can only be NULL if the window handle is invalid");
+
+    return pxWindow->DeviceContextHandle;
+}
+
+HWND PXAPI PXWindowHandleGet(PXWindow PXREF pxWindow)
+{
+    return pxWindow->WindowHandle;
 }
 
 PXWindow* PXAPI PXWindowFromHandle(const HWND windowHandle)
 {
     return (PXWindow*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
 }
+
 
 void SubSegment(RECT* m, RECT* r, PXWindowDockSide side)
 {
@@ -7630,3 +6797,854 @@ void SubSegment(RECT* m, RECT* r, PXWindowDockSide side)
 
     }
 }
+
+
+
+
+static void LayoutDockedAA(PXWindow PXREF pxWindow)
+{
+    PXRectangleXYWHI32 pxRectangleXYWH;
+    PXWindowSpaceDrawGet(pxWindow, &pxRectangleXYWH);
+
+    RECT rc;// = PXWindowRectOf(pxWindow->WindowHandle);
+    int leftX = rc.left;
+    int rightX = rc.right;
+    int topY = rc.top;
+    int bottomY = rc.bottom;
+    const int bandW = 260;  // left/right band width
+    const int bandH = 180;  // top band height
+
+    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT))
+    {
+        PXWindow* p = PXWindowFromHandle(child);
+        if(!p)
+            continue;
+
+        RECT r = { 0 };
+        switch(p->State.DockSide) {
+            case PXWindowDockSideLeft:
+                r.left = leftX;
+                r.right = leftX + bandW;
+                r.top = rc.top;
+                r.bottom = rc.bottom;
+                leftX += bandW;
+                break;
+            case PXWindowDockSideRight:
+                r.left = rightX - bandW;
+                r.right = rightX;
+                r.top = rc.top;
+                r.bottom = rc.bottom;
+                rightX -= bandW;
+                break;
+            case PXWindowDockSideTop:
+                r.left = rc.left;
+                r.right = rc.right;
+                r.top = topY;
+                r.bottom = topY + bandH;
+                topY += bandH;
+                break;
+            case PXWindowDockSideBottom:
+                r.left = rc.left;
+                r.right = rc.right;
+                r.top = bottomY - bandH;
+                r.bottom = bottomY;
+                bottomY -= bandH;
+                break;
+
+            default:
+                r = rc;
+                break;
+        }
+        MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+    }
+}
+
+void LayoutDockedGOOD(PXWindow PXREF pxWindow)
+{
+    PXRectangleXYWHI32 pxRectangleXYWH;
+    PXWindowSpaceDrawGet(pxWindow, &pxRectangleXYWH);
+
+    RECT rc;// = PXWindowRectOf(pxWindow->WindowHandle);
+    int leftX = rc.left;
+    int rightX = rc.right;
+    int topY = rc.top;
+    int bottomY = rc.bottom;
+
+    const int bandW = 260;  // left/right band width (could be per-pane)
+    const int bandH = 180;  // top/bottom band height (could be per-pane)
+
+    // PASS 1: LEFT/RIGHT
+    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT))
+    {
+        PXWindow* p = PXWindowFromHandle(child);
+
+        if(!p)
+            continue;
+
+        RECT r;
+        switch(p->State.DockSide)
+        {
+            case PXWindowDockSideLeft:
+                r.left = leftX;
+                r.right = leftX + bandW;
+                r.top = rc.top;
+                r.bottom = rc.bottom; // full height
+                leftX += bandW;
+                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+                break;
+            case PXWindowDockSideRight:
+                r.left = rightX - bandW; r.right = rightX;
+                r.top = rc.top; r.bottom = rc.bottom; // full height
+                rightX -= bandW;
+                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // PASS 2: TOP/BOTTOM — use remaining width [leftX, rightX]
+    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        PXWindow* p = PXWindowFromHandle(child);
+        if(!p) continue;
+
+        RECT r;
+        switch(p->State.DockSide) {
+            case PXWindowDockSideTop:
+                r.left = leftX; r.right = rightX;
+                r.top = topY;   r.bottom = topY + bandH;
+                topY += bandH;
+                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+                break;
+            case PXWindowDockSideBottom:
+                r.left = leftX; r.right = rightX;
+                r.top = bottomY - bandH; r.bottom = bottomY;
+                bottomY -= bandH;
+                MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // PASS 3: CENTER (or default)
+    for(HWND child = GetWindow(pxWindow->WindowHandle, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        PXWindow* p = PXWindowFromHandle(child);
+        if(!p) continue;
+
+        if(p->State.DockSide == PXWindowDockSideNone /*DOCK_FILL  or your default/none enum */) {
+            RECT r = { leftX, topY, rightX, bottomY };
+            MoveWindow(child, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+        }
+    }
+}
+
+// -----------------------------
+// Types from your current model
+// -----------------------------
+
+// Defaults
+static DockLayoutConfig DockDefaultConfig(void)
+{
+    DockLayoutConfig cfg;
+    cfg.defaultBandW = 260;
+    cfg.defaultBandH = 180;
+    cfg.defaultSpacing = 8;
+    cfg.padLeft = (BoxInsets){ 8, 8, 8, 8 };
+    cfg.padRight = (BoxInsets){ 8, 8, 8, 8 };
+    cfg.padTop = (BoxInsets){ 8, 8, 8, 8 };
+    cfg.padBottom = (BoxInsets){ 8, 8, 8, 8 };
+    cfg.padCenter = (BoxInsets){ 8, 8, 8, 8 };
+    cfg.centerVertical = TRUE;
+    return cfg;
+}
+
+// -----------------------------
+// Styles to reduce overdraw
+// -----------------------------
+void InitDockContainerStyles(PXWindow PXREF pxWindow)
+{
+    HWND hwnd = pxWindow->WindowHandle;
+
+    LONG_PTR st = GetWindowLongPtr(hwnd, GWL_STYLE);
+    st |= WS_CLIPCHILDREN;           // parent won't draw under children
+    SetWindowLongPtr(hwnd, GWL_STYLE, st);
+
+    SetWindowPos
+    (
+        hwnd,
+        NULL,
+        0,
+        0,
+        0,
+        0,
+        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE
+    );
+}
+
+static void InitDockChildStyles(PXWindow PXREF pxWindow)
+{
+    HWND hwnd = pxWindow->WindowHandle;
+    LONG_PTR st = GetWindowLongPtr(hwnd, GWL_STYLE);
+    st |= WS_CLIPSIBLINGS;           // siblings avoid overdrawing each other
+    SetWindowLongPtr(hwnd, GWL_STYLE, st);
+}
+
+// -----------------------------
+// Utility
+// -----------------------------
+static int clamp_nonneg(int v) { return v < 0 ? 0 : v; }
+static int CountVisiblePanes(HWND hParent)
+{
+    int total = 0;
+    for(HWND child = GetWindow(hParent, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        if(!IsWindowVisible(child)) continue;
+        PXWindow* p = PXWindowFromHandle(child);
+        if(!p || p->State.Floating) continue;
+        ++total;
+    }
+    return total;
+}
+
+
+
+static int CollectSide(HWND hParent, PXWindowDockSide side, Paneref* buf, int cap)
+{
+    int n = 0;
+    for(HWND child = GetWindow(hParent, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        if(!IsWindowVisible(child)) continue;
+        PXWindow* p = PXWindowFromHandle(child);
+        if(!p || p->State.Floating) continue;
+        if(p->State.DockSide != side) continue;
+        if(n < cap) { buf[n].h = child; buf[n].p = p; }
+        ++n;
+    }
+    return n;
+}
+
+// -----------------------------
+// Axis distribution with margin & padding
+// -----------------------------
+// Distributes space along the stack axis among panes.
+// vertical = TRUE: axis = Y (heights vary), width = area width.
+// vertical = FALSE: axis = X (widths vary), height = area height.
+//
+// We compute each pane's SLOT size (the space it consumes along the axis).
+// SLOT size includes: marginBefore + content + marginAfter + paddingBefore + paddingAfter.
+// The rectangle given to the child will then be SLOT rect inset by margins and padding.
+static void DistributeAxisWithBox(Paneref* arr, int n, int availableAxis, int spacing,
+                                  BOOL vertical, int* outSlotSizes /* n */)
+{
+    int gaps = (n > 1 ? spacing * (n - 1) : 0);
+
+    // Sum fixed segment (fixedLong + margins + padding) and total weight
+    int totalFixed = 0;
+    double totalWeight = 0.0;
+
+    for(int i = 0; i < n; ++i) {
+        PXWindow* p = arr[i].p;
+        PXI32S mBefore = vertical ? p->Layout.Margin.Top : p->Layout.Margin.Left;
+        PXI32S mAfter = vertical ? p->Layout.Margin.Bottom : p->Layout.Margin.Right;
+        PXI32S padBefore = vertical ? p->Layout.Padding.Top : p->Layout.Padding.Left;
+        PXI32S padAfter = vertical ? p->Layout.Padding.Bottom : p->Layout.Padding.Right;
+        PXI32S axisExtra = mBefore + mAfter + padBefore + padAfter;
+
+        if(p->fixedLong > 0) {
+            totalFixed += p->fixedLong + axisExtra;
+        }
+        else {
+            totalWeight += (p->weight > 0.0 ? p->weight : 1.0);
+            // axisExtra will be added per pane to slot later
+        }
+    }
+
+    int remaining = availableAxis - totalFixed - gaps;
+    if(remaining < 0) remaining = 0;
+
+    // Assign slots: content from weights for flexible panes, plus margins/padding
+    for(int i = 0; i < n; ++i) {
+        PXWindow* p = arr[i].p;
+        PXI32S mBefore = vertical ? p->Layout.Margin.Top : p->Layout.Margin.Left;
+        PXI32S mAfter = vertical ? p->Layout.Margin.Bottom : p->Layout.Margin.Right;
+        PXI32S padBefore = vertical ? p->Layout.Padding.Top : p->Layout.Padding.Left;
+        PXI32S padAfter = vertical ? p->Layout.Padding.Bottom : p->Layout.Padding.Right;
+        int axisExtra = mBefore + mAfter + padBefore + padAfter;
+
+        int content = 0;
+        if(p->fixedLong > 0) {
+            content = p->fixedLong;
+        }
+        else {
+            double w = (p->weight > 0.0 ? p->weight : 1.0);
+            content = (totalWeight > 0.0) ? (int)floor((w / totalWeight) * (double)remaining + 0.5) : 0;
+        }
+
+        // Min constraint along axis applies to content
+        if(vertical) {
+            int minH = (p->minH > 0 ? p->minH : (p->headerH > 0 ? p->headerH : 0));
+            if(content < minH) content = minH;
+        }
+        else {
+            int minW = (p->minW > 0 ? p->minW : 0);
+            if(content < minW) content = minW;
+        }
+
+        outSlotSizes[i] = clamp_nonneg(content + axisExtra);
+    }
+
+    // Fix rounding to consume exactly availableAxis
+    int sum = gaps;
+    for(int i = 0; i < n; ++i) sum += outSlotSizes[i];
+    int diff = availableAxis - sum;
+    if(diff != 0 && n > 0) {
+        // Adjust the last flexible pane's slot if possible; otherwise the last pane
+        for(int i = n - 1; i >= 0; --i) {
+            PXWindow* p = arr[i].p;
+            if(p->fixedLong <= 0) {
+                outSlotSizes[i] = clamp_nonneg(outSlotSizes[i] + diff);
+                return;
+            }
+        }
+        outSlotSizes[n - 1] = clamp_nonneg(outSlotSizes[n - 1] + diff);
+    }
+}
+
+// Apply a stack inside 'area' with margins/padding.
+static void ApplyStackWithBox
+(
+    HWND hParent,
+    HDWP* phdwp,
+    RECT area,
+    BOOL vertical,
+    Paneref* arr,
+    int n,
+    int spacing
+)
+{
+    const UINT SWP_FLAGS = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOOWNERZORDER;
+    int axisLen = vertical ? (area.bottom - area.top) : (area.right - area.left);
+    if(axisLen < 0) axisLen = 0;
+
+    // Compute SLOT sizes (including margins/padding)
+    int* slotSizes = (int*)HeapAlloc(GetProcessHeap(), 0, sizeof(int) * (n > 0 ? n : 1));
+    if(!slotSizes) return;
+
+    DistributeAxisWithBox(arr, n, axisLen, spacing, vertical, slotSizes);
+
+    // Cursor along axis
+    int cursor = vertical ? area.top : area.left;
+
+    for(int i = 0; i < n; ++i) {
+        PXWindow* p = arr[i].p;
+
+        // Effective spacing for this pane (allow per-pane override)
+        int sp = (p->spacing > 0 ? p->spacing : spacing);
+
+        // Margins/padding
+        int mL = p->Layout.Margin.Left;
+        int mT = p->Layout.Margin.Top;
+        int mR = p->Layout.Margin.Right;
+        int mB = p->Layout.Margin.Bottom;
+
+        int padL = p->Layout.Padding.Left;
+        int padT = p->Layout.Padding.Top;
+        int padR = p->Layout.Padding.Right;
+        int padB = p->Layout.Padding.Bottom;
+
+        // SLOT rect (includes margins and padding)
+        int x = area.left;
+        int   y = area.top;
+        int    w = area.right - area.left;
+        int   h = area.bottom - area.top;
+
+
+        if(vertical)
+        {
+            y = cursor;
+            h = slotSizes[i];
+        }
+        else
+        {
+            x = cursor;
+            w = slotSizes[i];
+        }
+
+        // Apply margins to SLOT (outside gaps)
+        x += mL; y += mT; w -= (mL + mR); h -= (mT + mB);
+        w = clamp_nonneg(w); h = clamp_nonneg(h);
+
+        // Apply padding (inner inset into the rect we pass to child)
+        x += padL; y += padT; w -= (padL + padR); h -= (padT + padB);
+        w = clamp_nonneg(w); h = clamp_nonneg(h);
+
+        // Final min constraints (ensure the rect is not smaller than minW/minH)
+        if(p->minW > 0 && w < p->minW) w = p->minW;
+        if(p->minH > 0 && h < p->minH) h = p->minH;
+
+        if(*phdwp)
+        {
+            *phdwp = DeferWindowPos(*phdwp, arr[i].h, NULL, x, y, w, h, SWP_FLAGS);
+        }
+        else
+        {
+            MoveWindow(arr[i].h, x, y, w, h, TRUE);
+        }
+
+        // Advance cursor by SLOT size + spacing (spacing is outside panes)
+        cursor += slotSizes[i] + (i + 1 < n ? sp : 0);
+    }
+
+    HeapFree(GetProcessHeap(), 0, slotSizes);
+}
+
+// Inset a rect by BoxInsets (band-level padding)
+static RECT InsetRectBy(RECT r, BoxInsets in)
+{
+    r.left += in.l;
+    r.top += in.t;
+    r.right -= in.r;
+    r.bottom -= in.b;
+    if(r.right < r.left)   r.right = r.left;
+    if(r.bottom < r.top)   r.bottom = r.top;
+    return r;
+}
+
+// -----------------------------
+// Main layout (multi-pass)
+// -----------------------------
+void LayoutDockedEx(PXWindow PXREF pxWindow, const DockLayoutConfig* pCfg)
+{
+#if PXWindowLayoutCalc
+    return;
+#endif
+
+    if(!(pxWindow && pCfg))
+    {
+        return;
+    }
+
+    DockLayoutConfig cfg = pCfg ? *pCfg : DockDefaultConfig();
+
+    PXRectangleXYWHI32 pxRectangleXYWH;
+    PXWindowSpaceDrawGet(pxWindow, &pxRectangleXYWH);
+
+    RECT rc;// = PXWindowRectOf(pxWindow->WindowHandle);
+    int leftX = rc.left;
+    int rightX = rc.right;
+    int topY = rc.top;
+    int bottomY = rc.bottom;
+
+    int total = CountVisiblePanes(pxWindow->WindowHandle);
+
+    if(total <= 0)
+        return;
+
+    HDWP hdwp = BeginDeferWindowPos(total);
+    const int spacingDefault = cfg.defaultSpacing;
+
+    Paneref* buf = (Paneref*)HeapAlloc(GetProcessHeap(), 0, sizeof(Paneref) * (total > 0 ? total : 1));
+    if(!buf)
+    {
+        if(hdwp)
+            EndDeferWindowPos(hdwp); return;
+    }
+
+    // -----------------------------
+    // PASS 1: LEFT band(s)
+    // -----------------------------
+    {
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideLeft, buf, total);
+
+        if(n > 0)
+        {
+            int bandW = cfg.defaultBandW;
+            for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
+
+            RECT band = (RECT){ leftX, topY, leftX + bandW, bottomY };
+            // Band-level padding:
+            band = InsetRectBy(band, cfg.padLeft);
+
+            leftX += bandW; // consume thickness regardless of inner padding
+
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
+        }
+    }
+
+    // -----------------------------
+    // PASS 1: RIGHT band(s)
+    // -----------------------------
+    {
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideRight, buf, total);
+        if(n > 0) {
+            int bandW = cfg.defaultBandW;
+            for(int i = 0; i < n; ++i) if(buf[i].p->prefW > bandW) bandW = buf[i].p->prefW;
+
+            RECT band = (RECT){ rightX - bandW, topY, rightX, bottomY };
+            band = InsetRectBy(band, cfg.padRight);
+
+            rightX -= bandW;
+
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, TRUE /* vertical stack */, buf, n, spacingDefault);
+        }
+    }
+
+    // -----------------------------
+    // PASS 2: TOP band(s) — use remaining width
+    // -----------------------------
+    {
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideTop, buf, total);
+        if(n > 0) {
+            int bandH = cfg.defaultBandH;
+            for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
+
+            RECT band = (RECT){ leftX, topY, rightX, topY + bandH };
+            band = InsetRectBy(band, cfg.padTop);
+
+            topY += bandH;
+
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
+        }
+    }
+
+    // -----------------------------
+    // PASS 2: BOTTOM band(s)
+    // -----------------------------
+    {
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideBottom, buf, total);
+
+        if(n > 0)
+        {
+            int bandH = cfg.defaultBandH;
+            for(int i = 0; i < n; ++i) if(buf[i].p->prefH > bandH) bandH = buf[i].p->prefH;
+
+            RECT band = (RECT){ leftX, bottomY - bandH, rightX, bottomY };
+            band = InsetRectBy(band, cfg.padBottom);
+
+            bottomY -= bandH;
+
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, band, FALSE /* horizontal row */, buf, n, spacingDefault);
+        }
+    }
+
+    // -----------------------------
+    // PASS 3: CENTER / FILL (DOCK_NONE)
+    // -----------------------------
+    {
+        int n = CollectSide(pxWindow->WindowHandle, PXWindowDockSideNone, buf, total);
+        RECT remain = (RECT){ leftX, topY, rightX, bottomY };
+        remain = InsetRectBy(remain, cfg.padCenter);
+
+        if(n > 0) {
+            ApplyStackWithBox(pxWindow->WindowHandle, &hdwp, remain, cfg.centerVertical /* orientation */, buf, n, spacingDefault);
+        }
+    }
+
+    HeapFree(GetProcessHeap(), 0, buf);
+
+    if(hdwp)
+        EndDeferWindowPos(hdwp);
+
+    PXWindowEventPoll(pxWindow);
+
+    // InvalidateRect(pxWindow->WindowHandle, 0, 0);
+    // UpdateWindow(pxWindow->WindowHandle);
+    // ShowWindow(pxWindow->WindowHandle, SW_MINIMIZE);
+    // ShowWindow(pxWindow->WindowHandle, SW_SHOW);
+}
+
+BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S)
+{
+    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
+
+    if(!pxWindowRoot)
+        return FALSE;
+
+    RECT rc; GetClientRect(pxWindowRoot->WindowHandle, &rc);
+
+    POINT tl = { rc.left, rc.top },
+        br = { rc.right, rc.bottom };
+
+    ClientToScreen(pxWindowRoot->WindowHandle, &tl);
+    ClientToScreen(pxWindowRoot->WindowHandle, &br);
+
+    RECT scr = { tl.x, tl.y, br.x, br.y };
+
+    POINT point = *(POINT*)pxVector2I32S;
+
+    return PtInRect(&scr, point);
+}
+
+PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S)
+{
+    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
+
+    RECT rectangle;
+    GetClientRect(pxWindowRoot->WindowHandle, &rectangle);
+    POINT topLeft = { rectangle.left, rectangle.top };
+    POINT botomRight = { rectangle.right, rectangle.bottom };
+
+    ClientToScreen(pxWindowRoot->WindowHandle, &topLeft);
+    ClientToScreen(pxWindowRoot->WindowHandle, &botomRight);
+
+#if 0
+
+    int marginX = (botomRight.x - topLefe.x) / 4;
+    int marginY = (botomRight.y - topLefe.y) / 4;
+
+    int limitDockSideTop = topLefe.y + marginY;
+    int limitDockSideBottom = botomRight.y - marginY;
+    int limitDockSideLeft = topLefe.x + marginX;
+    int limitDockSideRight = botomRight.x - marginX;
+
+    PXBool dockSideTop = (pxVector2I32S->Y < limitDockSideTop);
+    PXBool dockSideBottom = (pxVector2I32S->Y > limitDockSideBottom);
+    PXBool dockSideLeft = (pxVector2I32S->X < limitDockSideLeft);
+    PXBool dockSideRight = (pxVector2I32S->X > limitDockSideRight);
+#else
+
+    int marginX = (topLeft.x + botomRight.x) / 2;
+    int marginY = (topLeft.y + botomRight.y) / 2;
+
+    if(pxVector2I32S->Y < marginY)
+        return PXWindowDockSideTop;
+
+    int deadOffsetY = marginX / 2;
+    int deadOffsetX = marginY / 2;
+
+    int limitDockSideTop = deadOffsetY;
+    int limitDockSideBottom = deadOffsetX;
+    int limitDockSideLeft = marginY + deadOffsetY;
+    int limitDockSideRight = marginX + deadOffsetX;
+
+
+    PXBool dockSideTop = (pxVector2I32S->Y < limitDockSideTop);
+    PXBool dockSideLeft = (pxVector2I32S->X < limitDockSideBottom);
+    PXBool dockSideBottom = (pxVector2I32S->Y > limitDockSideLeft);
+    PXBool dockSideRight = (pxVector2I32S->X > limitDockSideRight);
+
+
+
+#endif
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXWindowTextText,
+        "Dock-PX",
+        "\n"
+        "%20s : %i, %i, M:%i,%i\n"
+        "%20s : %i, %i < %i\n"
+        "%20s : %i, %i > %i\n"
+        "%20s : %i, %i < %i\n"
+        "%20s : %i, %i > %i",
+        "Position", pxVector2I32S->X, pxVector2I32S->Y, marginX, marginY,
+        "Top", dockSideTop, pxVector2I32S->Y, limitDockSideTop,
+        "Bottom", dockSideBottom, pxVector2I32S->Y, limitDockSideBottom,
+        "Left", dockSideLeft, pxVector2I32S->X, limitDockSideLeft,
+        "Right", dockSideRight, pxVector2I32S->X, limitDockSideRight
+    );
+#endif
+
+    if(dockSideBottom)
+        return PXWindowDockSideBottom;
+
+    if(dockSideRight)
+        return PXWindowDockSideRight;
+
+    if(dockSideLeft)
+        return PXWindowDockSideLeft;
+
+    if(dockSideTop)
+        return PXWindowDockSideTop;
+
+    return PXWindowDockSideNone;
+}
+
+/* ---- Overlay helpers --------------------------------------------------- */
+
+RECT PXAPI OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side)
+{
+    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
+
+    PXRectangleXYWHI32 pxRectangleXYWH;
+    PXWindowSpaceDrawGet(pxWindow, &pxRectangleXYWH);
+
+    RECT m;// = PXWindowRectOf(pxWindowRoot->WindowHandle);
+    POINT tl = { m.left, m.top }, br = { m.right, m.bottom };
+    // Convert to screen for DockSide calc, but overlay is drawn in client coords.
+    // The rect we return is in MAIN CLIENT COORDS (used in PaintMain).
+
+    RECT r = { 0 };
+
+    SubSegment(&m, &r, side);
+
+    return r;
+}
+
+void PXAPI PXWindowShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side)
+{
+    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
+
+    if(!pxWindowRoot)
+        return;
+
+    gOverlay.active = TRUE;
+    gOverlay.side = side;
+    gOverlay.rect = OverlayRectForSide(pxWindow, side);
+    InvalidateRect(pxWindowRoot->WindowHandle, NULL, FALSE);
+}
+
+void PXAPI PXWindowHideDockOverlay(PXWindow PXREF pxWindow)
+{
+    PXWindow* pxWindowRoot = PXWindowRootGet(pxWindow);
+
+    if(!pxWindowRoot)
+        return;
+
+    if(gOverlay.active) {
+        gOverlay.active = FALSE;
+        InvalidateRect(pxWindowRoot->WindowHandle, NULL, FALSE);
+    }
+}
+
+void PXAPI PXWindowTearOffToFloating(PXWindow* pxWindow, POINT startScreen)
+{
+    if(pxWindow->State.Floating)
+        return;
+
+    PXBool reactGL = pxWindow->RenderContext > 0;
+
+    PXWindowDestroy(pxWindow);
+
+    PXWindowCreateInfo pxWindowCreateInfo;
+    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+    pxWindowCreateInfo.State.Floating = TRUE;
+    pxWindowCreateInfo.State.DockSide = PXWindowDockSideNone;
+    pxWindowCreateInfo.WindowParent = PXNull;
+    //pxWindowCreateInfo.isChild = FALSE;
+
+    PXWindowCreate(&pxWindow, &pxWindowCreateInfo);
+
+    if(reactGL)
+    {
+        PXWindowOpenGLEnable(pxWindow);
+    }
+
+    RECT wr; GetWindowRect(pxWindow->WindowHandle, &wr);
+    int w = wr.right - wr.left, h = wr.bottom - wr.top;
+    MoveWindow(pxWindow->WindowHandle, startScreen.x - w / 2, startScreen.y - pxWindow->headerH / 2, w, h, TRUE);
+    ShowWindow(pxWindow->WindowHandle, SW_SHOWNORMAL);
+
+    ReleaseCapture();
+    SendMessageW(pxWindow->WindowHandle, WM_SYSCOMMAND, SC_MOVE | 0x0002, 0); // start system drag
+}
+
+void PXAPI PXWindowDockBackToChild(PXWindow* pxWindow, PXWindowDockSide side)
+{
+    if(pxWindow->State.Floating)
+        return;
+
+    PXBool reactGL = pxWindow->RenderContext > 0;
+
+    PXWindowDestroy(pxWindow);
+
+    PXWindowCreateInfo pxWindowCreateInfo;
+    PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+    pxWindowCreateInfo.WindowParent = PXWindowParentGet(pxWindow);
+    pxWindowCreateInfo.State.Floating = FALSE;
+    pxWindowCreateInfo.State.DockSide = side;
+    //pxWindowCreateInfo.isChild = PXTrue;
+
+    PXWindowCreate(&pxWindow, &pxWindowCreateInfo);
+
+    if(reactGL)
+    {
+        PXWindowOpenGLEnable(pxWindow);
+    }
+
+    LayoutDockedEx(pxWindow, NULL);
+}
+
+/* ---- Painting ---------------------------------------------------------- */
+
+void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha) {
+    int w = rc.right - rc.left, h = rc.bottom - rc.top;
+    if(w <= 0 || h <= 0) return;
+
+    HDC mem = CreateCompatibleDC(hdc);
+    HBITMAP bmp = CreateCompatibleBitmap(hdc, w, h);
+    HGDIOBJ oldBmp = SelectObject(mem, bmp);
+
+    HBRUSH br = CreateSolidBrush(color);
+    RECT fill = { 0,0,w,h };
+    FillRect(mem, &fill, br);
+    DeleteObject(br);
+
+    BLENDFUNCTION bf = { AC_SRC_OVER, 0, alpha, 0 };
+    AlphaBlend(hdc, rc.left, rc.top, w, h, mem, 0, 0, w, h, bf);
+
+    SelectObject(mem, oldBmp);
+    DeleteObject(bmp);
+    DeleteDC(mem);
+}
+
+void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov)
+{
+    if(!ov->active) return;
+
+    RECT rScreen = ov->rect;
+    // Adorner_ShowAt(&gAdorner, rScreen);
+
+    // return;
+
+     // Translucent aqua block
+    PXWindowDrawAlphaRect(hdc, ov->rect, RGB(80, 170, 200), 120);
+    //Rectangle(hdc, ov->rect.left, ov->rect.top, ov->rect.right, ov->rect.bottom);
+
+    // Triangle arrow pointing into the block
+    POINT tri[3];
+    const int m = 16; // arrow size/padding
+    switch(ov->side) {
+        case PXWindowDockSideLeft:
+            tri[0].x = ov->rect.right - m; tri[0].y = (ov->rect.top + ov->rect.bottom) / 2;
+            tri[1].x = ov->rect.right - m - 18; tri[1].y = tri[0].y - 12;
+            tri[2].x = ov->rect.right - m - 18; tri[2].y = tri[0].y + 12;
+            break;
+        case PXWindowDockSideRight:
+            tri[0].x = ov->rect.left + m; tri[0].y = (ov->rect.top + ov->rect.bottom) / 2;
+            tri[1].x = ov->rect.left + m + 18; tri[1].y = tri[0].y - 12;
+            tri[2].x = ov->rect.left + m + 18; tri[2].y = tri[0].y + 12;
+            break;
+        case PXWindowDockSideTop:
+            tri[0].x = (ov->rect.left + ov->rect.right) / 2; tri[0].y = ov->rect.bottom - m;
+            tri[1].x = tri[0].x - 12; tri[1].y = ov->rect.bottom - m - 18;
+            tri[2].x = tri[0].x + 12; tri[2].y = ov->rect.bottom - m - 18;
+            break;
+        case PXWindowDockSideBottom:
+            tri[0].x = (ov->rect.left + ov->rect.right) / 2; tri[0].y = ov->rect.top + m;
+            tri[1].x = tri[0].x - 12; tri[1].y = ov->rect.top + m + 18;
+            tri[2].x = tri[0].x + 12; tri[2].y = ov->rect.top + m + 18;
+            break;
+
+        default: return;
+    }
+    HBRUSH triBr = CreateSolidBrush(RGB(250, 250, 0));
+    HGDIOBJ oldBr = SelectObject(hdc, triBr);
+    HPEN triPen = CreatePen(PS_SOLID, 2, RGB(0xFF, 0, 0));
+    HGDIOBJ oldPen = SelectObject(hdc, triPen);
+    Polygon(hdc, tri, 3);
+    SelectObject(hdc, oldPen); DeleteObject(triPen);
+    SelectObject(hdc, oldBr);  DeleteObject(triBr);
+
+    // Border around the block
+    HPEN pen = CreatePen(PS_DASH, 3, RGB(0, 120, 200));
+    HGDIOBJ old = SelectObject(hdc, pen);
+    // SetPolyFillMode(hdc, );
+    // Rectangle(hdc, ov->rect.left, ov->rect.top, ov->rect.right, ov->rect.bottom);
+    SelectObject(hdc, old);
+    DeleteObject(pen);
+}
+
+#endif

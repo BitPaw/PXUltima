@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/Async/PXThread.h>
 
 #include <errno.h> // POSIX
 #include <signal.h> // SEGFLT
@@ -76,7 +77,7 @@ PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     // Get error code
 #if OSUnix || OSForcePOSIXForWindows
     const int errorID = errno; // We will definitly have some error code now.
-    pxResult = PXErrorCodeFromID(errorResult); // Translate errorID to our own error-enum
+    pxResult = PXErrorCodeFromID(errorID); // Translate errorID to our own error-enum
 #elif OSWindows
     const DWORD errorID = GetLastError(); // Will fetch the global current errorID
     const HRESULT errorResult = HRESULT_FROM_WIN32(errorID); // Documentation defines that these errors can be translated into HRESULTs!
@@ -92,8 +93,8 @@ PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
     //char* text = strerror_l(errorID, 0);
    // const int text = strerror_r(errorID, errorMessageBuffer, PXErrorMessageBufferSize);
-   // const char* errorNameText = strerrorname_np(errorID); // input: errno:0, output:EPERM 
-   // const char* errorDescText = strerrordesc_np(errorID); 
+   // const char* errorNameText = strerrorname_np(errorID); // input: errno:0, output:EPERM
+   // const char* errorDescText = strerrordesc_np(errorID);
 
     if((errorID - 1) <= PXERRNOListMax)
     {
@@ -428,9 +429,6 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
         case EXDEV:
             return CrossDeviceLink;
 
-        case ERROR_INVALID_PARAMETER:
-            return  PXResultRefusedParameterInvalid;
-
         case 145:
             return PXActionRefusedDirectoryNotEmpty;
 
@@ -440,8 +438,12 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
         case 1400:
             return PXActionRefusedObjectIDInvalid;
 
+#if OSWindows
+        case ERROR_INVALID_PARAMETER:
+            return  PXResultRefusedParameterInvalid;
         case STATUS_INVALID_HANDLE:
             return PXActionRefusedObjectIDInvalid;
+#endif
 
         default:
             return PXResultInvalid;
@@ -464,7 +466,7 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
 
             // case S_FALSE:
         case ERROR_INVALID_FUNCTION:
-            return PXResultOK; // Incorrect function.    1 (0x1)        
+            return PXResultOK; // Incorrect function.    1 (0x1)
 
         case 0xC0070006: // FACILITY_WIN32 | ERROR_INVALID_HANDLE
             return PXActionRefusedObjectIDInvalid;
@@ -486,11 +488,11 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
             return PXResultInvalid; //    The handle is invalid.    6 (0x6)
         case    ERROR_ARENA_TRASHED:
             return PXResultInvalid; //    The storage control blocks were destroyed.    7 (0x7)
-        
+
         case 0x80070008:
         case ERROR_NOT_ENOUGH_MEMORY: // 8 (0x8)
             return PXResultRefusedNotEnoughMemory; // Not enough memory resources are available to process this command.
-                
+
         case    ERROR_INVALID_BLOCK:
             return PXResultInvalid; //    The storage control block address is invalid.    9 (0x9)
         case    ERROR_BAD_ENVIRONMENT:
@@ -2148,8 +2150,10 @@ const PXI8U PXSingalIDList[] =
     SIGFPE,
     SIGSEGV,
     SIGTERM,
-    SIGBREAK,
-    SIGABRT
+    SIGABRT,
+#if OSWindows
+    SIGBREAK // Windows only
+#endif
 };
 const PXResult PXPOSIXSignalResultList[] =
 {
@@ -2158,8 +2162,8 @@ const PXResult PXPOSIXSignalResultList[] =
     SIGFPE,
     PXResultExceptionAccessViolation,
     SIGTERM,
-    PXResultDebugEventBreakPoint,
-    PXResultExceptionControlCExit
+    PXResultExceptionControlCExit,
+    PXResultDebugEventBreakPoint
 };
 const PXI8U PXSingalIDListAmount = sizeof(PXSingalIDList);
 
@@ -2177,7 +2181,7 @@ void PXUnixSignalHandler(const int signalID)
 
     PXAssert(PXResultOK == pxResultContext, "This cant ever fail");
 
-    // Actual recover, secound Parameter will be the element returned by setjmp()	
+    // Actual recover, secound Parameter will be the element returned by setjmp()
 #if PXJumpOldUse
     longjmp(pxThreadContext.POSIXJumpBuffer, pxResultTranslated);
 #else
@@ -2258,7 +2262,7 @@ PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
 #if OSUnix || OSForcePOSIXForWindows
 
     jmp_buf snapshot;
-    PXClear(jmp_buf, snapshot);
+    PXClear(jmp_buf, &snapshot);
 
     // This implementation uses the POSIX implementation
     // Windows supports this behaviour on paper but in practise it does not.
@@ -2283,11 +2287,13 @@ PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
 #if PXJumpOldUse
     // Store handler callback for this thread
     signal(SIGINT, PXUnixSignalHandler);
-    signal(SIGILL, PXUnixSignalHandler); // Bad instuction
+    signal(SIGILL, PXUnixSignalHandler); // Bad instruction
     signal(SIGFPE, PXUnixSignalHandler); // float error
-    signal(SIGSEGV, PXUnixSignalHandler); // Bad adress
+    signal(SIGSEGV, PXUnixSignalHandler); // Bad address
     signal(SIGTERM, PXUnixSignalHandler);
+#if OSWindows
     signal(SIGBREAK, PXUnixSignalHandler);
+#endif
     signal(SIGABRT, PXUnixSignalHandler); // Abnormal termination
     //signal(SIGBUS, signalHandler); // BUS error, SIGSEGV is used by os
     //signal(SIGTRAP, signalHandler); // Breakpoint?

@@ -2,7 +2,8 @@
 #include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXProcessor.h>
-#include <gl/GL.h>
+
+#include <GL/gl.h>
 
 #define PXFooterDebug 0
 

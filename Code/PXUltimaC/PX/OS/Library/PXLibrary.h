@@ -30,7 +30,7 @@ typedef struct PXLibrary_ PXLibrary;
 typedef struct PXLibrary_
 {
 #if OSUnix
-    void* ID;
+    void* ModuleHandle;
 #elif OSWindows
     // Note: Windows calls DLL files modules.
     HMODULE ModuleHandle; // HINSTANCE(semms is also okey)
@@ -62,8 +62,8 @@ PXPublic PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF px
 // Lib can be NULL, means we dont need the lib result
 PXPublic PXResult PXAPI PXLibraryNameFromAdress
 (
-    PXLibrary* pxLibrary, 
-    PXText PXREF pxTextLibraryName, 
+    PXLibrary* pxLibrary,
+    PXText PXREF pxTextLibraryName,
     const void PXREF adress
 );
 

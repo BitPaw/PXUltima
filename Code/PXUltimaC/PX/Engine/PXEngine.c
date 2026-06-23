@@ -38,7 +38,12 @@
 
 #pragma comment(lib, "dinput8.lib")
 
+#if OSWindows
+#include <Xinput.h>
+#include <stdio.h>
 
+#pragma comment(lib, "Xinput.lib")
+#endif
 
 typedef struct PXEngine_
 {
@@ -101,13 +106,15 @@ typedef struct PXEngine_
 
     //---------------------------------
     // Time
+    #if OSWindows
     LARGE_INTEGER PerformanceFrequency; // LARGE_INTEGER, Timer frequency. Irellevant, only for caching
+    #endif
     PXF64 TimeDeltaTimeTarget;
     PXF64 TimeDeltaTimeCurrent;
 
     PXF64 TimeStampLast; // Time after last frame.
     PXF64 TimeStampCurrent; // Our "NOW"
-    PXF64 TimeStampNext; // Expected time to update 
+    PXF64 TimeStampNext; // Expected time to update
 
     PXF64 FPSCurrent;
     PXF64 FPSTarget;
@@ -144,8 +151,8 @@ const PXECSRegisterInfoStatic PXEngineRegisterInfoStatic =
 PXECSRegisterInfoDynamic PXEngineRegisterInfoDynamic;
 
 
-PXEngineUpdateFuntion _pxEngineUpdateFuntionList[] = 
-{ 
+PXEngineUpdateFuntion _pxEngineUpdateFuntionList[] =
+{
     PXEngineUpdateAwait,
     PXEngineUpdateTimers,
     PXEngineUpdateInput,
@@ -1313,7 +1320,10 @@ PXResult PXAPI PXEngineRun(PXEngine PXREF pxEngine)
 
 void PXAPI PXEngineEventWork(PXEngine PXREF pxEngine)
 {
-    ResetEvent(pxEngine->EventWorkHandle);
+#if OSUnix
+#elif OSWindows
+        ResetEvent(pxEngine->EventWorkHandle);
+#endif
 }
 
 void PXAPI PXEngineEventRender(PXEngine PXREF pxEngine)
@@ -1326,6 +1336,8 @@ void PXAPI PXEngineEventRender(PXEngine PXREF pxEngine)
 
 void PXAPI PXEngineEventOS(PXEngine PXREF pxEngine)
 {
+#if OSUnix
+#elif OSWindows
     MSG msg;
     while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -1338,26 +1350,33 @@ void PXAPI PXEngineEventOS(PXEngine PXREF pxEngine)
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+#endif
 }
 
 void PXAPI PXEngineTimeSetEnd(PXEngine PXREF pxEngine)
 {
+#if OSUnix
+#elif OSWindows
     LARGE_INTEGER performanceCounterNow;
     QueryPerformanceCounter(&performanceCounterNow);
 
     pxEngine->TimeStampLast = (PXF64)performanceCounterNow.QuadPart / (PXF64)pxEngine->PerformanceFrequency.QuadPart;
     pxEngine->TimeStampNext = pxEngine->TimeStampLast + pxEngine->TimeDeltaTimeTarget;
+#endif
 }
 
 void PXAPI PXEngineTimeSetNow(PXEngine PXREF pxEngine)
 {
+#if OSUnix
+#elif OSWindows
     LARGE_INTEGER performanceCounterNow;
     QueryPerformanceCounter(&performanceCounterNow);
 
     pxEngine->TimeStampCurrent = (PXF64)performanceCounterNow.QuadPart / (PXF64)pxEngine->PerformanceFrequency.QuadPart;
     pxEngine->TimeDeltaTimeCurrent = pxEngine->TimeStampCurrent - pxEngine->TimeStampLast;
     pxEngine->FrameTime = pxEngine->TimeDeltaTimeCurrent * 1000.0;
-    pxEngine->FPSCurrent = 1.0 / pxEngine->FrameTime;  
+    pxEngine->FPSCurrent = 1.0 / pxEngine->FrameTime;
+#endif
 }
 
 PXF64 PXAPI PXEngineTimeDelta(PXEngine PXREF pxEngine)
@@ -1441,10 +1460,10 @@ void PXAPI PXEngineUpdateAwait(PXEngine PXREF pxEngine)
     }
 
 
-    PXEngineEvent pxEngineEventList[] = 
+    PXEngineEvent pxEngineEventList[] =
     {
-        PXEngineEventWork,  // WAIT_OBJECT_0, 
-        PXEngineEventOS,  // WAIT_OBJECT_0 + 1, 
+        PXEngineEventWork,  // WAIT_OBJECT_0,
+        PXEngineEventOS,  // WAIT_OBJECT_0 + 1,
         PXEngineEventOS // WAIT_OBJECT_0 + 2, Generic events are always +1 more than our events
     };
 
@@ -1453,10 +1472,10 @@ void PXAPI PXEngineUpdateAwait(PXEngine PXREF pxEngine)
         pxEngineEventList[1] = PXEngineEventRender;
     }
 
-    HANDLE handleList[] = 
+    HANDLE handleList[] =
     {
         pxEngine->EventWorkHandle,
-        pxEngine->EventRenderHandle 
+        pxEngine->EventRenderHandle
     };
 
 
@@ -1468,13 +1487,13 @@ void PXAPI PXEngineUpdateAwait(PXEngine PXREF pxEngine)
     (
         timeCounter,
         handleList,
-        FALSE, 
+        FALSE,
         INFINITE,
         QS_ALLINPUT
     ); // Windows NT 3.1
 
     // We need to refetch the time, we dont know how long we waited.
-    PXEngineTimeSetNow(pxEngine); 
+    PXEngineTimeSetNow(pxEngine);
 
     pxEngineEventList[result](pxEngine);
 
@@ -1500,17 +1519,14 @@ void PXAPI PXEngineUpdateTimers(PXEngine PXREF pxEngine)
     pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeWindow;
 }
 
-#include <Xinput.h>
-#include <stdio.h>
-
-#pragma comment(lib, "Xinput.lib")
-
 void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine)
 {
+    #if OSUnix
+    #elif OSWindows
     XINPUT_STATE inputState;
     ZeroMemory(&inputState, sizeof(inputState));
 
-    DWORD errorCode = XInputGetState(0, &inputState); // Windows XP?, Xinput.lib, xinput.h 
+    DWORD errorCode = XInputGetState(0, &inputState); // Windows XP?, Xinput.lib, xinput.h
     PXBool isOK = ERROR_SUCCESS == errorCode;
 
     if(isOK)
@@ -1521,13 +1537,14 @@ void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine)
 
         printf("[XINPUT] LX=%d LY=%d A=%d\n", lx, ly, a);
     }
+    #endif
 }
 
 void PXAPI PXEngineUpdateNetwork(PXEngine PXREF pxEngine)
 {
     pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet();
     PXFunctionInvoke(pxEngine->OnNetworkUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeNetwork;    
+    pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeNetwork;
 }
 
 void PXAPI PXEngineUpdateWindow(PXEngine PXREF pxEngine)
@@ -1539,7 +1556,7 @@ void PXAPI PXEngineUpdateWindow(PXEngine PXREF pxEngine)
         if(!isRunningASYNC)
         {
             PXWindowEventPoll(pxEngine->WindowMain);
-                        
+
 
             // PXWindowShow(pxEngine);
 
@@ -1627,7 +1644,7 @@ void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventMouseMoveDa
     pxCamera->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y * 0.02;
     pxCamera->CurrentRotation.Y -= pxWindowEventInputMouseMove->Delta.X * 0.02;
 
-    
+
 
 
     const PXF32 maxValue = PXMathDegreeToRadians(85.0f);
@@ -1756,7 +1773,7 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
 
     if(pxWindowEventInputKeyboard->CharacterW == L'w')
     {
-        PXVector3F32Substract(&move, &forward);       
+        PXVector3F32Substract(&move, &forward);
     }
     if(pxWindowEventInputKeyboard->CharacterW == L's')
     {
@@ -1771,7 +1788,7 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
     }
     if(pxWindowEventInputKeyboard->CharacterW == L'a')
     {
-        PXVector3F32Substract(&move, &right);      
+        PXVector3F32Substract(&move, &right);
     }
 
 
@@ -1854,8 +1871,8 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
                 pxEngine->UpdateUI = 1;
             }
 
-       
-       
+
+
 
 
 
@@ -2216,7 +2233,7 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
 
 
 #if OSUnix
-    pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
+    //pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
 #endif
 
     const PXResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
@@ -2346,10 +2363,12 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
     //PXCameraRotateXYZ(pxEngine->CameraCurrent, 80, 0, 0);
 
 
+    #if OSWindows
     // Create a waitable object, so we can reduce CPU time (EventDriven)
     // If waiting, we HAVE to call SetEvent() from another thread to wake up!
     pxEngine->EventWorkHandle = CreateEvent(NULL, TRUE, FALSE, NULL); // "PX_External"
     pxEngine->EventRenderHandle = CreateWaitableTimer(NULL, TRUE, NULL); // "PX_Render"
+    #endif
 
 
 #if PXLogEnable
@@ -2527,6 +2546,13 @@ PXWindow* PXAPI PXEngineWindowGet(const PXEngine PXREF pxEngine)
 
 void PXAPI PXEngineFPSTargetSet(PXEngine PXREF pxEngine, const PXI32U fpsTarget)
 {
+    if(!pxEngine)
+    {
+        return;
+    }
+
+#if OSUnix
+#elif OSWindows
     LARGE_INTEGER now;
 
     QueryPerformanceFrequency(&pxEngine->PerformanceFrequency);
@@ -2539,6 +2565,7 @@ void PXAPI PXEngineFPSTargetSet(PXEngine PXREF pxEngine, const PXI32U fpsTarget)
     pxEngine->TimeDeltaTimeTarget = 1.0 / (PXF64)fpsTarget;
     pxEngine->TimeStampNext = pxEngine->TimeStampCurrent + pxEngine->TimeDeltaTimeTarget;
     pxEngine->UseImgameTimer = PXTrue;
+#endif
 }
 
 PXResult PXAPI PXEngineAwaken(PXEngine PXREF pxEngine)
@@ -3812,7 +3839,7 @@ PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine)
     //glClearColor(0.1f, 0.2f, 0.3f, 1.0f); // Set background color
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#if 0 
+#if 0
     {
         PXClear(PXRenderEntity, &pxRenderEntity);
         pxRenderEntity.Type = PXResourceTypeSkybox;

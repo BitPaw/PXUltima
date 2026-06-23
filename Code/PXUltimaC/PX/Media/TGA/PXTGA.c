@@ -202,7 +202,14 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
                 break;
         }
 
-        PXTextureResize(pxTexture, pxColorFormat, tga->Width, tga->Height);
+        PXTextureResize
+        (
+            pxTexture,
+            pxColorFormat, 
+            tga->Width,
+            tga->Height,
+            PXTextureNoMinmaps
+        );
     }
     //----------------------------------------------------
 

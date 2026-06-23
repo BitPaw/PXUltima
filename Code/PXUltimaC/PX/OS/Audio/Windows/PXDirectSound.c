@@ -193,9 +193,9 @@ PXBool _counter = 0;
 
 BOOL CALLBACK PXAudioDeviceDetectCallBack
 (
-    LPGUID guid, 
+    LPGUID guid,
     LPCWSTR cstrDescription,
-    LPCWSTR cstrModule, 
+    LPCWSTR cstrModule,
     PXAudioSystem PXREF pxAudioSystem
 )
 {
@@ -206,7 +206,7 @@ BOOL CALLBACK PXAudioDeviceDetectCallBack
     }
 
     PXAudioDeviceDetectInfo pxAudioDeviceDetectInfo;
-    PXClear(PXAudioDeviceDetectInfo, &pxAudioDeviceDetectInfo);    
+    PXClear(PXAudioDeviceDetectInfo, &pxAudioDeviceDetectInfo);
     PXTextFromAdressW(&pxAudioDeviceDetectInfo.Name, cstrDescription, PXTextLengthUnkown, PXTextLengthUnkown);
     pxAudioDeviceDetectInfo.InternalID = _counter;
     pxAudioDeviceDetectInfo.DeviceGUID = *guid;
@@ -271,7 +271,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
             {
                 result = _pxDirectSound.CaptureCreate8
                 (
-                    PXNull, 
+                    PXNull,
                     &pxAudioDevice->CaptureInterface8,
                     PXNull
                 );
@@ -280,7 +280,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
             {
                 result = _pxDirectSound.CaptureCreate
                 (
-                    PXNull, 
+                    PXNull,
                     &pxAudioDevice->CaptureInterface,
                     PXNull
                 );
@@ -288,7 +288,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
 
             const PXResult crateResult = PXErrorFromHRESULT(result);
 
-            if(PXResultOK != crateResult) 
+            if(PXResultOK != crateResult)
                 return crateResult;
 
             directSoundCapture = pxAudioDevice->CaptureInterface8;
@@ -330,7 +330,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
                 {
                     crateResultID = _pxDirectSound.Create
                     (
-                        PXNull, 
+                        PXNull,
                         &pxAudioDevice->OutputInterface,
                         PXNull
                     );
@@ -338,7 +338,7 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
 
                 const PXResult crateResult = PXErrorFromHRESULT(crateResultID);
 
-                if(PXResultOK != crateResult) 
+                if(PXResultOK != crateResult)
                     return crateResult;
 
                 directSound = (PXDirectSoundOutputInterface*)pxAudioDevice->CaptureInterface;
@@ -358,14 +358,14 @@ PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const 
 
                 const PXResult initResult = PXErrorFromHRESULT(result);
 
-                if(PXResultOK != initResult) 
+                if(PXResultOK != initResult)
                     return initResult;
 
                 pxAudioDevice->SupportFlags = capabiltys.dwFlags;
 
             }
 
-          
+
 /* Alternativ jank
             LPDIRECTSOUND8 directSound = PXNull;
             LPDIRECTSOUNDBUFFER buffer;
@@ -415,7 +415,6 @@ PXResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice PXREF pxAudioDevice)
 
 PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
 {
-    HRESULT result = 0;
     PXResult pxResult = PXResultInvalid;
 
     if(!(pxAudioDevice && pxSound))
@@ -425,6 +424,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
 
 #if OSUnix
 #elif OSWindows
+    HRESULT result = 0;
 
     PXDirectSoundOutputInterface PXREF directSound = (PXDirectSoundOutputInterface*)pxAudioDevice->CaptureInterface;
     PXDirectSoundBuffer* soundBuffer = PXNull;
@@ -497,10 +497,10 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
             &pxAudioDevice->SoundBuffer,
             PXNull
         );
-#endif     
+#endif
         const PXResult createResult = PXErrorFromHRESULT(createResultID);
 
-        if(PXResultOK != createResult) 
+        if(PXResultOK != createResult)
             return createResult;
 
         soundBuffer = pxAudioDevice->SoundBuffer;
@@ -520,26 +520,26 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
         (
             dataOffset,
             pxSound->DataSize,
-            &dataBlockAdressA, 
+            &dataBlockAdressA,
             &dataBlockSizeA,
             &dataBlockAdressB,
-            &dataBlockSizeB, 
+            &dataBlockSizeB,
             flags
         );
 #else
         result = soundBuffer->lpVtbl->Lock
         (
-            soundBuffer, 
+            soundBuffer,
             dataOffset,
             pxSound->DataSize,
             &dataBlockAdressA,
-            &dataBlockSizeA, 
+            &dataBlockSizeA,
             &dataBlockAdressB,
-            dataBlockSizeB, 
+            dataBlockSizeB,
             flags
         );
 #endif
-        
+
         pxResult = PXErrorFromHRESULT(result);
 
         if(PXResultOK != pxResult)
@@ -566,7 +566,7 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
 
         const PXResult lockResult = PXErrorFromHRESULT(result);
 
-        if(PXResultOK != lockResult) 
+        if(PXResultOK != lockResult)
             return lockResult;
     }
 
@@ -580,12 +580,12 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
 #else
     result = soundBuffer->lpVtbl->QueryInterface
     (
-        soundBuffer, 
-        &IID_IDirectSound3DListener, 
+        soundBuffer,
+        &IID_IDirectSound3DListener,
         &pxAudioDevice->Listen3DInterface
     );
 #endif
-    
+
     pxResult = PXErrorFromHRESULT(result);
 
     //listener->lpVtbl->SetPosition
@@ -600,19 +600,19 @@ PXResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice PXREF pxAudioDevice
 #if PXLanguageCPP
         result = soundBuffer->QueryInterface
         (
-            IID_IDirectSound3DBuffer, 
+            IID_IDirectSound3DBuffer,
             &pxAudioDevice->Buffer3DInterface
         );
 #else
         result = soundBuffer->lpVtbl->QueryInterface
         (
-            soundBuffer, 
-            &IID_IDirectSound3DBuffer, 
+            soundBuffer,
+            &IID_IDirectSound3DBuffer,
             &pxAudioDevice->Buffer3DInterface
         );
 #endif
 
-        
+
         const PXResult bufferResult = PXErrorFromHRESULT(result);
     }
 #endif
@@ -627,7 +627,7 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
         return PXResultRefusedParameterNull;
     }
 
-    const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);   
+    const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);
 
 
 #if OSUnix
@@ -648,19 +648,28 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
     {
         return PXActionRefuedObjectInterfaceNotAvailable;
     }
-#endif
 
     switch(pxSoundDeviceProperty->Type)
     {
         case PXSoundDevicePropertyStatePlay:
         {
+#if PXLanguageCPP
+            resultID = soundBuffer->Play(0, 0, DSBPLAY_LOOPING);
+#else
             resultID = soundBuffer->lpVtbl->Play(soundBuffer, 0, 0, DSBPLAY_LOOPING);
+#endif
+
             pxAudioDevice->IsRunning = PXTrue;
             break;
         }
         case PXSoundDevicePropertyStatePause:
         {
+#if PXLanguageCPP
+            resultID = soundBuffer->Stop();
+#else
             resultID = soundBuffer->lpVtbl->Stop(soundBuffer);
+#endif
+
             pxAudioDevice->IsRunning = PXFalse;
             break;
         }
@@ -703,7 +712,7 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
 #endif
 
                 pxSoundDeviceProperty->Value = positionRead;
-            }        
+            }
 
             break;
         }
@@ -835,11 +844,9 @@ PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PX
         }
     }
 
-#if OSUnix
-#elif OSWindows
     const PXResult setResult = PXErrorFromHRESULT(resultID);
 
-    if(PXResultOK != setResult) 
+    if(PXResultOK != setResult)
         return setResult;
 #endif
 
@@ -1038,7 +1045,7 @@ PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioSystem PXREF pxAudioSystem, PXAu
                 PXFilterChorus PXREF pxAudioEffectChorus = &pxAudioEffect->Filter;
                 DSFXChorus dxfxChorus;
 
-                
+
 
                 if(pxAudioEffect->Fetch)
                 {

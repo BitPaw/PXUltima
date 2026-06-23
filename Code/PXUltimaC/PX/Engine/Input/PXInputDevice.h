@@ -86,14 +86,18 @@ typedef struct PXInputDevice_
     PXI32U XInput;
     PXI32U RAWInput;
 
-    union 
+    union
     {
         PXInputKeyBoard KeyBoard;
         PXInputMouse Mouse;
         PXInputHID HID;
     };
 
+#if OSUnix
+    char Name[260];
+#elif OSWindows
     wchar_t Name[MAX_PATH];
+#endif
 
     union
     {
@@ -101,8 +105,5 @@ typedef struct PXInputDevice_
     };
 }
 PXInputDevice;
-
-
-
 
 #endif

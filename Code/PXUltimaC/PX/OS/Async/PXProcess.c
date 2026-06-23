@@ -27,7 +27,26 @@
 const char PXKernelNT[] = "ntdll.dll";
 const PXI8U PXKernelNTLength = sizeof(PXKernelNT);
 
+
+
 #if OSWindows
+
+// Late windows 10 feature. Alot of windows 10 SDKs dont have this.
+#ifndef POWER_THROTTLING_STATE_VERSION
+#define POWER_THROTTLING_STATE_VERSION 1
+
+#define POWER_THROTTLING_EXECUTION_SPEED 0x1
+
+typedef struct _POWER_THROTTLING_STATE
+{
+    ULONG Version;
+    ULONG ControlMask;
+    ULONG StateMask;
+}
+POWER_THROTTLING_STATE, * PPOWER_THROTTLING_STATE;
+#endif
+
+
 void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HANDLE processHandle)
 {
     PXClear(PXProcess, pxProcess);
@@ -346,7 +365,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
         {
             case PXHandleTypeFile:
             {
-                PXFile* pxFile = PXNull; 
+                PXFile* pxFile = PXNull;
                 //pxFile.FileHandle = handleCurrent;
 
                 PXText buffer;
@@ -898,6 +917,10 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
 
 void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
 {
+#if OSUnix
+    return  PXActionRefusedNotImplemented;
+
+#elif OSWindows
     PXProcess target;
     HANDLE processHandle = PXNull;
 
@@ -910,7 +933,6 @@ void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
         processHandle = GetCurrentProcess();
     }
 
-#if 0
     POWER_THROTTLING_STATE powerThrottleingState;
     PXClear(POWER_THROTTLING_STATE, &powerThrottleingState);
     powerThrottleingState.Version = POWER_THROTTLING_STATE_VERSION;
@@ -921,7 +943,7 @@ void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
         powerThrottleingState.StateMask = POWER_THROTTLING_EXECUTION_SPEED;
     }
 
-    const BOOL result = SetProcessInformation 
+    const BOOL result = SetProcessInformation
     (
         processHandle,
         ProcessPowerThrottling,
@@ -930,10 +952,9 @@ void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
     ); // Windows 8 (+UWP), Kernel32.lib, processthreadsapi.h
     PXResult pxResult = PXErrorCurrent(result);
 
-
     return pxResult;
+
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
-
 }

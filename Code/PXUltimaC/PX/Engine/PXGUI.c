@@ -224,7 +224,7 @@ PXResult PXAPI PXGUIShutdown(void)
     PXResult result = PXResultInvalid;
 
 #if OSUnix
-    const int resultID = XCloseDisplay(_pxGUIManager.DisplayCurrent.DisplayHandle);
+    const int resultID = 0;// XCloseDisplay(_pxGUIManager.DisplayCurrent.DisplayHandle);
     result = PXActionRefusedNotImplemented;
 #elif OSWindows
     // TODO: ???
@@ -571,39 +571,6 @@ PXResult PXAPI PXWindowDrawText(PXGUIManager PXREF pxGUIManager, PXWindow PXREF 
     }
 }*/
 
-
-
-
-
-PXResult PXAPI PXGUIFontListFetch(PXGUIManager PXREF pxGUIManager, PXSize PXREF amount)
-{
-#if OSUnix
-    int fontNameListSizeMax = 0;
-    int fontNameListSizeCurrnet = 0;
-    char** fontNameList = XListFonts
-    (
-        _pxGUIManager.DisplayCurrent.DisplayHandle,
-        PXNull,
-        fontNameListSizeMax,
-        &fontNameListSizeCurrnet
-    );
-
-
-    // Can also have additional info
-    // char **XListFontsWithInfo(Display *display, char *pattern, int maxnames, int *count_return, XFontStruct
-
-#elif OSWindows
-
-    // Microsoft says: EnumFontFamiliesA() is deprecated and is only provided for compatibility with 16-bit versions
-    // EnumFontFamiliesEx shall be used instead.
-
-    const int result = 0;// EnumFontFamiliesExA(HDC hdc, LPLOGFONTA lpLogfont, FONTENUMPROCA lpProc, LPARAM lParam, 0);
-
-
-#else
-    return PXNotsuport;
-#endif
-}
 
 #if OSUnix
 PXResult PXAPI PXWindowErrorFromXSystem(const int xSysstemErrorID)

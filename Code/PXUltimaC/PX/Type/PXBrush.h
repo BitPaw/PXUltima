@@ -23,7 +23,9 @@ typedef struct PXBrush_
 
     union
     {
+        #if OSWindows
         HBRUSH BrushHandle;
+        #endif
     };
 
     union

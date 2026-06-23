@@ -1,5 +1,9 @@
 #include "PXGroupBox.h"
+
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 PXResult PXAPI PXGroupBoxDraw(PXGroupBox PXREF pxGroupBox, PXGroupBoxCreateInfo PXREF pxGroupBoxCreateInfo)
 {

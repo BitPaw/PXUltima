@@ -1,8 +1,10 @@
 #include "PXGameCard.h"
-#include <gl/GL.h>
+
 #include <PX/Engine/Player/PXPlayerLobby.h>
 #include <PX/Engine/Game/PXDeckFrensh.h>
 
+//#include <gl/GL.h>
+#include <GL/gl.h>
 
 typedef struct PXGameStateMauMau_
 {
@@ -35,7 +37,7 @@ PXResult PXAPI PXGameCardRelease(PXGameCard PXREF pxGameCard)
 PXResult PXAPI PXGameCardLoop(PXGameCard PXREF pxGameCard)
 {
     /*
-    for(;;) 
+    for(;;)
     {
         PXGameCardTick(pxGameCard);
 
@@ -126,7 +128,7 @@ PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXDrawInfo PXREF pxDr
     const PXF32 card_h = 0.18f;
     const PXF32 spacing = 0.14f;
 
-    PXVector3F32 positionInsert = *positionRoot;    
+    PXVector3F32 positionInsert = *positionRoot;
 
     PXSize amountOfCards = pxCardHand->CardList.EntryAmountUsed;
 

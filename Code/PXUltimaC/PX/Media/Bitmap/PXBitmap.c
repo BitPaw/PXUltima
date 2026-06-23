@@ -285,7 +285,14 @@ PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
                 break;
         }
 
-        const PXBool allocationSuccess = PXTextureResize(pxTexture, pxColorFormat, bmp->InfoHeader.Width, bmp->InfoHeader.Height);
+        const PXBool allocationSuccess = PXTextureResize
+        (
+            pxTexture, 
+            pxColorFormat,
+            bmp->InfoHeader.Width,
+            bmp->InfoHeader.Height,
+            PXTextureNoMinmaps
+        );
 
         if(!allocationSuccess)
         {

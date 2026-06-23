@@ -4,6 +4,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Engine/PXResource.h>
 #include <math.h>
+#include <gl/GL.h>
 #include <gl/GLU.h>
 
 const char PXCameraName[] = "Camera";
@@ -69,13 +70,11 @@ PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera)
 
 
 
-#include <math.h>
-#include <string.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-#include <gl/GL.h>
+
 
 typedef struct GizLineVtx {
     unsigned char r, g, b, a;

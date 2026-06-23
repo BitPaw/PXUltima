@@ -20,24 +20,19 @@
 //#pragma comment(lib, "XAUDIO2_10.LIB")
 #pragma comment(lib, "Xaudio2.lib") // Library: Windows XAudio
 
-#endif
-
-
-
 // Shit solution
 // CLSID_MMDeviceEnumerator
 // IID_IMMDeviceEnumerator
 // IID_IAudioClient
 // IID_IAudioRenderClient
-#if 1
+#if OSWindows
 DEFINE_GUID(CLSID_MMDeviceEnumerator, 0xbcde0395, 0xe52f, 0x467c, 0x8e, 0x3d, 0xc4, 0x57, 0x92, 0x91, 0x69, 0x2e);
 DEFINE_GUID(IID_IMMDeviceEnumerator, 0xa95664d2, 0x9614, 0x4f35, 0xa7, 0x46, 0xde, 0x8d, 0xb6, 0x36, 0x17, 0xe6);
 DEFINE_GUID(IID_IAudioClient, 0x1cb9ad4c, 0xdbfa, 0x4c32, 0xb1, 0x78, 0xc2, 0xf5, 0x8c, 0x4c, 0x6e, 0x2b);
 DEFINE_GUID(IID_IAudioRenderClient, 0xf294acfc, 0x3146, 0x4483, 0xa7, 0xbf, 0xad, 0xdc, 0xa7, 0xc2, 0x60, 0xe2);
 #endif
 
-
-
+#endif
 
 
 typedef struct PXAudioXSystem_
@@ -144,22 +139,10 @@ const AudioBackend* audio_backend_wasapi(void) {
 */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 {
+#if OSUnix
+#elif OSWindows
     PXClear(PXCoreAudio, &_pxCoreAudio);
 
     // Open Library
@@ -174,7 +157,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 
     // Link functions
     {
-     
+
     }
 
 
@@ -187,7 +170,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
         resultID = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
         const PXResult initializeResult = PXErrorFromHRESULT(resultID);
 
-        if(PXResultOK != initializeResult) 
+        if(PXResultOK != initializeResult)
             return initializeResult;
     }
 
@@ -196,10 +179,10 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
         resultID = XAudio2Create(&_pxCoreAudio.XAudio2API, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
         const PXResult createResult = PXErrorFromHRESULT(resultID);
 
-        if(PXResultOK != createResult) 
+        if(PXResultOK != createResult)
             return createResult;
     }
- 
+
     // Output
     {
         /*/
@@ -275,7 +258,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #if PXLanguageCPP
     resultID = _pxCoreAudio.AudioDevice->Activate
     (
-        IID_IAudioClient, 
+        IID_IAudioClient,
         CLSCTX_ALL,
         NULL,
         (void**)&_pxCoreAudio.AudioClient
@@ -309,10 +292,10 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #if PXLanguageCPP
     resultID = _pxCoreAudio.AudioClient->Initialize
     (
-        AUDCLNT_SHAREMODE_SHARED, 
+        AUDCLNT_SHAREMODE_SHARED,
         0,
         hnsBufferDuration,
-        0, 
+        0,
         pwfx,
         NULL
     );
@@ -339,7 +322,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #else
     resultID = _pxCoreAudio.AudioClient->lpVtbl->GetBufferSize(_pxCoreAudio.AudioClient, &bufferFrameCount);
 #endif
-    
+
 #if PXLanguageCPP
     resultID = _pxCoreAudio.AudioClient->GetService(IID_IAudioRenderClient, (void**)&pRenderClient);
 #else
@@ -357,7 +340,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
     resultID = _pxCoreAudio.AudioClient->lpVtbl->Start(_pxCoreAudio.AudioClient);
 #endif
 
-    while(1) 
+    while(1)
     {
         UINT32 numFramesPadding;
 
@@ -366,7 +349,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #else
         resultID = _pxCoreAudio.AudioClient->lpVtbl->GetCurrentPadding(_pxCoreAudio.AudioClient, &numFramesPadding);
 #endif
-        
+
         UINT32 numFramesAvailable = bufferFrameCount - numFramesPadding;
 
 #if PXLanguageCPP
@@ -392,8 +375,8 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #else
         resultID = pRenderClient->lpVtbl->ReleaseBuffer(pRenderClient, numFramesAvailable, 0);
 #endif
-        
-        
+
+
         Sleep(10);
     }
 
@@ -411,8 +394,11 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
    // pEnumerator->lpVtbl->Release(pEnumerator);
     CoUninitialize();
 
+    return PXResultOK;
 
+#else
     return PXActionRefusedNotImplemented;
+#endif
 }
 
 

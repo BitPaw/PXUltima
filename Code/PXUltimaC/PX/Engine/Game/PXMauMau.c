@@ -32,7 +32,7 @@ typedef struct PXCardGameMauMau_
 }
 PXCardGameMauMau;
 
-PXResult PXAPI PXMauMauCreate(PXGameCard PXREF pxGameCard)
+PXResult PXAPI PXMauMauCreate(PXGameCard** pxGameCard)
 {
    // PXGameCardInit();
 

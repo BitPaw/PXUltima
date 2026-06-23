@@ -619,7 +619,6 @@ void Gizmo_Render(const float origin[3], int enable4D)
 
 float poss[3] = { 00,5,00 };
 
-#include <gl/GLU.h>
 PXResult PXAPI PXGizmoDraw(PXGizmo PXREF pxGizmo, PXDrawInfo PXREF pxDrawInfo)
 {
 

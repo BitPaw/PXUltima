@@ -7,6 +7,13 @@
 #include <mmintrin.h>
 
 #if OSUnix
+#include <xmmintrin.h> // SSE, __m128
+#include <emmintrin.h> // SSE2, __m128i, __m128d
+#include <pmmintrin.h> // SSE3
+#include <tmmintrin.h> // SSSE3
+#include <smmintrin.h> // SSE4.1
+#include <nmmintrin.h> // SSE4.2
+#include <immintrin.h> // AVX, AVX2, AVX‑512, __m256i, __m256
 #elif OSWindows
 #include <intrin.h>
 #endif
@@ -29,7 +36,7 @@ PXMath GLOBALPXMath;
 void PXAPI PXMathIntrinsicInit()
 {
     PXProcessor pxProcessor;
-    PXProcessorFetchInfo(&pxProcessor);  
+    PXProcessorFetchInfo(&pxProcessor);
 }
 
 PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataAdressSize, const void* target)
@@ -38,13 +45,13 @@ PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataA
     const PXSize adressMax = adressMin + dataAdressSize;
     const PXSize x = (PXSize)target;
     const PXBool isInTage = adressMin <= x && x <= adressMax;
-  
+
     return isInTage;
 }
 
 void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F PXREF pxMatrix4x4)
 {
-   
+
 }
 
 void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F PXREF pxMatrix4x4)
@@ -106,7 +113,7 @@ PXF32 PXAPI PXMathAbsoluteF(const PXF32 value)
     return PXMathAbsolute(a);
 #else
     return fabsf(value);
-#endif 
+#endif
 }
 
 PXF64 PXAPI PXMathAbsoluteD(const PXF64 value)
@@ -115,7 +122,7 @@ PXF64 PXAPI PXMathAbsoluteD(const PXF64 value)
     return PXMathAbsolute(a);
 #else
     return fabs(value);
-#endif 
+#endif
 }
 
 PXSize PXAPI PXMathClamp(const PXSize value, const PXSize minimum, const PXSize maximum)
@@ -167,23 +174,23 @@ void PXAPI PXMathF16ToF32(PXF32 PXREF listOut, const PXF16 PXREF listInput, cons
         return;
     }
 
-    // Check if 
+    // Check if
     if(1) // AVX512 support
     {
         // __m256i _mm512_mask_cvtps_ph (__m256i src, __mmask16 k, __m512 a, int rounding)
         //__m256i res = _mm512_mask_cvtps_ph(); // [Intrinsic] AVX512F, vcvtps2ph, 16x 32-Bit PXF32 -> 16-Bit PXF32
 
-    
+
 
         return; // DONE
     }
 
-    if(1) // AVX support, 
+    if(1) // AVX support,
     {
         // __m128i _mm256_cvtps_ph (__m256 a, int imm8)
         //__m128i resB = _mm256_cvtps_ph(); // [Intrinsic] immintrin.h, F16C, vcvtps2ph, 8x 32-Bit PXF32 -> 16-Bit PXF32
 
-      
+
 
         return; // DONE
     }
@@ -221,7 +228,7 @@ void PXAPI PXMathF16ToF32X4(PXF32 PXREF listOut, const PXF16 PXREF listInput, co
 
 void PXAPI PXMathF16ToF32X8(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
-  
+
 }
 
 void PXAPI PXMathF16ToF32X16(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
@@ -263,7 +270,7 @@ void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, cons
 
     PXMathF32ToF16X4(listOut, listInput, inputAmount);
 
-    // Check if 
+    // Check if
     if(1) // AVX512 support
     {
         // __m256i _mm512_mask_cvtps_ph (__m256i src, __mmask16 k, __m512 a, int rounding)
@@ -273,12 +280,12 @@ void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, cons
     }
 
 
-    if(1) // AVX support, 
+    if(1) // AVX support,
     {
         // __m128i _mm256_cvtps_ph (__m256 a, int imm8)
         //__m128i resB = _mm256_cvtps_ph(); // [Intrinsic] immintrin.h, F16C, vcvtps2ph, 8x 32-Bit PXF32 -> 16-Bit PXF32
 
-       
+
 
         return; // DONE
     }
@@ -363,7 +370,7 @@ PXF32 PXAPI PXMathFastInverseSqaureRoot(PXF32 number)
 PXI32U PXAPI PXMathPowerI32U(const PXI32U base, const PXI32U exponent)
 {
     PXI32U result = 1;
-  
+
     for(PXI32U i = 0; i < exponent; ++i)
     {
         result *= base;
@@ -390,7 +397,7 @@ double PXAPI PXMathPower(double base, double exponent)
     return pow(base, exponent);
 #else
     double result = 1.0;
-    for (int i = 0; i < exponent; ++i) 
+    for (int i = 0; i < exponent; ++i)
     {
         result *= base;
     }
@@ -444,15 +451,15 @@ PXF32 PXAPI PXMathRootSquareF32(const PXF32 value)
 
 PXF64 PXAPI PXMathRootSquareF64(const PXF64  value)
 {
-#if PXStandardLibraryMathUse        
+#if PXStandardLibraryMathUse
         return sqrt(value);  // TODO: Dependeny problem
 #else
     // Newton-Raphson method
     double guess = value / 2.0;
     const double epsilon = 0.00001; // Precision level
 
-#if 0        
-    while ((guess * guess - value) > epsilon || (value - guess * guess) > epsilon) 
+#if 0
+    while ((guess * guess - value) > epsilon || (value - guess * guess) > epsilon)
 #else
     for (int i = 0; i < 10; i++) // Fixed iterations
 #endif
@@ -471,20 +478,20 @@ void PXAPI PXMathRootSquareF32V(PXF32 PXREF outputListY, const PXF32 PXREF input
 
     if(1)
     {
-     
+
 
         return; // DONE
     }
 
     if(1)
     {
-   
+
     }
 
-  
+
     if(1)
     {
-       
+
 
         return; // DONE
     }
@@ -582,9 +589,9 @@ void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PX
     __m128h dataOut;
 
     PXMemoryCopyF16V(dataInput.m128i_u16, inputListX, 8);
-     
+
    // dataOut = _mm_invsqrt_ph(dataInput); // AVX512_FP16
-   
+
     PXMemoryCopyF16V(outputListY, dataOut.m128i_u16, 8);
 }
 
@@ -614,19 +621,19 @@ void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PX
 
 double PXAPI PXMathRootCubic(const double x)
 {
-#if PXStandardLibraryMathUse   
+#if PXStandardLibraryMathUse
     return cbrt(x);
 #else
     double guess = x / 3.0;
     double epsilon = 0.00001; // Precision level
 
-    while ((guess * guess * guess - x) > epsilon || (x - guess * guess * guess) > epsilon) 
+    while ((guess * guess * guess - x) > epsilon || (x - guess * guess * guess) > epsilon)
     {
         guess = (2.0 * guess + x / (guess * guess)) / 3.0;
     }
 
     return guess;
-#endif  
+#endif
 }
 
 void PXAPI PXMathRootCubeInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
@@ -648,7 +655,7 @@ void PXAPI PXMathRootCubeInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXRE
 
     PXMemoryCopyF32V(dataInput.m128_f32, inputListX, 4);
 
-    __m128 _mm_invcbrt_ps(dataInput); // SSE
+    __m128 data = _mm_invcbrt_ps(dataInput); // SSE
 
     PXMemoryCopyF32V(outputListY, dataInput.m128_f32, 4);
 }
@@ -660,7 +667,7 @@ void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXRE
 
     PXMemoryCopyF64V(dataInput.m128d_f64, inputListX, 2);
 
-    __m128d _mm_invcbrt_pd(dataInput); // SSE
+    __m128d data = _mm_invcbrt_pd(dataInput); // SSE
 
     PXMemoryCopyF64V(outputListY, dataInput.m128d_f64, 2);
 }
@@ -683,7 +690,7 @@ double PXAPI PXMathPythagoras(double a, double b)
 {
 #if PXStandardLibraryMathUse
     return hypot(a, b);
-#else 
+#else
     return PXMathRootSquare(PXMathPowerOfTwo(a) + PXMathPowerOfTwo(b));
 #endif
 }
@@ -737,7 +744,7 @@ double PXAPI PXMathLogarithmus(int x, double exponent)
     return 0;// _dlog(exponent, base); // TODO: !!!
 #endif
 
-    // Taylor series expansion    
+    // Taylor series expansion
     if (x <= 0)
     {
         return -1; // Error: log is undefined for non-positive values
@@ -749,14 +756,14 @@ double PXAPI PXMathLogarithmus(int x, double exponent)
     double numerator = term;
     int n = 1;
 
-    while (n < 100) 
+    while (n < 100)
     { // More iterations for better accuracy
         result += numerator / (2 * n - 1);
         numerator *= term_squared;
         n++;
     }
 
-    return 2 * result;    
+    return 2 * result;
 }
 
 double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
@@ -1011,7 +1018,7 @@ PXF64 PXAPI PXMathTangensRADF64(const PXF64 x)
 #if PXStandardLibraryMathUse
     return tan(x);
 #else
-    return PXMathSinusD(x) / PXMathCosinusD(x); 
+    return PXMathSinusD(x) / PXMathCosinusD(x);
 #endif
 }
 
@@ -1022,7 +1029,7 @@ PXF32 PXAPI PXMathCosinusRADF32(const PXF32 x)
 
 void PXAPI PXMathCosinusDEGF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
-   
+
 }
 
 void PXAPI PXMathCosinusDEGF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
@@ -1086,12 +1093,12 @@ void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 P
 
 void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
- 
+
 }
 
 void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
-  
+
 }
 
 PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x)
@@ -1104,7 +1111,7 @@ PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x)
     double x_squared = x * x;
     int n = 1;
 
-    while (term > 0.00001 || term < -0.00001) 
+    while (term > 0.00001 || term < -0.00001)
     {
         term *= -x_squared / (2 * n * (2 * n - 1));
         sum += term;
@@ -1117,7 +1124,7 @@ PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x)
 
 PXF32 PXAPI PXMathCosinusDEGF32(const PXF32 x)
 {
-    float rad = x * (PXMathPI / 180.0f); 
+    float rad = x * (PXMathPI / 180.0f);
     return PXMathCosinusRADF32(rad);
 }
 
@@ -1143,7 +1150,7 @@ double PXAPI PXMathArcusSinus(const double x)
 #if PXStandardLibraryMathUse
     return asin(x);
 #else
-    if (x < -1.0 || x > 1.0) 
+    if (x < -1.0 || x > 1.0)
     {
         return -1; // Error: asin is undefined for values outside [-1, 1]
     }
@@ -1153,7 +1160,7 @@ double PXAPI PXMathArcusSinus(const double x)
     double x_squared = x * x;
     int n = 1;
 
-    while (term > 0.00001 || term < -0.00001) 
+    while (term > 0.00001 || term < -0.00001)
     {
         term *= x_squared * (2 * n - 1) / (2 * n + 1);
         result += term / (2 * n + 1);
@@ -1171,18 +1178,18 @@ PXF32 PXAPI PXMathArcusCosinusF32(const PXF32 x)
 
 double PXAPI PXMathHyperbolicCosinus(const double x)
 {
-#if PXStandardLibraryMathUse 
+#if PXStandardLibraryMathUse
     return cosh(x);
 #else
     double ex = PXExponential(x);
     double e_minus_x = PXExponential(-x);
     return (ex + e_minus_x) / 2.0;
-#endif 
+#endif
 }
 
 double PXAPI PXMathHyperbolicTangens(const double x)
 {
-#if PXStandardLibraryMathUse  
+#if PXStandardLibraryMathUse
     return tanh(x);
 #else
     double ex = PXExponential(x);
@@ -1201,7 +1208,7 @@ double PXAPI PXMathArcusTangens(const double x)
     double x_squared = x * x;
     int n = 1;
 
-    while (term > 0.00001 || term < -0.00001) 
+    while (term > 0.00001 || term < -0.00001)
     {
         result += term / (2 * n - 1);
         term *= -x_squared;
@@ -1209,7 +1216,7 @@ double PXAPI PXMathArcusTangens(const double x)
     }
 
     return result;
-#endif    
+#endif
 }
 
 
@@ -1222,17 +1229,17 @@ a = a - b;
 
 void PXAPI PXMathShuffleI8
 (
-    const PXI8U PXREF input, 
+    const PXI8U PXREF input,
     PXI8U PXREF output,
-    const PXSize amount, 
+    const PXSize amount,
     const PXI8U* mask,
     const PXI8U maskAmount
 )
-{ 
+{
     PXSize i = 0;
 
     __m512i shuffleMask;
-  
+
     // Build
     for(PXI8U j = 0; j < 64; ++j)
     {
@@ -1287,18 +1294,18 @@ double PXAPI PXMathArcusTangens2(double x, double y)
     {
         return 0; // Undefined for (0, 0)
     }
-#endif    
+#endif
 }
 
-double PXAPI PXExponential(const double x) 
+double PXAPI PXExponential(const double x)
 {
-    // Taylor series    
+    // Taylor series
     double result = 1.0; // Initialize result to 1 (the first term of the series)
     double term = 1.0;   // Initialize the first term to 1
     int n = 1;
 
     // Continue adding terms until the term is very small
-    while (term > 0.00001 || term < -0.00001) 
+    while (term > 0.00001 || term < -0.00001)
     {
         term *= x / n;   // Calculate the next term in the series
         result += term;  // Add the term to the result
@@ -1388,20 +1395,20 @@ void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32 PXREF resultA, PX
     *resultB = pHalfNeg - rootResult;
 }
 
-// Horner's Method 
-// Reform  2x^3 - 6x^2 + 2x - 1 into 
+// Horner's Method
+// Reform  2x^3 - 6x^2 + 2x - 1 into
 // double coefficientList[] = {2, -6, 2, -1}; // Each element is a a*x^b
-// int degree = 3; // The size of the list -1. 
+// int degree = 3; // The size of the list -1.
 // double x = 3.0; // The value for x in the term
 double PXAPI PXMathHornerD(double PXREF coefficientList, const PXI32U degree, const double x)
 {
     double result = coefficientList[0];
-    
-    for (int i = 1; i <= degree; ++i) 
+
+    for (int i = 1; i <= degree; ++i)
     {
         result = result * x + coefficientList[i];
     }
-    
+
     return result;
 }
 

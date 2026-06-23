@@ -14,6 +14,10 @@
 #include <PX/Type/PXColor.h>
 #include <PX/Type/PXCamera.h>
 
+#if OSUnix
+#include <X11/Xlib.h> // Display*
+#endif
+
 
 // Atomic UI-Element
 // Only Text can be text
@@ -126,7 +130,7 @@ typedef struct PXDrawInfo_
     // Color
     PXBrush* Brush;
     PXColorRGBI8 Color;
-        
+
     // Rectangle
     PXBool Rounded;
 
@@ -144,8 +148,8 @@ PXDrawInfo;
 
 
 
-PXPublic const char* PXWindowDockSideToString(const PXWindowDockSide pxWindowDockSide);
 
+#if OSWindows
 typedef struct BoxInsets
 {
     int l, t, r, b;
@@ -162,7 +166,7 @@ typedef struct DockLayoutConfig {
     BoxInsets padTop;     // padding inside TOP band area
     BoxInsets padBottom;  // padding inside BOTTOM band area
     BoxInsets padCenter;  // padding inside CENTER area
-    BOOL centerVertical;  // TRUE => center stacks vertically; FALSE => horizontally
+    PXBool centerVertical;  // TRUE => center stacks vertically; FALSE => horizontally
 } DockLayoutConfig;
 
 
@@ -171,25 +175,28 @@ typedef struct DockLayoutConfig {
 
 void SubSegment(RECT* m, RECT* r, PXWindowDockSide side);
 
-
 // For allocation convenience
-typedef struct Paneref { HWND h; PXWindow* p; } Paneref;
+typedef struct Paneref 
+{
+    HWND h; 
+    PXWindow* p;
+} 
+Paneref;
 
-
-
-typedef struct DockOverlay {
+typedef struct DockOverlay 
+{
     BOOL     active;
     PXWindowDockSide side;
     RECT     rect;        // rectangle of preview area
-} DockOverlay;
+} 
+DockOverlay;
 
 static DockOverlay gOverlay = { 0 };
 
 
-PXPublic PXWindow* PXAPI PXWindowRootGet(const PXWindow PXREF pxWindow);
-PXPublic PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow);
 
-PXPublic PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow);
+
+
 
 
 void LayoutDockedAA(PXWindow PXREF pxWindow);
@@ -204,7 +211,7 @@ void DistributeAxisWithBox(Paneref* arr, int n, int availableAxis, int spacing, 
 void ApplyStackWithBox(HWND hParent, HDWP* phdwp, RECT area, BOOL vertical, Paneref* arr, int n, int spacing);
 RECT InsetRectBy(RECT r, BoxInsets in);
 void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg);
-// End of file
+
 
 BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
 PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
@@ -221,6 +228,7 @@ void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGBI8 PXR
 void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
 
 
+#endif
 
 
 
@@ -750,7 +758,7 @@ typedef enum PXUIElementType_
 
     PXUIElementTypeFileManager,    // TreeView of filesystem with utility
     PXUIElementTypeResourceManger, // TreeView of a list of resource entrys
-    PXUIElementTypeResourceEntry,  // Panel with name and icons of type and propertys 
+    PXUIElementTypeResourceEntry,  // Panel with name and icons of type and propertys
     PXUIElementTypeResourceInfo    // Resource info
 }
 PXUIElementType;
@@ -814,7 +822,7 @@ typedef struct PXWindowEventInputKeyboard_
     {
         char CharacterA;
         wchar_t CharacterW;
-    };  
+    };
 
     PXI16U CharacterID;
 }
@@ -1011,7 +1019,7 @@ typedef struct PXWindowCreateInfo_
     PXWindowState State;
 
     // Style
- 
+
 
     PXColorRGBI8 BackGroundColor;
 
@@ -1022,7 +1030,7 @@ typedef struct PXWindowCreateInfo_
     PXBool DoOpenGL;
 
 
- 
+
 
     // Setings
     PXBool UsePhysical; // Dont create a HANDLE for the window. Nested rendering
@@ -1037,13 +1045,13 @@ typedef struct PXWindowCreateInfo_
 
     PXWindow* UIElementReference;
 
- 
+
 
 
 
     PXWindowEventList EventList;
 
-   
+
 
     //PXI32U FlagList;
 
@@ -1112,21 +1120,23 @@ PXWindowPositionCalulcateInfo;
 
 PXPublic const char* PXAPI PXWindowTypeToString(const PXUIElementType pxUIElementType);
 
-
 PXPublic void PXAPI PXWindowRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
+#if OSUnix
+#elif OSWindows
 PXPublic HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow);
 PXPublic HWND PXAPI PXWindowHandleGet(PXWindow PXREF pxWindow);
-
-PXPublic RECT PXAPI PXWindowRectOf(HWND h);
 PXPublic PXWindow* PXAPI PXWindowFromHandle(const HWND windowHandle);
+#endif
+
+
 
 
 //---------------------------------------------------------
 // WINDOW-EVENT
 
-// This function consumes events first before any other 
-// listener revices this. Because of this, this event handler 
+// This function consumes events first before any other
+// listener revices this. Because of this, this event handler
 // shall only handle low-level events and not be too much in the way
 PXPublic PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent);
 
@@ -1145,9 +1155,12 @@ PXPublic void PXAPI PXWindowEventMoved(PXWindow PXREF pxWindow, PXWindowEvent PX
 //---------------------------------------------------------
 
 
+PXPublic PXWindow* PXAPI PXWindowRootGet(const PXWindow PXREF pxWindow);
+PXPublic PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow);
 
+PXPublic PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow);
 
-
+PXPublic const char* PXWindowDockSideToString(const PXWindowDockSide pxWindowDockSide);
 
 
 PXPublic PXResult PXAPI PXWindowEventPendingAmount(PXSize PXREF amount);
@@ -1196,8 +1209,8 @@ PXPublic PXBool PXAPI PXWindowIsPhysical(const PXWindow PXREF pxWindow);
 
 PXPublic PXResult PXAPI PXWindowVisibilitySet
 (
-    PXWindow PXREF pxWindow, 
-    const PXBool doRenderingSelf, 
+    PXWindow PXREF pxWindow,
+    const PXBool doRenderingSelf,
     const PXBool doRenderingChildren
 );
 

@@ -26,10 +26,11 @@ typedef struct PXThread_
 
 #if OSUnix
     PXI32U ThreadID;
+    int ThreadHandle;
 #elif OSWindows
     DWORD ThreadID;
     HANDLE ThreadHandle;
-#endif 
+#endif
 }
 PXThread;
 
@@ -124,7 +125,7 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
 
     const int errorID = pthread_create
     (
-        &pxThread->Info.Handle.ThreadHandle,
+        &pxThread->ThreadHandle,
         0,
         threadFunction,
         (void*)parameter
@@ -174,7 +175,7 @@ PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF p
             threadId
         );
     }
-   
+
     const PXResult threadCreateResult = PXErrorCurrent(PXNull != pxThread->ThreadHandle);
 #else
     const PXResult threadCreateResult = PXActionRefusedNotSupported;
@@ -793,7 +794,7 @@ PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThrea
     switch(pxThreadState)
     {
         case PXECSFlagStateWAITING:
-        { 
+        {
             PXThreadWait(pxThread);
             break;
         }
@@ -1055,24 +1056,24 @@ PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const P
 
     // Data can be found here:
     // /proc/[pid]/task/[tid]/status
-    
+
     struct user_regs_struct regs;
 
     const long attachResultID = ptrace(PTRACE_ATTACH, tid, NULL, NULL);
     const PXBool attachSuccess = attachResultID == -1;
-    
-    if (!attachSuccess) 
+
+    if (!attachSuccess)
     {
         perror("ptrace attach");
         return;
     }
-    
+
     waitpid(tid, NULL, 0);
 
     const long getRegisterID = ptrace(PTRACE_GETREGS, tid, NULL, &regs);
     const PXBool getRegisterSuccess = getRegisterID == -1;
-    
-    if (!getRegisterSuccess) 
+
+    if (!getRegisterSuccess)
     {
         perror("ptrace getregs");
         ptrace(PTRACE_DETACH, tid, NULL, NULL);
@@ -1081,13 +1082,13 @@ PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const P
     printf("RIP: %llx\n", regs.rip);
     // Print other registers as needed
     ptrace(PTRACE_DETACH, tid, NULL, NULL);
-    
+
 #elif OSWindows
     CONTEXT context;
     PXClear(CONTEXT, &context);
     context.ContextFlags = CONTEXT_ALL;
-    
-    const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h    
+
+    const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult getResult = PXErrorCurrent(getResultID);
 
     if(PXResultOK != getResult)
@@ -1125,7 +1126,7 @@ PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const P
 
     //pxThreadContext->X86.PXF32Save = context.PXF32Save;
     PXCopyList(BYTE, MAXIMUM_SUPPORTED_EXTENSION, context.ExtendedRegisters, pxThreadContext->X86.ExtendedRegisters);
- 
+
 #elif OS64B
 #endif
 
@@ -1134,7 +1135,7 @@ PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const P
     return getResult;
 #else
     return PXNotimplemented;
-#endif    
+#endif
 }
 
 

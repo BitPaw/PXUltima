@@ -2,7 +2,11 @@
 
 typedef struct PXECSEventDemuxer_
 {
+#if OSUnix
+    int Dummy;
+#elif OSWindows
     HANDLE IOCompletionPortHandle;
+#endif
 }
 PXECSEventDemuxer;
 
@@ -10,18 +14,26 @@ PXECSEventDemuxer _PXECSEventDemuxer;
 
 PXResult PXAPI PXECSEventDemuxerCreate()
 {
+#if OSUnix
+#elif OSWindows
     _PXECSEventDemuxer.IOCompletionPortHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 1);
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXECSEventDemuxerRelease()
 {
+#if OSUnix
+#elif OSWindows
     BOOL result = CloseHandle(_PXECSEventDemuxer.IOCompletionPortHandle);
+#endif
 
     return PXResultOK;
 }
 
+#if OSUnix
+#elif OSWindows
 PXResult PXAPI PXECSEventDemuxerHandleAdd(HANDLE winHandle, PXECSInfo PXREF pxECSPayload)
 {
     // Associate the handle with the IOCP with userdata pointer.
@@ -44,9 +56,12 @@ PXResult PXAPI PXECSEventDemuxerHandleRemove(HANDLE winHandle)
     CloseHandle(winHandle);
     return 0;
 }
+#endif
 
 PXResult PXAPI PXECSEventDemuxerWaitCancel()
 {
+#if OSUnix
+#elif OSWindows
     // Post a dummy completion to wake the wait
     BOOL result = PostQueuedCompletionStatus
     (
@@ -55,12 +70,15 @@ PXResult PXAPI PXECSEventDemuxerWaitCancel()
         (ULONG_PTR)NULL, 
         NULL
     );
+#endif
 
     return 0;
 }
 
 PXResult PXAPI PXECSEventDemuxerWait()
 {
+#if OSUnix
+#elif OSWindows
     PXECSEventInfo* pxECSPayload;
     LPOVERLAPPED overLappedData;
     DWORD bytesRead = 0; 
@@ -92,6 +110,7 @@ PXResult PXAPI PXECSEventDemuxerWait()
         // We prepare for the next loop
         waitingTime = 0; // Next fetch time reduced to zero!
     }
+#endif
 
     return PXResultOK;
 }

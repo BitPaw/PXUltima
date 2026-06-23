@@ -4,12 +4,10 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/DDS/PXDDS.h>
 
+
 #define PXD8WDebugLog 0
 
 const char PXD8WName[] = "D8W";
-
-
-
 
 const PXI32U PXD8WHeaderList[] =
 {
@@ -37,16 +35,7 @@ const PXI32U PXD8WTextureTableEntryList[] =
 const PXI8U PXD8WTextureTableEntryListSize = sizeof(PXD8WTextureTableEntryList) / sizeof(PXI32U);
 
 
-
-
-
-
-
-
-
 int counter = 0;
-
-#include <intrin.h>
 
 PXResult PXAPI PXD8WLoadFromFile(PXTexturePool PXREF pxTexturePool, PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePoolFile)
 {

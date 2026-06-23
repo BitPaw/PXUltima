@@ -10,8 +10,11 @@
 PXPublic PXResult PXAPI PXECSEventDemuxerCreate();
 PXPublic PXResult PXAPI PXECSEventDemuxerRelease();
 
+#if OSUnix
+#elif OSWindows
 PXPublic PXResult PXAPI PXECSEventDemuxerHandleAdd(HANDLE winHandle, PXECSInfo PXREF pxECSPayload);
 PXPublic PXResult PXAPI PXECSEventDemuxerHandleRemove(HANDLE winHandle);
+#endif
 
 PXPublic PXResult PXAPI PXECSEventDemuxerWaitCancel();
 

@@ -239,7 +239,7 @@ PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory PXREF pxSymbolMemory, const
 PXPublic PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSymbol);
 
 
-// Check if two pointers overlap, if they do, we can't use a memory copy function, instaead 
+// Check if two pointers overlap, if they do, we can't use a memory copy function, instaead
 // we need to use memory move, because of optimisattion that results in copy corruption.
 PXPublic PXBool PXAPI PXMemoryDoAdressesOverlap(void PXREF adressA, const PXSize adressALengh, void PXREF adressB, const PXSize adressBLengh);
 
@@ -351,7 +351,7 @@ PXPublic void PXAPI PXMemoryCopyF16ToF32V(PXF16 PXREF destination, const PXF32 P
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-#pragma optimize( "", off )
+
 PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
@@ -367,7 +367,6 @@ PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBu
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-#pragma optimize( "", off )
 PXPublic void PXAPI PXMemoryClear(void PXREF PXRestrict bufferA, const PXSize bufferASize);
 
 #define PXClear(type, adress) PXMemoryClear(adress, sizeof(type));
@@ -386,10 +385,8 @@ PXPublic void PXAPI PXMemoryClear(void PXREF PXRestrict bufferA, const PXSize bu
 //---------------------------------------------------------
 // Set
 //---------------------------------------------------------
-#pragma optimize( "", off )
 PXPublic void PXAPI PXMemorySetI32U(int PXREF PXRestrict bufferA, const int value, const PXSize amount);
 
-#pragma optimize( "", off )
 PXPublic void PXAPI PXMemorySet(void PXREF PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
 #define PXSet(type, adress, value) PXMemorySet(adress, value, sizeof(type));
 #define PXSetList(type, adress, amount, value) PXMemorySet(adress, value, sizeof(type) * amount);
@@ -457,9 +454,9 @@ PXPublic PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, cons
 // This function is not like memcmp that returns -1, 0, and 1!
 PXPublic PXBool PXAPI PXMemoryCompare
 (
-    const void* PXRestrict bufferA, 
-    const PXSize bufferASize, 
-    const void* PXRestrict bufferB, 
+    const void* PXRestrict bufferA,
+    const PXSize bufferASize,
+    const void* PXRestrict bufferB,
     const PXSize bufferBSize,
     const PXBool expectEqualSize
 );

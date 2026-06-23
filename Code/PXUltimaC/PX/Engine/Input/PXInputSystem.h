@@ -6,9 +6,9 @@
 #include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Math/PXMatrix.h>
+
 #include "PXInputPlayer.h"
 #include "PXInputDevice.h"
-
 
 
 typedef struct PXMMJoystick_
@@ -25,15 +25,18 @@ PXMMJoystick;
 typedef struct PXInputSystem_
 {
     // LIB
+#if OSUnix
+#elif OSWindows
     struct IDirectInput8W* DirectInput8Handle;
+
+    PXMMJoystick JoystickMM;
+#endif
 
     PXSize InputPlayerAmount;
     PXInputPlayer* InputPlayerList;
 
     PXSize DeviceAmount;
     PXInputDevice* DeviceList;
-
-    PXMMJoystick JoystickMM;
 }
 PXInputSystem;
 
@@ -63,8 +66,9 @@ PXPublic PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controller
 
 
 // TODO: TEST
+#if OSWindows
 PXPublic PXBool SendVibration_0079_0006(UCHAR strong, UCHAR weak);
 PXPublic PXBool SendVibration_HIDPATH(WCHAR* path, UCHAR strong, UCHAR weak);
-
+#endif
 
 #endif

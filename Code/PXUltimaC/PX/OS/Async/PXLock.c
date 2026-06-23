@@ -178,7 +178,7 @@ PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
     int sharedPointer = 0;
     unsigned int value = 1;
 
-    const int resultID = sem_init(&pxLock->ID, sharedPointer, value);
+    const int resultID = sem_init(&pxLock->SemaphoreHandle, sharedPointer, value);
     pxResult = PXErrorCurrent(0 == resultID); // 0=sucessful, -1=Error
 
 #elif OSWindows
@@ -220,7 +220,7 @@ PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock)
 #endif
 
 #if OSUnix
-    const int closingResult = sem_destroy(&lock->ID);
+    const int closingResult = sem_destroy(&pxLock->SemaphoreHandle);
 #elif OSWindows
     const BOOL closingResult = CloseHandle(pxLock->SemaphoreHandle);
 #endif
@@ -241,7 +241,7 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock, const PXBool forceEntering)
     PXResult waitResult = PXResultInvalid;
 
 #if OSUnix
-    const int waitResultID = sem_wait(&lock->SemaphoreHandle);
+    const int waitResultID = sem_wait(&pxLock->SemaphoreHandle);
     waitResult = PXErrorCurrent(0 == waitResultID);
 #elif OSWindows
 
@@ -308,11 +308,6 @@ PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
         return PXResultInvalid;
     }
 
-    if(0 == pxLock->SemaphoreHandle)
-    {
-        return PXResultInvalid;
-    }
-
 #if PXLogEnable  && 0
     PXLogPrint
     (
@@ -324,12 +319,18 @@ PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
 #endif
 
 #if OSUnix
-    const int releaseResultID = sem_post(&pxLock->ID);
+    const int releaseResultID = sem_post(&pxLock->SemaphoreHandle);
     const PXResult releaseResult = PXErrorCurrent(0 == releaseResultID);
 #elif OSWindows
+
+    if(PXNull == pxLock->SemaphoreHandle)
+    {
+        return PXResultInvalid;
+    }
+
     const BOOL releaseResultID = ReleaseSemaphore(pxLock->SemaphoreHandle, 1, PXNull);
     const PXResult releaseResult = PXErrorCurrent(releaseResultID);
-#endif   
+#endif
 
     return releaseResult;
 }
@@ -338,7 +339,7 @@ PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock)
 {
 #if OSUnix
 
-#elif OSWindows     
+#elif OSWindows
     PXClear(CRITICAL_SECTION, &pxLock->SectionHandle);
     InitializeCriticalSection(&pxLock->SectionHandle);
 #endif
@@ -416,7 +417,7 @@ PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEnt
                 continue;
             }
 
-#if PXLogEnable 
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,

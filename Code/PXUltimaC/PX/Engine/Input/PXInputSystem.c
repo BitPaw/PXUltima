@@ -7,6 +7,8 @@
 
 #if OSUnix
 
+// ???
+
 #elif OSWindows
 
 #ifndef DIRECTINPUT_VERSION
@@ -15,18 +17,43 @@
 
 
 #include <windows.h>
-#include <setupapi.h>
-#pragma comment(lib, "setupapi.lib")
-#include <hidsdi.h>
-#pragma comment(lib, "hid.lib")
-#include <dinput.h> // Doc states Dinput8.h
 
-#pragma comment(lib, "Dinput8.lib") // This is D8 not D7!
 
-#include <Xinput.h> // XBOX controllers
+#if WindowsAtleastVista
+#include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
+#else
+#include <MMSystem.h>
 
 #endif
 
+#pragma comment( lib, "winmm.lib" )
+
+typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
+typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);
+typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji);
+
+
+//------------------------------
+#include <setupapi.h>
+#pragma comment(lib, "setupapi.lib")
+//------------------------------
+#include <hidsdi.h>
+#pragma comment(lib, "hid.lib")
+//------------------------------
+#include <dinput.h> // Doc states Dinput8.h
+#pragma comment(lib, "Dinput8.lib") // This is D8 not D7!
+//------------------------------
+#include <Xinput.h> // XBOX controllers
+//------------------------------
+
+#endif
+
+
+const char PXWindowsMultiMedia[] = "WINMM.DLL";
+const PXI8U PXWindowsMultiMediaLength = sizeof(PXWindowsMultiMedia);
+
+
+#if OSWindows
 BOOL CALLBACK PXDirectInputDeviceListCallback(const DIDEVICEINSTANCEW* inst, PXInputSystem PXREF pxInputSystem)
 {
     inst->guidProduct;
@@ -159,15 +186,34 @@ BOOL CALLBACK PXDirectInputDeviceListCallback(const DIDEVICEINSTANCEW* inst, PXI
     return DIENUM_CONTINUE;
 }
 
+BOOL CALLBACK PXInputEnumEffectsCallback(LPCDIEFFECTINFOW pei, LPVOID pvRef)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Device",
+        "Fetch",
+        "GUID:%4.4x Name:%ls",
+        pei->guid,
+        pei->tszName
+    );
+#endif
+
+    return DIENUM_CONTINUE;
+}
+#endif
+
 
 PXInputPlayer* PXAPI PXInputSystemPlayerGet(const PXSize playerNR)
 {
     return PXNull;
 }
 
-
 PXResult PXAPI PXInputSystemDevicesRefreshRawInput(PXInputSystem PXREF pxInputSystem)
 {
+#if OSUnix
+#elif OSWindows
     UINT numDevices = 0;
 
     union
@@ -322,12 +368,17 @@ PXResult PXAPI PXInputSystemDevicesRefreshRawInput(PXInputSystem PXREF pxInputSy
             }
         }
     }
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXInputSystemDevicesRefreshXInput(PXInputSystem PXREF pxInputSystem)
 {
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
     for(DWORD playerID = 0; playerID < 4; ++playerID) 
     {       
         XINPUT_STATE xInputState;
@@ -341,12 +392,19 @@ PXResult PXAPI PXInputSystemDevicesRefreshXInput(PXInputSystem PXREF pxInputSyst
     }
 
     return PXResultOK;
+#endif
 }
 
 PXResult PXAPI PXInputSystemDevicesRefreshDirectInput(PXInputSystem PXREF pxInputSystem)
 {
+    PXResult pxResult = PXResultInvalid;
+
+#if OSUnix
+
+    pxResult = PXActionRefusedNotImplemented;
+
+#elif OSWindows
     HRESULT result;
-    PXResult pxResult;
 
     result = DirectInput8Create
     (
@@ -383,6 +441,8 @@ PXResult PXAPI PXInputSystemDevicesRefreshDirectInput(PXInputSystem PXREF pxInpu
     );
     pxResult = PXErrorCurrent(result);
     
+#endif
+
     return pxResult;
 }
 
@@ -393,8 +453,7 @@ PXResult PXAPI PXInputSystemDevicesRefresh(void)
 {
     PXInputSystemDevicesRefreshRawInput(&_pxInputSystem);
     PXInputSystemDevicesRefreshXInput(&_pxInputSystem);
-    PXInputSystemDevicesRefreshDirectInput(&_pxInputSystem);   
-
+    PXInputSystemDevicesRefreshDirectInput(&_pxInputSystem);
 
 
     for(PXSize i = 0; i < _pxInputSystem.DeviceAmount; i++)
@@ -420,12 +479,10 @@ PXResult PXAPI PXInputSystemDevicesRefresh(void)
 #endif
     }
 
-
-
-
     return PXResultOK;
 }
 
+#if OSWindows
 PXBool SendVibration_0079_0006(UCHAR strong, UCHAR weak)
 {
     GUID hidGuid;
@@ -532,13 +589,17 @@ PXBool SendVibration_HIDPATH(WCHAR* path, UCHAR strong, UCHAR weak)
   
     return ok;
 }
-
-
+#endif
 
 PXResult PXAPI PXInputDevicePoll(PXInputDevice PXREF pxInputDevice)
 {
-    HRESULT result;
     PXResult pxResult;
+
+#if OSUnix
+    pxResult = PXActionRefusedNotImplemented;
+
+#elif OSWindows
+    HRESULT result;
 
     DIJOYSTATE2 directInputJoyState;
     ZeroMemory(&directInputJoyState, sizeof(directInputJoyState));
@@ -623,7 +684,7 @@ PXResult PXAPI PXInputDevicePoll(PXInputDevice PXREF pxInputDevice)
     pxController->AxisVelocity[6] = directInputJoyState.rglVSlider[0];
     pxController->AxisVelocity[7] = directInputJoyState.rglVSlider[1];
 
-   // directInputJoyState.rgbButtons;
+#endif
 
     return pxResult;
 }
@@ -650,30 +711,16 @@ PXInputDevice* PXAPI PXInputControllerGet(const PXSize index)
     return PXNull;
 }
 
-
-BOOL CALLBACK PXInputEnumEffectsCallback(LPCDIEFFECTINFOW pei, LPVOID pvRef)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Device",
-        "Fetch",
-        "GUID:%4.4x Name:%ls",
-        pei->guid,
-        pei->tszName
-    );
-#endif
-
-    return DIENUM_CONTINUE;
-}
-
 PXResult PXAPI PXInputDeviceOpen(PXInputDevice PXREF pxInputDevice, PXWindow PXREF pxWindow)
 {
     if(!(pxInputDevice && pxWindow))
     {
         return PXResultRefusedParameterNull;
     }
+
+#if OSUnix
+#elif OSWindows
+
 
     IDirectInput8W* directInput = &_pxInputSystem;
     HRESULT result;
@@ -807,34 +854,10 @@ XInputSetState(0, &vib);
 
     */
 
+#endif
+
     return PXResultOK;
 }
-
-
-
-
-#if OSUnix
-
-#elif OSWindows
-
-#include <windows.h>
-
-#if WindowsAtleastVista
-#include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
-#else
-#include <MMSystem.h>
-#endif
-
-#pragma comment( lib, "winmm.lib" )
-
-typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
-typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);
-typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji);
-
-#endif
-
-const char PXWindowsMultiMedia[] = "WINMM.DLL";
-const PXI8U PXWindowsMultiMediaLength = sizeof(PXWindowsMultiMedia);
 
 PXResult PXAPI PXControllerSystemInitilize(PXMMJoystick PXREF pxControllerSystem)
 {
@@ -952,7 +975,7 @@ PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXInputSystem PXREF pxControl
 
 
 
-#if (Version_Windows_NT)
+#if Version_Windows_NT
         JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
         joystickInfo.dwSize = sizeof(JOYINFOEX);

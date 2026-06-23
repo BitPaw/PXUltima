@@ -8,6 +8,8 @@
 #include <PX/Container/Buffer/PXBuffer.h>
 
 
+#define PXTextureNoMinmaps 0
+
 #define PXTexturePropertyWidth      1
 #define PXTexturePropertyHeight     2
 #define PXTexturePropertyDepth      3
@@ -228,7 +230,7 @@ PXPublic PXBuffer* PXAPI PXTexturePixelData(PXTexture PXREF pxTexture);
 
 PXPublic PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
 PXPublic PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
-PXPublic PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height);
+PXPublic PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height, const PXSize minmaps);
 PXPublic PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture);
 PXPublic PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture);
 PXPublic PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue);
@@ -254,6 +256,8 @@ PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
 
 PXPublic PXResult PXAPI PXTextureRegisterGL(PXTexture PXREF pxTexture);
 
-PXPublic HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amountofchannels, void* data);
+#if OSWindows
+PXPublic HBITMAP PXAPI PXBitMapFromImage(const PXI32S width, const PXI32S height, const PXI16U amountOfChannels, const void* data);
+#endif
 
 #endif

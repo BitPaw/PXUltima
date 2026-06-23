@@ -674,7 +674,7 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
 
 
 #if OSWindows
-HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amountofchannels, void* data)
+HBITMAP PXAPI PXBitMapFromImage(const PXI32S width, const PXI32S height, const PXI16U amountOfChannels, const void* data)
 {
     BITMAPINFO bmi;
     PXClear(BITMAPINFO, &bmi);
@@ -682,7 +682,7 @@ HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amo
     bmi.bmiHeader.biWidth = width;
     bmi.bmiHeader.biHeight = -height; // Top-down DIB 
     bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 8 * amountofchannels;
+    bmi.bmiHeader.biBitCount = 8 * amountOfChannels;
     bmi.bmiHeader.biCompression = BI_RGB;
     void* bitmapData;
     HBITMAP hBitmap = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &bitmapData, NULL, 0);
@@ -692,7 +692,7 @@ HBITMAP PXAPI PXBitMapFromImage(const int width, const int height, const int amo
         return PXNull;
     }
 
-    PXSize size = amountofchannels * width * height;
+    PXSize size = amountOfChannels * width * height;
 
     PXMemoryCopy(data, bitmapData, size);
 

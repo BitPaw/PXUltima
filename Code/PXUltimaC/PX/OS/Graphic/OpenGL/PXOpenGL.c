@@ -3282,7 +3282,14 @@ PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF
 
     PXOpenGLImageFormatToID(pxColorFormat, &formatStructure, &formatData);
       
-    PXTextureResize(pxTexture, pxColorFormat, width, height);    
+    PXTextureResize
+    (
+        pxTexture, 
+        pxColorFormat, 
+        width, 
+        height,
+        PXTextureNoMinmaps
+    );    
 
     pxOpenGL->Binding.ReadPixels
     (
@@ -6450,7 +6457,14 @@ void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL PXREF pxOpenGL, PXTexture PXRE
 
     PXOpenGLImageFormatToID(pxTexture->Format, &imageFormatID, &dataTypeID);
 
-    PXTextureResize(pxTexture, pxTexture->Format, width, height);
+    PXTextureResize
+    (
+        pxTexture, 
+        pxTexture->Format,
+        width, 
+        height,
+        PXTextureNoMinmaps
+    );
 
     pxOpenGL->Binding.ReadPixels(x, y, width, height, imageFormatID, dataTypeID, pxTexture->PixelData.Adress);
 }

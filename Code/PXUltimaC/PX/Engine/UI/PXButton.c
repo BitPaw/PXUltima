@@ -1,8 +1,12 @@
 #include "PXButton.h"
 #include <PX/OS/Console/PXConsole.h>
-#include <CommCtrl.h>
 #include <PX/Engine/PXGUI.h>
 #include <PX/OS/PXOS.h>
+
+#if OSUnix
+#elif OSWindows
+#include <CommCtrl.h>
+#endif
 
 const char PXButtonName[] = "Button";
 
@@ -76,12 +80,12 @@ PXResult PXAPI PXButtonCreate(PXButton** pxButtonREF, PXButtonCreateInfo PXREF p
 #if OSWindows
     pxWindowCreateInfo->WindowClassName.A = WC_BUTTON;
    // pxWindowCreateInfo->WindowText.A = pxWindowCreateInfo->Button.TextInfo.Content;
-#endif
+
 
     pxWindowCreateInfo->WindowClassName.A = WC_BUTTON;
     pxWindowCreateInfo->StyleFlags |= BS_AUTORADIOBUTTON;
 
-#if OSWindows
+
     pxWindowCreateInfo->WindowClassName.A = WC_BUTTON;
     pxWindowCreateInfo->StyleFlags |= BS_RADIOBUTTON;
 #endif

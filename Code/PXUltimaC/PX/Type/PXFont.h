@@ -51,13 +51,14 @@ typedef struct PXFont_
 {
     PXECSInfo Info;
 
+#if OSWindows
     HFONT FontHandle;
 
     PXI32U FontBase;
     LPGLYPHMETRICSFLOAT GlyphMetricsFloat; // Unicode range
+#endif
 
     PXBool IsOK;
-
 
     PXSize PageListAmount;
     PXI16U Size;
@@ -92,6 +93,8 @@ PXPublic PXResult PXAPI PXFontPageCreate(PXFont PXREF pxFont, const PXSize amoun
 PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF pxFontPage, const PXI32U characterID);
 
 PXPublic PXResult PXAPI PXFontListFetch();
+
+
 PXPublic PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCreateInfo);
 PXPublic PXResult PXAPI PXFontRelease(PXFont PXREF pxFont);
 

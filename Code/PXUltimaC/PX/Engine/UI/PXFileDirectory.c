@@ -1,12 +1,13 @@
 #include "PXFileDirectory.h"
 #include <PX/OS/Console/PXConsole.h>
-#include <CommCtrl.h>
-
 #include <PX/Type/PXIcon.h>
 #include <PX/Engine/PXGUI.h>
 
 
-
+#if OSUnix
+#elif OSWindows
+#include <CommCtrl.h>
+#endif
 
 const char PXFileDirectoryName[] = "FileDirectory";
 const PXI8U PXFileDirectoryNameLength = sizeof(PXFileDirectoryName);

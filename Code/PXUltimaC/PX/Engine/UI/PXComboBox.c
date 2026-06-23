@@ -1,5 +1,8 @@
 #include "PXComboBox.h"
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 PXResult PXAPI PXComboBoxDraw(PXComboBox PXREF pxComboBox, PXComboBoxCreateInfo PXREF pxComboBoxCreateInfo)
 {

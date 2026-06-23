@@ -1,6 +1,10 @@
 #include "PXTabList.h"
 #include <PX/Type/PXBrush.h>
+
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 
 const char PXTabListName[] = "PXTabList";

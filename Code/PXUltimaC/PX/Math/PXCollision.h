@@ -5,6 +5,7 @@
 
 #include <PX/Type/PXType.h>
 #include <PX/Math/PXVector.h>
+#include <PX/Math/PXTriangle.h>
 
 typedef enum PXCollisionBodyType_
 {
@@ -57,7 +58,7 @@ PXPublic PXF32 PXAPI PXRayTriangleIntersect
 (
     PXVector3F32 PXREF rayOriginPositon,
     PXVector3F32* rayOriginDirection,
-    const PXVector3F32 PXREF triangleVertexList,
+    const PXTriangleF32 PXREF triangleVertexList,
     const PXSize amountTriangles
 );
 

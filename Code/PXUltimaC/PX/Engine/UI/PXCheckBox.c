@@ -1,5 +1,8 @@
 #include "PXCheckBox.h"
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 PXResult PXAPI PXCheckBoxDraw(PXCheckBox PXREF pxCheckBox, PXCheckBoxCreateInfo PXREF pxCheckBoxCreateInfo)
 {

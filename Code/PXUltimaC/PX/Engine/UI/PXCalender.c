@@ -1,5 +1,9 @@
 #include "PXCalender.h"
+
+#if OSUnix
+#elif OSWindows
 #include <ShlObj.h>
+#endif
 
 PXResult PXAPI PXCalenderDraw(PXCalender PXREF pxCalender, PXCalenderCreateInfo PXREF pxCalenderCreateInfo)
 {

@@ -224,7 +224,14 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
     {
         PXClear(PXTexture, PXTexture);
 
-        PXTextureResize(PXTexture, PXColorFormatRGBI8, imageWidth, imageHeight);
+        PXTextureResize
+        (
+            PXTexture,
+            PXColorFormatRGBI8, 
+            imageWidth, 
+            imageHeight,
+            PXTextureNoMinmaps
+        );
 
         pxGraphic.ScreenBufferRead(pxGraphic.EventOwner, PXTexture);
 

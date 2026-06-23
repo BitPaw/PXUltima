@@ -6,7 +6,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXDocument.h>
 #include <PX/OS/Time/PXTime.h>
-
+#include <PX/Type/PXDOM.h>
 
 #define PXCompilerDebug 0
 #define PXCompilerSanitise 1
@@ -14,16 +14,10 @@
 #if PXCompilerDebug
 #include <stdio.h>
 #endif
-#include <PX/Type/PXDOM.h>
 
 const char PXCompilerText[] = "Compiler";
 const char PXCompilerTextLexer[] = "Lexer";
 const char PXCompilerTextParse[] = "Parse";
-
-
-
-
-
 
 
 const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer)

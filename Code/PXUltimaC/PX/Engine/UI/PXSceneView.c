@@ -148,7 +148,7 @@ void Idle(void)
 
 PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreateInfo PXREF pxSceneViewCreateInfo)
 {
-    PXSceneView* pxSceneView = PXNull; 
+    PXSceneView* pxSceneView = PXNull;
 
     pxSceneViewCreateInfo->Info.Info.Static = &PXSceneViewRegisterInfoStatic;
     pxSceneViewCreateInfo->Info.Info.Dynamic = &PXSceneViewRegisterInfoDynamic;
@@ -159,7 +159,7 @@ PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreate
         return pxResult;
     }
 
-    pxSceneView = *pxSceneViewREF; 
+    pxSceneView = *pxSceneViewREF;
     pxSceneView->CameraTarget = pxSceneViewCreateInfo->CameraTarget;
 
     return PXResultOK;

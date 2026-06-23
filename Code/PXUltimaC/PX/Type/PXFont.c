@@ -3,6 +3,12 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 
+#if OSUnix
+#include <fontconfig/fontconfig.h> // More modern than X11
+#elif OSWindows
+#endif
+
+
 const char PXFontText[] = "Font";
 const PXI8U PXFontTextLength = sizeof(PXFontText);
 const PXECSRegisterInfoStatic PXFontRegisterInfoStatic =
@@ -11,7 +17,9 @@ const PXECSRegisterInfoStatic PXFontRegisterInfoStatic =
     sizeof(PXFont),
     __alignof(PXFont),
     PXECSTypeResource,
-    PXFontCreate
+    PXFontCreate,
+    PXNull,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXFontRegisterInfoDynamic;
 
@@ -107,6 +115,77 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF pxFontPage,
 PXResult PXAPI PXFontListFetch()
 {
 #if OSUnix
+
+    //-----------------------------------------------------
+    // Modern way, old path is not maintained!
+    FcInit();
+
+    FcPattern* pat = FcPatternCreate();
+    FcObjectSet* os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, NULL);
+    FcFontSet* fs = FcFontList(NULL, pat, os);
+
+    for(PXSize i = 0; i < fs->nfont; i++) 
+    {
+        FcPattern* font = fs->fonts[i];
+
+        FcChar8* file;
+        FcChar8* family;
+
+        PXBool isOK =
+            FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch &&
+            FcPatternGetString(font, FC_FAMILY, 0, &family) == FcResultMatch;
+
+        if(!isOK)
+        {
+            continue;
+        }
+
+        printf("Font: %s (%s)\n", family, file);
+    }
+
+    FcFontSetDestroy(fs);
+    FcObjectSetDestroy(os);
+    FcPatternDestroy(pat);
+    FcFini();
+    //-----------------------------------------------------
+
+
+
+
+
+
+
+    //-----------------------------------------------------
+    // Legacy X-System pathway
+    //-----------------------------------------------------
+    Display* display = 0;
+    char* searchPattern = PXNull;
+    int fontNameListSizeMax = 0;
+    int fontNameListSizeCurrnet = 0;
+    XFontStruct* info = PXNull;
+    char** fontNameList = XListFontsWithInfo
+    (
+        display,
+        searchPattern,
+        fontNameListSizeMax,
+        &fontNameListSizeCurrnet,
+        &info
+    );
+    PXBool isOK = fontNameList > 0;
+
+    for(PXSize i = 0; i < fontNameListSizeCurrnet; ++i)
+    {
+        const char* fontName = names[i];
+        XFontStruct* f = &info[i];
+    }
+
+    XFreeFontNames(fontNameList);
+    //-----------------------------------------------------
+
+
+    // Can also have additional info
+    // char **XListFontsWithInfo(Display *display, char *pattern, int maxnames, int *count_return, XFontStruct
+
 
     /*
      TODO: implement

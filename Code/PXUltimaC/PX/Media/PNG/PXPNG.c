@@ -437,7 +437,14 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
                 break;
         }
 
-        const PXBool allocateResult = PXTextureResize(pxTexture, imageDataFormat, png->ImageHeader.Width, png->ImageHeader.Height);
+        const PXBool allocateResult = PXTextureResize
+        (
+            pxTexture, 
+            imageDataFormat, 
+            png->ImageHeader.Width,
+            png->ImageHeader.Height,
+            PXTextureNoMinmaps
+        );
 
         if(!allocateResult)
         {

@@ -3,8 +3,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Math/PXTriangle.h>
 #include <PX/Engine/PXRenderingSystem.h>
-#include <gl/GL.h>
-#include <gl/GLU.h>
+#include <GL/gl.h>
 
 #define PXColorPickerDebug 0
 
@@ -76,8 +75,8 @@ static void HSVToRGBA_Alpha(const PXColorHSV* hsv, float alpha, PXColorRGBAF* ou
 static void DrawGradientRectH
 (
     float x0,
-    float y0, 
-    float x1, 
+    float y0,
+    float x1,
     float y1,
     PXColorRGBAF* left,
     PXColorRGBAF* right
@@ -294,16 +293,17 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     float width = 0;//pxDrawInfo->RectangleXYWH.Width;
     float height = 0;//pxDrawInfo->RectangleXYWH.Height;
 
-    float viewHeight = height; // your chosen "zoom" 
+    float viewHeight = height; // your chosen "zoom"
     float viewWidth = viewHeight * pxDrawInfo->AspectRatio;
 
+    /*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     //gluPerspective(90, pxDrawInfo->AspectRatio, 0, 10000);
     gluOrtho2D(x, viewHeight, viewWidth, y);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
+    */
 
 
 
@@ -397,7 +397,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, (segmentAmount + 1) * 2);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }    
+        }
 
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
@@ -405,8 +405,8 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
 #endif
 
     float s = innerRadius;// (innerRadius * 2) / 1.7320508f;// 1.414213560f ~sqrt(3)
-    float a0 = 0;// 1.570796327f; // 90° 
-    float a1 = 120;//3.665191429f; // 210° 
+    float a0 = 0;// 1.570796327f; // 90°
+    float a1 = 120;//3.665191429f; // 210°
     float a2 = 240;//5.759586532f; // 330°
 
     if(1)
@@ -442,8 +442,8 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
         glVertex2f(centerX + s, centerY + s);
         glVertex2f(centerX - s, centerY + s);
         glEnd();
-    }    
-    
+    }
+
 
     PXTriangleF32 pxTriangle;
     pxTriangle.A.X = centerX + s * PXMathCosinusDEGF32(a0);
@@ -454,7 +454,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     pxTriangle.C.Y = centerY + s * PXMathSinusDEGF32(a2);
 
 
-  
+
 
 
 #if 0
@@ -521,7 +521,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     glEnd();
 
 
-    
+
 
     float widthAgng = 0.08;
 
@@ -538,7 +538,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     selectRectangle[3].X = centerX + innerRadius * PXMathCosinusRADF32(angleRad- widthAgng);
     selectRectangle[3].Y = centerY + innerRadius * PXMathSinusRADF32(angleRad- widthAgng);
 
-    
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_QUADS);
     glColor4f(0.2f, 0.2f, 0.2f, 0.2);
@@ -555,7 +555,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Knob
 
-    
+
     PXVector2F32 knobPosition;
 
     PXHSVTriangleToPosition(&currentHSV, &pxTriangle, &knobPosition);
@@ -709,9 +709,9 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
             DrawGradientRectH
             (
                 sx, sliderY,
-                sx + stepW, 
+                sx + stepW,
                 sliderY + sliderHeight,
-                &c0, 
+                &c0,
                 &c1
             );
 
@@ -736,7 +736,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
             slidersX0, sliderY,
             slidersX0 + sliderWidth,
             sliderY + sliderHeight,
-            &c0, 
+            &c0,
             &c1
         );
         sliderY -= (sliderHeight + sliderGap);

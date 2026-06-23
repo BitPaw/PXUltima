@@ -1,5 +1,8 @@
 #include "PXProgressbar.h"
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 PXResult PXAPI PXProgressbarDraw(PXProgressbar PXREF pxProgressbar, PXProgressbarCreateInfo PXREF pxProgressbarCreateInfo)
 {

@@ -1,5 +1,5 @@
 #include "PXECSEntityList.h"
-#include <gl/GL.h>
+#include <GL/gl.h>
 #include <PX/Math/PXMath.h>
 
 const char PXECSEntityListText[] = "ECS-EntityList";
@@ -71,7 +71,7 @@ PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDraw
 
     PXTextDrawInfoRowNext(pxDrawInfo);
 
-    PXSize amount = PXECSEntryAmount();    
+    PXSize amount = PXECSEntryAmount();
 
     amount = PXMathMaximum(amount, 10);
 
@@ -87,17 +87,17 @@ PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDraw
 
             PXTextPrint
             (
-                &pxText, 
+                &pxText,
                 "[%4i] %-15s (%s)",
                 pxECSTypeInfo.InfoDynamic->ID,
                 pxECSTypeInfo.InfoStatic->NameOfType.A,
-                typeName          
+                typeName
             );
         }
         else
         {
             PXTextPrint(&pxText, "TEXT:%i", -1);
-        }  
+        }
 
         PXWindowDrawText
         (

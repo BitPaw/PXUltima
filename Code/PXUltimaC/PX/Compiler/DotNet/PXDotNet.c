@@ -81,14 +81,14 @@ typedef struct PXDotNetCoreCLR_
 }
 PXDotNetCoreCLR;
 
-// Modern runtime 
+// Modern runtime
 typedef struct PXDotNetHostFX
 {
     PXLibrary LibraryHostFX;
 
     void* RuntimeHandle; // hostfxr_handle
 
-    BOOL IsDotNetCore;
+    PXBool IsDotNetCore;
 
     void* com_activation;
     void* load_in_memory_assembly;
@@ -122,7 +122,7 @@ typedef struct PXDotNetHostFX
     void* ResolveSDK;
     void* ResolveSDK2;
     void* AvailableSDKsGet; // hostfxr_get_available_sdks
-    void* NativeSearchDirectoriesGet; // hostfxr_get_native_search_directories           
+    void* NativeSearchDirectoriesGet; // hostfxr_get_native_search_directories
 }
 PXDotNetHostFX;
 
@@ -441,7 +441,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
             { &pxDotNetCoreCLR->Shutdown ,"coreclr_shutdown"},
             { &pxDotNetCoreCLR->Shutdown2 , "coreclr_shutdown_2"},
             { &pxDotNetCoreCLR->g_CLREngineMetrics , "g_CLREngineMetrics"},
-            { &pxDotNetCoreCLR->g_dacTable, "g_dacTable"} 
+            { &pxDotNetCoreCLR->g_dacTable, "g_dacTable"}
         };
         const PXI8U amount = sizeof(pxFunctionEntryList) / sizeof(PXLibraryFuntionEntry);
 
@@ -480,9 +480,9 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
         pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual; // No size specified, we get atleast one pagesize
-            
+
         PXFileCreate(&asseblyList, &pxFileOpenInfo);
-        
+
         PXText pxTextExtension;
         PXTextFromAdressA(&pxTextExtension, ".dll", 4, 4);
 
@@ -516,7 +516,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
                 PXFileWriteC(asseblyList, '/');
                 PXFileWriteText(asseblyList, &pxFileEntry.FilePath);
                 PXFileWriteC(asseblyList, ';');
-            } 
+            }
             while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
 
             PXDirectoryClose(&pxDirectorySearchCache);
@@ -527,14 +527,14 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
             PXDirectorySearchCache pxDirectorySearchCache;
             PXFileEntry pxFileEntry;
 
-            PXDirectoryOpenA(&pxDirectorySearchCache, &pxFileEntry, currentDirectory);  
+            PXDirectoryOpenA(&pxDirectorySearchCache, &pxFileEntry, currentDirectory);
 
             do
             {
                 if(pxFileEntry.FilePath.SizeUsed < 5)
                 {
                     continue;
-                }                
+                }
 
                 const PXBool isTarget = PXFilePathExtensionGet(&pxFileEntry.FilePath, &pxTextExtension);
 
@@ -551,7 +551,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
                 PXFileWriteC(&asseblyList, '//');
                 PXFileWriteText(&asseblyList, &pxFileEntry.FilePath);
                 PXFileWriteC(&asseblyList, ';');
-            } 
+            }
             while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
 
             PXDirectoryClose(&pxDirectorySearchCache);
@@ -729,7 +729,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 
 
         //PXLibraryOpenA(&pxDotNetHostFX->LibraryHostFX, hostfxrPath);
-    } 
+    }
 
     // Load symbols
     {
@@ -820,7 +820,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
         errorWriterSet(PXDotNetHostFXRuntimeErrorCallback);
     }
 
-  
+
 
     // Setup properties
     {
@@ -865,7 +865,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
         }
 #endif
     }
-    
+
 
     // Get the delegate for the managed method
     {
@@ -886,7 +886,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
             runtimeDelegateGet(runtimeHandle, hdt_load_assembly_bytes, &pxDotNetHostFX->AssemblyLoadBytes);
         }
     }
-  
+
 
     //printf(".NET runtime handle <%p>\n", pxDotNetHostFX->RuntimeHandle);
 
@@ -1012,7 +1012,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
         typeNameRef = typeNameA;
         PXTextPrintA(typeNameA, 64, "%s.%s", pxDelegate->NameNamespace, pxDelegate->NameClass);
     }
-  
+
     const PXSize size = PXTextCopyA(pxDelegate->NameLibrary, _MAX_PATH, fileNameBuffer, _MAX_PATH);
 
     // Delete extension
@@ -1024,7 +1024,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
     }
 
     // Syntax:
-    // HostHandle             : Defined by previous called function "coreclr_initialize_ptr" 
+    // HostHandle             : Defined by previous called function "coreclr_initialize_ptr"
     // DomainID               : Same as HostHandle
     // entryPointAssemblyName : No path, bare name of the DLL but without the extension!!
     // entryPointTypeName     : Format: "NameSpace.ClassName"
@@ -1108,14 +1108,14 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
 
             // build custom format
             delegateSignatureRef = delegateSignatureDef;
-            PXTextPrintW(delegateSignatureDef, 64, "PX.TESTClass+YourMethodDelegate"); 
+            PXTextPrintW(delegateSignatureDef, 64, "PX.TESTClass+YourMethodDelegate");
             PXTextPrintA(delegateSignatureText, 64, "Custom");
 
             PXTextCopyAW("YourMethod", 11, functionNameW, 64);
         }
     }
 
- 
+
 
 
     char dllName[] = "PXTestDLLRelay";
@@ -1162,7 +1162,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
 
         const HRESULT loadResultID = assemblyLoadAndFunctionPointerGet
         (
-            fileNameW,      // Name must contain DLL, full path 
+            fileNameW,      // Name must contain DLL, full path
             classNameW,     // Format: "NameSpace.Class, DLLNameWithoutExtension"
             functionNameW,  // Function name
             delegateSignatureRef,         // L"YourNamespace.YourClass+YourMethodDelegate, YourAssembly", UNMANAGEDCALLERSONLY_METHOD
@@ -1237,7 +1237,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
             L"NoPam",
             L"System.Action, System.Private.CoreLib",
             nullptr,
-            nullptr, 
+            nullptr,
             (void**)&entryPoint
         );
 
@@ -1249,7 +1249,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
     }
     else
     {
-    
+
 
 
         printf("");
@@ -1325,7 +1325,7 @@ PXResult PXAPI PXDotNetCompile(PXDotNet PXREF pxDotNet)
     // Create the project file
     // netcoreapp3.0
     {
-        const char templateFile[] = 
+        const char templateFile[] =
             "<Project Sdk=\"Microsoft.NET.Sdk\">\n"
             "<PropertyGroup>\n"
             "<TargetFramework>net5.0</TargetFramework>\n"
@@ -1374,6 +1374,8 @@ PXResult PXAPI PXDotNetCompile(PXDotNet PXREF pxDotNet)
 
 PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList)
 {
+    PXResult result = PXResultInvalid;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -1422,7 +1424,7 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
             PXVersionFromString(pxVersion, pxFileEntry.FilePath.A);
 
             pxDotNet->CoreCLR.VersionCurrent = pxVersion;
-            
+
             ++pxDotNet->CoreCLR.VersionListAmount;
         }
         while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
@@ -1435,9 +1437,9 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 #if 0
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchHostFX;
     pxDotNet->Execute = PXDotNetExecuteHostFX;
-    PXResult resultA = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
+    result = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
 
-    if(PXResultOK == resultA)
+    if(PXResultOK == result)
     {
         return PXResultOK;
     }
@@ -1447,9 +1449,9 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchCoreCLR;
     pxDotNet->Execute = PXDotNetExecuteCoreCLR;
-    PXResult resultB = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
+    result = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
 
-    if(PXResultOK == resultB)
+    if(PXResultOK == result)
     {
         return PXResultOK;
     }
@@ -1457,15 +1459,15 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
 
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchMSCoree;
     pxDotNet->Execute = PXDotNetExecuteMSCoree;
-    PXResult resultC = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
+    result = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
 
-    if(PXResultOK == resultC)
+    if(PXResultOK == result)
     {
         return PXResultOK;
     }
 
     PXClear(PXDotNet, pxDotNet);
-#endif
 
-    return resultC;
+    return result;
+#endif
 }

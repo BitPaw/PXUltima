@@ -25,27 +25,25 @@ typedef enum { noDictIssue = 0, dictSmall } dictIssue_directive;
 
 PXResult PXAPI PXLZ4DecompressChunk(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
-
-
     earlyEnd_directive partialDecoding;  /* full, partial */
     dict_directive dict = noDict;                 /* noDict, withPrefix64k, usingExtDict */
-    const BYTE PXREF lowPrefix = 0;  /* always <= dst, == dst when no prefix */
-    const BYTE PXREF dictStart = 0;  /* only if dict==usingExtDict */
-    const size_t dictSize = 0;       /* note : = 0 if noDict */
+    const PXByte PXREF lowPrefix = 0;  /* always <= dst, == dst when no prefix */
+    const PXByte PXREF dictStart = 0;  /* only if dict==usingExtDict */
+    const PXSize dictSize = 0;       /* note : = 0 if noDict */
 
 
     // if((src == NULL) || (outputSize < 0)) { return -1; }
 
 
-    const BYTE PXREF dictEnd = (dictStart == NULL) ? NULL : dictStart + dictSize;
+    const PXByte PXREF dictEnd = (dictStart == NULL) ? NULL : dictStart + dictSize;
     const int checkOffset = (dictSize < (int)(64 KB));
 
 
     /* Set up the "end" pointers for the shortcut. */
-   // const BYTE PXREF shortiend = iend - 14 /*maxLL*/ - 2 /*offset*/;
-   // const BYTE PXREF shortoend = oend - 14 /*maxLL*/ - 18 /*maxML*/;
+   // const PXByte PXREF shortiend = iend - 14 /*maxLL*/ - 2 /*offset*/;
+   // const PXByte PXREF shortoend = oend - 14 /*maxLL*/ - 18 /*maxML*/;
 
-    const BYTE* match;
+    const PXByte* match;
 
 
 
@@ -120,13 +118,13 @@ PXResult PXAPI PXLZ4DecompressChunk(PXFile PXREF pxFileInput, PXFile PXREF pxFil
                 }
 
                 break;
-            }         
+            }
         }
 
         PXFileWriteInternMove(pxFileOutput, offset, matchlength);
 
 
-      
+
 
 
 
@@ -356,14 +354,14 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
     if(PXFileAllocatedSize(pxFileOutput) < LZ4_MAX_INPUT_SIZE)
     {
         // nChunks must be 0 for < LZ4_MAX_INPUT_SIZE
-        if(nChunks != 0) 
+        if(nChunks != 0)
         {
             return PXResultInvalid; // Corrupted LZ4 compressed data.
         }
     }
 
     // If true, we can directly decompress one block.
-    if(0 == nChunks) 
+    if(0 == nChunks)
     {
         const PXResult nDecompressed = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
 
@@ -377,7 +375,7 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
 
         PXFileReadI32UE(pxFileInput, &chunkSize, PXEndianLittle);
 
-        if(LZ4_MAX_INPUT_SIZE < chunkSize) 
+        if(LZ4_MAX_INPUT_SIZE < chunkSize)
         {
             return PXResultInvalid; // ChunkSize too big
         }

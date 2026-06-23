@@ -83,7 +83,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchC
     pxFileEntryINPUT->FilePath.Data4 = PXListDynamicAdd
     (
         &pxDirectorySearchCache->FilePathCache,
-        &pxFileEntryINPUT->ID, 
+        &pxFileEntryINPUT->ID,
         pxFileEntryINPUT->FilePath.Data4,
         pxFileEntryINPUT->FilePath.SizeUsed
     );
@@ -199,8 +199,8 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
 
         PXListDynamicGet
         (
-            &pxDirectorySearchCache->FilePathCache, 
-            &key, 
+            &pxDirectorySearchCache->FilePathCache,
+            &key,
             &pxText.A,
             &pxText.SizeUsed
         );
@@ -494,7 +494,7 @@ PXResult PXAPI PXDirectoryCreate(const PXText PXREF directoryName)
 PXResult PXAPI PXDirectoryCurrentA(char PXREF directoryCurrent, const PXSize bufferSize, PXSize PXREF sizeWritten)
 {
 #if OSUnix
-    const char PXREF text = getcwd(workingDirectory->A, bufferSize);
+    const char PXREF text = getcwd(directoryCurrent, bufferSize);
     const PXResult pxResult = PXErrorCurrent(text);
 
     return pxResult;
@@ -646,7 +646,7 @@ PXResult PXAPI PXDirectoryDeleteA(const char PXREF directoryName)
     }
 
 
-  
+
 
 
 

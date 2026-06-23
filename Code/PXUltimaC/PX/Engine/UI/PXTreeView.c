@@ -1,5 +1,8 @@
 #include "PXTreeView.h"
+#if OSUnix
+#elif OSWindows
 #include <CommCtrl.h>
+#endif
 
 PXResult PXAPI PXTreeViewDraw(PXTreeView PXREF pxTreeView, PXTreeViewCreateInfo PXREF pxTreeViewCreateInfo)
 {
