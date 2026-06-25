@@ -5,7 +5,8 @@
 #include <PX/Type/PXCamera.h>
 #include <PX/Type/PXWindow.h>
 #include <PX/Engine/PXRenderingSystem.h>
-#include <gl/GL.h>
+
+#include <GL/gl.h>
 #include <math.h>
 
 const char PXTesseractName[] = "Tesseract";
@@ -130,13 +131,13 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXDrawInfo PXREF p
     PXMatrix4x4F rotXW;
     PXMatrix4x4F rotYZ;
 
-    //y22 += angle*0.02;    
+    //y22 += angle*0.02;
 
     PXMatrix4x4FIdentity(&rotXY);
     PXMatrix4x4FIdentity(&rotXW);
     PXMatrix4x4FIdentity(&rotYZ);
     //  Matrix4x4RotationSet4D(&rotXW, 0, 2, angle);
-    // Matrix4x4RotationSet4D(&rotXW, 0, 3, angle);    
+    // Matrix4x4RotationSet4D(&rotXW, 0, 3, angle);
      // Matrix4x4RotationSet4D(&rotXY, 0, 1, angle);
 
     PXMatrix4x4FRotationAxisSet(&rotXW, 1, 3, angle);
@@ -210,10 +211,10 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXDrawInfo PXREF p
 
             // Color based on w (depth cue)
             float color = (v.W + 1.0f) / 2.0f;
-            
 
-       
-        
+
+
+
 
             PXVector4F32 ccolor = (vOrg);
             ccolor.X = 1 - (ccolor.X + color) / 2.0f;
