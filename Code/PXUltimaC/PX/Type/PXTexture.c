@@ -3,6 +3,8 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
+#include <PX/Math/PXMath.h>
+#include <GL/gl.h>
 
 const char PXTextureText[] = "Texture";
 const PXI8U PXTextureTextLength = sizeof(PXTextureText);
@@ -79,7 +81,7 @@ PXResult PXAPI PXTextureProperty(PXTexture PXREF pxTexture, PXECSProperty PXREF 
         {
             if(pxECSProperty->DoWrite)
             {
-               
+
             }
             else
             {
@@ -116,9 +118,6 @@ PXColorFormat PXAPI PXTextureColorFormat(PXTexture PXREF pxTexture)
     return pxTexture->Format;
 }
 
-#include <PX/Math/PXMath.h>
-#include <gl/GL.h>
-
 PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize minmapLevel, const PXColorFormat pxColorFormat)
 {
     switch(pxColorFormat)
@@ -130,7 +129,7 @@ PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize
             PXSize total = 0;
             PXSize w = width;
             PXSize h = height;
-            
+
             for(PXSize i = 0; i < minmapLevel; i++)
             {
                 PXSize bw = PXMathCeilingF(w / 4.0f);
@@ -138,9 +137,9 @@ PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize
 
                 total += bw * bh * 8;
 
-                // Next mip level 
-                w = (w > 1) ? (w / 2) : 1; 
-                h = (h > 1) ? (h / 2) : 1; 
+                // Next mip level
+                w = (w > 1) ? (w / 2) : 1;
+                h = (h > 1) ? (h / 2) : 1;
             }
 
             return total + 512;
@@ -161,7 +160,7 @@ PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize
 
                 total += bw * bh * 16;
 
-                // Next mip level 
+                // Next mip level
                 w = (w > 1) ? (w / 2) : 1;
                 h = (h > 1) ? (h / 2) : 1;
             }
@@ -178,7 +177,7 @@ PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize
             {
                 total += w * h * 3;
 
-                // Next mip level 
+                // Next mip level
                 w = (w > 1) ? (w / 2) : 1;
                 h = (h > 1) ? (h / 2) : 1;
             }
@@ -213,7 +212,7 @@ PXSize PXAPI PXTextureSize(const PXSize width, const PXSize height, const PXSize
             {
                 total += w * h * 4;
 
-                // Next mip level 
+                // Next mip level
                 w = (w > 1) ? (w / 2) : 1;
                 h = (h > 1) ? (h / 2) : 1;
             }
@@ -310,7 +309,7 @@ PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXRE
 PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
 {
     PXBufferAllocate(&pxTexture->PixelData, pxTextureSource->PixelData.CursorOffsetByte);
-    PXBufferCopy(&pxTexture->PixelData, pxTextureSource->PixelData.Adress, pxTextureSource->PixelData.CursorOffsetByte);
+    PXBufferCopy(&pxTexture->PixelData, pxTextureSource->PixelData.Address, pxTextureSource->PixelData.CursorOffsetByte);
 
     pxTexture->Width = pxTextureSource->Width;
     pxTexture->Height = pxTextureSource->Height;
@@ -503,7 +502,7 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
     pxTexture->WrapWidth = PXTextureWrapRepeat;
     pxTexture->Type = pxTextureCreateInfo->Type;
     pxTexture->Format = pxTextureCreateInfo->Format;
-    
+
     if(pxTextureCreateInfo->Payload)
     {
         PXBufferSet(&pxTexture->PixelData, pxTextureCreateInfo->Payload, pxTextureCreateInfo->PayloadSize);
@@ -553,8 +552,8 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
             else
             {
                 // PXTextureCopyAsNew(PXTexture, &PXTextureCreateInfo->Image);
-                PXBool hasDimensions = 
-                    pxTextureCreateInfo->T2D.Width > 0 && 
+                PXBool hasDimensions =
+                    pxTextureCreateInfo->T2D.Width > 0 &&
                     pxTextureCreateInfo->T2D.Height > 0;
 
                 if(hasDimensions)
@@ -680,7 +679,7 @@ HBITMAP PXAPI PXBitMapFromImage(const PXI32S width, const PXI32S height, const P
     PXClear(BITMAPINFO, &bmi);
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = width;
-    bmi.bmiHeader.biHeight = -height; // Top-down DIB 
+    bmi.bmiHeader.biHeight = -height; // Top-down DIB
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 8 * amountOfChannels;
     bmi.bmiHeader.biCompression = BI_RGB;
