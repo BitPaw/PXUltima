@@ -81,7 +81,7 @@ PXResult PXAPI PXTexturePoolReserveAmount(PXTexturePool PXREF pxTexturePool, con
     return PXResultOK;
 }
 
-PXTextureSet* PXAPI PXTexturePoolSetGet(PXTexturePool PXREF pxTexturePool, const PXSize index)
+PXTextureSet* PXAPI PXTexturePoolSetGet(const PXTexturePool PXREF pxTexturePool, const PXSize index)
 {
     PXECSReferece* pxECSReferece = &pxTexturePool->TextureSetList[index];
 
