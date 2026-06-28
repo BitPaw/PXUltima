@@ -9,6 +9,10 @@
 #include <PX/Type/PXShader.h>
 #include <PX/Type/PXText.h>
 
+#if OSUnix
+#include <X11/Xlib.h> // Font
+#endif
+
 #define PXFontAntialiased   (1<<0)
 #define PXFontItalic        (1<<1)
 #define PXFontBold          (1<<2)
@@ -51,7 +55,10 @@ typedef struct PXFont_
 {
     PXECSInfo Info;
 
-#if OSWindows
+#if OSUnix
+    //struct XFontStruct* FontHandle; // Is this used?
+    Font FontHandle; // X11, handle
+#elif OSWindows
     HFONT FontHandle;
 
     PXI32U FontBase;
