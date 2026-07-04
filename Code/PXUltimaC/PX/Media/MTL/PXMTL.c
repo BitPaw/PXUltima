@@ -346,7 +346,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                         break;
                 }
 
-                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector->Data4, colorVectorSize, &valuesDetected);
+                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector->Data, colorVectorSize, &valuesDetected);
 
                 if(!listParsed)
                 {
