@@ -82,7 +82,7 @@ PXSize PXAPI PXListSizeUsed(const PXList PXREF pxList)
 PXBool PXAPI PXListIsAddresValid(const PXList PXREF pxList, const void PXREF adress)
 {
     const PXSize totalSize = PXListSizeUsed(pxList);
-    const PXBool isInRange = PXMathAdressInRange(pxList->Buffer.Data4, totalSize, adress);
+    const PXBool isInRange = PXMathAdressInRange(pxList->Buffer.Data, totalSize, adress);
 
     return isInRange;
 }
@@ -139,7 +139,7 @@ void* PXAPI PXListItemAtIndexGet(const PXList PXREF pxList, const PXSize index)
     }
 #endif
 
-    void PXREF adress = (PXByte*)pxList->Buffer.Data4 + pxList->ValueTypeSize * index;
+    void PXREF adress = (PXByte*)pxList->Buffer.Data + pxList->ValueTypeSize * index;
 
     return adress;
 }
@@ -158,7 +158,7 @@ PXBool PXAPI PXListEnqueue(PXList PXREF pxList, void PXREF dataElement)
         return PXFalse;
     }
 
-    void* target = pxList->Buffer.Data4 + (pxList->TailIndex * pxList->ValueTypeSize);
+    void* target = pxList->Buffer.Data + (pxList->TailIndex * pxList->ValueTypeSize);
     memcpy(target, dataElement, pxList->ValueTypeSize);        
 
     pxList->TailIndex = (pxList->TailIndex + 1) % pxList->EntryAmountAllocated;
@@ -179,7 +179,7 @@ void* PXAPI PXListDequeue(PXList PXREF pxList)
         return PXNull;
     }
 
-    void* source = pxList->Buffer.Data4 + (pxList->HeadIndex * pxList->ValueTypeSize);
+    void* source = pxList->Buffer.Data + (pxList->HeadIndex * pxList->ValueTypeSize);
 
     pxList->HeadIndex = (pxList->HeadIndex + 1) % pxList->EntryAmountAllocated;
     pxList->EntryAmountUsed--;
