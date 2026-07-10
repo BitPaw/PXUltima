@@ -794,7 +794,7 @@ typedef struct PXI16SCluster
             PXByte B;
         };
 
-        PXByte Data4[2];
+        PXByte Data[2];
 
         PXI16S Value;
     };
@@ -811,7 +811,7 @@ typedef struct PXI16UCluster
             PXByte B;
         };
 
-        PXByte Data4[2];
+        PXByte Data[2];
 
         PXI16S Value;
     };
@@ -830,7 +830,7 @@ typedef struct PXI32SCluster_
             PXByte D;
         };
 
-        PXByte Data4[4];
+        PXByte Data[4];
 
         PXI32S Value;
     };
@@ -849,7 +849,7 @@ typedef struct PXI32UCluster_
             PXByte D;
         };
 
-        PXByte Data4[4];
+        PXByte Data[4];
 
         PXI32U Value;
     };
@@ -872,7 +872,7 @@ typedef struct PXI64SCluster_
             PXByte H;
         };
 
-        PXByte Data4[8];
+        PXByte Data[8];
 
         PXI64S Value;
     };
@@ -895,7 +895,7 @@ typedef struct PXI64UCluster_
             PXByte H;
         };
 
-        PXByte Data4[8];
+        PXByte Data[8];
 
         PXI64U Value;
     };
