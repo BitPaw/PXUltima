@@ -40,6 +40,8 @@ PXResult PXAPI PXBashExecuteA
     const PXBool syncronous
 )
 {
+    FILE* pipeHandle = 0;
+
     if(!commandText)
     {
         return PXResultRefusedParameterNull;
@@ -105,7 +107,11 @@ PXResult PXAPI PXBashExecuteA
     }
 
     // Execute the command and get the output
-    FILE PXREF pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
+#if OSUnix
+    pipeHandle = popen(commandText, "r"); // [POSIX] stdio.h
+#elif OSWindows
+    pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
+#endif
     const PXResult openError = PXErrorCurrent(pipeHandle>0);
 
     if(PXResultOK != openError)
@@ -129,9 +135,11 @@ PXResult PXAPI PXBashExecuteA
         return openError;
     }
 
-    // Close the pipe
+#if OSUnix
+    pclose(pipeHandle); // [POSIX] stdio.h
+#elif OSWindows
     _pclose(pipeHandle); // [POSIX] stdio.h
-
+#endif
 
     // There is often a \n at the end. We dont want that
     const PXSize size = PXTextLengthA(*outBuffer, outBufferSizeMax);
