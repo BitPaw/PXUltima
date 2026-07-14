@@ -291,7 +291,7 @@ PXResult PXAPI PXTextureRegisterGL(PXTexture PXREF pxTexture)
         0,                  // border
         format,
         type,
-        pxTexture->PixelData.Data4
+        pxTexture->PixelData.Data
     );
 
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind
@@ -358,8 +358,8 @@ PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture)
             const PXSize indexA = x + (y * rowSize);
             const PXSize indexB = xB + (y * rowSize);
             PXByte tempByte[4] = { 0,0,0,0 };
-            PXByte* pixelA = pxTexture->PixelData.Data4 + indexA;
-            PXByte* pixelB = pxTexture->PixelData.Data4 + indexB;
+            PXByte* pixelA = pxTexture->PixelData.Data + indexA;
+            PXByte* pixelB = pxTexture->PixelData.Data + indexB;
 
             PXMemoryCopyX(pixelA, 4, tempByte, bbp);
             PXMemoryCopyX(pixelB, 4, pixelA, bbp);
@@ -389,8 +389,8 @@ PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
 
     for(PXSize scanlineIndex = 0; scanlineIndex < scanLinesToSwap; scanlineIndex++)
     {
-        PXByte* bufferA = pxTexture->PixelData.Data4 + (scanlineIndex * scanLineWidthSize);
-        PXByte* bufferB = pxTexture->PixelData.Data4 + ((pxTexture->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
+        PXByte* bufferA = pxTexture->PixelData.Data + (scanlineIndex * scanLineWidthSize);
+        PXByte* bufferB = pxTexture->PixelData.Data + ((pxTexture->Height - scanlineIndex) * scanLineWidthSize) - scanLineWidthSize;
 
         PXMemoryCopy(bufferB, copyBufferRow, scanLineWidthSize); // A -> Buffer 'Save A'
         PXMemoryCopy(bufferA, bufferB, scanLineWidthSize); // B -> A 'Move B to A(override)'
@@ -417,8 +417,8 @@ PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red,
 
     for(PXSize pixelIndex = 0; pixelIndex < length; ++pixelIndex)
     {
-        PXByte PXREF oldData = pxTexture->PixelData.Data4 + currentOffset - ((pixelIndex + 1) * 3u);
-        PXByte PXREF newData = pxTexture->PixelData.Data4 + dataOffset - ((pixelIndex + 1) * 4u);
+        PXByte PXREF oldData = pxTexture->PixelData.Data + currentOffset - ((pixelIndex + 1) * 3u);
+        PXByte PXREF newData = pxTexture->PixelData.Data + dataOffset - ((pixelIndex + 1) * 4u);
 
         newData[0] = oldData[0];
         newData[1] = oldData[1];
@@ -433,7 +433,7 @@ PXResult PXAPI PXTextureFillColorRGBA8(PXTexture PXREF pxTexture, const PXByte r
 {
     for(PXSize i = 0; i < pxTexture->PixelData.CursorOffsetByte; i += 4u)
     {
-        PXByte PXREF data = pxTexture->PixelData.Data4 + i;
+        PXByte PXREF data = pxTexture->PixelData.Data + i;
 
         data[0] = red;
         data[1] = green;
@@ -449,7 +449,7 @@ void* PXAPI PXTextureDataPoint(const PXTexture PXREF pxTexture, const PXSize x, 
     const PXSize bytesPerPixel = PXColorFormatBytePerPixel(pxTexture->Format);
     const PXSize index = x * bytesPerPixel + y * pxTexture->Width;
 
-    return (PXByte*)pxTexture->PixelData.Data4 + index;
+    return (PXByte*)pxTexture->PixelData.Data + index;
 }
 
 PXSize PXAPI PXTexturePixelPosition(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y)
@@ -463,7 +463,7 @@ PXSize PXAPI PXTexturePixelPosition(const PXTexture PXREF pxTexture, const PXSiz
 void PXAPI PXTexturePixelSetRGB8(PXTexture PXREF pxTexture, const PXSize x, const PXSize y, const PXByte red, const PXByte green, const PXByte blue)
 {
     const PXSize index = PXTexturePixelPosition(pxTexture, x, y);
-    PXByte* pixelData = (PXByte*)pxTexture->PixelData.Data4 + index;
+    PXByte* pixelData = (PXByte*)pxTexture->PixelData.Data + index;
 
     pixelData[0] = red;
     pixelData[1] = green;
@@ -513,7 +513,7 @@ PXResult PXAPI PXTextureCreate(PXTexture** pxTextureREF, PXTextureCreateInfo PXR
         case PXTextureType2D:
         {
             // Load texture
-            if(pxTextureCreateInfo->Info.FilePath.Data4)
+            if(pxTextureCreateInfo->Info.FilePath.Data)
             {
                 PXECSCreateInfo pxResourceLoadInfo;
                 PXClear(PXECSCreateInfo, &pxResourceLoadInfo);
