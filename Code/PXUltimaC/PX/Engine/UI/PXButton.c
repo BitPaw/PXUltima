@@ -1,7 +1,8 @@
 #include "PXButton.h"
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/PXUI.h>
 
 #if OSUnix
 #elif OSWindows
@@ -12,7 +13,7 @@ const char PXButtonName[] = "Button";
 
 PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXDrawInfo PXREF pxDrawInfo)
 {
-    PXGUITheme* pxGUITheme = PXGUIThemeGet();
+    PXUITheme* pxGUITheme = pxDrawInfo->UITheme;
     PXWindow PXREF pxWindow = pxButton->WindowBase;
 
 #if PXLogEnable && 0
