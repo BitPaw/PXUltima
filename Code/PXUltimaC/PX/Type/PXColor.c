@@ -27,10 +27,10 @@ PXI32U PXAPI PXColorI32FromRGBA(const PXI8U r, const PXI8U g, const PXI8U b, con
     return b | (g << 8) | (r << 16) | (a << 32);
 }
 
-
-inline int clip(int val) {
+int clip(int val) 
+{
     return (val < 0) ? 0 : (val > 255) ? 255 : val;
-}   
+}
 
 void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGBI8 PXREF pxColorRGBI8)
 {
