@@ -4,6 +4,7 @@
 #define PXSpriteMeshIncluded
 
 #include <PX/Engine/PXResource.h>
+#include <PX/Type/PXModel.h>
 
 typedef struct PXSpriteMeshEntry_
 {
