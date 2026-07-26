@@ -59,7 +59,7 @@ PXPublic PXBool PXAPI PXListIsIndexValid(const PXList PXREF pxList, const PXSize
 //---------------------------------------------------------
 // List
 //---------------------------------------------------------
-PXPublic PXListEntry PXAPI PXListAdd(PXList PXREF pxList, void PXREF dataElement);
+PXPublic PXListEntry PXAPI PXListAdd(PXList PXREF pxList, const void PXREF dataElement);
 //#define PXListAddT(Type, pxList, dataElement) (Type*)PXListAdd(pxList, dataElement)
 
 PXPublic PXResult PXAPI PXListRemove(PXList PXREF pxList, void PXREF dataElement);
@@ -85,7 +85,10 @@ PXPublic void* PXAPI PXListDequeue(PXList PXREF pxList);
 //---------------------------------------------------------
  
 
-PXPublic PXBool PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize);
+// Add data on the end, returns the position data is inserted.
+// Assume length is the same as given as input.
+PXPublic void* PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize);
+
 // IF the list is a stack, we can reduce the stack by a 
 // given amount and extract the data on it if a buffer
 // is defined.
