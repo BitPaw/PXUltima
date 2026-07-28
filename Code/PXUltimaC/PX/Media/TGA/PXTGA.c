@@ -131,7 +131,7 @@ void PXAPI PXTGADestruct(PXTGA PXREF tga)
 
 }
 
-PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTGALoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXTGA tgaOBJ;
     PXTGA* tga = &tgaOBJ;
@@ -202,13 +202,12 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
                 break;
         }
 
-        PXTextureResize
+        PXTexture2DResize
         (
-            pxTexture,
-            pxColorFormat, 
+            pxTexture2D,      
             tga->Width,
             tga->Height,
-            PXTextureNoMinmaps
+            pxColorFormat
         );
     }
     //----------------------------------------------------
@@ -228,7 +227,7 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     //--------------------------------
 
     //---[ ImageData ]------------------
-    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxTexture->PixelData.Adress, pxTexture->PixelData.CursorOffsetByte);
+    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxTexture2D->Data.Address, pxTexture2D->Data.CursorOffsetByte);
     //-----------------------------------------------------------------
 
 
@@ -320,7 +319,7 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     return PXResultOK;
 }
 
-PXResult PXAPI PXTGASaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTGASaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
