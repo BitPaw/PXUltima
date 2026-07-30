@@ -5,7 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/Media/FTP/PXFTP.h>
-#include <PX/OS/Network/PXServer.h>
+#include <PX/Type/PXServer.h>
 
 typedef struct PXFTPServer_
 {
