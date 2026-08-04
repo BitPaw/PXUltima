@@ -69,6 +69,7 @@
 #include <PX/Media/RedshiftMesh/PXRedshiftMesh.h>
 #include <PX/Media/RedshiftSkeleton/PXRedshiftSkeleton.h>
 #include <PX/Media/RedshiftAnimation/PXRedshiftAnimation.h>
+#include "PXFile.h"
 
 
 
