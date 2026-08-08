@@ -1,7 +1,7 @@
 #include "PXTransformView.h"
 
 #include <GL/gl.h>
-#include <PX/Engine/PXGUI.h>
+
 
 const char PXTransformViewName[] = "TransformView";
 const PXI8U PXTransformViewNameLength = sizeof(PXTransformViewName);
@@ -198,7 +198,7 @@ void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDra
 
     if(pxTransformView->Position)
     {
-        PXTextPrint(&pxText, "%6.2f", pxTransformView->Position->Data4[index]);
+        PXTextPrint(&pxText, "%6.2f", pxTransformView->Position->Data[index]);
     }
     else
     {
@@ -216,7 +216,7 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
 {
     PXWindow* pxWindow = pxTransformView->WindowBase;
     PXVector3F32* values = pxTransformView->Position;
-    PXGUITheme* theme = PXGUIThemeGet();
+    PXUITheme* theme = pxDrawInfo->UITheme;
     PXText pxText;
 
 #if OSWindows
