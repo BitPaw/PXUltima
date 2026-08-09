@@ -16,7 +16,7 @@ typedef struct PXTimelineEvent_
 {
     PXECSInfo Info;
     PXColorRGBAI8 Color;
-    PXTexture* Texture;
+    PXTexture2D* Texture;
 }
 PXTimelineEvent;
 
