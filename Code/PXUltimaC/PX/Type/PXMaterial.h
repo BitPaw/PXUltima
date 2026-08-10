@@ -5,6 +5,8 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Type/PXTexture.h>
 #include <PX/Type/PXColor.h>
+#include <PX/Type/PXShader.h>
+#include <PX/Type/PXTextureCube.h>
 
 typedef enum PXIlluminationMode_
 {
@@ -39,14 +41,16 @@ typedef struct PXMaterial_
 {
     PXECSInfo Info;
 
+    PXShaderProgram* ShaderProgram;
+
     //Texture* normalMap;
     //Texture* roughnessMap;
     //Texture* metalnessMap;
 
-    float opacity;
-    float roughness;
-    float metalness;
-    float emissionStrength;
+    PXF32 opacity;
+    PXF32 roughness;
+    PXF32 metalness;
+    PXF32 emissionStrength;
 
    // Shader* shader;
    // Vector2 uvTiling;
@@ -54,21 +58,23 @@ typedef struct PXMaterial_
    // BlendMode blendMode;
   //  bool doubleSided;
 
+    PXTextureCube* TextureCube;
+
 
     // Name would be too wasteful here, we shall store it in another container
     // TexturePath can not be put here, but we might store it differently.
 
-    PXColorRGBAF* DiffuseColor;
-    PXTexture* DiffuseTexture;
+    PXColorRGBAF* ColorBase;
+    PXTexture2D* TextureBase; //Diffuse, Albedo, 
 
     PXColorRGBAF* AmbientColor;
-    PXTexture* AmbientTexture;
+    PXTexture2D* AmbientTexture;
 
     PXColorRGBAF* SpecularColor;    // shininess
-    PXTexture* SpecularTexture;
+    PXTexture2D* SpecularTexture;
 
     PXColorRGBAF* EmissionColor;
-    PXTexture* EmissionTexture;
+    PXTexture2D* EmissionTexture;
 
     PXF32 Power;        // Sharpness if specular highlight
 
@@ -80,25 +86,18 @@ typedef struct PXMaterial_
 }
 PXMaterial;
 
-
-// Container to save a list of materials.
-// This is only ment to be a faster lookup for a model.
-typedef struct PXMaterialContainer_
-{
-    PXSize MaterialListAmount;
-    PXMaterial* MaterialList;
-}
-PXMaterialContainer;
-
 typedef struct PXMaterialCreateInfo_
 {
     PXECSCreateInfo Info;
+
+    PXShaderProgram* ShaderProgram;
+    PXColorRGBAF* ColorBase;
+    PXTexture2D* TextureBase;
 }
 PXMaterialCreateInfo;
 
+PXInternal void PXAPI PXMaterialRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
-PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXREF pxMaterialContainer, PXText PXREF pxMaterialName);
-
-PXPublic PXResult PXAPI PXMaterialCreate(PXMaterial PXREF pxMaterial, PXMaterialCreateInfo PXREF pxMaterialCreateInfo);
+PXPublic PXResult PXAPI PXMaterialCreate(PXMaterial** pxMaterialREF, PXMaterialCreateInfo PXREF pxMaterialCreateInfo);
 
 #endif
