@@ -11,13 +11,13 @@
 #include <PX/OS/PXOS.h>
 
 PXLock* _GLOBALCosolePrintLock = 0;
-PXI32U _GLOBALSourceThreadID = 0;
+PXThreadID _GLOBALSourceThreadID;
 
 #define PXConsoleColorEnable 1
 
 PXResult PXAPI PXConsoleTextColorSetFromID(const PXI16U coliorID)
 {
-    PXConsoleTextColor pxConsoleTextColor = 0;
+    PXConsoleTextColor pxConsoleTextColor = PXConsoleTextColorInvalid;
 
     if('0' <= coliorID && coliorID <= '9') // Number
     {
@@ -300,8 +300,61 @@ void PXAPI PXConsoleClear()
 #if OSUnix || OSForcePOSIXForWindows
     printf("\033[H\033[J");
 #elif OSWindows
-    //SetConsoleCursorPosition();
-    // TODO
+ 
+
+
+  
+    HANDLE input_handle;
+    HANDLE output_handle;
+
+    INPUT_RECORD input;
+
+    COORD pos;
+
+    DWORD info;
+
+    CONSOLE_SCREEN_BUFFER_INFO screen_info;
+
+    output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    GetConsoleScreenBufferInfo(output_handle, &screen_info);
+
+    //SetConsoleMode(input_handle, ENABLE_PROCESSED_INPUT);
+
+    pos.X = screen_info.srWindow.Left; 
+    pos.Y = screen_info.srWindow.Top; 
+    SetConsoleCursorPosition(output_handle, pos);
+
+    char buffer[1024];
+
+    memset(buffer, ' ', sizeof(buffer));
+
+   // WriteConsoleA(output_handle, buffer, sizeof(buffer), 0, 0);
+
+ 
+
+    /*
+
+    while(1)
+    {
+        pos.X = screen_info.srWindow.Right / 2 - 5; // Center X - (1/2 string length) 
+        pos.Y = screen_info.srWindow.Bottom / 2;    // Center Y
+
+        SetConsoleCursorPosition(output_handle, pos);
+
+        ReadConsoleInput(input_handle, &input, 1, &info);
+
+        if(input.Event.KeyEvent.bKeyDown)
+        {
+            char theChar = (char)input.Event.KeyEvent.uChar.AsciiChar;
+
+            for(int i = 0; i < 10; ++i)
+                printf("%c", theChar);
+        }
+    }
+
+    */
+    
 #endif
 }
 
@@ -715,10 +768,10 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
     PXTime pxTime;
     PXTimeNow(&pxTime);
 
-    const DWORD threadID = GetCurrentThreadId();
+    const PXThreadID threadID = PXThreadCurrentID();
     char threadIDName[64];
 
-    if(_GLOBALSourceThreadID == threadID)
+    if(_GLOBALSourceThreadID.Data== threadID.Data)
     {
         PXTextPrintA(threadIDName, 64, "§6#Main");
     }
