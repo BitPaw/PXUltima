@@ -2,8 +2,9 @@
 
 #ifndef PXThreadIncluded
 #define PXThreadIncluded
+
 #include <PX/Engine/PXResource.h>
-#include "PXProcess.h"
+#include <PX/OS/Async/PXProcess.h>
 
 // Return IDs
 
@@ -11,13 +12,9 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <setjmp.h>
-typedef void* PXThreadResult;
-//typedef pthread_t PXThreadIDType;
 #define PXThreadIDUnused 0  // Adress
 #elif OSWindows
 #include <windows.h>
-typedef DWORD PXThreadResult;
-//typedef HANDLE PXThreadIDType;
 #define PXThreadIDUnused nullptr
 #if OSWindowsXP
 typedef struct IUnknown IUnknown;
@@ -274,7 +271,7 @@ PXThreadContext64;
 // https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/x86-architecture
 typedef struct PXThreadContext_
 {
-#if OSUnix
+#if OSUnix || OSForcePOSIXForWindows
     jmp_buf POSIXJumpBuffer;
 #elif OSWindows
     CONTEXT WindowsContext;
@@ -313,11 +310,15 @@ PXPublic void PXAPI PXThreadDestruct(PXThread PXREF pxThread);
 
 #if OSWindows
 PXPublic void PXAPI PXThreadConstructFromHandle(PXThread PXREF pxThread, HANDLE threadHandle);
+PXPublic PXResult PXAPI PXThreadContextFromSystem(PXThreadContext PXREF pxThreadContext, const CONTEXT PXREF windowsContext);
 #endif
 
+PXPublic PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const PXThreadID pxThreadID);
 
 PXPublic PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread);
-PXPublic PXI32U PXAPI PXThreadCurrentID();
+
+PXPublic PXThreadHandle PXAPI PXThreadCurrentHandle();
+PXPublic PXThreadID PXAPI PXThreadCurrentID();
 
 PXPublic PXResult PXAPI PXThreadResume(PXThread PXREF pxThread);
 PXPublic PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread);
@@ -357,7 +358,7 @@ PXPublic PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode);
 // current thread proceeds execution and false is returned.
 PXPublic PXResult PXAPI PXThreadYieldToOtherThreads();
 
-PXPublic PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread, const PXThreadID pxThreadID);
 
 
 PXPublic PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
