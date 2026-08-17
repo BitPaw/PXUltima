@@ -70,7 +70,7 @@ typedef struct PXMatrix4x4F_
             PXF32 WW;
         };
 
-        PXF32 Data4[16];
+        PXF32 Data[16];
 
         PXF32 DataXY[4][4];
     };
@@ -83,7 +83,9 @@ PXPublic void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F PXREF matrix4x4F);
 PXPublic void PXAPI PXMatrix4x4FRotationAxisSet(PXMatrix4x4F PXREF matrix4x4F, const PXI8U axisA, const PXI8U axisB, const PXF32 angle);
 
 PXPublic void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F PXREF matrix, PXVector3F32 PXREF position);
-PXPublic void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F PXREF matrix4x4F, const PXVector3F32 PXREF position);
+PXPublic void PXAPI PXMatrix4x4FPosition3DSet(PXMatrix4x4F PXREF matrix4x4F, const PXVector3F32 PXREF position);
+PXPublic void PXAPI PXMatrix4x4FPosition4DSet(PXMatrix4x4F PXREF matrix4x4F, const PXVector4F32 PXREF position);
+
 
 PXPublic void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F PXREF matrix, PXVector3F32 PXREF position);
 PXPublic void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F PXREF matrix4x4F, const PXVector3F32 PXREF position);
@@ -95,7 +97,7 @@ PXPublic void PXAPI PXMatrix4x4FMultiplyV4F(const PXMatrix4x4F PXREF matrix, PXV
 
 PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F PXREF matrix4x4F, const PXVector3F32 PXREF vector3F);
 
-PXPublic void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F PXREF matrixA, PXMatrix4x4F PXREF matrixResult);
+PXPublic void PXAPI PXMatrix4x4FCopy(PXMatrix4x4F PXREF pxMatrix, const PXMatrix4x4F PXREF matrixSource);
 
 PXPublic void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F PXREF matrixData, const PXVector3F32 PXREF vector3F);
 PXPublic void PXAPI PXMatrix4x4FMoveXY(PXMatrix4x4F PXREF matrixData, const PXF32 x, const PXF32 y);
@@ -103,6 +105,9 @@ PXPublic void PXAPI PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F PXREF matrixData, con
 PXPublic void PXAPI PXMatrix4x4FMoveXYZ(PXMatrix4x4F PXREF matrixData, const PXF32 x, const PXF32 y, const PXF32 z);
 
 PXPublic void PXAPI PXMatrix4x4FScaleBy(PXMatrix4x4F PXREF matrixA, const PXF32 scalar);
+
+PXPublic void PXAPI PXMatrix4x4FScale4D(PXMatrix4x4F PXREF pxMatrix, const PXVector4F32 PXREF pxVector4F32);
+
 
 //PXPublic void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F PXREF pxMatrix4x4F, const PXRectangleOffset PXREF pxMargin);
 PXPublic void PXAPI PXMatrix4x4FScaleByXY(PXMatrix4x4F PXREF pxMatrix4x4F, const PXF32 x, const PXF32 y);
