@@ -8,6 +8,7 @@
 #endif
 
 #include <PX/OS/File/PXDirectory.h>
+#include <PX/OS/File/PXFile.h>
 
 #if OSWindows
 typedef struct PXWindowsWMIEntry_
