@@ -11,8 +11,6 @@ PXResult PXAPI PXListCreate(PXList PXREF pxList, const PXSize dataTypeSize, cons
         return PXResultRefusedParameterNull;
     }
 
-    PXClear(PXList, pxList);
-
     if(startAmount)
     {
         // We want to preallocate memory to prepare space for data
@@ -33,7 +31,7 @@ PXResult PXAPI PXListCreate(PXList PXREF pxList, const PXSize dataTypeSize, cons
 
 PXResult PXAPI PXListRelease(PXList PXREF pxList)
 {
-    PXResult pxResult = PXBufferRelese(&pxList->Buffer);
+    PXResult pxResult = PXBufferRelease(&pxList->Buffer);
 
     return pxResult;
 }
@@ -92,7 +90,7 @@ PXBool PXAPI PXListIsIndexValid(const PXList PXREF pxList, const PXSize index)
     return pxList->EntryAmountUsed > index;
 }
 
-PXListEntry PXAPI PXListAdd(PXList PXREF pxList, void PXREF dataElement)
+PXListEntry PXAPI PXListAdd(PXList PXREF pxList, const void PXREF dataElement)
 {
     PXListEntry pxListEntry;
 
@@ -151,7 +149,7 @@ PXBool PXAPI PXListEnqueue(PXList PXREF pxList, void PXREF dataElement)
         return PXFalse;
     }
 
-    PXResult pxResult = PXBufferEnsureAdditional(pxList, 1);
+    PXResult pxResult = PXBufferEnsureAdditional(&pxList->Buffer, 1);
 
     if(PXResultOK != pxResult)
     {
@@ -192,7 +190,7 @@ PXBool PXAPI PXListItemFromStartGet(PXList PXREF pxList, void PXREF dataElement)
     return PXResultOK;
 }
 
-PXBool PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize)
+void* PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize)
 {
     PXListReserve(pxList, pxList->EntryAmountUsed + pxList->EntryGrowthOnAllocation);
 
@@ -202,7 +200,7 @@ PXBool PXAPI PXListAppend(PXList PXREF pxList, void PXREF buffer, const PXSize b
 
     pxList->EntryAmountUsed += bufferSize;
 
-    return PXTrue;
+    return target;
 }
 
 PXBool PXAPI PXListExtractAndReduce(PXList PXREF pxList, void PXREF buffer, const PXSize bufferSize)
