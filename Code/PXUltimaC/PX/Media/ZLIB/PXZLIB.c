@@ -5,24 +5,32 @@
 #include <PX/Media/DEFLATE/PXDEFLATE.h>
 #include <PX/Media/ADLER/PXAdler32.h>
 
+#define ZLIBUse OSWindows && 1
+
+#if ZLIBUse
+#include <zlib/zlib.h>
+
+#pragma comment(lib, "zlibstatic.lib")
+#endif
+
 PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXI8U compressionLevel)
 {
     switch(compressionLevel)
     {
-    case 0u:
-        return PXZLIBCompressionLevelFastest;
+        case 0u:
+            return PXZLIBCompressionLevelFastest;
 
-    case 1u:
-        return PXZLIBCompressionLevelFast;
+        case 1u:
+            return PXZLIBCompressionLevelFast;
 
-    case 2u:
-        return PXZLIBCompressionLevelDefault;
+        case 2u:
+            return PXZLIBCompressionLevelDefault;
 
-    case 3u:
-        return PXZLIBCompressionLevelSlowest;
+        case 3u:
+            return PXZLIBCompressionLevelSlowest;
 
-    default:
-        return PXZLIBCompressionLevelInvalid;
+        default:
+            return PXZLIBCompressionLevelInvalid;
     }
 }
 
@@ -30,21 +38,21 @@ PXI8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionL
 {
     switch(compressionLevel)
     {
-    default:
-    case PXZLIBCompressionLevelInvalid:
-        return -1;
+        default:
+        case PXZLIBCompressionLevelInvalid:
+            return -1;
 
-    case PXZLIBCompressionLevelDefault:
-        return 2u;
+        case PXZLIBCompressionLevelDefault:
+            return 2u;
 
-    case PXZLIBCompressionLevelSlowest:
-        return 3u;
+        case PXZLIBCompressionLevelSlowest:
+            return 3u;
 
-    case PXZLIBCompressionLevelFast:
-        return 1u;
+        case PXZLIBCompressionLevelFast:
+            return 1u;
 
-    case PXZLIBCompressionLevelFastest:
-        return 0u;
+        case PXZLIBCompressionLevelFastest:
+            return 0u;
     }
 }
 
@@ -52,14 +60,14 @@ PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXI8U compress
 {
     switch(compressionMethod)
     {
-    case 8u:
-        return PXZLIBCompressionMethodDeflate;
+        case 8u:
+            return PXZLIBCompressionMethodDeflate;
 
-    case 15u:
-        return PXZLIBCompressionMethodReserved;
+        case 15u:
+            return PXZLIBCompressionMethodReserved;
 
-    default:
-        return PXZLIBCompressionMethodInvalid;
+        default:
+            return PXZLIBCompressionMethodInvalid;
     }
 }
 
@@ -67,28 +75,25 @@ PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressio
 {
     switch(compressionMethod)
     {
-    default:
-    case PXZLIBCompressionMethodInvalid:
-        return -1;
+        default:
+        case PXZLIBCompressionMethodInvalid:
+            return -1;
 
-    case PXZLIBCompressionMethodDeflate:
-        return 8u;
+        case PXZLIBCompressionMethodDeflate:
+            return 8u;
 
-    case PXZLIBCompressionMethodReserved:
-        return 15u;
+        case PXZLIBCompressionMethodReserved:
+            return 15u;
     }
 }
-
-#include <zlib/zlib.h>
-
-#pragma comment(lib, "zlibstatic.lib")
 
 PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam)
 {
     PXBuffer* pxBufferIN = PXFileBufferGET(pxInputSteam);
     PXBuffer* pxBufferOUT = PXFileBufferGET(pxOutputSteam);
 
-    switch(pxBufferIN->Data4[0])
+#if 0 // Whats this
+    switch(pxBufferIN->Data[0])
     {
         case 0x78:
         {
@@ -106,31 +111,33 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
             break;
         }
     }
+#endif
 
-#if 1
-
+#if ZLIBUse
 
 
     // Start with a guess for output size
     size_t buf_size = pxBufferIN->SizeAllowedToUse * 4;
-    unsigned char* out = pxBufferOUT->Data4;
+    PXByte* out = pxBufferOUT->Data;
 
     z_stream strm = { 0 };
-    strm.next_in = (Bytef*)pxBufferIN->Data4;
+    strm.next_in = (Bytef*)pxBufferIN->Data;
     strm.avail_in = pxBufferIN->SizeAllowedToUse;
 
     inflateInit(&strm);
 
-    while(1) {
+    while(1)
+    {
         strm.next_out = out + strm.total_out;
         strm.avail_out = buf_size - strm.total_out;
 
         int ret = inflate(&strm, Z_NO_FLUSH);
 
-        if(ret == Z_STREAM_END) 
+        if(ret == Z_STREAM_END)
             break;
 
-        if(ret != Z_OK) {
+        if(ret != Z_OK) 
+        {
             inflateEnd(&strm);
             //free(out);
             return PXEndianInvalid;
@@ -145,7 +152,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
 
     pxBufferOUT->CursorOffsetByte = strm.total_out;
 
-#else
+#elif 1
     PXZLIB PXZLIB;
 
     const PXSize headerSize = 2u;
@@ -275,7 +282,7 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
         // Check
         {
             const PXI16U checksum = PXI16Make(buffer[0], buffer[1]);
-            const PXI8U multble = 31-checksum % 31;
+            const PXI8U multble = 31 - checksum % 31;
 
             buffer[1] += multble;
         }
@@ -287,7 +294,7 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
     {
         const PXResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        if(PXResultOK != delfateResult) 
+        if(PXResultOK != delfateResult)
             return delfateResult;;
     }
 
@@ -312,31 +319,31 @@ PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height
 
     switch(interlaceMethod)
     {
-    default:
-    case PXPNGInterlaceInvalid:
-        break;
+        default:
+        case PXPNGInterlaceInvalid:
+            break;
 
-    case PXPNGInterlaceNone:
-    {
-        // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
-        // If the decompressed size does not match the prediction, the image must be corrupt.
-        expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
-        break;
-    }
-    case PXPNGInterlaceADAM7:
-    {
-        // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
-        expected_size = 0;
-        expected_size += PXZLIBCalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
-        if(width > 4) expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
-        expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
-        if(width > 2) expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
-        expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
-        if(width > 1) expected_size += PXZLIBCalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
-        expected_size += PXZLIBCalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
+        case PXPNGInterlaceNone:
+        {
+            // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
+            // If the decompressed size does not match the prediction, the image must be corrupt.
+            expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
+            break;
+        }
+        case PXPNGInterlaceADAM7:
+        {
+            // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
+            expected_size = 0;
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
+            if(width > 4) expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
+            if(width > 2) expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
+            if(width > 1) expected_size += PXZLIBCalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
+            expected_size += PXZLIBCalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
 
-        break;
-    }
+            break;
+        }
     }
 
     return expected_size;
