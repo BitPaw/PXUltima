@@ -2,31 +2,55 @@
 
 #include <PX/OS/PXOS.h>
 
-void PXAPI PXBufferLayoutSET
-(
-    PXBufferLayout PXREF pxBufferLayout,
-    PXBufferLayoutInfo PXREF pxBufferLayoutInfo
-)
+PXResult PXAPI PXBufferLayoutPrepare(PXBufferLayout PXREF pxBufferLayout, const PXSize amount)
 {
-    if(0 == pxBufferLayoutInfo->Amount || 1 == pxBufferLayoutInfo->Amount)
-    {
-        pxBufferLayout->LayoutAmount = 1;
+    pxBufferLayout->LayoutAmount = amount;
 
-        return;
+    if(amount <= PXEmbeddedArraySize)
+    {
+        return PXActionRefusedIndexOutOfBounce;
     }
 
-    pxBufferLayout->LayoutAmount = pxBufferLayoutInfo->Amount;
-    pxBufferLayout->LayoutList = PXMemoryHeapCallocT(PXBufferLayoutEntry, pxBufferLayoutInfo->Amount);
+    pxBufferLayout->LayoutAmount = amount;
+    pxBufferLayout->LayoutList = PXMemoryHeapCallocT(PXBufferLayoutEntry, amount);
+
+    return PXResultOK;
 }
 
-PXBufferLayoutEntry* PXAPI PXBufferLayoutGET(PXBufferLayout PXREF pxBufferLayout)
+PXBufferLayoutEntry* PXAPI PXBufferLayoutGetViaIndex(PXBufferLayout PXREF pxBufferLayout, const PXSize index)
 {
-    if(1 == pxBufferLayout->LayoutAmount)
+    if(!pxBufferLayout)
     {
-        return pxBufferLayout->LayoutPrime;
+        return PXNull;
+    }
+
+    // Outofbounce 
+    PXBool isValidIndex = index < pxBufferLayout->LayoutAmount;
+
+    if(!isValidIndex)
+    {
+        return PXNull;
+    }
+
+    PXBufferLayoutEntry* pxBufferLayoutEntryList = PXNull;
+
+    const PXBool useEmbedded = PXEmbeddedArraySize >= pxBufferLayout->LayoutAmount;
+
+    if(useEmbedded)
+    {
+        pxBufferLayoutEntryList = pxBufferLayout->LayoutPrime;
     }
     else
     {
-        return pxBufferLayout->LayoutList;
+        pxBufferLayoutEntryList = pxBufferLayout->LayoutList;
     }
+
+    PXBufferLayoutEntry* target = &pxBufferLayoutEntryList[index];
+
+    return target;
+}
+
+PXSize PXAPI PXBufferLayoutAmount(const PXBufferLayout PXREF pxBufferLayout)
+{
+    return pxBufferLayout->LayoutAmount;
 }
