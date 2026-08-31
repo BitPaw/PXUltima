@@ -413,7 +413,7 @@ PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEnt
 
             if(failEnterCounter < 10)
             {
-                Sleep(0);
+                PXThreadSleep(PXNull,0);
                 continue;
             }
 
