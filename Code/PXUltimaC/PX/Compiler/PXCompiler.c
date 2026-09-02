@@ -14,6 +14,7 @@
 #if PXCompilerDebug
 #include <stdio.h>
 #endif
+#include <PX/OS/PXOS.h>
 
 const char PXCompilerText[] = "Compiler";
 const char PXCompilerTextLexer[] = "Lexer";
@@ -462,7 +463,7 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler PXREF pxCompiler, const 
         );
 #endif
 
-        DebugBreak();
+        PXDebugBreak();
     }
 
     return isTarget;
@@ -1205,7 +1206,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
             (
                 compilerSymbolEntry.Source, 
                 compilerSymbolEntry.Size,
-                pxCompiler->CommentMultibleLineBegin.Data4,
+                pxCompiler->CommentMultibleLineBegin.A,
                 pxCompiler->CommentMultibleLineBegin.SizeUsed,
                 0
             );
@@ -1216,7 +1217,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
                 (
                     compilerSymbolEntry.Source,
                     compilerSymbolEntry.Size,
-                    pxCompiler->CommentMultibleLineEnd.Data4,
+                    pxCompiler->CommentMultibleLineEnd.A,
                     pxCompiler->CommentMultibleLineEnd.SizeUsed
                 );
                 const PXBool isCompleate = index != -1;
