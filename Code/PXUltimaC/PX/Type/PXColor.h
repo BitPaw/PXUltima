@@ -83,9 +83,15 @@ typedef enum PXColorFormat_
 
     PXColorFormatRGBI5,
 
+    // Color index
+    PXColorFormatColorIndex_x1,
+    PXColorFormatColorIndex_x4,
+    PXColorFormatColorIndex_x8,
+    PXColorFormatColorIndex_x16,
+
     PXColorFormatLuminance,
     PXColorFormatLuminanceAlpha,
-    PXColorFormatColorIndex,
+
     PXColorFormatStencilIndex,
     PXColorFormatDepthComponent
 }
@@ -93,50 +99,120 @@ PXColorFormat;
 
 typedef struct PXColorRGBI8_
 {
-    PXI8U Red;
-    PXI8U Green;
-    PXI8U Blue;
+    union
+    {
+        PXI8U Data[3];
+
+        struct
+        {
+            PXI8U Red;
+            PXI8U Green;
+            PXI8U Blue;
+        };
+    };
 }
 PXColorRGBI8;
 
-typedef struct PXColorHSV_
-{
-    PXF32 Hue;
-    PXF32 Saturation;
-    PXF32 Value;
-}
-PXColorHSV;
-
-typedef struct PXColorRGBAI8_
-{
-    PXI8U Red;
-    PXI8U Green;
-    PXI8U Blue;
-    PXI8U Alpha;
-}
-PXColorRGBAI8;
 
 typedef struct PXColorRGBI16_
 {
-    PXI16U Red;
-    PXI16U Green;
-    PXI16U Blue;
+    union
+    {
+        PXI16U Data[3];
+
+        struct
+        {
+            PXI16U Red;
+            PXI16U Green;
+            PXI16U Blue;
+        };
+    };
 }
 PXColorRGBI16;
 
+
+
+typedef struct PXColorRGBAI8_
+{
+    union
+    {
+        PXI8U Data[4];
+
+        struct
+        {
+            PXI8U Red;
+            PXI8U Green;
+            PXI8U Blue;
+            PXI8U Alpha;
+        };
+    };
+}
+PXColorRGBAI8;
+
+typedef struct PXColorRGBAI16_
+{
+    union
+    {
+        PXI16U Data[4];
+
+        struct
+        {
+            PXI16U Red;
+            PXI16U Green;
+            PXI16U Blue;
+            PXI16U Alpha;
+        };
+    };
+}
+PXColorRGBAI16;
+
+
+typedef struct PXColorHSV_
+{
+    union
+    {
+        PXF32 Data[3];
+
+        struct
+        {
+            PXF32 Hue;
+            PXF32 Saturation;
+            PXF32 Value;
+        };
+    };
+}
+PXColorHSV;
+
+
 typedef struct PXColorRGBI32_
 {
-    PXI32U Red;
-    PXI32U Green;
-    PXI32U Blue;
+    union
+    {
+        PXI32U Data[3];
+
+        struct
+        {
+            PXI32U Red;
+            PXI32U Green;
+            PXI32U Blue;
+        };
+    };  
 }
 PXColorRGBI32;
 
 typedef struct PXColorRGBF_
 {
-    PXF32 Red;
-    PXF32 Green;
-    PXF32 Blue;
+    union
+    {
+        PXF32 Data[3];
+
+        struct
+        {
+            PXF32 Red;
+            PXF32 Green;
+            PXF32 Blue;
+        };
+    };
 }
 PXColorRGBF;
 
@@ -154,7 +230,7 @@ typedef struct PXColorRGBAF_
             PXF32 Alpha;
         };
 
-        PXF32 Data4[4];
+        PXF32 Data[4];
     };
 }
 PXColorRGBAF;
@@ -191,6 +267,8 @@ PXPublic PXI32U PXAPI PXColorI32FromBGRA(const PXI8U r, const PXI8U g, const PXI
 PXPublic PXI32U PXAPI PXColorI32FromRGB(const PXI8U r, const PXI8U g, const PXI8U b);
 PXPublic PXI32U PXAPI PXColorI32FromRGBA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a);
 
+
+PXPublic inline int clip(int val);
 
 PXPublic void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGBI8 PXREF pxColorRGBI8);
 
