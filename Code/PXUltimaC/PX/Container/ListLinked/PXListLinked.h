@@ -47,7 +47,7 @@ PXPublic void PXAPI PXListLinkedFixedNodeDestruct(PXListLinkedFixed PXREF linked
 PXPublic void PXAPI PXListLinkedFixedNodeSet(PXListLinkedFixed PXREF linkedListFixed, void PXREF data, const PXSize dataSize, const PXSize nodeSize);
 
 PXPublic PXBool PXAPI PXListLinkedFixedNodeAt(const PXListLinkedFixed PXREF linkedListFixed, PXListLinkedNodeFixed PXREF pxLinkedListNodeFixed, const PXSize index);
-PXPublic PXBool PXAPI PXListLinkedFixedNodeNext(PXListLinkedFixed PXREF linkedListFixed, PXListLinkedNodeFixed PXREF pxLinkedListNodeFixed);
+PXPublic PXBool PXAPI PXListLinkedFixedNodeNext(const PXListLinkedFixed PXREF linkedListFixed, PXListLinkedNodeFixed PXREF pxLinkedListNodeFixed);
 
 //PXPublic PXBool PXListLinkedFixedNodeFetch(PXListLinkedFixed PXREF linkedListFixed, void PXREF element);
 
