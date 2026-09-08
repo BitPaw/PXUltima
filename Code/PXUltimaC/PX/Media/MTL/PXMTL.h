@@ -4,6 +4,7 @@
 #define PXMTLIncluded
 
 #include <PX/Engine/PXResource.h>
+#include <PX/Type/PXMaterial.h>
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u
