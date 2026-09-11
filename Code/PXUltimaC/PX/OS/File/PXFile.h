@@ -109,9 +109,9 @@ typedef struct PXFileCreateInfo_
 PXFileCreateInfo;
 
 
-PXPublic PXBool PXAPI PXDirectoryIsRootFolder(const char* directory);
-PXPublic PXBool PXAPI PXDirectoryIsCurrentFolder(const char* directory);
-PXPublic PXBool PXAPI PXDirectoryIsDotFolder(const char* directory);
+PXPublic PXBool PXAPI PXDirectoryIsRootFolder(const PXText PXREF pxText);
+PXPublic PXBool PXAPI PXDirectoryIsCurrentFolder(const PXText PXREF pxText);
+PXPublic PXBool PXAPI PXDirectoryIsDotFolder(const PXText PXREF pxText);
 
 
 PXPublic void PXAPI PXTypeEntryInfo
@@ -237,10 +237,13 @@ PXPublic PXBool PXAPI PXFileAssureFreeSize(PXFile PXREF pxFile, const PXSize amo
 // Returns offset of end.
 PXPublic PXSize PXAPI PXFileFindEndOfText(PXFile PXREF pxFile);
 
-PXPublic void* PXAPI PXFileDataAtCursor(PXFile PXREF pxFile);
-PXPublic void* PXAPI PXFileDataAtCursorWithOffset(PXFile PXREF pxFile, const PXSize offset);
+PXPublic void* PXAPI PXFileDataAtCursor(const PXFile PXREF pxFile);
+PXPublic void* PXAPI PXFileDataAtCursorWithOffset(const PXFile PXREF pxFile, const PXSize offset);
+PXPublic void* PXAPI PXFileDataFromStart(const PXFile PXREF pxFile);
+PXPublic void* PXAPI PXFileDataFromStartWithOffset(const PXFile PXREF pxFile, const PXSize offset);
 
 PXPublic PXSize PXAPI PXFileDataPosition(PXFile PXREF pxFile);
+
 
 PXPublic PXSize PXAPI PXFileSizeToRead(PXFile PXREF pxFile);
 
@@ -483,7 +486,6 @@ PXPublic PXResult PXAPI PXFileTimeGet
 PXPublic PXResult PXAPI PXFilePath(const PXFile PXREF pxFile, PXText PXREF filePath, const PXBool doWrite);
 PXPublic PXResult PXAPI PXFilePathA(PXFile PXREF pxFile, char PXREF filePath, const PXSize filePathSize, PXSize PXREF sizeWritten);
 PXPublic PXResult PXAPI PXFilePathLong(PXText PXREF pxTextInput, PXText PXREF pxTextOutput);
-
 
 PXPublic PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText);
 PXPublic void PXAPI PXFileEndianessSet(PXFile PXREF pxFile, const PXEndian pxEndian);
