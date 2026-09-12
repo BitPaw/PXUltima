@@ -27,7 +27,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {signature.Data4, PXTypeDatax4},
+            {signature.Data, PXTypeDatax4},
             {&page.Version, PXTypeI08U},
             {&page.HeaderType, PXTypeI08U},
             {&page.GranulePosition, PXTypeI32UBE},
@@ -41,7 +41,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         const PXBool validHeaderSignature = PXMemoryCompare
         (
-            signature.Data4,
+            signature.Data,
             4u,
             PXOGGHeaderSignature, 
             sizeof(PXOGGHeaderSignature),
