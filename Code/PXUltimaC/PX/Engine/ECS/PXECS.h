@@ -221,7 +221,7 @@ typedef struct PXECSReferece_
     // On match, reference is valid.
     // On missmatch, recalibrate the reference.
     // Note: We could use an index for beeing "safer" buuut.. 
-    //       we can also directly use the adress.
+    //       we can also directly use the address.
     // PXSize ArrayIndex;
 
     // ID to be expected behind the pointer.
@@ -233,7 +233,7 @@ typedef struct PXECSReferece_
     // Direct access to the component.
     // Be aware this can be stale.
     // Update before use to prevent this!
-    // If adress is not in range from the container, scan 
+    // If address is not in range from the container, scan 
     // for matching ID. If no ID is found, object got deleted.
     PXECSInfo* Element;
 }
@@ -301,9 +301,11 @@ PXECSProperty;
 typedef struct PXECSCreateInfo_
 {
     //PXECSElementRef** ElementRef; // Unused for now
-    PXECSInfo** ObjectReference; // Reference to an adress to be filled with an object
-    PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
+    //PXECSInfo** ObjectReference; // Reference to an address to be filled with an object
+    //PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
 
+    void* ResourceSource; // ???
+    
     void* Parent;
 
     PXText FilePath;
@@ -345,8 +347,12 @@ PXPublic PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PX
 
 PXPublic PXSize PXAPI PXECSTypeAmount(void);
 PXPublic PXResult PXAPI PXECSTypeGet(PXECSRegisterInfo PXREF pxECSTypeInfo, const PXSize index);
+
 PXPublic PXSize PXAPI PXECSEntryAmount(void);
-PXPublic PXResult PXAPI PXECSEntryGet(PXECSReferece PXREF pxECSReferece, const PXSize index);
+PXPublic PXResult PXAPI PXECSEntryAdd(PXECSInfo PXREF pxECSInfo);
+PXPublic PXECSInfo* PXAPI PXECSEntryGetViaIndex(const PXSize index);
+PXPublic PXECSInfo* PXAPI PXECSEntryGetViaID(const PXID pxID);
+PXPublic PXECSInfo* PXAPI PXECSEntryGetViaName(PXText PXREF pxText);
 //---------------------------------------------------------
 
 PXPublic PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo);
@@ -377,6 +383,7 @@ PXPublic PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty);
 //---------------------------------------------------------
 
 // Check if a reference has gotten stale
+PXPublic PXBool PXAPI PXECSInfoCheckVSID(const PXECSInfo PXREF pxECSInfo, const PXID pxID);
 PXPublic PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece);
 //---------------------------------------------------------
 
