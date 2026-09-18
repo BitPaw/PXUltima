@@ -17,7 +17,7 @@ PXLevel;
 
 typedef struct PXLevelEntry_
 {
-    void* DataAdress;
+    void* DataAddress;
     PXSize DataSize; // Can also be 0 is size if not known
 
     PXI32U Flags;
