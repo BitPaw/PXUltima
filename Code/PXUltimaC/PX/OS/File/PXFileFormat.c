@@ -147,7 +147,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
         }
         case 2u:
         {
-            const PXI32U list = PXI16FromAdress(pxTextExtension.A);
+            const PXI32U list = PXI16FromAddress(pxTextExtension.A);
 
             switch(list)
             {
@@ -170,7 +170,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
         }
         case 3u:
         {
-            const PXI32U list = PXI24FromAdress(pxTextExtension.A);
+            const PXI32U list = PXI24FromAddress(pxTextExtension.A);
 
             switch(list)
             {
@@ -337,7 +337,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
         }
         case 4u:
         {
-            const PXI32U list = PXI32FromAdress(pxTextExtension.A);
+            const PXI32U list = PXI32FromAddress(pxTextExtension.A);
 
             switch(list)
             {
@@ -413,7 +413,7 @@ PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, 
     if(firstDot != -1)
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, filePath->A, firstDot, firstDot);
+        PXTextFromAddressA(&pxText, filePath->A, firstDot, firstDot);
 
 #if PXLogEnable
         PXLogPrint
