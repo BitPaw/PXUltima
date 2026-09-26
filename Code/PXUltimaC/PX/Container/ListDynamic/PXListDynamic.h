@@ -39,9 +39,9 @@ PXPublic void PXAPI PXListDynamicInit(PXListDynamic PXREF pxListDynamic, const P
 PXPublic void* PXAPI PXListDynamicInsertFind(PXListDynamic PXREF pxListDynamic);
 
 // Adds an entry, data is copyed given the range.
-// a direct adress to the object is returned
-PXPublic void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF key,  const char PXREF data, const PXSize dataSize);
-PXPublic void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize);
+// a direct address to the object is returned
+PXPublic void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF key,  const void PXREF data, const PXSize dataSize);
+PXPublic PXResult PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize);
 
 PXPublic void PXAPI PXListDynamicClearAll(PXListDynamic PXREF pxListDynamic);
 
