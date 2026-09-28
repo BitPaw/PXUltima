@@ -331,6 +331,8 @@ typedef struct PXECSCreateInfo_
     PXFileFormatInfo FormatInfoExpected;    // The format detected by the resource loader
     PXFile* FileCurrent;
 
+    struct PXEngine_* Engine;
+
     // Stats for benchmarking
     PXF32 TimePeek;
     PXF32 TimeTransphere;
