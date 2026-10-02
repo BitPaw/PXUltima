@@ -101,7 +101,7 @@ typedef PXResult(PXAPI* PXLobbyUserBan)(void PXREF owner);
 typedef PXResult(PXAPI* PXLobbyUserMe)(void PXREF owner);
 typedef PXResult(PXAPI* PXLobbyUserListAll)(void PXREF owner);
 
-typedef PXResult(PXAPI* PXLobbyUserProfileIconFetch)(void PXREF owner, PXTexture PXREF image);
+typedef PXResult(PXAPI* PXLobbyUserProfileIconFetch)(void PXREF owner, PXTexture2D PXREF image);
 
 
 
