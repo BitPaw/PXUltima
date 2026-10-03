@@ -7,6 +7,8 @@ const char PXIconAtlasText[] = "IconAtlas";
 
 PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreateInfo PXREF pxIconAtlasCreateInfo)
 {
+    return;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -23,15 +25,7 @@ PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreat
 
     // Load image
     {
-        PXECSCreateInfo pxResourceCreateInfoSub;
 
-        PXClear(PXECSCreateInfo, &pxResourceCreateInfoSub);
-        pxResourceCreateInfoSub.ObjectReference = (PXECSInfo**)&pxIconAtlas->IconTexture2D;
-        pxResourceCreateInfoSub.ObjectAmount = 1;
-        pxResourceCreateInfoSub.FilePath = pxIconAtlasCreateInfo->Info.FilePath;
-        pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
-
-        ////PXResourceManagerAdd(&pxResourceCreateInfoSub);
     }
 
     pxIconAtlasCreateInfo->CellAmountX = pxIconAtlas->IconTexture2D->Width / pxIconAtlasCreateInfo->CellSize;
@@ -78,8 +72,8 @@ PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreat
 
             PXIconCreateInfo pxIconCreateInfo;
             PXClear(PXIconCreateInfo, &pxIconCreateInfo);
-            pxIconCreateInfo.Info.ObjectReference = (PXECSInfo**)&pxIcon;
-            pxIconCreateInfo.Info.ObjectAmount = 1;
+            //pxIconCreateInfo.Info.ObjectReference = (PXECSInfo**)&pxIcon;
+            //pxIconCreateInfo.Info.ObjectAmount = 1;
             pxIconCreateInfo.Info.Type = PXResourceTypeIcon;
             pxIconCreateInfo.IconImage = pxIconAtlas->IconTexture2D;
             pxIconCreateInfo.OffsetX = pixelPositionX;
@@ -89,7 +83,7 @@ PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreat
             pxIconCreateInfo.RowSize = pxIconAtlasCreateInfo->CellSize * 4;
             pxIconCreateInfo.BitPerPixel = 8 * 4;
 
-            PXIconCreate(&pxIcon, &pxIconCreateInfo);
+           // PXIconCreate(&pxIcon, &pxIconCreateInfo);
         }
     }
 
