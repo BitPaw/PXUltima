@@ -17,7 +17,7 @@ PXResult PXAPI PXRARLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if (!isSignature)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         char checkA = 0;
@@ -39,7 +39,7 @@ PXResult PXAPI PXRARLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!isSignatureB)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
 
             pxRAR.Version = PXRARVersion5x0;
@@ -48,14 +48,14 @@ PXResult PXAPI PXRARLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         }
 
         default:
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXRARSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
