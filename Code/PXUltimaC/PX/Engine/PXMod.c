@@ -24,7 +24,7 @@ PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF
     {
         const PXResult directoryOpenResult = PXDirectoryOpen(&pxDirectoryIterator, pxTextModFileDirectory);
 
-        PXActionReturnOnError(directoryOpenResult);
+        PXResultReturnOnError(directoryOpenResult);
     }
 
     do
@@ -42,7 +42,7 @@ PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF
         );
 
         PXText pyText;
-        PXTextConstructFromAdressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
+        PXTextConstructFromAddressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
 
         const PXResult pxResult = PXLibraryOpen(&pxMod.Library, &pyText);
 
