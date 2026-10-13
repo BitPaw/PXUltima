@@ -38,5 +38,5 @@ PXPublic void PXAPI PXFileDirectoryRegisterToECS(PXECSRegisterInfo PXREF pxECSRe
 PXPublic PXResult PXAPI PXFileDirectoryCreate(PXFileDirectory** pxFileDirectory, PXFileDirectoryCreateInfo PXREF pxFileDirectoryCreateInfo);
 PXPublic PXResult PXAPI PXFileDirectoryDestroy(PXFileDirectory PXREF pxFileDirectory);
 
-PXPublic PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXEngineUIDrawInfo PXREF pxDrawInfo);
 #endif
