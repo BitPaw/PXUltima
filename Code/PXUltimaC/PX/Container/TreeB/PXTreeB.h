@@ -24,7 +24,7 @@ typedef struct PXTreeB_
     //-------------------
     // Data
     //-------------------
-    void* ValueDataAdress;
+    void* ValueDataAddress;
     PXSize ValueAmount;
     PXSize ValueSize;
     //-------------------
@@ -32,7 +32,7 @@ typedef struct PXTreeB_
     //-------------------
     // Index
     //-------------------
-    void* KeyDataAdress;
+    void* KeyDataAddress;
     PXSize KeyAmount;
     PXSize KeySize;
     PXI8U KeyOrder;
@@ -46,7 +46,7 @@ PXPublic PXResult PXAPI PXTreeBInsert(PXTreeB PXREF pxTreeB, const void PXREF ke
 PXPublic PXResult PXAPI PXTreeBFindIndexed(PXTreeB PXREF pxTreeB, const void PXREF key, void* PXREF value);
 PXPublic PXResult PXAPI PXTreeBFindUnindexed(PXTreeB PXREF pxTreeB, const void PXREF key, void* PXREF value);
 PXPublic void PXAPI PXTreeBValueIndex(PXTreeB PXREF pxTreeB, const PXSize index, void* PXREF key, void* PXREF value);
-PXPrivate PXResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, void* adress);
+PXPrivate PXResult PXAPI PXTreeBNodeExtractFromAddress(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, void* address);
 PXPrivate PXResult PXAPI PXTreeBNodeInsert(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, const void PXREF key, const void PXREF value);
 
 #endif
