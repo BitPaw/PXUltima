@@ -29,6 +29,6 @@ typedef struct PXJFS_
 PXJFS;
 
 PXPublic PXResult PXAPI PXJFSRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
-PXPublic PXResult PXAPI PXJFSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
+PXPublic PXResult PXAPI PXJFSLoadFromFile(void PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
 
 #endif
