@@ -228,7 +228,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxR
                 break;
 
             default:
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
 
             PXFileEndianessSet(pxResourceLoadInfo->FileCurrent, tiff->Endianness);
@@ -245,7 +245,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxR
             PXFileReadMultible(pxResourceLoadInfo->FileCurrent, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         }
 
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiff->OffsetToIFD); // Jump to adress
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileCurrent, tiff->OffsetToIFD); // Jump to address
 
         // PredictSize
 
@@ -500,7 +500,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxR
 
 PXResult PXAPI PXTIFFSaveToFile(PXFile PXREF pxFile, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXTIFFCompression PXAPI PXTIFFCompressionFromID(const unsigned short tiffCompressionID)

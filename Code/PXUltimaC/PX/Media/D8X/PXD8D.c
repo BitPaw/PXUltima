@@ -5,7 +5,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/D8X/PXD8W.h>
 #include <PX/Media/D8X/PXD8G.h>
-#include <PX/Type/PXModelPool.h>
+#include <PX/OS/File/PXFile.h>
 
 const char PXD8DText[] = "D8D";
 
@@ -32,7 +32,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
     pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
 
     char text[260];
-    PXTextFromAdressA(&pxFileOpenInfo.FilePath, text, 0, sizeof(text));
+    PXTextFromAddressA(&pxFileOpenInfo.FilePath, text, 0, sizeof(text));
     PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central/angel north central.d8t");
 
 
@@ -45,7 +45,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
     pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
     pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
 
-    PXTextFromAdressA(&pxFileOpenInfo.FilePath, text, 0, sizeof(text));
+    PXTextFromAddressA(&pxFileOpenInfo.FilePath, text, 0, sizeof(text));
     //PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central/angel north central_anc_trees.d8g");
     PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central/angel north central_ANC_building.d8g");
     //PXTextPrint(&pxFileOpenInfo.FilePath, "N:/NAS/Games/PC/Juiced/tracks/Angel North Central/angel north central_anc_hills.d8g");
@@ -62,7 +62,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
     PXD8GLoadFromFile(&pxModel, &pxECSCreateInfoSub);
 
-    PXSceneAddModel(pxScene, pxModel);
+    //PXSceneAddModel(pxScene, pxModel);
 
 
 
@@ -87,7 +87,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
     if(!invalidLength)
     {
-        return PXActionRefusedIndexOutOfBounce;
+        return PXResultRefusedIndexOutOfBounce;
     }
 
     pxD8XDat->PXD8XDatEntry = PXMemoryHeapCallocT(PXD8XArchiveEntry, pxD8XDat->TableEntryAmount);
@@ -278,7 +278,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
 
         char fileName[64];
-        PXTextFromAdressA(&pxFileOpenInfo.FilePath, fileName, 0, sizeof(fileName));
+        PXTextFromAddressA(&pxFileOpenInfo.FilePath, fileName, 0, sizeof(fileName));
         PXTextPrint(&pxFileOpenInfo.FilePath, "J/Unnamed_%8x8.%s", pxD8XDatEntry->Hash, extension);
 
         //PXFileStoreOnDiskA(pxD8XDatEntry->FileData, fileName);
@@ -287,6 +287,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
 
 
     // We need to bind texture data with model material IDs       
+#if 0
     PXSize amount = PXModelPoolModelAmount(pxScene->ModelPool);
 
     for(PXSize i = 0; i < amount; i++)
@@ -302,6 +303,7 @@ PXResult PXAPI PXD8DatLoadFromFile(PXScene PXREF pxScene, PXECSCreateInfo PXREF 
             pxMesh->Texture = PXTexturePoolTextureGet(pxScene->TexturePool, pxMesh->TextureID);
         }
     }
+#endif
             
 
 

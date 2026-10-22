@@ -6,6 +6,16 @@
 #include <wmmintrin.h>
 #include <mmintrin.h>
 
+#define PXIntrinsicUseSSE       1
+#define PXIntrinsicUseSSE2      1
+#define PXIntrinsicUseSSE3      1
+#define PXIntrinsicUseSSSE3     1
+#define PXIntrinsicUseSSE41     1
+#define PXIntrinsicUseSSE42     1
+#define PXIntrinsicUseAVX       1
+#define PXIntrinsicUseAVX2      1
+#define PXIntrinsicUseAVX512    1
+
 #if OSUnix
 #include <xmmintrin.h> // SSE, __m128
 #include <emmintrin.h> // SSE2, __m128i, __m128d
@@ -20,12 +30,23 @@
 
 #include <PX/Math/PXMatrix.h>
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Type/PXProcessor.h>
+#include <PX/Type/PXCPU.h>
 #include <PX/OS/Console/PXConsole.h>
 
 #define PXStandardLibraryMathUse 1
 
-const PXF64 PXMathPI = 3.1415926535897932384626433832;
+const PXI8U PXI8UMAX = 0xFFu;
+const PXI16U PXI16UMAX = 0xFFFFu;
+const PXI32U PXI32UMAX = 0xFFFFFFFFu;
+const PXI64U PXI64UMAX = 0xFFFFFFFFFFFFFFFFu;
+
+const PXI8S PXI8SMAX = 0xFFu / 2u;
+const PXI16U PXI16SMAX = 0xFFFFu / 2u;;
+const PXI32U PXI32SMAX = 0xFFFFFFFFu / 2u;;
+const PXI64U PXI64SMAX = 0xFFFFFFFFFFFFFFFFu / 2;
+
+
+const PXF64 PXMathPI = 3.1415926535897932384626433832; // 3.141592653589793116
 const PXF64 PXMathE = 2.71828182845904523536028747135266249;
 const PXF64 PXMathP = 1.32471795724474602596090885447809734;
 const PXF64 PXMathA = 2.50290787509589282228390287321821578;
@@ -39,14 +60,66 @@ void PXAPI PXMathIntrinsicInit()
     PXProcessorFetchInfo(&pxProcessor);
 }
 
-PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataAdressSize, const void* target)
+PXBool PXAPI PXMathAddressInRange(const void PXREF dataAddress, const PXSize dataAddressSize, const void* target)
 {
-    const PXSize adressMin = (PXSize)dataAdress;
-    const PXSize adressMax = adressMin + dataAdressSize;
+    const PXSize addressMin = (PXSize)dataAddress;
+    const PXSize addressMax = addressMin + dataAddressSize;
     const PXSize x = (PXSize)target;
-    const PXBool isInTage = adressMin <= x && x <= adressMax;
+    const PXBool isInTage = addressMin <= x && x <= addressMax;
 
     return isInTage;
+}
+
+PXI8U PXAPI PXMathDetectMinimalTypeWidthS(const PXI64S value)
+{
+    PXI64S valueAbsolute = PXMathAbsoluteI64(value);
+
+    if(valueAbsolute <= PXI8SMAX)
+    {
+        return 1u;
+    }
+
+    if(valueAbsolute <= PXI16SMAX)
+    {
+        return 2u;
+    }
+
+    if(valueAbsolute <= PXI32SMAX)
+    {
+        return 4u;
+    }
+
+    if(valueAbsolute <= PXI64SMAX)
+    {
+        return 8u;
+    }
+
+    return 16u;
+}
+
+PXI8U PXAPI PXMathDetectMinimalTypeWidthU(const PXI64U value)
+{
+    if(value <= PXI8UMAX)
+    {
+        return 1u;
+    }
+
+    if(value <= PXI16UMAX)
+    {
+        return 2u;
+    }
+
+    if(value <= PXI32UMAX)
+    {
+        return 4u;
+    }
+
+    if(value <= PXI64UMAX)
+    {
+        return 8u;
+    }
+
+    return 16u;
 }
 
 void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F PXREF pxMatrix4x4)
@@ -56,6 +129,7 @@ void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F PXREF pxMatrix4x4)
 
 void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F PXREF pxMatrix4x4)
 {
+#if PXIntrinsicUseSSE
     // _mm_loadu_ps
     // _mm_storeu_ps
     __m128 matrixTemp[4];
@@ -65,6 +139,7 @@ void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F PXREF pxMatrix4x4)
     _MM_TRANSPOSE4_PS(matrixTemp[0], matrixTemp[1], matrixTemp[2], matrixTemp[3]);
 
     PXMemoryCopyF32V(matrixTemp, pxMatrix4x4, 16);
+#endif
 }
 
 int PXAPI PXMathMinimumI(const int a, const int b)
@@ -87,12 +162,12 @@ PXSize PXAPI PXMathMaximumIU(const PXSize a, const PXSize b)
     return PXMathMaximum(a, b);
 }
 
-int PXAPI PXMathFloorI(const int a)
+PXI32S PXAPI PXMathFloorF(const PXF32 a)
 {
     return PXMathFloor(a);
 }
 
-int PXAPI PXMathFloorD(const double a)
+PXI32S PXAPI PXMathFloorD(const PXF64 a)
 {
     return PXMathFloor(a);
 }
@@ -103,6 +178,11 @@ PXI16U PXAPI PXMathAbsoluteI16(const PXI16S value)
 }
 
 PXI32U PXAPI PXMathAbsoluteI32(const PXI32S value)
+{
+    return PXMathAbsolute(value);
+}
+
+PXI64U PXAPI PXMathAbsoluteI64(const PXI64S value)
 {
     return PXMathAbsolute(value);
 }
@@ -201,6 +281,7 @@ void PXAPI PXMathF16ToF32(PXF32 PXREF listOut, const PXF16 PXREF listInput, cons
 
 void PXAPI PXMathF16ToF32X4(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
+#if PXIntrinsicUseSSE
     __m128i simdInput;
     __m128 simdOutput;
 
@@ -218,12 +299,14 @@ void PXAPI PXMathF16ToF32X4(PXF32 PXREF listOut, const PXF16 PXREF listInput, co
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
-        PXMemoryCopyF16V(simdInput.m128i_u16, extractPoint, workSet);
+        //PXMemoryCopyF16V(simdInput.m128i_u16, extractPoint, workSet);
+        simdInput = _mm_loadu_si128((__m128i*)extractPoint);
 
         simdOutput = _mm_cvtph_ps(simdInput); // [Intrinsic] 4x 16-Bit PXF32 -> 32-Bit PXF32
 
-        PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
+        PXMemoryCopyF32V(insertPoint, (PXF32*)&simdOutput, workSet);
     }
+#endif
 }
 
 void PXAPI PXMathF16ToF32X8(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
@@ -233,6 +316,7 @@ void PXAPI PXMathF16ToF32X8(PXF32 PXREF listOut, const PXF16 PXREF listInput, co
 
 void PXAPI PXMathF16ToF32X16(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
+#if PXIntrinsicUseSSE
     __m256i simdInput;
     __m512 simdOutput;
 
@@ -256,6 +340,7 @@ void PXAPI PXMathF16ToF32X16(PXF32 PXREF listOut, const PXF16 PXREF listInput, c
 
         PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
     }
+#endif
 }
 
 void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
@@ -296,6 +381,7 @@ void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, cons
 
 void PXAPI PXMathF32ToF16X4(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
+#if PXIntrinsicUseSSE
     __m128 simdInput;
     __m128i simdOutput;
 
@@ -318,6 +404,7 @@ void PXAPI PXMathF32ToF16X4(PXF16 PXREF listOut, const PXF32 PXREF listInput, co
 
         PXMemoryCopyF16V(insertPoint, simdOutput.m128i_u16, workSet);
     }
+#endif
 }
 
 void PXAPI PXMathF32ToF16X8(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
@@ -327,6 +414,7 @@ void PXAPI PXMathF32ToF16X8(PXF16 PXREF listOut, const PXF32 PXREF listInput, co
 
 void PXAPI PXMathF32ToF16X16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
+#if PXIntrinsicUseSSE
     __m512 simdInput;
     __m256i simdOutput;
 
@@ -349,6 +437,7 @@ void PXAPI PXMathF32ToF16X16(PXF16 PXREF listOut, const PXF32 PXREF listInput, c
 
         PXMemoryCopyF16V(insertPoint, simdOutput.m256i_u16, workSet);
     }
+#endif
 }
 
 PXF32 PXAPI PXMathFastInverseSqaureRoot(PXF32 number)
@@ -444,6 +533,13 @@ PXF64 PXAPI PXMathRootF64(unsigned int rootNr, const PXF64 value)
     }
 }
 
+PXI32U PXAPI PXMathRootSquareI32U(const PXI32U value)
+{
+    // ToDo: There usProb.
+
+    return PXMathFloorF(PXMathRootSquareF32(value));
+}
+
 PXF32 PXAPI PXMathRootSquareF32(const PXF32 value)
 {
     return sqrtf(value);  // TODO: Dependeny problem
@@ -499,6 +595,7 @@ void PXAPI PXMathRootSquareF32V(PXF32 PXREF outputListY, const PXF32 PXREF input
 
 void PXAPI PXMathRootSquareF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
 
@@ -523,10 +620,12 @@ void PXAPI PXMathRootSquareF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inp
 
         PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
     }
+#endif
 }
 
 void PXAPI PXMathRootSquareF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
 
@@ -551,12 +650,12 @@ void PXAPI PXMathRootSquareF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inp
 
         PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
     }
-
-    return; // DONE
+#endif
 }
 
 void PXAPI PXMathRootSquareF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
 
@@ -581,10 +680,22 @@ void PXAPI PXMathRootSquareF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF in
 
         PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
     }
+#endif
+}
+
+PXF32 PXAPI PXMathRootSquareInverseF32(const PXF32 value)
+{
+    return 1.0f / PXMathRootSquareF32(value); // 1/sqrtf(x)
+}
+
+PXF64 PXAPI PXMathRootSquareInverseF64(const PXF64 value)
+{
+    return 1.0 / PXMathRootSquareF64(value);
 }
 
 void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128h dataInput;
     __m128h dataOut;
 
@@ -593,10 +704,12 @@ void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PX
    // dataOut = _mm_invsqrt_ph(dataInput); // AVX512_FP16
 
     PXMemoryCopyF16V(outputListY, dataOut.m128i_u16, 8);
+#endif
 }
 
 void PXAPI PXMathRootSquareInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128 dataInput;
     __m128 dataOut;
 
@@ -605,10 +718,12 @@ void PXAPI PXMathRootSquareInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PX
     dataOut = _mm_invsqrt_ps(dataInput); // SSE
 
     PXMemoryCopyF32V(outputListY, dataOut.m128_u16, 4);
+#endif
 }
 
 void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128d dataInput;
     __m128d dataOut;
 
@@ -617,6 +732,7 @@ void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PX
     dataOut = _mm_invsqrt_pd(dataInput); // SSE
 
     PXMemoryCopyF64V(outputListY, dataOut.m128d_f64, 2);
+#endif
 }
 
 double PXAPI PXMathRootCubic(const double x)
@@ -638,6 +754,7 @@ double PXAPI PXMathRootCubic(const double x)
 
 void PXAPI PXMathRootCubeInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128h dataInput;
     __m128h dataOut;
 
@@ -646,10 +763,12 @@ void PXAPI PXMathRootCubeInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXRE
    // dataOut = _mm_invcbrt_ph(dataInput); // AVX512_FP16
 
     PXMemoryCopyF16V(outputListY, dataInput.m128i_u16, 8);
+#endif
 }
 
 void PXAPI PXMathRootCubeInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128 dataInput;
     __m128 dataOut;
 
@@ -658,10 +777,12 @@ void PXAPI PXMathRootCubeInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXRE
     __m128 data = _mm_invcbrt_ps(dataInput); // SSE
 
     PXMemoryCopyF32V(outputListY, dataInput.m128_f32, 4);
+#endif
 }
 
 void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128d dataInput;
     __m128d dataOut;
 
@@ -670,6 +791,7 @@ void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXRE
     __m128d data = _mm_invcbrt_pd(dataInput); // SSE
 
     PXMemoryCopyF64V(outputListY, dataInput.m128d_f64, 2);
+#endif
 }
 
 PXF64 PXAPI PXMathRootNF64(const PXI32U amount, const PXF64 x)
@@ -883,15 +1005,13 @@ PXF64 PXAPI PXMathSinusRADF64(const PXF64 x)
 
 PXF32 PXAPI PXMathSinusDEGF32(const PXF32 x)
 {
-    const float PI = 3.14159265358979323846f;
-    float rad = x * (PI / 180.0f);
+    float rad = x * (PXMathPI / 180.0f);
     return PXMathSinusRADF32(rad);
 }
 
 PXF64 PXAPI PXMathSinusDEGF64(const PXF64 x)
 {
-    const float PI = 3.14159265358979323846f;
-    float rad = x * (PI / 180.0f);
+    float rad = x * (PXMathPI / 180.0f);
     return PXMathSinusRADF64(rad);
 }
 
@@ -954,6 +1074,60 @@ void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32 PXREF valueSIN, PXF32 PXR
 {
     *valueSIN = PXMathSinusRADF32(angle);
     *valueCOS = PXMathCosinusRADF32(angle);
+}
+
+void PXAPI PXMathSinCosRADF32x4(PXMathSinCosRADF32Result PXREF pxMathSinCosRADF32Result)
+{
+#if 0
+    for(PXI8U i = 0; i < 4; ++i)
+    {
+        pxMathSinCosRADF32Result->DataSin[i] = PXMathSinusRADF32(pxMathSinCosRADF32Result->InputAngles[i]);
+        pxMathSinCosRADF32Result->DataCos[i] = PXMathCosinusRADF32(pxMathSinCosRADF32Result->InputAngles[i]);
+    }
+#else
+
+    // (128Bits/8)/sizeof(float)=4
+   // Load X, Y, Z into a single register, a 4th W axis is unused. 4D Euler angles are bad. 
+    __m128 angles = _mm_loadu_ps(pxMathSinCosRADF32Result->InputAngles);
+    __m128 cosines;
+
+    // (3 input angles XYZ -> 3x sin&cos combos)
+    __m128 sines = _mm_sincos_ps(&cosines, angles); // SSE
+
+    // Note: sines.m128_f32[0] is not standard code, a MSVC extra. Cant produce code thats slower.
+
+#if OSUnix
+
+    alignas(16) PXF32 sinArray[4];
+    alignas(16) PXF32 cosArray[4];
+    _mm_store_ps(sinArray, sines);
+    _mm_store_ps(cosArray, cosines);
+
+    pxMathSinCosRADF32Result->DataSin[0] = sinArray[0];
+    pxMathSinCosRADF32Result->DataSin[1] = sinArray[1];
+    pxMathSinCosRADF32Result->DataSin[2] = sinArray[2];
+    pxMathSinCosRADF32Result->DataSin[3] = sinArray[3];
+
+    pxMathSinCosRADF32Result->DataCos[0] = cosArray[0];
+    pxMathSinCosRADF32Result->DataCos[1] = cosArray[1];
+    pxMathSinCosRADF32Result->DataCos[2] = cosArray[2];
+    pxMathSinCosRADF32Result->DataCos[3] = cosArray[3];
+
+#elif OSWindows
+
+    pxMathSinCosRADF32Result->DataSin[0] = sines.m128_f32[0];
+    pxMathSinCosRADF32Result->DataSin[1] = sines.m128_f32[1];
+    pxMathSinCosRADF32Result->DataSin[2] = sines.m128_f32[2];
+    pxMathSinCosRADF32Result->DataSin[3] = sines.m128_f32[3];
+
+    pxMathSinCosRADF32Result->DataCos[0] = cosines.m128_f32[0];
+    pxMathSinCosRADF32Result->DataCos[1] = cosines.m128_f32[1];
+    pxMathSinCosRADF32Result->DataCos[2] = cosines.m128_f32[2];
+    pxMathSinCosRADF32Result->DataCos[3] = cosines.m128_f32[3];
+
+#endif
+
+#endif
 }
 
 void PXAPI PXMathSinCosRADF16V(PXF16 PXREF data, const PXSize amount)
@@ -1060,30 +1234,38 @@ void PXAPI PXMathCosinusDEGF32VX1(PXF32 PXREF outputListY, const PXF32 PXREF inp
 
 void PXAPI PXMathCosinusDEGF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m128 input = _mm_load_ps(outputListY);
     __m128 output = _mm_cosd_ps(input); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit PXF32 in DEG -> COS(x)
     _mm_store_ps(inputListX, output);
+#endif
 }
 
 void PXAPI PXMathCosinusDEGF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m256 input = _mm256_load_ps(outputListY);
     __m256 output = _mm256_cosd_ps(input); // AVX512F, 16x COS() Degrees
     _mm256_store_ps(inputListX, input);
+#endif
 }
 
 void PXAPI PXMathCosinusDEGF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m512 input = _mm512_load_ps(outputListY);
     __m512 output = _mm512_cosd_ps(input); // AVX512F, 16x COS() Degrees
     _mm512_store_ps(inputListX, input);
+#endif
 }
 
 void PXAPI PXMathCosinusDEGF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
+#if PXIntrinsicUseSSE
     __m512d input = _mm512_load_pd(outputListY);
     __m512d output = _mm512_cosd_pd(input); // AVX512F, 16x COS() Degrees
     _mm512_store_pd(inputListX, input);
+#endif
 }
 
 void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
@@ -1229,14 +1411,16 @@ a = a - b;
 
 void PXAPI PXMathShuffleI8
 (
-    const PXI8U PXREF input,
-    PXI8U PXREF output,
+    const PXI8U* input,
+    PXI8U* output,
     const PXSize amount,
     const PXI8U* mask,
     const PXI8U maskAmount
 )
 {
     PXSize i = 0;
+
+#if PXIntrinsicUseSSE
 
     __m512i shuffleMask;
 
@@ -1262,6 +1446,32 @@ void PXAPI PXMathShuffleI8
         output[j] = input[j + shuffleMask.m512i_u8[j % maskAmount]];
     }
 #endif
+
+#endif
+}
+
+PXSize PXAPI PXIndex2D(const PXSize width, const PXSize x, const PXSize y)
+{
+    return 
+        x + 
+        y * width;
+}
+
+PXSize PXAPI PXIndex3D(const PXSize width, const PXSize x, const PXSize y, const PXSize z)
+{
+    return 
+        x + 
+        y * width + 
+        z * width * width;
+}
+
+PXSize PXAPI PXIndex4D(const PXSize width, const PXSize x, const PXSize y, const PXSize z, const PXSize w)
+{
+    return
+        (x * 1.0f) +
+        (y * width) +
+        (z * width * width) +
+        (w * width * width * width);
 }
 
 // Arctangent Function
@@ -1416,5 +1626,3 @@ void PXAPI PXFastFourierTransform()
 {
     // TODO: implement
 }
-
-// fmod

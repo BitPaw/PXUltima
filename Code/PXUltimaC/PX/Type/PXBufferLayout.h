@@ -5,17 +5,27 @@
 
 #include <PX/Type/PXType.h>
 
+typedef enum PXVertexBufferLayoutType_
+{
+    PXVertexBufferLayoutTypeInvalid,
+    PXVertexBufferLayoutTypePosition,
+    PXVertexBufferLayoutTypeNormal,
+    PXVertexBufferLayoutTypeTexturePos,
+    PXVertexBufferLayoutTypeColor,
+    PXVertexBufferLayoutTypeCustom,
+}
+PXVertexBufferLayoutType;
+
 // Describes how the data is stuctured
 typedef struct PXBufferLayoutEntry_
 {
-    PXI32U Format;
+    PXI32U TypeData; // PXTypeF32
+    PXVertexBufferLayoutType TypeUse;
     PXI8U AmountOfElements; // 2=2D, 3=3D, 4=RGBA, ...
-    PXI8U Type;
-    PXBool UpdatePerPrimitive; // 1=Instancing
-    PXSize Entrys;
+    PXBool UpdatesPerPrimitive; // 1=Instancing
+    PXSize RelativeOffsetInBytes;
 }
 PXBufferLayoutEntry;
-
 
 typedef struct PXBufferLayout_
 {
@@ -29,19 +39,8 @@ typedef struct PXBufferLayout_
 }
 PXBufferLayout;
 
-typedef struct PXBufferLayoutInfo_
-{
-    PXSize Amount;
-}
-PXBufferLayoutInfo;
-
-
-PXPublic void PXAPI PXBufferLayoutSET
-(
-    PXBufferLayout PXREF pxBufferLayout,
-    PXBufferLayoutInfo PXREF pxBufferLayoutInfo
-);
-PXPublic PXBufferLayoutEntry* PXAPI PXBufferLayoutGET(PXBufferLayout PXREF pxBufferLayout);
-
+PXPublic PXResult PXAPI PXBufferLayoutPrepare(PXBufferLayout PXREF pxBufferLayout, const PXSize amount);
+PXPublic PXBufferLayoutEntry* PXAPI PXBufferLayoutGetViaIndex(PXBufferLayout PXREF pxBufferLayout, const PXSize index);
+PXPublic PXSize PXAPI PXBufferLayoutAmount(const PXBufferLayout PXREF pxBufferLayout);
 
 #endif

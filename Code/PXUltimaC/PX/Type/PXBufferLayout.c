@@ -8,7 +8,7 @@ PXResult PXAPI PXBufferLayoutPrepare(PXBufferLayout PXREF pxBufferLayout, const 
 
     if(amount <= PXEmbeddedArraySize)
     {
-        return PXActionRefusedIndexOutOfBounce;
+        return PXResultRefusedIndexOutOfBounce;
     }
 
     pxBufferLayout->LayoutAmount = amount;

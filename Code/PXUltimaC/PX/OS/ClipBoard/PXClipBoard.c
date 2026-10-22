@@ -250,7 +250,7 @@ PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXI32U clipBoardFormat)
 PXResult PXAPI PXClipBoardOpen(PXClipBoard PXREF clipBoard)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     HWND pxWindowID = NULL;
@@ -259,14 +259,14 @@ PXResult PXAPI PXClipBoardOpen(PXClipBoard PXREF clipBoard)
 
     return pxResult;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXClipBoardClose(PXClipBoard PXREF clipBoard)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     const PXBool successfull = CloseClipboard(); // Windows 2000, User32.dll, winuser.h
@@ -275,14 +275,14 @@ PXResult PXAPI PXClipBoardClose(PXClipBoard PXREF clipBoard)
     return pxResult;
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXClipBoardSet(PXClipBoard PXREF clipBoard, const PXClipBoardFormat format, const void* data)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
     // Alloc something with GlobalAlloc()
     // Maybe copy data?
@@ -294,20 +294,20 @@ PXResult PXAPI PXClipBoardSet(PXClipBoard PXREF clipBoard, const PXClipBoardForm
 
     return pxResult;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXClipBoardClear(PXClipBoard PXREF clipBoard)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
     const PXBool successfull = EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
     const PXResult pxResult = PXErrorCurrent(!successfull);
 
     return pxResult;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }

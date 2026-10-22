@@ -24,22 +24,22 @@ PXTabListCreateInfo;
 
 
 
-typedef struct PXUIElementTabPageSingleInfo_
+typedef struct PXEngineUIElementTabPageSingleInfo_
 {
     PXWindow** UIElement;
     char* PageName;
     PXIcon* TABIcon;
-    PXUIElementType UIElementType;
+    PXEngineUIElementType UIElementType;
 }
-PXUIElementTabPageSingleInfo;
+PXEngineUIElementTabPageSingleInfo;
 
 
-typedef struct PXUIElementTabPageInfo_
+typedef struct PXEngineUIElementTabPageInfo_
 {
-    PXUIElementTabPageSingleInfo* TabPageSingleInfoList;
+    PXEngineUIElementTabPageSingleInfo* TabPageSingleInfoList;
     PXSize TabPageSingleInfoAmount;
 }
-PXUIElementTabPageInfo;
+PXEngineUIElementTabPageInfo;
 
 
 
@@ -81,7 +81,7 @@ PXWindowExtendedBehaviourResourceView;
 
 PXPublic void PXAPI PXTabListRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
-PXPublic PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 PXPublic PXResult PXAPI PXTabListCreate(PXTabList** pxTabListREF, PXTabListCreateInfo PXREF pxTabListCreateInfo);
 

@@ -1,8 +1,8 @@
 #include "PXKnowlegeGraph.h"
 
-#include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/Math/PXMath.h>
+#include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 
 PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXKnowlegeGraphNode PXREF pxKnowlegeGraphNode)
 {
@@ -25,8 +25,8 @@ void PXDrawTriangle(PXOpenGL* pxOpenGL)
 
 typedef struct PXLine_
 {
-    PXColorRGBAF* ColorFill;
-    PXColorRGBAF* ColorBorder;
+    PXColorRGBA_F32* ColorFill;
+    PXColorRGBA_F32* ColorBorder;
 
     PXF32 Positon[4];
     PXF32 Scale[2];
@@ -35,8 +35,8 @@ PXLine;
 
 typedef struct PXCircle
 {
-    PXColorRGBAF* ColorFill;
-    PXColorRGBAF* ColorBorder;
+    PXColorRGBA_F32* ColorFill;
+    PXColorRGBA_F32* ColorBorder;
 
     PXF32 Positon[2];
     PXF32 Scale[2];
@@ -47,7 +47,7 @@ PXCircle;
 
 void PXDrawLine(PXOpenGL PXREF pxOpenGL, PXLine PXREF pxLine)
 {
-    const PXColorRGBAF PXREF colorList[2] = {pxLine->ColorBorder, pxLine->ColorFill };
+    const PXColorRGBA_F32 PXREF colorList[2] = {pxLine->ColorBorder, pxLine->ColorFill };
     const int lineSize[2] = { 20, 6 };
     const int drawMode[2] = { GL_LINES, GL_POINTS };
 
@@ -55,7 +55,7 @@ void PXDrawLine(PXOpenGL PXREF pxOpenGL, PXLine PXREF pxLine)
     {
         for (size_t i = 0; i < 2; i++)
         {
-            const PXColorRGBAF PXREF color = colorList[i];
+            const PXColorRGBA_F32 PXREF color = colorList[i];
 
             pxOpenGL->Binding.LineWidth(lineSize[i]);
             pxOpenGL->Binding.PointSize(lineSize[i]);
@@ -78,14 +78,14 @@ void PXDrawCircle(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircle)
 {
     const PXF32 piX2 = PXMathPI * 2.0f;
 
-    PXColorRGBAF* colorList[2] = { pxCircle->ColorFill, pxCircle->ColorBorder };
+    PXColorRGBA_F32* colorList[2] = { pxCircle->ColorFill, pxCircle->ColorBorder };
     int modeList[2] = { GL_POLYGON, GL_LINE_LOOP };
 
     pxOpenGL->Binding.LineWidth(3);
 
     for (PXSize i = 0; i < 2; ++i)
     {
-        PXColorRGBAF* color = colorList[i];
+        PXColorRGBA_F32* color = colorList[i];
 
         pxOpenGL->Binding.Begin(modeList[i]);
 
@@ -105,8 +105,8 @@ void PXDrawCircle(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircle)
 
 void PXDrawCircleList(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircleList, const PXSize pxSize)
 {
-    PXColorRGBAF fillColor = { 0.6,0.2,0.6,1 };
-    PXColorRGBAF borderColor = { 0.8,0.8,0.8,1 };
+    PXColorRGBA_F32 fillColor = { 0.6,0.2,0.6,1 };
+    PXColorRGBA_F32 borderColor = { 0.8,0.8,0.8,1 };
 
     PXLine pxLine;
     pxLine.ColorFill = &fillColor;
@@ -131,13 +131,19 @@ void PXDrawCircleList(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircleList, cons
     }
 }
 
-PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXCodeDocument PXREF pxDocument, PXTexture PXREF PXTexture)
+PXResult PXAPI PXKnowlegeGraphLoadAndBuild
+(
+    PXKnowlegeGraph PXREF pxKnowlegeGraph, 
+    PXCodeDocument PXREF pxDocument
+)
 {
     PXSize imageWidth = pxKnowlegeGraph->SizeMaxWidth;
     PXSize imageHeight = pxKnowlegeGraph->SizeMaxHeight;
 
     imageWidth = 500;
     imageHeight = 500;
+
+#if 0
 
     // How many nodes do we have, allocate space for it.
 
@@ -155,7 +161,7 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
     //PXWindowCreateA(&pxWindow, 50,50, 1000, 1000, "==", PXTrue);
     //PXWindowCreateHidden(&pxWindow, imageWidth, imageHeight, PXTrue);
 
-
+    /*
     // Create windowless rendering instance
     PXGraphic pxGraphic;
 
@@ -167,20 +173,21 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
         pxGraphicInitializeInfo.WindowReference = pxWindow;
         pxGraphicInitializeInfo.Width = imageWidth;
         pxGraphicInitializeInfo.Height = imageHeight;
-        pxGraphicInitializeInfo.GraphicSystem = PXGraphicSystemOpenGL;
+        pxGraphicInitializeInfo.GraphicSystem = PXGraphicAPIOpenGL;
         pxGraphicInitializeInfo.Graphic = &pxGraphic;
 
         PXGraphicInstantiate(&pxGraphic, &pxGraphicInitializeInfo);
     }
+    */
 
-    pxGraphic.OpenGLInstance.Binding.Viewport(0,0, imageWidth, imageHeight);
+    pxGraphic.APIOpenGL.Binding.Viewport(0,0, imageWidth, imageHeight);
 
     // Render image
     {
-        PXColorRGBAF clearColor = { 0.1,0,0,1 };
-        PXColorRGBAF drawColor = { 1,0,0,0 };
+        PXColorRGBA_F32 clearColor = { 0.1,0,0,1 };
+        PXColorRGBA_F32 drawColor = { 1,0,0,0 };
 
-        pxGraphic.Select(pxGraphic.EventOwner);
+        pxGraphic.Select(pxGraphic.EventOwner, pxWindow);
 
         //glViewport(0,0, pxWindow.Width, pxWindow.Height);
 
@@ -192,8 +199,8 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
             pxGraphic.Clear(pxGraphic.EventOwner, &clearColor);
 
 
-            PXColorRGBAF fillColor = { 1,0,0,1 };
-            PXColorRGBAF borderColor = { 1,1,1,1 };
+            PXColorRGBA_F32 fillColor = { 1,0,0,1 };
+            PXColorRGBA_F32 borderColor = { 1,1,1,1 };
 
             PXCircle pxCircleList[5];
 
@@ -210,7 +217,7 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
                 pxCircle->LevelOfDetail = 64;
             }
 
-            PXDrawCircleList(&pxGraphic.OpenGLInstance, pxCircleList, 5);
+            PXDrawCircleList(&pxGraphic.APIOpenGL, pxCircleList, 5);
 
 
             // pxGraphic.DrawColorRGBAF(pxGraphic.EventOwner, 1, 0, 0, 1);
@@ -242,7 +249,7 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph
 
     PXGraphicRelease(&pxGraphic);
     //  PXWindowDestruct(&pxWindow);
-
+#endif
 
     return PXResultOK;
 }

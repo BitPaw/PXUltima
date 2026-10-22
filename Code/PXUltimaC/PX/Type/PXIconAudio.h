@@ -20,6 +20,6 @@ PXIconAudioCreateInfo;
 PXPublic void PXAPI PXIconAudioRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXIconAudioCreate(PXIconAudio** pxIconAudioREF, PXIconAudioCreateInfo PXREF pxIconAudioCreateInfo);
 PXPublic PXResult PXAPI PXIconAudioRelease(PXIconAudio PXREF pxIconAudio);
-PXPublic PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

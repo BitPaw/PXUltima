@@ -7,8 +7,8 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Type/PXModel.h>
 #include <PX/Type/PXCamera.h>
-#include <PX/Type/PXTexturePool.h>
-#include <PX/Type/PXModelPool.h>
+#include <PX/Engine/PXDictionaryECS.h>
+#include <PX/Type/PXSkyBox.h>
 
 //typedef struct PXScene_ PXScene;
 
@@ -16,19 +16,46 @@ typedef struct PXScene_
 {
     PXECSInfo Info;
 
-    PXTexturePool* TexturePool;
-    PXModelPool* ModelPool;
+    //PXTexturePool* TexturePool; // ???
+   
+    PXDictionaryECS ModelLookup;
+    PXDictionaryECS CameraLookup;
 
-    PXCamera* Camera;
+    PXSkyBox* SkyBox;
+
+    PXCamera* CameraCurrent;
 }
 PXScene;
 
-PXPublic void PXAPI PXSceneRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
-PXPublic PXResult PXAPI PXSceneCreate(PXScene** pxSceneREF, PXECSCreateInfo PXREF pxECSCreateInfo);
-PXPublic PXResult PXAPI PXSceneRelease(PXScene PXREF pxScene);
-PXPublic PXResult PXAPI PXSceneDraw(PXScene PXREF pxScene, PXDrawInfo PXREF pxDrawInfo);
+typedef struct PXSceneCreateInfo_
+{
+    PXECSCreateInfo Info;
+}
+PXSceneCreateInfo;
 
-PXPublic PXResult PXAPI PXSceneAddModel(PXScene PXREF pxScene, PXModel PXREF pxModel);
-PXPublic PXResult PXAPI PXSceneAddCamera(PXScene PXREF pxScene, PXCamera PXREF pxCamera);
+PXPublic void PXAPI PXSceneRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
+PXPublic PXResult PXAPI PXSceneCreate(PXScene** pxSceneREF, PXSceneCreateInfo PXREF pxSceneCreateInfo);
+PXPublic PXResult PXAPI PXSceneRelease(PXScene PXREF pxScene);
+
+
+
+// Model
+PXPublic PXSize PXAPI PXSceneModelAmount(const PXScene PXREF pxScene);
+PXPublic PXModel* PXAPI PXSceneModelGet(const PXScene PXREF pxScene, const PXSize index);
+PXPublic PXResult PXAPI PXSceneModelAdd(PXScene PXREF pxScene, PXModel PXREF pxModel);
+
+// Skybox
+PXPublic PXSkyBox* PXAPI PXSceneSkyBoxGet(const PXScene PXREF pxScene);
+PXPublic PXResult PXAPI PXSceneSkyBoxSet(PXScene PXREF pxScene, PXSkyBox PXREF pxSkyBox);
+
+// Camera
+PXPublic PXSize PXAPI PXSceneCameraAmount(const PXScene PXREF pxScene);
+PXPublic PXCamera* PXAPI PXSceneCameraGet(const PXScene PXREF pxScene, const PXSize index);
+PXPublic PXResult PXAPI PXSceneCameraAdd(PXScene PXREF pxScene, PXCamera PXREF pxCamera);
+
+PXPublic PXResult PXAPI PXSceneCameraSet(PXScene PXREF pxScene, PXCamera PXREF pxCamera);
+PXPublic PXCamera* PXAPI PXSceneCameraCurrent(const PXScene PXREF pxScene);
+
+
 
 #endif

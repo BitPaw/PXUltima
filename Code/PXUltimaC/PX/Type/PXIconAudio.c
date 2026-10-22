@@ -1,8 +1,9 @@
 #include "PXIconAudio.h"
-#include <gl/GL.h>
 
 #include <PX/Math/PXMath.h>
 #include <PX/Math/PXVector.h>
+
+#include <GL/gl.h>
 
 const char PXIconAudioName[] = "IconAudio";
 const PXI8U PXIconAudioNameLength = sizeof(PXIconAudioName);
@@ -44,18 +45,18 @@ PXResult PXAPI PXIconAudioCreate(PXIconAudio** pxIconAudioREF, PXIconAudioCreate
 
 PXResult PXAPI PXIconAudioRelease(PXIconAudio PXREF pxIconAudio)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 
-PXVector3F32 v3_add(PXVector3F32 a, PXVector3F32 b) 
+PXVector3F32 v3_add(PXVector3F32 a, PXVector3F32 b)
 {
     PXVector3F32 r = { a.X + b.X,a.Y + b.Y,a.Z + b.Z };
-    return r; 
+    return r;
 }
-PXVector3F32 v3_mul(PXVector3F32 a, float s) 
+PXVector3F32 v3_mul(PXVector3F32 a, float s)
 {
-    PXVector3F32 r = { a.X * s,a.Y * s,a.Z * s }; 
+    PXVector3F32 r = { a.X * s,a.Y * s,a.Z * s };
     return r;
 }
 
@@ -83,7 +84,7 @@ void push_line(LineVtx* v, int* n,
     *n += 2;
 }
 
-PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     PXVector3F32 center;
     float size;
@@ -93,7 +94,7 @@ PXResult PXAPI PXIconAudioDraw(PXIconAudio PXREF pxIconAudio, PXDrawInfo PXREF p
     unsigned char a;
     int waveSegments;
 
-    if(waveSegments < 8) 
+    if(waveSegments < 8)
         waveSegments = 8;
 
     PXVector3F32 camRight, camUp;

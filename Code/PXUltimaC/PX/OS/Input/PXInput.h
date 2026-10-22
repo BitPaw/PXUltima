@@ -7,31 +7,31 @@
 
 typedef struct PXDeviceInputMouse_
 {
-    DWORD dwId;
-    DWORD dwNumberOfButtons;
-    DWORD dwSampleRate;
-    BOOL  fHasHorizontalWheel;
+    PXI32U ID;
+    PXI32U NumberOfButtons;
+    PXI32U SampleRate;
+    PXBool HasHorizontalWheel;
 }
 PXDeviceInputMouse;
 
 typedef struct PXDeviceInputKeyBoard_
 {
-    DWORD dwType;
-    DWORD dwSubType;
-    DWORD dwKeyboardMode;
-    DWORD dwNumberOfFunctionKeys;
-    DWORD dwNumberOfIndicators;
-    DWORD dwNumberOfKeysTotal;
+    PXI32U dwType;
+    PXI32U dwSubType;
+    PXI32U dwKeyboardMode;
+    PXI32U dwNumberOfFunctionKeys;
+    PXI32U dwNumberOfIndicators;
+    PXI32U dwNumberOfKeysTotal;
 }
 PXDeviceInputKeyBoard;
 
 typedef struct PXDeviceInputGeneric_
 {
-    DWORD dwVendorId;
-    DWORD dwProductId;
-    DWORD dwVersionNumber;
-    USHORT usUsagePage;
-    USHORT usUsage;
+    PXI32U dwVendorId;
+    PXI32U dwProductId;
+    PXI32U dwVersionNumber;
+    PXI16U usUsagePage;
+    PXI16U usUsage;
 }
 PXDeviceInputGeneric;
 
@@ -85,8 +85,9 @@ typedef struct PXDeviceInputUpdateInfo_
 PXDeviceInputUpdateInfo;
 
 
+#if OSWindows
 PXPrivate void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHandle);
-
+#endif
 
 PXPublic PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo PXREF pxDeviceInputUpdateInfo);
 

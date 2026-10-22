@@ -3,6 +3,8 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/DDS/PXDDS.h>
+#include <PX/OS/File/PXFile.h>
+#include <PX/Type/PXTexture2D.h>
 
 
 #define PXD8WDebugLog 0
@@ -37,8 +39,9 @@ const PXI8U PXD8WTextureTableEntryListSize = sizeof(PXD8WTextureTableEntryList) 
 
 int counter = 0;
 
-PXResult PXAPI PXD8WLoadFromFile(PXTexturePool PXREF pxTexturePool, PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePoolFile)
+PXResult PXAPI PXD8WLoadFromFile(PXModel PXREF pxModel, PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePoolFile)
 {
+#if 0
     PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
     PXSize poolStartIndex = PXTexturePoolAmountGet(pxTexturePool);
         
@@ -152,32 +155,33 @@ PXResult PXAPI PXD8WLoadFromFile(PXTexturePool PXREF pxTexturePool, PXECSCreateI
         {
             PXD8TextureTableEntry PXREF pxD8TextureTableEntry = &textureTable->EntryList[textureIndex];
 
-            PXTexture* pxTexture = 0;
+            PXTexture2D* pxTexture2D = 0;
 
             //-------------------------------------------------
             // Create texture
-            PXTextureCreateInfo pxTextureCreateInfo;
-            PXClear(PXTextureCreateInfo, &pxTextureCreateInfo);
-            pxTextureCreateInfo.Type = PXTextureType2D;
-            pxTextureCreateInfo.Format = PXDDSTypeDetect(pxD8TextureTableEntry->PixelFormat);
-            pxTextureCreateInfo.T2D.Height = pxD8TextureTableEntry->TextureHeight;
-            pxTextureCreateInfo.T2D.Width = pxD8TextureTableEntry->TextureWidth;
-            pxTextureCreateInfo.T2D.Minmaps = pxD8TextureTableEntry->MinmapCount;
+            PXTexture2DCreateInfo pxTexture2DCreateInfo;
+            PXClear(PXTexture2DCreateInfo, &pxTexture2DCreateInfo);
+            //pxTexture2DCreateInfo.Format = PXDDSTypeDetect(pxD8TextureTableEntry->PixelFormat);
+            pxTexture2DCreateInfo.Height = pxD8TextureTableEntry->TextureHeight;
+            pxTexture2DCreateInfo.Width = pxD8TextureTableEntry->TextureWidth;
+            pxTexture2DCreateInfo.Minmaps = pxD8TextureTableEntry->MinmapCount;
 
-            PXTextureCreate(&pxTexture, &pxTextureCreateInfo);
+            PXTextureCreate(&pxTexture2D, &pxTexture2DCreateInfo);
             //-------------------------------------------------
 
-            PXTextureSetEntryAdd(pxTextureSet, pxTexture);
+            PXTextureSetEntryAdd(pxTextureSet, pxTexture2D);
 
             //-------------------------------------------------
             // Fill texture with data
-            PXAssert(pxTexture->PixelData.SizeAllocated >= pxD8TextureTableEntry->RawDataSize, "Should be equal");
+            //PXAssert(pxTexture->PixelData.SizeAllocated >= pxD8TextureTableEntry->RawDataSize, "Should be equal");
 
-            PXFileCursorMoveTo(pxTexturePoolFile, pxD8TextureTableEntry->Offset);
-            PXFileReadB(pxTexturePoolFile, pxTexture->PixelData.Data4, pxD8TextureTableEntry->RawDataSize);
+           // PXFileCursorMoveTo(pxTexturePoolFile, pxD8TextureTableEntry->Offset);
+            //PXFileReadB(pxTexturePoolFile, pxTexture->PixelData.Data, pxD8TextureTableEntry->RawDataSize);
             //-------------------------------------------------
         }
     }
+#endif
+
 #endif
 
     return PXResultOK;
@@ -281,7 +285,7 @@ PXFileCreateInfo pxFileCreateInfo;
 
         PXText pxText;
         char fileName[64];
-        PXTextFromAdressA(&pxText, fileName, 0, sizeof(fileName));
+        PXTextFromAddressA(&pxText, fileName, 0, sizeof(fileName));
         PXTextPrint(&pxText, "J/Q/Unnamed_UUPx%i.dds", ++counter);
 
         PXFileStoreOnDiskA(pxFileOUT, fileName);

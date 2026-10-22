@@ -2,8 +2,8 @@
 
 const char* PXInputDeviceTypeToString(const PXInputDeviceType pxInputDeviceType)
 {
-	switch(pxInputDeviceType)
-	{
+    switch(pxInputDeviceType)
+    {
         default:
         case PXInputDeviceTypeInvalid:              return "Invalid";
         case PXInputDeviceTypeMouse:                return "Mouse";
@@ -25,5 +25,5 @@ const char* PXInputDeviceTypeToString(const PXInputDeviceType pxInputDeviceType)
         case PXInputDeviceTypeSUPPLEMENTAL:         return "Supplemental";
 
         case PXInputDeviceTypeUnkown:               return "Unkown";
-	}
+    }
 }

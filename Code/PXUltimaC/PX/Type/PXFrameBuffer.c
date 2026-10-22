@@ -14,7 +14,7 @@ const PXECSRegisterInfoStatic PXFrameBufferRegisterInfoStatic =
 };
 PXECSRegisterInfoDynamic PXFrameBufferRegisterInfoDynamic;
 
-void PXAPI PXFrameBuffeRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
+void PXAPI PXFrameBufferRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
     pxECSRegisterInfo->InfoStatic = &PXFrameBufferRegisterInfoStatic;
     pxECSRegisterInfo->InfoDynamic = &PXFrameBufferRegisterInfoDynamic;
@@ -24,10 +24,15 @@ PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer** pxFrameBufferREF, PXFrameBuff
 {
     PXFrameBuffer* pxFrameBuffer = 0;
 
-    switch(pxFrameBufferCreateInfo->System)
+    switch(0) // pxFrameBufferCreateInfo->System
     {
-        case PXGraphicSystemNative:
+        case PXGraphicAPINative:
         {
+#if OSUnix
+
+
+
+#elif OSWindows
             PXWindow* pxWindow = pxFrameBufferCreateInfo->WindowTarget;
             HDC windowDC = PXWindowDCGet(pxWindow);
             HDC memoryDeviceContext = CreateCompatibleDC(windowDC);
@@ -44,6 +49,7 @@ PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer** pxFrameBufferREF, PXFrameBuff
             pxFrameBuffer->Height = pxFrameBufferCreateInfo->Height;
 
             HGDIOBJ gdiObject = SelectObject(memoryDeviceContext, framebuffer);
+#endif       
 
             break;
         }

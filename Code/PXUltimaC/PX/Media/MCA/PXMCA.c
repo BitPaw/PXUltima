@@ -41,10 +41,10 @@ PXResult PXAPI PXMCALoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     */
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMCASaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

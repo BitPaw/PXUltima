@@ -55,13 +55,13 @@ void PXAPI PXJavaContainerWrite(PXCompiler PXREF pxCompiler)
 
     PXFileWriteC(pxFile, ' ');
 
-    if(entry->NameShortAdress)
+    if(entry->NameShortAddress)
     {
-        PXFileWriteA(pxFile, entry->NameShortAdress, entry->NameShortSize);
+        PXFileWriteA(pxFile, entry->NameShortAddress, entry->NameShortSize);
     }
     else
     {
-        PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
+        PXFileWriteA(pxFile, entry->NameAddress, entry->NameSize);
     }
 
     PXFileWriteNewLine(pxFile);
@@ -85,7 +85,7 @@ void PXAPI PXJavaContainerWrite(PXCompiler PXREF pxCompiler)
             case PXDocumentElementTypeEnum:
             {
                 PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
-                PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
+                PXFileWriteA(pxFile, child->NameShortAddress, child->NameShortSize);
 
                 if(child->ElementSibling) // if not last
                 {
@@ -147,7 +147,7 @@ void PXAPI PXJavaFunctionWrite(PXCompiler PXREF pxCompiler)
 
     PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
     PXFileWriteC(pxFile, ' ');
-    PXFileWriteA(pxFile, entry->NameShortAdress, entry->NameShortSize);
+    PXFileWriteA(pxFile, entry->NameShortAddress, entry->NameShortSize);
 
     pxCompiler->WriteInfo.WriteParameter(pxCompiler);
 
@@ -200,19 +200,19 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler PXREF pxCompiler)
     else
     {
         // Custom type
-        PXFileWriteA(pxFile, entry->TypeNameAdress, entry->TypeNameSize);
+        PXFileWriteA(pxFile, entry->TypeNameAddress, entry->TypeNameSize);
     }
 
-    // Adress?
+    // Address?
 
 
     PXFileWriteC(pxFile, ' ');
-    PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
+    PXFileWriteA(pxFile, entry->NameAddress, entry->NameSize);
 }
 
 PXResult PXAPI PXJavaLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXJavaSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
@@ -229,9 +229,9 @@ PXResult PXAPI PXJavaSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
-    PXTextFromAdressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
-    PXTextFromAdressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
 
     //pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->ResourceTarget;
     pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileCurrent;
@@ -242,5 +242,5 @@ PXResult PXAPI PXJavaSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXCompilerWrite(&pxCompiler);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -162,7 +162,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
             default:
             case PXDeflateEncodingReserverd:
             {
-                return PXActionRefusedFormatSettingNotAllowed;
+                return PXResultRefusedFormatSettingNotAllowed;
             }
             case PXDeflateEncodingLiteralRaw:
             {
@@ -182,7 +182,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
 
                 if(!validLength)
                 {
-                    return PXActionFailedFormatNotAsExpected;
+                    return PXResultFailedFormatNotAsExpected;
                 }
 
                 const PXSize dataRead = PXFileDataCopy(pxInputStream, pxOutputStream, pxDEFLATELiteralRawData.LengthActual);
@@ -254,11 +254,11 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
                     {
                         if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
                         {
-                            return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
+                            return PXResultRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
                         }
                         else
                         {
-                            return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
+                            return PXResultRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
                         }
                     }
 
@@ -277,7 +277,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
                     PXSize start = PXFileDataPosition(pxOutputStream);//(*outputBufferSizeRead);
 
                     if(distance > start)
-                        return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
+                        return PXResultRefusedParserSymbolNotAsExpected; /*too long backward distance*/
 
                     PXSize backward = start - distance;
 
@@ -317,7 +317,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
     } 
     while(!pxDeflateBlock.IsLastBlock);
 
-    //(PXAdress)pxOutputStream->Data -= 2;
+    //(PXAddress)pxOutputStream->Data -= 2;
 
     return PXResultOK;
 }
@@ -450,7 +450,7 @@ PXResult PXAPI hash_init(Hash PXREF hash, const PXSize windowsize)
 
     if(!hash->head || !hash->chain || !hash->val || !hash->headz || !hash->chainz || !hash->zeros)
     {
-        return PXActionFailedMemoryAllocation;
+        return PXResultFailedMemoryAllocation;
     }
 
     // initialize hash table
@@ -1348,18 +1348,18 @@ PXResult PXAPI deflateDynamic
             //if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
             // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
             // {
-            //     ((PXAdress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
+            //     ((PXAddress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
             // }
         }
 
         /*Count the frequencies of lit, len and dist codes*/
         /* for (i = 0; i != lz77CacheStream.DataSize; ++i)
          {
-             unsigned int symbol = ((PXAdress)lz77CacheStream.Data)[i];
+             unsigned int symbol = ((PXAddress)lz77CacheStream.Data)[i];
              ++frequencies_ll[symbol];
              if(symbol > 256)
              {
-                 unsigned int dist = ((PXAdress)lz77CacheStream.Data)[i + 2];
+                 unsigned int dist = ((PXAddress)lz77CacheStream.Data)[i + 2];
                  ++frequencies_d[dist];
                  i += 3;
              }
@@ -1598,7 +1598,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
 
                 
 
-                PXFileWriteB(pxOutputStream, (PXAdress)PXFileDataPosition(pxOutputStream) + datapos, chunkLength);
+                PXFileWriteB(pxOutputStream, (PXAddress)PXFileDataPosition(pxOutputStream) + datapos, chunkLength);
 
                 datapos += chunkLength;
             }
@@ -1669,7 +1669,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
         }
         case PXDeflateEncodingReserverd:
         default:
-            return PXActionRefusedFormatSettingNotAllowed;
+            return PXResultRefusedFormatSettingNotAllowed;
     }
 
     return PXResultOK;
@@ -1711,11 +1711,11 @@ PXResult PXLZ77Encode
     const PXLZ77ESetting PXREF pxLZ77ESetting
 )
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 PXResult PXLZ77Decode()
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 

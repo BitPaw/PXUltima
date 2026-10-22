@@ -135,7 +135,7 @@ PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI3
         {
             //PXDeleteList(PXI32U, maxlens, maxlensSize);
             /* freeing tree->table values is done at a higher scope */
-            return PXActionFailedMemoryAllocation; /*alloc fail*/
+            return PXResultFailedMemoryAllocation; /*alloc fail*/
         }
         /*initialize with an invalid length to indicate unused entries*/
         for(PXSize i = 0; i < size; ++i)
@@ -184,7 +184,7 @@ PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI3
                 PXI32U index = reverse | (j << l);
 
                 if(huffmanTree->TableLength[index] != 16)
-                    return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
+                    return PXResultRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
                 huffmanTree->TableLength[index] = l;
                 huffmanTree->TableValue[index] = i;
@@ -202,7 +202,7 @@ PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI3
             const PXI32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
 
             if(maxlen < l)
-                return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
+                return PXResultRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
             for(PXI32U j = 0; j < num; ++j)
             {
@@ -243,7 +243,7 @@ PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI3
         for(PXSize i = 0; i < size; ++i)
         {
             if(huffmanTree->TableLength[i] == 16)
-                return PXActionRefusedParserSymbolNotAsExpected;
+                return PXResultRefusedParserSymbolNotAsExpected;
         }
     }
     //----------------------------
@@ -343,7 +343,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
 
         if(!isValid) // INVALIDSYMBOL
         {
-            return PXActionRefusedParserSymbolNotAsExpected; // Error: Invalid code, tried to read disallowed huffman symbol
+            return PXResultRefusedParserSymbolNotAsExpected; // Error: Invalid code, tried to read disallowed huffman symbol
         }
 
         switch(code)
@@ -357,7 +357,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
                 for(n = 0; n < replength; ++n)
                 {
                     if(i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
-                        return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
+                        return PXResultRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
 
                     if(i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
                     else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -375,7 +375,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
                 for(n = 0; n < replength; ++n)
                 {
                     if(i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
-                        return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
+                        return PXResultRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
 
                     if(i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
                     else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -390,7 +390,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
                 PXSize value; /*set value to the previous code*/
 
                 if(i == 0)
-                    return PXActionRefusedParserSymbolNotAsExpected; // can't repeat previous if i is 0
+                    return PXResultRefusedParserSymbolNotAsExpected; // can't repeat previous if i is 0
 
                 replength += PXFileReadBits(pxFile, 2u);
 
@@ -400,7 +400,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
                 for(n = 0; n < replength; ++n)
                 {
                     if(i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
-                        return PXActionRefusedParserSymbolNotAsExpected; /*error: i is larger than the amount of codes*/
+                        return PXResultRefusedParserSymbolNotAsExpected; /*error: i is larger than the amount of codes*/
 
                     if(i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = value;
                     else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = value;
@@ -441,7 +441,7 @@ PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffm
         const PXBool isEndCodeValid = bitlen_lengh[256] > 0; // the length of the end code 256 must be larger than 0
 
         if(!isEndCodeValid)
-            return PXActionRefusedParserSymbolNotAsExpected;
+            return PXResultRefusedParserSymbolNotAsExpected;
 
     }
 

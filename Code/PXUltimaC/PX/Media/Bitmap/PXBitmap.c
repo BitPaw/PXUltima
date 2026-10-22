@@ -156,13 +156,13 @@ const PXI32U PXBitmapHeaderOS22XList[] =
 const PXI8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXI32U);
 
 
-PXResult PXAPI PXBitmapPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXBitmapPeekFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXFile PXREF pxFile = pxECSCreateInfo->FileCurrent;
 
     PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
-    //pxECSCreateInfo->ResourceSource = bmp;
+    pxECSCreateInfo->ResourceSource = bmp;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
@@ -176,7 +176,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
 
             if(!isValidType)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
         }
     }
@@ -241,7 +241,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
             default:
             {
                 // Unkown Header
-                return PXActionRefusedFormatNotSupported;
+                return PXResultRefusedFormatNotSupported;
             }
         }
     }
@@ -250,11 +250,11 @@ PXResult PXAPI PXBitmapPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
     return PXResultOK;
 }
 
-PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF PXECSCreateInfo)
+PXResult PXAPI PXBitmapLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF PXECSCreateInfo)
 {
     PXFile PXREF pxFile = PXECSCreateInfo->FileCurrent;
 
-    PXBitmap* bmp = 0;// (PXBitmap*)PXECSCreateInfo->ResourceSource;
+    PXBitmap* bmp = (PXBitmap*)PXECSCreateInfo->ResourceSource;
 
     // Generate imagedata
     {
@@ -262,48 +262,67 @@ PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
 
         switch(bmp->InfoHeader.NumberOfBitsPerPixel)
         {
-            case 4:
-                bmp->InfoHeader.NumberOfBitsPerPixel = 24;
-                pxColorFormat = PXColorFormatRGBI8;
+            case 1u:
+            {
+                pxColorFormat = PXColorFormatColorIndex_x1;
                 break;
-
-            case 8:
-                bmp->InfoHeader.NumberOfBitsPerPixel = 24;
-                pxColorFormat = PXColorFormatRGBI8;
+            }
+            case 4u:
+            {
+                pxColorFormat = PXColorFormatColorIndex_x4;
                 break;
-
-            case 24:
-                pxColorFormat = PXColorFormatRGBI8;
+            }
+            case 8u:
+            {
+                pxColorFormat = PXColorFormatColorIndex_x8;
                 break;
-
-            case 32:
-                pxColorFormat = PXColorFormatRGBAI8;
+            }
+            case 16u:
+            {
+                pxColorFormat = PXColorFormatColorIndex_x16;
                 break;
-
+            }
+            case 24u:
+            {
+                pxColorFormat = PXColorFormatBGRI8;
+                break;
+            }
+            case 32u:
+            {
+                pxColorFormat = PXColorFormatBGRAI8;
+                break;
+            }
             default:
+            {
                 pxColorFormat = PXColorFormatInvalid;
                 break;
+            }
         }
 
-        const PXBool allocationSuccess = PXTextureResize
+        const PXBool allocationSuccess = PXTexture2DResize
         (
-            pxTexture, 
-            pxColorFormat,
+            pxTexture2D, 
             bmp->InfoHeader.Width,
             bmp->InfoHeader.Height,
-            PXTextureNoMinmaps
+            pxColorFormat
         );
 
         if(!allocationSuccess)
         {
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
     }
 
     //---[ Pixel Data ]--------------------------------------------------------
     PXBitmapImageDataLayout imageDataLayout;
 
-    PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp->InfoHeader.Width, bmp->InfoHeader.Height, bmp->InfoHeader.NumberOfBitsPerPixel);
+    PXBitmapImageDataLayoutCalculate
+    (
+        &imageDataLayout,
+        bmp->InfoHeader.Width,
+        bmp->InfoHeader.Height,
+        bmp->InfoHeader.NumberOfBitsPerPixel
+    );
 
     // Can we do it in one go?
 #if 0
@@ -317,44 +336,50 @@ PXResult PXAPI PXBitmapLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo P
     // Note: No, we can't load the image data at once!
     // Although the padding is 0, we can just read all at once, the image will be upside down.
 
-    const PXI8U shuffleData[] = {2,1,0};
-    const PXI8U shuffleSize = sizeof(shuffleData) / sizeof(PXI8U);
+    //const PXI8U shuffleData[] = {2,1,0};
+    //const PXI8U shuffleSize = sizeof(shuffleData) / sizeof(PXI8U);
 
-    PXBuffer* pixelData = PXTexturePixelData(pxTexture);
+    PXBuffer* pixelData = &pxTexture2D->Data;
 
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        PXByte* data = pixelData->Data4 + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
+        PXByte* data = pixelData->Data + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding
-        PXMathShuffleI8(data, data, imageDataLayout.RowImageDataSize, shuffleData, shuffleSize);
     }
+
+    PXTexture2DBGRI8ToRGBI8(pxTexture2D);
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXBitmapSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBitmapSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
+    if(!(pxTexture2D && pxResourceSaveInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     PXFile PXREF pxFile = pxResourceSaveInfo->FileCurrent;
 
-    PXSize width = PXTextureWidth(pxTexture);
-    PXSize height = PXTextureHeight(pxTexture);
-    PXColorFormat format = PXTextureColorFormat(pxTexture);
+    PXSize width = pxTexture2D->Width;;
+    PXSize height = pxTexture2D->Height;
+    PXColorFormat format = pxTexture2D->Format;
 
     if(width == 0)
     {
-        return PXActionRefuedImageWidthIsZero;
+        return PXResultRefuedImageWidthIsZero;
     }
 
     if(height == 0)
     {
-        return PXActionRefuedImageHeightIsZero;
+        return PXResultRefuedImageHeightIsZero;
     }
 
     if(format == PXColorFormatInvalid)
     {
-        return PXActionRefuedImageFormatInvalid;
+        return PXResultRefuedImageFormatInvalid;
     }
 
 
@@ -423,12 +448,12 @@ PXResult PXAPI PXBitmapSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
         }
     }
     //-----------------------------------------------------
-    PXBuffer* pxBuffer = PXTexturePixelData(pxTexture);
+    PXBuffer* pxBuffer = &pxTexture2D->Data;
 
     if(1)
     {
         // If we have embedded BMP format, we can write it directly
-        PXFileWriteB(pxFile, pxBuffer->Adress, pxBuffer->CursorOffsetByte);
+        PXFileWriteB(pxFile, pxBuffer->Address, pxBuffer->CursorOffsetByte);
     }
     else
     {
@@ -438,7 +463,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
 
         for(PXSize row = imageDataLayout.RowAmount - 1; row != (PXSize)-1; --row)
         {
-            const PXByte PXREF dataInsertPoint = pxBuffer->Data4 + (imageDataLayout.RowImageDataSize * row);
+            const PXByte PXREF dataInsertPoint = pxBuffer->Data + (imageDataLayout.RowImageDataSize * row);
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {

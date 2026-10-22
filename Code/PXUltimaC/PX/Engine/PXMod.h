@@ -7,25 +7,20 @@
 #include <PX/OS/Error/PXResult.h>
 #include <PX/OS/Library/PXLibrary.h>
 
-#define PXModLoadFunctionName "PXModLoad"
-
 typedef struct PXMod_ PXMod;
+typedef struct PXModCreateInfo_ PXModCreateInfo;
+typedef struct PXEngineModManager_ PXEngineModManager;
 
-typedef struct PXModLoadEventData_
-{
-    PXBool IsEssential;
+// Function shall be called once on discoverry, then not again.
+// The mods self does not exist jet. But we can give the mod a registartion form.
+// It needs access to the mod manager, to set possible mod references and dependecys.
+typedef PXResult(PXAPI* PXModCreateFunction)(PXEngineModManager PXREF PXEngineModManager, PXModCreateInfo PXREF pxModCreateInfo);
 
-    // Is
-    PXBool RequestProgramTermination;
+// Function to load the actual mod.
+typedef PXResult (PXAPI* PXModLoadFunction)(PXMod PXREF pxMod);
 
-    PXLibrary Library;
-}
-PXModLoadEventData;
-
-typedef PXResult (PXAPI* PXModLoadFunction)(void PXREF owner, PXMod PXREF pxMod, PXModLoadEventData PXREF pxModLoadEventData);
-typedef PXResult (PXAPI* PXModInitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
-typedef PXResult (PXAPI* PXModDenitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
-typedef PXResult (PXAPI* PXModUnloadFunction)(void PXREF owner, PXMod PXREF pxMod);
+// Function to unload all.
+typedef PXResult (PXAPI* PXModUnloadFunction)(PXMod PXREF pxMod);
 
 
 #define PXModBehaviourIsEssential   0b00001 // Is the mod essential for the functionaly of the program?
@@ -40,22 +35,28 @@ typedef struct PXMod_
     void* Owner;
 
     PXModLoadFunction Load;
-    PXModInitializeFunction Initialize;
-    PXModDenitializeFunction Denitialize;
     PXModUnloadFunction Unload;
 
     PXLibrary Library;
 }
 PXMod;
 
-typedef struct PXModLoader_
+typedef struct PXModCreateInfo_
 {
-    PXSize ModListSize;
-    PXMod* ModList;
-}
-PXModLoader;
+    PXECSCreateInfo Info;
 
-PXPublic PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF pxTextModFileDirectory);
-PXPublic PXResult PXAPI PXModLoaderAdd(PXModLoader PXREF pxModLoader, PXMod PXREF pxMod);
+    PXBool IsEssential;
+    PXBool RequestProgramTermination; // remove? If a mod is strongly expected, shutdown if misssing
+
+    PXLibrary Library; // The .DLL or .SO of the mod
+    PXText FilePath;
+
+    PXModCreateFunction Create;
+}
+PXModCreateInfo;
+
+
+PXPublic PXResult PXAPI PXModCreate(PXMod** pxModREF, PXModCreateInfo PXREF pxModCreateInfo);
+PXPublic PXResult PXAPI PXModRelease(PXMod PXREF pxMod);
 
 #endif

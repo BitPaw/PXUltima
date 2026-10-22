@@ -242,11 +242,11 @@ PXResult PXAPI PXRTextureLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 #if 0
 
     //Memory2D<ColorRgba32>[] mipMaps = new Memory2D<ColorRgba32>[mipMapCount];
-    PXTexture PXREF pxTextureList = PXMemoryHeapCallocT(PXTexture, pxRTexture.MipMapCount);
+    PXTexture2D PXREF pxTexture2DList = PXMemoryHeapCallocT(PXTexture, pxRTexture.MipMapCount);
 
     for(PXI8U i = 0; i < pxRTexture.MipMapCount; ++i)
     {
-        PXTexture PXREF pxTexture = &pxTextureList[i];
+        PXTexture2D PXREF pxTexture2D = &pxTextureList[i];
 
         // Calculate dimensions of current mipmap
         PXI16U currentWidth = PXMathMaximum(pxRTexture.Header.Width >> i, 1);
@@ -294,5 +294,5 @@ PXResult PXAPI PXRTextureLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXRTextureSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

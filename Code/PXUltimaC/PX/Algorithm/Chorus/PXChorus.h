@@ -3,20 +3,20 @@
 #ifndef PXFilterChorusIncluded
 #define PXFilterChorusIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
 
 typedef struct PXFilterChorus_
 {
-    PXFAudio Wet;
-    PXFAudio Dry;
-    PXFAudio Depth;
-    PXFAudio Feedback;
-    PXFAudio Frequency;
-    PXFAudio Waveform; // LFO shape; DSFXCHORUS_WAVE_xxx
-    PXFAudio Delay;
-    PXFAudio Phase;
+    PXF32 Wet;
+    PXF32 Dry;
+    PXF32 Depth;
+    PXF32 Feedback;
+    PXF32 Frequency;
+    PXF32 Waveform; // LFO shape; DSFXCHORUS_WAVE_xxx
+    PXF32 Delay;
+    PXF32 Phase;
 
-    PXFAudio Rate;
+    PXF32 Rate;
 
     PXSize IDX;
 }

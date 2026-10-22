@@ -12,6 +12,7 @@
 #include <PX/OS/Async/PXThread.h>
 #include "Async/PXLock.h"
 #include <PX/Reflection/PXReflection.h>
+#include "Signal/PXSignal.h"
 
 typedef enum PXSymbolType_
 {
@@ -62,25 +63,25 @@ typedef struct PXSymbol_
 
     PXSymbolType Type;// PDB classification
 
-#if OSUnix
-    void* ModuleAdress; // Base Address of module comtaining this symbol 
-#elif OSWindows
-    void* ModuleAdress; // Base Address of module comtaining this symbol 
-#endif
 
 
     PXHandleModule ModuleHandle; // OS depended handle to the module
 
-    void* SymbolAdress;
+   
 
     PXSize LineNumber;
     PXSize Amount;
     PXSize ObjectSize;
 
+
+    void* AddressModule; // EXE / DLL / SO containing this symbol 
+    void* AddressSymbol; // Function or class/struct
+    PXSize Offset; // Offset of symbol to its address. Example: Member of class.
+
     char NameUndecorated[64];
     char NameSymbol[64];        // MyFunction()
     char NameFile[64];          // MyCode.c
-    char NameModule[64];        // MyLibrary.dll / MyLibrary.so
+    char NameModule[256];        // MyLibrary.dll / MyLibrary.so
 }
 PXSymbol;
 
@@ -158,11 +159,12 @@ typedef struct PXOS_
 
     PXBool Init;
 
-    PXI32U MainThreadID;
+    PXThreadID MainThreadID;
 }
 PXOS;
 
 
+#define PXMemoryPageNone        0
 #define PXMemoryPageNormal      1
 #define PXMemoryPagePhysical    2
 #define PXMemoryPageLarge       3
@@ -232,8 +234,6 @@ PXPublic void PXAPI PXTextUNICODEToUTF8(char PXREF textOutput, const wchar_t PXR
 //---------------------------------------------------------
 // Process and threads
 //---------------------------------------------------------
-PXPublic void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess);
-
 
 PXPublic PXResult PXAPI PXProcessMemoryWrite
 (
@@ -280,17 +280,17 @@ PXPublic PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap);
 PXPublic PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap);
 
 // Get the size of the allocated block
-PXPublic PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF adress);
+PXPublic PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF address);
 
 PXPublic void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize); // [POSIX]
 PXPublic void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize); // [POSIX]
-PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adress); // Windows:HeapFree
-PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adress, const PXSize memorySize); // Windows:HeapReAlloc
+PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF address); // Windows:HeapFree
+PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF address, const PXSize memorySize); // Windows:HeapReAlloc
 
 
 #define PXMemoryHeapCallocT(type, amount) (type*)PXMemoryHeapCalloc(PXNull, amount, sizeof(type))
 #define PXMemoryHeapMallocT(type, amount) (type*)PXMemoryHeapMalloc(PXNull, sizeof(type) * amount)
-#define PXMemoryHeapReallocT(type, adress, amount) (type*)PXMemoryHeapRealloc(PXNull, adress, sizeof(type) * (amount))
+#define PXMemoryHeapReallocT(type, address, amount) (type*)PXMemoryHeapRealloc(PXNull, address, sizeof(type) * (amount))
 //---------------------------------------------------------
 
 
@@ -342,11 +342,29 @@ PXMemoryVirtualInfo;
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
-PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode);
-PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
-PXPublic PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
-PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
-PXPublic PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* adress);
+PXPublic void* PXAPI PXMemoryVirtualAllocate(const PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode);
+PXPrivate void PXAPI PXMemoryVirtualAllocateNormal(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo);
+PXPrivate void PXAPI PXMemoryVirtualAllocatePhysical(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo);
+PXPrivate void PXAPI PXMemoryVirtualAllocateLarge(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo);
+PXPrivate void PXAPI PXMemoryVirtualAllocateHuge(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo);
+
+
+PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* address, const PXSize size);
+PXPublic PXResult PXAPI PXMemoryVirtualRelease(const void* address, const PXSize size);
+PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* address, const PXSize size);
+PXPublic PXResult PXAPI PXMemoryVirtualInfoViaAddress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* address);
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// On fault
+//---------------------------------------------------------
+
+#define PXStackFrameAmountMax 16
+
+
+PXPublic void PXAPI PXDebugStackTrace(void);
+PXPublic void PXAPI PXDebugStackTraceWithSignal(PXSignalInfo PXREF pxSignalInfo);
 //---------------------------------------------------------
 
 
@@ -373,17 +391,19 @@ PXPublic PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID);
 PXPublic PXResult PXAPI PXSymbolServerInitialize(void); // SymInitialize
 PXPublic PXResult PXAPI PXSymbolServerCleanup(void);
 PXPublic PXResult PXAPI PXSymbolServerOptionsSet(void);
-PXPublic PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress);
-PXPublic PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress); // SymLoadModuleEx
+PXPublic PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAddress);
+PXPublic PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAddress); // SymLoadModuleEx
 PXPublic PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo);
-PXPublic PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth);
+PXPublic PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount);
+PXPublic PXResult PXAPI PXSymbolCaller(PXSymbol PXREF pxSymbol);
 PXPublic PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten); // UnDecorateSymbolName
-PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress);
+PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF address);
 //---------------------------------------------------------
 
+PXPublic PXResult PXAPI PXModuleCurrentPath(PXText PXREF pxText);
+PXPublic PXResult PXAPI PXModuleCurrentName(PXText PXREF pxText);
 
-
-
+PXPublic PXBool PXAPI PXModuleInSameDirectory(PXText PXREF pxTextA, PXText PXREF pxTextB);
 
 
 //---------------------------------------------------------
@@ -396,7 +416,7 @@ PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void 
 typedef struct PXPageFaultInfo_
 {
     void* ProgramCounter; // Instruction that caused the page fault.
-    void* VirtualAdress; // Page that was added to the working set.
+    void* VirtualAddress; // Page that was added to the working set.
 }
 PXPageFaultInfo;
 
@@ -404,8 +424,8 @@ PXPageFaultInfo;
 // Perfromance
 typedef struct PXPerformanceInfo_
 {
-    PXI64U TimeStamp;
-    PXF32 TimeDelta;
+    PXTimeStamp TimeStamp;
+    PXF64 TimeDelta;
 
     PXI32U UpdateCounter; // Times we updated this stucture. To update delta values.
 

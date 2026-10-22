@@ -2,10 +2,10 @@
 
 PXResult PXAPI PXGLTFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXGLTFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

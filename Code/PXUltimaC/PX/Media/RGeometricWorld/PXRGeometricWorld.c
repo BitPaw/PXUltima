@@ -160,5 +160,5 @@ PXResult PXAPI PXRGeometricWorldLoadFromFile(PXECSCreateInfo PXREF pxResourceLoa
 
 PXResult PXAPI PXRGeometricWorldSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

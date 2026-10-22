@@ -26,12 +26,17 @@ const char PXMemoryLogPrintMemoryVirtualRealloc[] = "Virtual-Realloc";
 
 #include <sys/mman.h>
 #include <alloca.h>
+#include <string.h>
 
 #define ProtectionIDRead PROT_READ
 #define ProtectionIDWrite PROT_WRITE
 #define ProtectionIDReadWrite PROT_READ | PROT_WRITE
 
+#define PXMathUseIntrinsics 0
+
 #elif OSWindows
+
+#define PXMathUseIntrinsics 1
 
 #include <Windows.h>
 #include <crtdbg.h>
@@ -41,6 +46,9 @@ const char PXMemoryLogPrintMemoryVirtualRealloc[] = "Virtual-Realloc";
 #define ProtectionIDWrite PAGE_READWRITE
 #define ProtectionIDReadWrite PAGE_READWRITE
 
+
+
+#include <immintrin.h>
 
 
 /*
@@ -100,7 +108,7 @@ PXResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 #include <Time/Time.h>
 #include <Psapi.h>
 
-PXDictionary _memoryAdressLookup;
+PXDictionary _memoryAddressLookup;
 
 struct MemoryAllocationInfo
 {
@@ -123,6 +131,95 @@ void PXAPI PXAccessModeToStringA(char* text, const const PXAccessMode pxAccessMo
     text[1] = (PXAccessWRITE    & pxAccessMode) > 0 ? 'W' : '-';
     text[2] = (PXAccessEXECUTE  & pxAccessMode) > 0 ? 'X' : '-';
     text[3] = 0;
+}
+
+PXResult PXAPI PXMemoryAddressInfoGet(PXMemoryAddressInfo PXREF pxMemoryAddressInfo, const void PXREF address)
+{
+    if(!(pxMemoryAddressInfo && address))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXClear(PXMemoryAddressInfo, pxMemoryAddressInfo);
+
+    pxMemoryAddressInfo->BlockAddress = address;
+
+#if OSUnix
+    char maps_line[512];
+    FILE* maps = fopen("/proc/self/maps", "r");
+
+    while(fgets(maps_line, sizeof(maps_line), maps))
+    {
+        unsigned long start = 0;
+        unsigned long end = 0;
+
+        sscanf
+        (
+            maps_line,
+            "%lx-%lx %s %*s %*s %*s %255[^\n]",
+            &start,
+            &end,
+            pxMemoryAddressInfo->Perms,
+            pxMemoryAddressInfo->Path
+        );
+
+        PXSize length = PXMemoryAddressStartEndToSize(start, end);
+
+        pxMemoryAddressInfo->BlockAddress = start;      
+
+        if(length)
+        {
+            pxMemoryAddressInfo->BlockSize = length;
+        }
+
+        PXBool isMatch = address >= start && address < end;
+
+        if(!isMatch)
+        {
+            continue;
+        }
+
+        if(!pxMemoryAddressInfo->Path)
+        {
+            PXTextCopyA("(anonymous)", 12, pxMemoryAddressInfo->Path, sizeof(pxMemoryAddressInfo->Path));
+        }
+
+#if 0
+        // Now dump smaps info
+        FILE* smaps = fopen("/proc/self/smaps", "r");
+        char smaps_line[512];
+        int in_region = 0;
+
+        while(fgets(smaps_line, sizeof(smaps_line), smaps))
+        {
+            unsigned long s, e;
+
+            if(sscanf(smaps_line, "%lx-%lx", &s, &e) == 2)
+            {
+                in_region = (s == start && e == end);
+            }
+            if(in_region)
+            {
+                printf("%s", smaps_line);
+            }
+        }
+        fclose(smaps);
+#endif
+
+        fclose(maps);
+        break;        
+    }
+
+#elif OSWindows
+    MEMORY_BASIC_INFORMATION memoryInfo;
+    PXClear(MEMORY_BASIC_INFORMATION, &memoryInfo);
+
+    const SIZE_T result = VirtualQuery(address, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+
+    pxMemoryAddressInfo->BlockSize = memoryInfo.RegionSize;
+#endif
+
+    return PXResultOK;
 }
 
 PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void)
@@ -153,7 +250,7 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory PXREF pxSymbolMemory,  const PXMemor
     {
         case PXMemorySymbolInfoModeAdd:
         {
-            PXDictionaryEntryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
+            PXDictionaryEntryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Address, pxSymbolMemory);
             break;
         }
         case PXMemorySymbolInfoModeUpdate:
@@ -171,15 +268,15 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory PXREF pxSymbolMemory,  const PXMemor
     }
 }
 
-PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSymbol)
+PXResult PXAPI PXMemorySymbolFetch(const void PXREF address, PXSymbol PXREF pxSymbol)
 {
     PXMemorySymbolLookup PXREF pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
     PXSymbolMemory* symbolMemory = PXNull;
 
     PXDictionaryEntry pxDictionaryEntry;
-    pxDictionaryEntry.KeyAddress = &adress;
+    pxDictionaryEntry.KeyAddress = &address;
     pxDictionaryEntry.KeySize = sizeof(PXSymbolMemory);
-    pxDictionaryEntry.ValueAdress = &symbolMemory;
+    pxDictionaryEntry.ValueAddress = &symbolMemory;
     pxDictionaryEntry.ValueSize;
 
     PXResult pxResult = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &pxDictionaryEntry);
@@ -194,46 +291,46 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
     pxSymbol->Amount = symbolMemory->Amount;
     pxSymbol->ObjectSize = symbolMemory->ObjectSize;
 
-    // Get module name from adress
+    // Get module name from address
 
-    pxSymbol->ModuleAdress = symbolMemory->ModuleAdress;
+    pxSymbol->AddressModule = symbolMemory->ModuleAddress;
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, pxSymbol->NameModule, 0, sizeof(pxSymbol->NameModule));
-    PXLibraryNameFromAdress(PXNull, symbolMemory->ModuleAdress, &pxText); // PXDebugModuleNameShort
+    PXTextFromAddressA(&pxText, pxSymbol->NameModule, 0, sizeof(pxSymbol->NameModule));
+    PXLibraryNameFromAddress(PXNull, symbolMemory->ModuleAddress, &pxText); // PXDebugModuleNameShort
 
-    PXTextCopyA(symbolMemory->FunctionAdress, 64, pxSymbol->NameSymbol, 64);
-    PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);
+    PXTextCopyA(symbolMemory->FunctionAddress, 64, pxSymbol->NameSymbol, 64);
+    PXTextCopyA(symbolMemory->FileAddress, 64, pxSymbol->NameFile, 64);
     // PXTextCopyA(symbolMemory->N, 64, pxSymbol->Name, 64);
 
     return PXResultOK;
 }
 
-PXBool PXAPI PXMemoryDoAdressesOverlap(void PXREF adressA, const PXSize adressALengh, void PXREF adressB, const PXSize adressBLengh)
+PXBool PXAPI PXMemoryDoAddressesOverlap(void PXREF addressA, const PXSize addressALengh, void PXREF addressB, const PXSize addressBLengh)
 {
-    // What adress is the lower one?
-    // We could force the user to only use a as a lower adress but not right now
+    // What address is the lower one?
+    // We could force the user to only use a as a lower address but not right now
 
-    PXSize adressLowerSize = 0;
-    void* adressLower = PXNull;
-    void* adressHigher = PXNull;
+    PXSize addressLowerSize = 0;
+    void* addressLower = PXNull;
+    void* addressHigher = PXNull;
 
-    if(adressA <= adressB)
+    if(addressA <= addressB)
     {
-        adressHigher = adressB;
-        adressLower = adressA;
-        adressLowerSize = adressALengh;
+        addressHigher = addressB;
+        addressLower = addressA;
+        addressLowerSize = addressALengh;
     }
     else
     {
-        adressHigher = adressA;
-        adressLower = adressB;
-        adressLowerSize = adressBLengh;
+        addressHigher = addressA;
+        addressLower = addressB;
+        addressLowerSize = addressBLengh;
 
-        // ToDo: Print message to user: Order of adresses swapped
+        // ToDo: Print message to user: Order of addresses swapped
     }
 
-    PXBool overlap = ((PXSize)adressLower + adressLowerSize) >= (PXSize)adressHigher;
+    PXBool overlap = ((PXSize)addressLower + addressLowerSize) >= (PXSize)addressHigher;
 
     return overlap;
 }
@@ -260,36 +357,36 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXI8U protectionMode)
 
     switch(protectionMode)
     {
-    case PXAccessModeNoAccess:
-        protectionID = PAGE_NOACCESS;
-        break;
+        case PXAccessModeNoAccess:
+            protectionID = PAGE_NOACCESS;
+            break;
 
-    case PXAccessModeReadOnly:
-        protectionID = PAGE_READONLY;
-        break;
+        case PXAccessModeReadOnly:
+            protectionID = PAGE_READONLY;
+            break;
 
-    case PXAccessModeWriteOnly:
-        protectionID = PAGE_WRITECOPY;
-        break;
+        case PXAccessModeWriteOnly:
+            protectionID = PAGE_WRITECOPY;
+            break;
 
-    case PXAccessModeReadAndWrite:
-        protectionID = PAGE_READWRITE;
-        break;
+        case PXAccessModeReadAndWrite:
+            protectionID = PAGE_READWRITE;
+            break;
 
-    case PXAccessModeReadExecute:
-        protectionID = PAGE_EXECUTE_READ;
-        break;
+        case PXAccessModeReadExecute:
+            protectionID = PAGE_EXECUTE_READ;
+            break;
 
-    case PXAccessModeFull:
-        protectionID = PAGE_EXECUTE_READWRITE;
-        break;
+        case PXAccessModeFull:
+            protectionID = PAGE_EXECUTE_READWRITE;
+            break;
 
-    case PXAccessModeWriteExecute:
-        protectionID = PAGE_EXECUTE_WRITECOPY;
-        break;
+        case PXAccessModeWriteExecute:
+            protectionID = PAGE_EXECUTE_WRITECOPY;
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
 #endif
@@ -297,12 +394,12 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXI8U protectionMode)
     return protectionID;
 }
 
-PXResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXI8U protectionMode)
+PXResult PXAPI PXMemoryProtect(void* dataAddress, const PXSize dataSize, const PXI8U protectionMode)
 {
     const PXI32U protectionID = PXMemoryProtectionIDTranslate(protectionMode);
 
 #if OSUnix
-    const int protectResultID = mprotect(dataAdress, dataSize, protectionID); // libc.so, sys/mman.h
+    const int protectResultID = mprotect(dataAddress, dataSize, protectionID); // libc.so, sys/mman.h
     const PXResult protectResult = PXErrorCurrent(0 == protectResultID);
 
     return protectResult;
@@ -310,12 +407,12 @@ PXResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PX
 
     DWORD oldProtectModeID = 0;
 
-    const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
+    const PXBool result = VirtualProtect(dataAddress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
     const PXResult actiobResult = PXErrorCurrent(result);
 
     return actiobResult;
 #else
-    return PXActionRefusedTypeNotSupported;
+    return PXResultRefusedTypeNotSupported;
 #endif
 }
 
@@ -401,200 +498,37 @@ void PXAPI PXMemorySet(void PXREF PXRestrict buffer, const PXByte value, const P
 #else
     for(PXSize i = 0; i < bufferSize; ++i)
     {
-        ((PXAdress)buffer)[i] = value;
+        ((PXAddress)buffer)[i] = value;
     }
 #endif
 }
-
-#include <immintrin.h>
-
 void* PXAPI PXMemoryAddressAdd(const void PXREF addressA, const void PXREF addressB)
 {
     return (void*)((PXSize)addressA + (PXSize)addressB);
 }
 
-PXI8U PXAPI PXMemoryCompareI8V(const PXI8U PXREF textList, const PXI8U listAmount, const PXI8U value)
+PXSize PXAPI PXMemoryAddressStartEndToSize(const void PXREF addressStart, const void PXREF addressEnd)
 {
-    for(PXI8U i = 0; i < listAmount; ++i)
+    PXSize start = (PXSize)addressStart;
+    PXSize end = (PXSize)addressEnd;
+
+    if(start < end)
     {
-        const PXBool isMatch = textList[i] == value;
-
-        if(isMatch)
-        {
-            return i;
-        }
+        return end - start;
     }
-
-    return 0xFFu;
-}
-
-PXI8U PXAPI PXMemoryCompareI8V_Strait(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI8V_MMX(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI8V_SSE2(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI8V_AVX512(const PXI8U PXREF dataList, const PXI8U listAmount, const PXI8U value)
-{
-    const __m512i zero = _mm512_setzero_si512();
-    __m512i value_vector = _mm512_set1_epi8(value); // Load target byte gets copy'ed 64x 
-
-    for(PXI8U i = 0; i < listAmount; i += 64)
+    else
     {
-        __mmask64 mask = ((listAmount - i) > 64) ? 0xFFFFFFFFFFFFFFFF : (1LL << (listAmount - (i))) - 1; // How many things can we load?
-        __m512i data_vector = _mm512_mask_loadu_epi8(zero, mask, &dataList[i]); // Load compare array
-
-        const PXI64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 64x byte vs byte
-
-#if 0
-        char bufferA[64 * 2 + 1];
-        char bufferB[64 * 2 + 1];
-
-        for(size_t i = 0; i < 64; ++i)
-        {
-            bufferA[2 * i + 0] = value_vector.m512i_u8[i];
-            bufferA[2 * i + 1] = ' ';
-            bufferA[2 * i + 2] = 0;
-
-            bufferB[2 * i + 0] = PXTextMakePrintable(data_vector.m512i_u8[i]);
-            bufferB[2 * i + 1] = ' ';
-            bufferB[2 * i + 2] = 0;
-        }
-
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "SIMD-Compare",
-            "64x (%i) Target: %c\n"
-            "%s\n"
-            "%s",
-            listAmount,
-            value,
-            bufferA,
-            bufferB
-        );
-#endif
-
-
-        if(!result) // Not a single match, get to next
-        {
-            continue;
-        }
-
-        // We found a match!
-
-#if OS64B
-        const PXI8U match_index = 63 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
-#else
-        const PXI8U match_index = 63 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
-#endif
-
-
-        return i + match_index; // Index of first hit
+        // This is an error! We avoid this error case with
+        // zero length, as otherwise we would have a negative one.
+        PXDebugBreak();
+        return 0; 
     }
-
-    return (PXI8U)-1; // No match!
 }
 
-PXI8U PXAPI PXMemoryCompareI16V(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value)
+PXI8U PXAPI PXMemoryCompareC32V(const char* value, const char PXREF textList, const PXI8U listAmount)
 {
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI16V_Strait(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI16V_MMX(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI16V_SSE2(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value)
-{
-    return 0;
-}
-
-PXI8U PXAPI PXMemoryCompareI16V_AVX512(const PXI16U PXREF dataList, const PXI8U listAmount, const PXI16U value)
-{
-    const __m512i zero = _mm512_setzero_si512();
-    __m512i value_vector = _mm512_set1_epi16(value); // Load target byte gets copy'ed 32x 
-
-    for(PXI8U i = 0; i < listAmount; i += 32)
-    {
-        // How many 16-bit elements remain?
-        PXI8U remaining = listAmount - i;
-
-        // Mask for up to 32 16-bit lanes
-        __mmask32 mask = (remaining >= 32)
-            ? 0xFFFFFFFF
-            : ((1u << remaining) - 1u);
-
-        // Masked load of 16-bit values
-        __m512i data_vector = _mm512_mask_loadu_epi16(zero, mask, &dataList[i]);
-
-        // Compare 32x 16-bit lanes
-        __mmask32 result = _mm512_cmp_epi16_mask(value_vector, data_vector, _MM_CMPINT_EQ);
-
-#if 0
-        char bufferA[64 * 2 + 1];
-        char bufferB[64 * 2 + 1];
-
-        for(size_t i = 0; i < 64; ++i)
-        {
-            bufferA[2 * i + 0] = value_vector.m512i_u8[i];
-            bufferA[2 * i + 1] = ' ';
-            bufferA[2 * i + 2] = 0;
-
-            bufferB[2 * i + 0] = PXTextMakePrintable(data_vector.m512i_u8[i]);
-            bufferB[2 * i + 1] = ' ';
-            bufferB[2 * i + 2] = 0;
-        }
-
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "SIMD-Compare",
-            "64x (%i) Target: %c\n"
-            "%s\n"
-            "%s",
-            listAmount,
-            value,
-            bufferA,
-            bufferB
-        );
-#endif
-
-
-        if(!result) // Not a single match, get to next
-        {
-            continue;
-        }
-
-        // We found a match!
-        const PXI8U match_index = 31 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
-
-        return i + match_index; // Index of first hit
-    }
-
-    return (PXI8U)-1; // No match!
-}
-
-PXI8U PXAPI PXMemoryCompareC32V(const char* value, char PXREF textList[4], const PXI8U listAmount)
-{
-    __m512i value_vector = _mm512_set1_epi32(*(int*)value); // Load target char[4], gets copy'ed 16x 
+#if PXMathUseIntrinsics
+    __m512i value_vector = _mm512_set1_epi32(*(int*)value); // Load target char[4], gets copy'ed 16x
 
     for(PXI8U i = 0; i < listAmount; i += 16)
     {
@@ -613,6 +547,8 @@ PXI8U PXAPI PXMemoryCompareC32V(const char* value, char PXREF textList[4], const
 
         return i + match_index; // Index of first hit
     }
+
+#endif
 
     return (PXI8U)-1; // No match!
 }
@@ -634,6 +570,7 @@ PXSize PXAPI PXMemoryCompareI32UV(const PXI32U* valueList, const PXSize listAmou
 
 PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF stringList, const PXI8U PXREF stringSizeList, const PXI8U amount)
 {
+#if PXMathUseIntrinsics
     // Load the target string into a 512-bit AVX512 register
     __m512i target = _mm512_set1_epi64(*(PXI64U*)stringTarget); // Mask for max 8 bytes
     __m512i currentString = _mm512_setzero_si512();
@@ -666,7 +603,7 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF strin
 
         // Compare
 
-
+#if 0
         PXLogPrint
         (
             PXLoggingAllocation,
@@ -693,6 +630,7 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF strin
             &currentString.m512i_i8[8 * 6],
             &currentString.m512i_i8[8 * 7]
         );
+#endif
 
 
         // Compare the target string with the current string (element-wise comparison)
@@ -726,7 +664,7 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF strin
         );
 
         return index;
-    }    
+    }
 
 
     PXLogPrint
@@ -737,6 +675,8 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF strin
         "Absolutly no match found"
     );
 
+#endif
+
     // Return a sentinel value if no match is found
     return (PXI8U)-1;
 
@@ -744,7 +684,9 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF strin
 
 PXI8U PXAPI PXMemoryReadBitI32U(const PXI32U PXREF value, const PXI8U index)
 {
+#if PXIntrinsicUseSSE
     return _bittest((LONG*)value, index); // [Intrinsic] intrin.h, winnt.h
+#endif
 }
 
 PXI8U PXAPI PXMemoryReadBitI64U(const PXI64U PXREF value, const PXI8U index)
@@ -789,10 +731,10 @@ int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize b
 
     for (PXSize counter = bufferSize ; counter ; --counter)
     {
-        const PXBool isEqual = ((PXAdress)bufferA)[counter] == ((PXAdress)bufferB)[counter];
+        const PXBool isEqual = ((PXAddress)bufferA)[counter] == ((PXAddress)bufferB)[counter];
 
-        acumulatorA += !isEqual * ((PXAdress)bufferA)[counter];
-        acumulatorB += !isEqual * ((PXAdress)bufferB)[counter];
+        acumulatorA += !isEqual * ((PXAddress)bufferA)[counter];
+        acumulatorB += !isEqual * ((PXAddress)bufferB)[counter];
     }
 
     const PXSize minimum = PXMathMaximum(acumulatorA, acumulatorB);
@@ -814,7 +756,7 @@ PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize 
 
     for (PXSize counter = bufferASize; counter; --counter)
     {
-        equalSum += dataByte == ((PXAdress)bufferA)[counter];
+        equalSum += dataByte == ((PXAddress)bufferA)[counter];
     }
 
     return equalSum == bufferASize;
@@ -822,7 +764,7 @@ PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize 
 
 PXBool PXAPI PXMemoryCompare
 (
-    const void* PXRestrict bufferA, 
+    const void* PXRestrict bufferA,
     const PXSize bufferASize,
     const void* PXRestrict bufferB,
     const PXSize bufferBSize,
@@ -839,7 +781,7 @@ PXBool PXAPI PXMemoryCompare
         }
         else
         {
-            return PXFalse;         
+            return PXFalse;
         }
     }
     else
@@ -914,7 +856,7 @@ PXBool PXAPI PXMemoryCompareN(const void* PXRestrict bufferA, const void* PXRest
 
     for(PXSize counter = bufferSize; counter; --counter)
     {
-        equalSum += ((PXAdress)bufferA)[counter - 1] == ((PXAdress)bufferB)[counter - 1];
+        equalSum += ((PXAddress)bufferA)[counter - 1] == ((PXAddress)bufferB)[counter - 1];
     }
 
     return equalSum == bufferSize;
@@ -927,7 +869,7 @@ PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferS
 
     for (PXSize i = 0; isNull && i < bufferSize; ++i)
     {
-        isNull = ((PXAdress)buffer)[i] == 0;
+        isNull = ((PXAddress)buffer)[i] == 0;
     }
 
     return isNull;
@@ -935,13 +877,13 @@ PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferS
 
 PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size)
 {
-    void* adress = PXMemoryHeapCallocT(char, size);
+    void* address = PXMemoryHeapCallocT(char, size);
 
-    PXMemoryCopy(bufferA, adress, size);
+    PXMemoryCopy(bufferA, address, size);
     PXMemoryCopy(bufferB, bufferA, size);
-    PXMemoryCopy(adress, bufferB, size);
+    PXMemoryCopy(address, bufferB, size);
 
-    PXMemoryHeapFree(PXNull, adress);
+    PXMemoryHeapFree(PXNull, address);
 
     return PXTrue;
 }
@@ -979,11 +921,10 @@ const void* PXAPI PXMemoryLocateLast(const void PXREF PXRestrict inputBuffer, co
 
     if(-1 == inputBufferSize)
     {
-        void* endOfString = PXMemoryLocateFirst(inputBuffer, 0, (PXSize)-1);
+        const void* endOfString = PXMemoryLocateFirst(inputBuffer, 0, (PXSize)-1);
 
-        maxRange = (PXSize)endOfString - (PXSize)inputBuffer;
+        maxRange = PXMemoryAddressStartEndToSize(inputBuffer, endOfString);
     }
-
 
     for(PXSize i = maxRange; i > 0; --i)
     {
@@ -1047,7 +988,7 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
 
 #if PXMemoryUseFunctionSTD
     memmove(outputBuffer, inputBuffer, bufferSize);
-#elif PXMemoryUseFunctionOS
+#elif OSWindows && PXMemoryUseFunctionOS
     MoveMemory(outputBuffer, inputBuffer, bufferSize);
 #else
     // Need a solution for a copy without a variable
@@ -1056,11 +997,11 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
     for(size_t i = 0; i < bufferSize; i++)
     {
         char volatile* a = &((char volatile*)inputBuffer)[i];
-        char volatile* b = &((char volatile*)outputBuffer)[i];       
+        char volatile* b = &((char volatile*)outputBuffer)[i];
 
         *b = *a;
     }
-#endif 
+#endif
 
     return bufferSize;
 }
@@ -1125,10 +1066,7 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo PXREF pxFilePageFileInfo, cons
     {
         pxFilePageFileInfo->Affinity = PXMemoryPageHuge;
     }
-
 }
-
-
 
 #define PXMemoryUseStackAllocation 0
 
@@ -1228,8 +1166,8 @@ PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
 
 PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRestrict const outputBuffer, const PXSize bufferSize)
 {
-    PXAssert(inputBuffer, "Is required");
-    PXAssert(outputBuffer, "Is required");
+    //PXAssert(inputBuffer, "Is required");
+    //PXAssert(outputBuffer, "Is required");
 
     if(!(inputBuffer && outputBuffer))
     {
@@ -1249,9 +1187,9 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRest
     );
 #endif
 
-#if PXMemoryUseFunctionSTD
+#if OSUnix || PXMemoryUseFunctionSTD
     memcpy(outputBuffer, inputBuffer, bufferSize);
-#elif PXMemoryUseFunctionOS
+#elif OSWindows && PXMemoryUseFunctionOS
     CopyMemory(outputBuffer, inputBuffer, bufferSize);
 #else
     for(PXSize index = bufferSize; index; --index)
@@ -1272,7 +1210,9 @@ PXSize PXAPI PXMemoryCopyX(const void* PXRestrict const inputBuffer, const PXSiz
         return 0;
     }
 
-    return PXMemoryCopy(inputBuffer, outputBuffer, bufferSize);
+    PXSize result = PXMemoryCopy(inputBuffer, outputBuffer, bufferSize);
+
+    return result;
 }
 
 /*
@@ -1295,13 +1235,13 @@ void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount)
         return PXNull;
     }
 
-    void PXREF adress = calloc(amount, objectSize);
+    void PXREF address = calloc(amount, objectSize);
 
 #if PXMemoryDebug
-    printf("[#][Memory] 0x%p (%10zi B) Allocate on heap cleared\n", adress, requestedSizeInBytes);
+    printf("[#][Memory] 0x%p (%10zi B) Allocate on heap cleared\n", address, requestedSizeInBytes);
 #endif
 
-    return adress;
+    return address;
 }
 
 PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize PXREF dataAddressSize, const PXSize dataAddressSizeRequired)
@@ -1315,7 +1255,7 @@ PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize PXREF
         }
     }
 
-    void* newAdress = PXMemoryHeapReallocateTypeClear
+    void* newAddress = PXMemoryHeapReallocateTypeClear
     (
         *dataAddress,
         typeSize,
@@ -1324,7 +1264,7 @@ PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize PXREF
     );
 
     {
-        const PXBool reallocSuccess = newAdress != 0;
+        const PXBool reallocSuccess = newAddress != 0;
 
         if (!reallocSuccess)
         {
@@ -1333,43 +1273,43 @@ PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize PXREF
     }
 
     *dataAddressSize = dataAddressSizeRequired;
-    *dataAddress = newAdress;
+    *dataAddress = newAddress;
 
     return PXTrue;
 
 }
 void* PXMemoryHeapReallocateClear(void PXREF sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
-    void PXREF adressReallocated = realloc(sourceAddress, sizeAfter);
+    void PXREF addressReallocated = realloc(sourceAddress, sizeAfter);
     const PXBool sizeIncredes = sizeAfter > sizeBefore;
 
     if (sizeIncredes)
     {
-        const PXAdress startAdress = (PXAdress)adressReallocated + sizeBefore;
+        const PXAddress startAddress = (PXAddress)addressReallocated + sizeBefore;
         const PXSize sizeDelta = sizeAfter - sizeBefore;
 
-        PXMemoryClear(startAdress, sizeDelta);
+        PXMemoryClear(startAddress, sizeDelta);
     }
 
 #if PXMemoryDebug
-    const unsigned char hasChanged = adress != adressReallocated;
+    const unsigned char hasChanged = address != addressReallocated;
 
     if (hasChanged)
     {
-        printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", adress, sizeAfter, adressReallocated);
+        printf("[#][Memory] 0x%p (%10zi B) Reallocate to 0x%p\n", address, sizeAfter, addressReallocated);
     }
     else
     {
-        printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", adress, sizeAfter);
+        printf("[#][Memory] 0x%p (%10zi B) Reallocate (No Change)\n", address, sizeAfter);
     }
 #endif
 
-    return adressReallocated;
+    return addressReallocated;
 }
 
-void* PXMemoryHeapReallocateTypeClear(void PXREF adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter)
+void* PXMemoryHeapReallocateTypeClear(void PXREF address, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter)
 {
-    return PXMemoryHeapReallocateClear(adress, objectSize * numberOfElementsBefore, objectSize * numberOfElementsAfter);
+    return PXMemoryHeapReallocateClear(address, objectSize * numberOfElementsBefore, objectSize * numberOfElementsAfter);
 }
 
 */

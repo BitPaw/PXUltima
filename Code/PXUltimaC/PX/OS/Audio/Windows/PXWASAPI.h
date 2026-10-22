@@ -3,23 +3,26 @@
 #ifndef PXWASAPIIncluded
 #define PXWASAPIIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
+#include <PX/Type/PXAudioFilterBuffer.h>
 
-typedef struct PXWASAPI_ PXWASAPI;
+#if OSWindows
 
-PXPublic PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo);
+PXPublic PXResult PXAPI PXWASAPIInitialize(PXEngineAudio PXREF pxEngineAudio, PXEngineAudioCreateInfo PXREF pxEngineAudioCreateInfo);
 
-PXPublic PXResult PXAPI PXWASAPIDeviceListFetch(PXAudioSystem PXREF pxAudioSystem);
+PXPublic PXResult PXAPI PXWASAPIDeviceListFetch(PXEngineAudio PXREF pxEngineAudio);
 
-PXPublic PXResult PXAPI PXWASAPIUpload(PXAudioSystem PXREF pxAudio, PXBuffer PXREF pxBuffer);
+PXPublic PXResult PXAPI PXWASAPIUpload(PXEngineAudio PXREF pxAudio, PXBuffer PXREF pxBuffer);
 PXPublic PXResult PXAPI PXWASAPIFilterApply
 (
-    PXAudioSystem PXREF pxAudio,
+    PXEngineAudio PXREF pxAudio,
     PXAudioDevice PXREF pxAudioDevice,
     PXAudioFilterFunction pxAudioFilterFunction,
     void PXREF filterData
 );
 
 PXPublic PXResult PXAPI PXWSAPISoundLoad(PXText PXREF pxText, PXBuffer PXREF pxBuffer);
+
+#endif
 
 #endif

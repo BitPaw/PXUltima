@@ -1,51 +1,51 @@
 #include "PXWASAPI.h"
 
-#if OSUnix
-#elif OSWindows
 
+#if OSWindows
+
+//---------------------------
+#include <PX/Math/PXMath.h>
+#include <PX/OS/Async/PXThread.h>
+#include <PX/Engine/PXEngineAudio.h>
+//---------------------------
+#include <math.h>
+//---------------------------
 //#define INITGUID
 #define COBJMACROS
 #include <windows.h>
 #include <initguid.h>       // Must come first to define the IIDs, unresolved references otherwise
-
 #include <xaudio2.h> // minimum windows 8?
-
-
 //-------------------------------------
 // Windows WASAPI
 #include <mmdeviceapi.h> // Device seek
-#include <audioclient.h>    // Windows Vista (+UWP)
+#include <audioclient.h> // Windows Vista (+UWP)
 #include <functiondiscoverykeys_devpkey.h>
-//-------------------------------------
-
 //-------------------------------------
 // Windows MediaFoundation
 #include <mfapi.h>
 #include <mfidl.h> 
 #include <mfreadwrite.h> 
 #include <mferror.h>
+
 #pragma comment(lib, "mfplat.lib")
 #pragma comment(lib, "mfreadwrite.lib")
 #pragma comment(lib, "mf.lib")
 #pragma comment(lib, "mfuuid.lib")
-//-------------------------------------
-
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "uuid.lib")
 #pragma comment(lib, "avrt.lib")
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "SetupApi.lib")
-
-
-
 //#pragma comment(lib, "XAUDIO2_9.LIB")
 //#pragma comment(lib, "XAUDIO2_10.LIB")
 #pragma comment(lib, "Xaudio2.lib") // Library: Windows XAudio
-
-#endif
+//---------------------------
 
 typedef struct PXWASAPI_
 {
+#if OSUnix
+    int dummy;
+#elif OSWindows
     IMMDeviceCollection* collection;
     IMMDevice* device;
     DWORD count;
@@ -71,21 +71,20 @@ typedef struct PXWASAPI_
     DWORD   AvgBytesPerSec;   /* for buffer estimation */
     WORD    BlockAlign;       /* block size of data */
     WORD    BitsPerSample;    /* Number of bits per sample of mono data */
+#endif
 }
 PXWASAPI;
 
 PXWASAPI _pxWASAPI;
 
-#include <math.h>
-#define PI 3.14159265358979323846
-
 // Call this each time WSAPI asks you to fill the buffer
 void fill_audio_buffer(float* buffer, int frames, int channels, float frequency, int sampleRate)
 {
     static double phase = 0.0;
-    double phaseIncrement = 2.0 * PI * frequency / sampleRate;
+    double phaseIncrement = 2.0 * PXMathPI * frequency / sampleRate;
 
-    for(int i = 0; i < frames; i++) {
+    for(int i = 0; i < frames; i++) 
+    {
         float sample = (float)sin(phase);
 
         // Write same sample to all channels
@@ -94,15 +93,13 @@ void fill_audio_buffer(float* buffer, int frames, int channels, float frequency,
         }
 
         phase += phaseIncrement;
-        if(phase >= 2.0 * PI)
-            phase -= 2.0 * PI;
+        if(phase >= 2.0 * PXMathPI)
+            phase -= 2.0 * PXMathPI;
     }
 }
 
-
-PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo)
+PXResult PXAPI PXWASAPIInitialize(PXEngineAudio PXREF pxEngineAudio, PXEngineAudioCreateInfo PXREF pxEngineAudioCreateInfo)
 {
-
     // Open Library
     {
 
@@ -144,7 +141,7 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
     const IID IID_IAudioClient = { 0x1CB9AD4C, 0xDBFA, 0x4c32, {0xB1, 0x78, 0xC2, 0xF5, 0x68, 0xA7, 0x03, 0xB2} };
 
 
-    PXWASAPIDeviceListFetch(pxAudioSystem);
+    PXWASAPIDeviceListFetch(pxEngineAudio);
 
 
     // Activate an IAudioClient on that device
@@ -220,7 +217,7 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
     }
 
 
-    PXWASAPIUpload(pxAudioSystem, PXNull);
+    PXWASAPIUpload(pxEngineAudio, PXNull);
 
 
 
@@ -259,7 +256,8 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
         // Get render client
         resultID = IAudioClient_GetService(_pxWASAPI.AudioClient, &IID_IAudioRenderClient,
                                      (void**)&render);
-        if(FAILED(resultID)) return resultID;
+        if(FAILED(resultID))
+            return resultID;
 
         // Start audio
         resultID = IAudioClient_Start(_pxWASAPI.AudioClient);
@@ -270,7 +268,7 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
 
 
         PXText pxText;
-        PXTextFromAdressW(&pxText, L"T:/TEST/SFX.wav", PXTextLengthUnkown, PXTextLengthUnkown);
+        PXTextFromAddressW(&pxText, L"T:/TEST/SFX.wav", PXTextLengthUnkown, PXTextLengthUnkown);
 
         PXBuffer pxBuffer;
         PXClear(PXBuffer, &pxBuffer);
@@ -289,7 +287,7 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
         size_t offset = 0;
         while(offset < pxBuffer.CursorOffsetByte)
         {
-            Sleep(500);
+            PXThreadSleep(PXNull,500);
 
             resultID = IAudioClient_GetCurrentPadding(_pxWASAPI.AudioClient, &padding);
 
@@ -314,12 +312,12 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
 
             if(bytesAvail <= remaining)
             {
-                memcpy(data, pxBuffer.Data4 + offset, bytesAvail);
+                memcpy(data, pxBuffer.Data + offset, bytesAvail);
                 offset += bytesAvail;
             }
             else 
             {
-                memcpy(data, pxBuffer.Data4 + offset, remaining);
+                memcpy(data, pxBuffer.Data + offset, remaining);
                // memcpy(data + remaining, pxBuffer.Data, bytesAvail - remaining);
                 offset = bytesAvail - remaining; 
             }
@@ -345,7 +343,9 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
           //  offset += bytesToCopy;
 
             resultID = IAudioRenderClient_ReleaseBuffer(render, padding, 0);
-            if(FAILED(resultID)) break;
+           
+            if(FAILED(resultID)) 
+                break;
 
         }
 
@@ -359,45 +359,36 @@ PXResult PXAPI PXWASAPIInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSyst
 #endif
 
 
-
-
-
     return PXResultOK;
 }
 
-PXResult PXAPI PXWASAPIDeviceListFetch(PXAudioSystem PXREF pxAudioSystem)
+PXResult PXAPI PXWASAPIDeviceListFetch(PXEngineAudio PXREF pxEngineAudio)
 {
-    HRESULT resultID;
-    PXResult pxResult;
+    PXResult pxResult = PXResultInvalid;
+    HRESULT resultID = S_OK;
 
-
-
-
-
-
-    // Create the device enumerator
-    {
+    // Create the device enumerator    
 #if PXLanguageCPP
-        resultID = CoCreateInstance
-        (
-            CLSID_MMDeviceEnumerator,
-            NULL,
-            CLSCTX_ALL,
-            IID_IMMDeviceEnumerator,
-            (void**)&_pxCoreAudio.AudioDeviceEnumerator
-        );
+    resultID = CoCreateInstance
+    (
+        CLSID_MMDeviceEnumerator,
+        NULL,
+        CLSCTX_ALL,
+        IID_IMMDeviceEnumerator,
+        (void**)&_pxCoreAudio.AudioDeviceEnumerator
+    );
 #else
-        resultID = CoCreateInstance
-        (
-            &CLSID_MMDeviceEnumerator,
-            NULL,
-            CLSCTX_ALL,
-            &IID_IMMDeviceEnumerator,
-            (void**)&_pxWASAPI.AudioDeviceEnumerator
-        );
+    resultID = CoCreateInstance
+    (
+        &CLSID_MMDeviceEnumerator,
+        NULL,
+        CLSCTX_ALL,
+        &IID_IMMDeviceEnumerator,
+        (void**)&_pxWASAPI.AudioDeviceEnumerator
+    );
 #endif
-        pxResult = PXErrorFromHRESULT(resultID);
-    }
+    pxResult = PXErrorFromHRESULT(resultID);
+    
 
     const EDataFlow dataFlowList[] = { eRender, eCapture };
     const PXAudioDeviceType inputTypeList[] = { PXAudioDeviceTypeOutput, PXAudioDeviceTypeInput };
@@ -441,12 +432,12 @@ PXResult PXAPI PXWASAPIDeviceListFetch(PXAudioSystem PXREF pxAudioSystem)
             {
                 resultID = IPropertyStore_GetValue(props, &PKEY_Device_FriendlyName, &name);
 
-                PXAudioDeviceDetectInfo pxAudioDeviceDetectInfo;
-                PXClear(PXAudioDeviceDetectInfo, &pxAudioDeviceDetectInfo);
-                PXTextFromAdressW(&pxAudioDeviceDetectInfo.Name, name.pwszVal, PXTextUnkownLength, PXTextUnkownLength);
-                pxAudioDeviceDetectInfo.Type = inputType;
+                PXAudioDeviceCreateInfo pxAudioDeviceCreateInfo;
+                PXClear(PXAudioDeviceCreateInfo, &pxAudioDeviceCreateInfo);
+                PXTextFromAddressW(&pxAudioDeviceCreateInfo.Info.Name, name.pwszVal, PXTextUnkownLength, PXTextUnkownLength);
+                pxAudioDeviceCreateInfo.Type = inputType;
 
-                PXAudioDeviceDetect(pxAudioSystem, &pxAudioDeviceDetectInfo);
+                PXAudioDeviceDetect(pxEngineAudio, &pxAudioDeviceCreateInfo);
 
                 PropVariantClear(&name);
                 IPropertyStore_Release(props);
@@ -456,67 +447,50 @@ PXResult PXAPI PXWASAPIDeviceListFetch(PXAudioSystem PXREF pxAudioSystem)
             IMMDevice_Release(device);
         }
 
-
-
-
-        // Get the default audio output device
-        {
+        // Get the default audio output device        
 #if PXLanguageCPP
-            resultID = _pxCoreAudio.AudioDeviceEnumerator->GetDefaultAudioEndpoint
-            (
-                dataFlow,
-                eConsole,
-                deviceList[i]
-            );
+        resultID = _pxCoreAudio.AudioDeviceEnumerator->GetDefaultAudioEndpoint
+        (
+            dataFlow,
+            eConsole,
+            deviceList[i]
+        );
 #else
-            resultID = _pxWASAPI.AudioDeviceEnumerator->lpVtbl->GetDefaultAudioEndpoint
-            (
-                _pxWASAPI.AudioDeviceEnumerator,
-                dataFlow,
-                eConsole,
-                deviceList[i]
-            );
+        resultID = _pxWASAPI.AudioDeviceEnumerator->lpVtbl->GetDefaultAudioEndpoint
+        (
+            _pxWASAPI.AudioDeviceEnumerator,
+            dataFlow,
+            eConsole,
+            deviceList[i]
+        );
 #endif
-            resultID = PXErrorFromHRESULT(resultID);
-        }
-
-
-
-
+        resultID = PXErrorFromHRESULT(resultID);
     }
   
     if(_pxWASAPI.collection)
         IMMDeviceCollection_Release(_pxWASAPI.collection);
 
-   // if(enumerator)
-     //   IMMDeviceEnumerator_Release(enumerator);
-
+    // if(enumerator)
+    //   IMMDeviceEnumerator_Release(enumerator);
 
     // Get default objects
-
-
-
-
-
-
-
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXWASAPIUpload(PXAudioSystem PXREF pxAudio, PXBuffer PXREF pxBuffer)
+PXResult PXAPI PXWASAPIUpload(PXEngineAudio PXREF pxAudio, PXBuffer PXREF pxBuffer)
 {
     IAudioRenderClient* renderClient = _pxWASAPI.AudioClientRender;
     HRESULT resultID = 0;
     PXResult pxResult = PXResultInvalid;
 
     // Get the address of the device space
-    BYTE* deviceBufferAdress = NULL;
+    BYTE* deviceBufferAddress = NULL;
     resultID = renderClient->lpVtbl->GetBuffer
     (
         renderClient,
         _pxWASAPI.BufferFrames,
-        &deviceBufferAdress
+        &deviceBufferAddress
     );
     pxResult = PXErrorFromHRESULT(pxResult);
 
@@ -530,23 +504,33 @@ PXResult PXAPI PXWASAPIUpload(PXAudioSystem PXREF pxAudio, PXBuffer PXREF pxBuff
         // Copy from out buffer to the device
         PXMemoryCopy
         (
-            deviceBufferAdress, 
-            pxBuffer->Adress,
+            deviceBufferAddress, 
+            pxBuffer->Address,
             pxBuffer->SizeAllowedToUse
         );
     }
     else
     {
         // We write zeros
-        PXMemoryClear(deviceBufferAdress, _pxWASAPI.BufferFrames * _pxWASAPI.BlockAlign);
+        PXMemoryClear(deviceBufferAddress, _pxWASAPI.BufferFrames * _pxWASAPI.BlockAlign);
     } 
 
-    resultID = renderClient->lpVtbl->ReleaseBuffer
+
+#if PXLanguageCPP
+    resultID = renderClient->ReleaseBuffer
     (
-        renderClient, 
         _pxWASAPI.BufferFrames,
         0
     );
+#else
+    resultID = renderClient->lpVtbl->ReleaseBuffer
+    (
+        renderClient,
+        _pxWASAPI.BufferFrames,
+        0
+    );
+#endif
+  
     pxResult = PXErrorFromHRESULT(pxResult);
 
     return pxResult;
@@ -554,7 +538,7 @@ PXResult PXAPI PXWASAPIUpload(PXAudioSystem PXREF pxAudio, PXBuffer PXREF pxBuff
 
 PXResult PXAPI PXWASAPIFilterApply
 (
-    PXAudioSystem PXREF pxAudio, 
+    PXEngineAudio PXREF pxAudio, 
     PXAudioDevice PXREF pxAudioDevice,
     PXAudioFilterFunction pxAudioFilterFunction,
     void PXREF filterData
@@ -570,12 +554,12 @@ PXResult PXAPI PXWASAPIFilterApply
     PXResult pxResult = PXResultInvalid;
 
     // Get the address of the device space
-    BYTE* deviceBufferAdress = NULL;
+    BYTE* deviceBufferAddress = NULL;
     resultID = renderClient->lpVtbl->GetBuffer
     (
         renderClient,
         _pxWASAPI.BufferFrames,
-        &deviceBufferAdress
+        &deviceBufferAddress
     );
     pxResult = PXErrorFromHRESULT(pxResult);
 
@@ -584,7 +568,7 @@ PXResult PXAPI PXWASAPIFilterApply
         return pxResult;
     }
 
-    PXBufferSet(&pxAudioDevice->FilterBuffer, deviceBufferAdress, _pxWASAPI.BufferFrames);
+    PXBufferSet(&pxAudioDevice->FilterBuffer, deviceBufferAddress, _pxWASAPI.BufferFrames);
 
     pxAudioFilterFunction(filterData, &pxAudioDevice->FilterBuffer);
 
@@ -604,9 +588,14 @@ PXResult PXAPI PXWASAPIFilterApply
 PXResult PXAPI PXWSAPISoundLoad(PXText PXREF pxText, PXBuffer PXREF pxBuffer)
 {
     HRESULT resultID = 0;
-    PXResult pxResult = 0;
+    PXResult pxResult = PXResultInvalid;
 
-    return PXEndianInvalid;
+    if(!(pxText && pxBuffer))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    return PXResultInvalid;
 
     // Initialize COM + Media Foundation
     resultID = CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -691,7 +680,7 @@ PXResult PXAPI PXWSAPISoundLoad(PXText PXREF pxText, PXBuffer PXREF pxBuffer)
         resultID = buffer->lpVtbl->Lock(buffer, &data, &maxLen, &curLen);
 
         // Collect decoded PCM samples
-        PXBufferAppend(pxBuffer, data, curLen);
+        PXBufferAppend(pxBuffer, data, curLen, PXNull);
 
         resultID = buffer->lpVtbl->Unlock(buffer);
         resultID = buffer->lpVtbl->Release(buffer);
@@ -758,3 +747,4 @@ PXResult PXAPI PXWSAPISoundLoad(PXText PXREF pxText, PXBuffer PXREF pxBuffer)
 
     return PXResultOK;
 }
+#endif

@@ -13,16 +13,15 @@ typedef struct PXSound_
 {
     PXECSInfo Info;
 
-    void* BaseObject;
-    void* Data;
+    PXBuffer Data;
+
+    //void* BaseObject; ???
+
+    PXI16U NumerOfChannels;
 
     PXI32U SampleRate;
-    PXI32U ByteRate;
-    PXI16U NumerOfChannels;
-    PXI16U BlockAllign;
-    PXI16U BitsPerSample;
+    PXI16U BitsPerSample; // 16-bit, 32-bit
 
-    PXSize DataSize;
     PXI32U ChunkSize;
     PXI16U AudioFormat;
 }
@@ -38,9 +37,13 @@ PXSoundCreateInfo;
 PXPublic void PXAPI PXSoundRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXSoundCreate(PXSound** pxSound, PXSoundCreateInfo PXREF pxSoundCreateInfo);
 
+PXPublic PXResult PXAPI PXSoundStereoToMono(PXSound PXREF pxSound);
 
-
-
+PXPublic PXSize PXAPI PXSoundSamplesAmount(const PXSound PXREF pxSound);
+PXPublic PXSize PXAPI PXSoundFramesAmount(const PXSound PXREF pxSound);
+PXPublic PXSize PXAPI PXSoundBytePerSample(const PXSound PXREF pxSound);
+PXPublic PXSize PXAPI PXSoundBlockAllign(const PXSound PXREF pxSound);
+PXPublic PXSize PXAPI PXSoundBytesPerSecound(const PXSound PXREF pxSound);
 
 PXPublic void PXAPI FillBufferWithElectricHum(const int sampleRate, short* samples, int sampleCount, float frequency);
 
@@ -80,13 +83,13 @@ PXPublic void PXAPI FillBufferWithWindAndRain(short* samples, int sampleCount, f
 PXPublic void PXAPI FillBufferWithWeather(short* samples, int count, float rain, float wind, float thunder);
 
 /*
-Thunder	Combine bursts of low - frequency noise + decay envelope + randomization
-Rain	Mix many fast random blips(white noise bursts, modulated by amplitude curves)
-Footsteps: Gravel	Randomized grain / burst - like noise with short envelopes
-Footsteps : Wood	Filtered impulse sound + slight reverb
-Wind	Pink noise with fluctuating low - pass filter cutoff
-Fire crackling	Random popping sine waves with frequency jitter
-Glass breaking	String of rapidly rising sine bursts + shatter - like white noise burst
+Thunder    Combine bursts of low - frequency noise + decay envelope + randomization
+Rain    Mix many fast random blips(white noise bursts, modulated by amplitude curves)
+Footsteps: Gravel    Randomized grain / burst - like noise with short envelopes
+Footsteps : Wood    Filtered impulse sound + slight reverb
+Wind    Pink noise with fluctuating low - pass filter cutoff
+Fire crackling    Random popping sine waves with frequency jitter
+Glass breaking    String of rapidly rising sine bursts + shatter - like white noise burst
 */
 
 #endif

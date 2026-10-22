@@ -4,10 +4,10 @@
 
 PXResult PXAPI PXVRMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXVRMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -24,8 +24,16 @@ typedef struct PXKnowlegeGraph_
 }
 PXKnowlegeGraph;
 
-PXPublic PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXKnowlegeGraphNode PXREF pxKnowlegeGraphNode);
+PXPublic PXResult PXAPI PXKnowlegeGraphNodeInsert
+(
+    PXKnowlegeGraph PXREF pxKnowlegeGraph,
+    PXKnowlegeGraphNode PXREF pxKnowlegeGraphNode
+);
 
-PXPublic PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXCodeDocument PXREF pxDocument, PXTexture PXREF PXTexture);
+PXPublic PXResult PXAPI PXKnowlegeGraphLoadAndBuild
+(
+    PXKnowlegeGraph PXREF pxKnowlegeGraph, 
+    PXCodeDocument PXREF pxDocument
+);
 
 #endif

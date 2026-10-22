@@ -2,15 +2,16 @@
 
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/Math/PXMath.h>
 #include <PX/Type/PXText.h>
 #include <PX/OS/Time/PXStopWatch.h>
-#include <PX/Type/PXProcessor.h>
+#include <PX/Type/PXCPU.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Async/PXThreadPool.h>
-#include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
-#include <PX/OS/Graphic/PXGraphic.h>
+
+
+
 
 
 const char PXResourceManagerText[] = "Resource-PX";
@@ -148,7 +149,7 @@ PXI8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVerte
 
         default:
         {
-            DebugBreak();
+            PXDebugBreak();
             return 0u;
         }
     }
@@ -324,10 +325,11 @@ PXResourceManager* PXAPI PXResourceManagerGet(void)
 */
 
 
-
-
-
-
+PXBool PXAPI PXRectangleXYWHF32IsInPoint(const PXRectangleXYWHF32 PXREF pxRectangle, const PXF32 x, const PXF32 y)
+{
+    return (x >= pxRectangle->X && x <= (pxRectangle->X + pxRectangle->Width) &&
+            y >= pxRectangle->Y && y <= (pxRectangle->Y + pxRectangle->Height));
+}
 
 void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32 PXREF pxRectangleLTRBI32, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32)
 {

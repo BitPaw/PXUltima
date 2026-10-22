@@ -7,5 +7,5 @@ PXResult PXAPI PXRSkinLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXRSkinSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

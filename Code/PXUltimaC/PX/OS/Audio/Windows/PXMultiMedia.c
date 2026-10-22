@@ -1,5 +1,9 @@
 #include "PXMultiMedia.h"
 
+
+
+
+
 #if OSWindows
 
 #if WindowsAtleastVista
@@ -11,8 +15,10 @@
 
 #endif
 
+
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/Library/PXLibrary.h>
 
 
 const char PXMultimediaName[] = "WinMM";
@@ -93,7 +99,7 @@ typedef struct PXAudioMultiMedia_
 
     void* WaveOutGetDevCapsA;
     void* WaveOutGetDevCapsW;
-    void* WaveOutGetNumDevs;
+    PXwaveOutGetNumDevs WaveOutGetNumDevs;
     void* WaveOutGetVolume;
     void* WaveOutSetVolume;
     void* WaveOutGetErrorA;
@@ -104,17 +110,17 @@ typedef struct PXAudioMultiMedia_
     void* WaveOutUnprepareHeader;
     void* WaveOutWrite;
     void* WaveOutPause;
-    void* WaveOutRestart;
-    void* WaveOutReset;
+    PXwaveOutRestart WaveOutRestart;
+    PXwaveOutReset WaveOutReset;
     void* WaveOutBreakLoop;
-    void* WaveOutGetPosition;
-    void* WaveOutGetPitch;
-    void* WaveOutSetPitch;
-    void* WaveOutGetPlaybackRate;
-    void* WaveOutSetPlaybackRate;
+    PXwaveOutGetPosition WaveOutGetPosition;
+    PXwaveOutGetPitch WaveOutGetPitch;
+    PXwaveOutSetPitch WaveOutSetPitch;
+    PXwaveOutGetPlaybackRate WaveOutGetPlaybackRate;
+    PXwaveOutSetPlaybackRate WaveOutSetPlaybackRate;
     void* WaveOutGetID;
     void* WaveOutMessage;
-    void* WaveInGetNumDevs;
+    PXwaveInGetNumDevs WaveInGetNumDevs;
     void* WaveInGetDevCapsA;
     void* WaveInGetDevCapsW;
     void* WaveInGetErrorA;
@@ -126,7 +132,7 @@ typedef struct PXAudioMultiMedia_
     void* WaveInAddBuffer;
     void* WaveInStart;
     void* WaveInStop;
-    void* WaveInReset;
+    PXwaveInReset WaveInReset;
     void* WaveInGetPosition;
     void* WaveInGetID;
     void* WaveInMessage;
@@ -195,19 +201,17 @@ typedef struct PXAudioMultiMedia_
 }
 PXAudioMultiMedia;
 
-#endif
-
-
-
 const char PXWindowsMMText[] = "WIN-MM";
 PXAudioMultiMedia _pxAudioMultiMedia;
 
-PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudioSystemCreateInfo PXREF pxAudioSystemCreateInfo)
+#endif
+
+PXResult PXAPI PXMultiMediaInitialize(PXEngineAudio PXREF pxEngineAudio, PXEngineAudioCreateInfo PXREF pxEngineAudioCreateInfo)
 {
     
 
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
 #if PXLogEnable
@@ -223,20 +227,20 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudio
     // Library
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXMultimediaLibraryName, PXMultimediaLibraryNameLength, PXMultimediaLibraryNameLength);
+        PXTextFromAddressA(&pxText, PXMultimediaLibraryName, PXMultimediaLibraryNameLength, PXMultimediaLibraryNameLength);
 
         const PXResult loadLibResult = PXLibraryOpen(&_pxAudioMultiMedia.MultiMediaLibrary, &pxText);
 
         if(PXResultOK != loadLibResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch
     {
         // TODO: make binding from this!
-        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntryList[] =
         {
             { &_pxAudioMultiMedia.WaveOutGetDevCapsA, "waveOutGetDevCapsA"},
             { &_pxAudioMultiMedia.WaveOutGetDevCapsW,"waveOutGetDevCapsW"},
@@ -341,9 +345,9 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudio
             { &_pxAudioMultiMedia.MixerGetControlDetailsW,"mixerGetControlDetailsW" }
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&_pxAudioMultiMedia.MultiMediaLibrary, pxLibraryFuntionEntryList, amount);
+        PXLibraryGetSymbolListA(&_pxAudioMultiMedia.MultiMediaLibrary, PXLibraryFunctionEntryList, amount);
     }
 
 #if 0
@@ -370,9 +374,72 @@ PXResult PXAPI PXMultiMediaInitialize(PXAudioSystem PXREF pxAudioSystem, PXAudio
 #endif
 }
 
+PXSize PXAPI PXMultiMediaInputAmount(PXEngineAudio PXREF pxEngineAudio)
+{
+    if(!pxEngineAudio)
+    {
+        return 0;
+    }
+
+    if(!_pxAudioMultiMedia.WaveInGetNumDevs)
+    {
+        return 0;
+    }
+
+    UINT amount = _pxAudioMultiMedia.WaveInGetNumDevs();
+
+    return amount;
+}
+
+PXAudioDevice* PXAPI PXMultiMediaInputIndex(PXEngineAudio PXREF pxEngineAudio, const PXSize index)
+{
+    return PXNull;
+}
+
+PXResult PXAPI PXMultiMediaInputOpen(PXEngineAudio PXREF pxEngineAudio, PXAudioDevice PXREF pxAudioDevice)
+{
+    return PXResultOK;
+}
+
+PXResult PXAPI PXMultiMediaInputClose(PXEngineAudio PXREF pxEngineAudio, PXAudioDevice PXREF pxAudioDevice)
+{
+    return PXResultOK;
+}
+
+PXSize PXAPI PXMultiMediaOutputAmount(PXEngineAudio PXREF pxEngineAudio)
+{
+    if(!pxEngineAudio)
+    {
+        return 0;
+    }
+
+    if(!_pxAudioMultiMedia.WaveOutGetNumDevs)
+    {
+        return 0;
+    }
+
+    UINT amount = _pxAudioMultiMedia.WaveOutGetNumDevs();
+
+    return amount;
+}
+
+PXAudioDevice* PXAPI PXMultiMediaOutputIndex(PXEngineAudio PXREF pxEngineAudio, const PXSize index)
+{
+    return PXNull;
+}
+
+PXResult PXAPI PXMultiMediaOutputOpen(PXEngineAudio PXREF pxEngineAudio, PXAudioDevice PXREF pxAudioDevice)
+{
+    return PXResultOK;
+}
+
+PXResult PXAPI PXMultiMediaOutputClose(PXEngineAudio PXREF pxEngineAudio, PXAudioDevice PXREF pxAudioDevice)
+{
+    return PXResultOK;
+}
 
 
-
+/*
 PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty)
 {
     if(!(pxAudioDevice && pxSoundDeviceProperty))
@@ -390,26 +457,6 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
 
     switch(pxSoundDeviceProperty->Type)
     {
-        case PXSoundDeviceAmount:
-        {
-            if(isWriteOP)
-            {
-              
-                const PXwaveOutGetNumDevs pxWaveOutGetNumDevs = (PXwaveOutGetNumDevs)_pxAudioMultiMedia.WaveOutGetNumDevs;
-
-                pxSoundDeviceProperty->Value = pxWaveOutGetNumDevs();
-            }
-            else
-            {
-
-                const PXwaveInGetNumDevs pxWaveInGetNumDevs = (PXwaveInGetNumDevs)_pxAudioMultiMedia.WaveInGetNumDevs;               
-
-                pxSoundDeviceProperty->Value = pxWaveInGetNumDevs();
-
-            }
-
-            break;
-        }
         case PXSoundDevicePropertyStatePlay:
         {        
             switch(pxAudioDevice->Type)
@@ -461,7 +508,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
             {
                 case PXAudioDeviceTypeInput:
                 {
-                    const PXwaveInReset pxWaveInReset = (PXwaveInReset)_pxAudioMultiMedia.WaveInReset;
+                    const PXwaveInReset pxWaveInReset = ()_pxAudioMultiMedia.WaveInReset;
                     resultID = pxWaveInReset(handleWaveIn);            
                     break;
                 }
@@ -504,7 +551,7 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
                     const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.Handle.DirectXInterface;
 
                     resultID = pxWaveOutBreakLoop(handleWaveOut);
-            */
+            * /
 
             break;
         }
@@ -651,10 +698,12 @@ PXResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXS
     return PXResultOK;
 }
 
+
+
 PXResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia PXREF pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
     PXClear(PXAudioDevice, pxAudioDevice);
@@ -728,6 +777,7 @@ PXResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia PXREF pxAudioMultiMedia
     return PXResultOK;
 }
 
+/*
 PXResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia PXREF pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
@@ -744,7 +794,7 @@ PXResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia PXREF pxAudioMultiMe
 PXResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia PXREF pxAudioMultiMedia, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
     DWORD_PTR dwCallback = 0;
@@ -752,12 +802,12 @@ PXResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia PXREF pxAudioMultiMedia,
     DWORD fdwOpen = CALLBACK_NULL;
 
     WAVEFORMATEX waveFormat;
-    waveFormat.wFormatTag = WAVE_FORMAT_PCM;// pxAudioSource->F;         /* format type */
-    waveFormat.nChannels = pxAudioDevice->Channels;          /* number of channels (i.e. mono, stereo...) */
-    waveFormat.nSamplesPerSec = pxAudioDevice->SamplesPerSecound;     /* sample rate */
-    waveFormat.nAvgBytesPerSec = pxAudioDevice->AverageBytesPerSecound;    /* for buffer estimation */
-    waveFormat.nBlockAlign = pxAudioDevice->BlockAlignSize;        /* block size of data */
-    waveFormat.wBitsPerSample = pxAudioDevice->BitsPerSample;     /* number of bits per sample of mono data */
+    waveFormat.wFormatTag = WAVE_FORMAT_PCM;// pxAudioSource->F;         // format type 
+    waveFormat.nChannels = pxAudioDevice->Channels;          // number of channels (i.e. mono, stereo...) 
+    waveFormat.nSamplesPerSec = pxAudioDevice->SamplesPerSecound;     // sample rate 
+    waveFormat.nAvgBytesPerSec = pxAudioDevice->AverageBytesPerSecound;    // for buffer estimation
+    waveFormat.nBlockAlign = pxAudioDevice->BlockAlignSize;        // block size of data
+    waveFormat.wBitsPerSample = pxAudioDevice->BitsPerSample;     // number of bits per sample of mono data
     waveFormat.cbSize = sizeof(WAVEFORMATEX);
 
 
@@ -836,7 +886,7 @@ PXResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia PXREF pxAudioMultiMedia,
 PXResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia PXREF pxAudioMultiMedia, PXAudioDevice PXREF pxAudioDevice)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
     MMRESULT result;
@@ -875,7 +925,7 @@ PXResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia PXREF pxAudioMultiMedia
 PXResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia PXREF pxAudioMultiMedia, PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
 
@@ -956,3 +1006,4 @@ PXResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia PXREF pxAudioMultiMedia,
 
     return PXResultOK;
 }
+*/

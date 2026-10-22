@@ -5,7 +5,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXDocument.h>
-#include <PX/OS/Time/PXTime.h>
+#include <PX/Type/PXTime.h>
 #include <PX/Type/PXDOM.h>
 
 #define PXCompilerDebug 0
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #endif
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/PXEngineMath.h>
 
 const char PXCompilerText[] = "Compiler";
 const char PXCompilerTextLexer[] = "Lexer";
@@ -182,7 +183,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler PXREF pxCompiler, const PXCompile
 #if PXCompilerDebug
     char pxTextValueBuffer[128];
     PXText pxTextValue;
-    PXTextFromAdressA(&pxTextValue, pxTextValueBuffer, 0, sizeof(pxTextValueBuffer));
+    PXTextFromAddressA(&pxTextValue, pxTextValueBuffer, 0, sizeof(pxTextValueBuffer));
 
     const char* typeName = PXCompilerCompilerSymbolLexerToString(pxCompilerSymbolEntry->ID);
 
@@ -293,7 +294,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompil
             &oldCopy.Coloum, PXTypeI32U,
             &oldCopy.Line, PXTypeI32U,
             &size, PXTypeI32U,
-            &oldCopy.Source, PXTypeAdress
+            &oldCopy.Source, PXTypeAddress
         };
 
         const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -306,14 +307,14 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompil
     {
         const PXI8U symbolID = PXCompilerSymbolLexerInvalid;
         const PXI32U emptyValue = 0;
-        const void* emptyAdress = 0;
+        const void* emptyAddress = 0;
         const PXTypeEntry pxFileDataElementType[] =
         {
             &symbolID, PXTypeI08U,
             &mergCopy.Coloum, PXTypeI32U,
             &mergCopy.Line, PXTypeI32U,
             &emptyValue, PXTypeI32U,
-            &emptyAdress, PXTypeAdress
+            &emptyAddress, PXTypeAddress
         };
 
         //const PXSize written = PXFileWriteB(pxCompiler->ReadInfo.FileCache, pxCompilerSymbolEntry, sizeof(PXCompilerSymbolEntry));
@@ -654,7 +655,8 @@ PXCompilerSymbolLexerNumeric
 
 PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile PXREF tokenStream, const char PXREF text, const PXSize textSize, PXCompilerSymbolEntry PXREF compilerSymbolEntry)
 {
-    const PXI8U index = PXMemoryCompareI8V(PXCompilerCharMatchList, PXCompilerCharMatchListSize, text[0]);
+    PXEngineMath PXREF pxEngineMath = PXEngineMathInstanceGet();
+    const PXI8U index = pxEngineMath->CompareI8V(PXCompilerCharMatchList, PXCompilerCharMatchListSize, text[0]);
 
 
     // Special behaviour if we only have one symbol
@@ -728,21 +730,21 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile PXREF tokenStream, c
 
                 if(!isFull)
                 {
-                    char PXREF dataAdress = compilerSymbolEntry->Source + 1u;
-                    PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, text[0]);
+                    char PXREF dataAddress = compilerSymbolEntry->Source + 1u;
+                    PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAddress, compilerSymbolEntry->Size, text[0]);
                     PXBool hasIndex = symbolPositionIndex != (PXSize)-1;
 
                     if(!hasIndex) // Prop string has empty space, so we need to mend them together
                     {
-                        char PXREF dataAdressExtended = &dataAdress[compilerSymbolEntry->Size - 1];
+                        char PXREF dataAddressExtended = &dataAddress[compilerSymbolEntry->Size - 1];
 
-                        PXBool isEmptySpace = dataAdressExtended[0] == ' ';
+                        PXBool isEmptySpace = dataAddressExtended[0] == ' ';
 
                         if(isEmptySpace) // Parse into oblivion for next
                         {
                             const PXSize spaceLeft = PXFileRemainingSize(tokenStream);
 
-                            symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, spaceLeft, text[0]);
+                            symbolPositionIndex = PXTextFindFirstCharacterA(dataAddress, spaceLeft, text[0]);
                             hasIndex = symbolPositionIndex != (PXSize)-1;
 
                             if(hasIndex)
@@ -891,7 +893,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile PXREF tokenStream, c
                 }
 
                 PXText numberText;
-                PXTextFromAdressA(&numberText, text, floatTextSize, textSize);
+                PXTextFromAddressA(&numberText, text, floatTextSize, textSize);
 
                 if(probablyFloatingPoint && isValidFloatSyntax)
                 {
@@ -997,7 +999,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
         return PXResultRefusedParameterInvalid;
     }
 
-    const PXI64U timeCounter = PXTimeCounterStampGet();
+    const PXTimeStamp timeCounter = PXTimeStampNow();
 
 #if PXLogEnable
     PXText pxTextSize;
@@ -1301,11 +1303,8 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
    // pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
     PXFileCursorPositionTerminate(pxCompiler->ReadInfo.FileCache);
 
-    PXI64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
-    PXF32 delta = PXTimeCounterStampToSecoundsF(timeCounterB);
-
-
 #if PXLogEnable
+    PXF32 delta = PXTimeStampDeltaSF(timeCounter);
     PXSize percentage = PXFileDataUtilized(pxCompiler->ReadInfo.FileCache);
 
     PXLogPrint
@@ -1378,7 +1377,7 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler PXREF pxCompiler, PXTe
 PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler PXREF pxCompiler, char PXREF text, const PXSize textMaxSize, PXSize PXREF textSize)
 {
     PXText pxText;
-    PXTextFromAdressA(&pxText, text, 0, textMaxSize);
+    PXTextFromAddressA(&pxText, text, 0, textMaxSize);
     const PXBool result = PXCompilerParseStringUntilNewLine(pxCompiler, &pxText);
 
     *textSize = pxText.SizeUsed;
@@ -1724,7 +1723,7 @@ void PXAPI PXCompilerWrite(PXCompiler PXREF pxCompiler)
     );
 #endif
 
-    PXI64U timeCounter = PXTimeCounterStampGet();
+    PXTimeStamp timeCounter = PXTimeStampNow();
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -1745,7 +1744,7 @@ void PXAPI PXCompilerWrite(PXCompiler PXREF pxCompiler)
 
     PXCompilerWriteNode(pxCompiler);
 
-    PXI64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
+    PXF64 timeCounterB = PXTimeStampDeltaSF(timeCounter);
 
 #if PXLogEnable
     PXLogPrint
@@ -1844,7 +1843,7 @@ void PXAPI PXCompilerWriteIncluded(PXCompiler PXREF pxCompiler)
 
     PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * pxCompiler->WriteInfo.CodeElementCurrent->Depth);
     PXFileWriteA(pxFile, "// depends on file ", 19);
-    PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
+    PXFileWriteA(pxFile, entry->NameAddress, entry->NameSize);
 }
 
 void PXAPI PXCompilerWriteComment(PXCompiler PXREF pxCompiler)
@@ -1857,7 +1856,7 @@ void PXAPI PXCompilerWriteComment(PXCompiler PXREF pxCompiler)
     if(current->CommentSize > 0)
     {
         PXFileWriteText(pxFile, &pxCompiler->CommentSingleLine);
-        PXFileWriteA(pxFile, current->CommentAdress, current->CommentSize);
+        PXFileWriteA(pxFile, current->CommentAddress, current->CommentSize);
         PXFileWriteNewLine(pxFile);
     }
 }

@@ -144,9 +144,9 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ModuleHandle = LoadLibraryA(filePath->A); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->Handle.Data = LoadLibraryA(filePath->A); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
-            return PXActionRefusedNotSupported;
+            return PXResultRefusedNotSupported;
 #endif
             break;
         }
@@ -170,15 +170,15 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ModuleHandle = LoadLibraryW(filePath->W); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->Handle.Data = LoadLibraryW(filePath->W); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
-            return PXActionRefusedNotSupported;
+            return PXResultRefusedNotSupported;
 #endif
             break;
         }
     }
 
-    const PXResult pxResult = PXErrorCurrent(PXNull != pxLibrary->ModuleHandle);
+    const PXResult pxResult = PXErrorCurrent(PXNull != pxLibrary->Handle.Data);
 
     if(PXResultOK != pxResult)
     {
@@ -203,7 +203,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
     char libraryPathFull[PXPathSizeMax];
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
+    PXTextFromAddressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
     PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
@@ -212,7 +212,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
         PXLibraryText,
         "Open",
         "<%p> - <%s>",
-        pxLibrary->ModuleHandle,
+        pxLibrary->Handle.Data,
         libraryPathFull
     );
 #endif
@@ -226,7 +226,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
     char libraryPathFull[PXPathSizeMax];
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
+    PXTextFromAddressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
     PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
@@ -243,7 +243,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
 #if OSUnix
         dlclose(pxLibrary->ModuleHandle);
 #elif OSWindows
-        FreeLibrary(pxLibrary->ModuleHandle); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
+        FreeLibrary(pxLibrary->Handle.Data); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
     const PXResult pxResult = PXErrorCurrent(result);
@@ -253,7 +253,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
         return pxResult;
     }
 
-    pxLibrary->ModuleHandle = PXNull;
+    pxLibrary->Handle.Data = PXNull;
 
     return PXResultOK;
 }
@@ -267,7 +267,7 @@ PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF 
         PXLibraryText,
         "Biding",
         "Load for <%p>...",
-        pxLibrary->ModuleHandle
+        pxLibrary->Handle.Data
     );
 #endif
 
@@ -298,14 +298,14 @@ PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF 
         PXLibraryText,
         "Biding",
         "Done for <%p>...",
-        pxLibrary->ModuleHandle
+        pxLibrary->Handle.Data
     );
 #endif
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount)
+PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFunctionEntry PXREF PXLibraryFunctionEntryList, const PXSize amount)
 {
 #if PXLogEnable
     PXLogPrint
@@ -320,9 +320,9 @@ PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFunti
 
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXLibraryFuntionEntry* pxLibraryFuntionEntry = &pxLibraryFuntionEntryList[i];
+        PXLibraryFunctionEntry* PXLibraryFunctionEntry = &PXLibraryFunctionEntryList[i];
 
-        PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName, PXTrue);
+        PXLibraryGetSymbolA(pxLibrary, PXLibraryFunctionEntry->Function, PXLibraryFunctionEntry->FunctionName, PXTrue);
     }
 
     return PXResultOK;
@@ -334,7 +334,7 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
     char libraryName[64];
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, libraryName, 0, sizeof(libraryName));
+    PXTextFromAddressA(&pxText, libraryName, 0, sizeof(libraryName));
     PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameShort
 #endif
 
@@ -342,7 +342,7 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
     *libraryFunction = (void*)dlsym(pxLibrary->ModuleHandle, symbolName);
     //const char* errorString = dlerror();
 #elif OSWindows
-    *libraryFunction = (void*)GetProcAddress(pxLibrary->ModuleHandle, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+    *libraryFunction = (void*)GetProcAddress(pxLibrary->Handle.Data, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
     const PXResult pxResult = PXErrorCurrent(PXNull != *libraryFunction);
 
@@ -414,10 +414,10 @@ static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
 
     char bufferName[128];
 
-    pxLibrary.ModuleHandle =  GetModuleHandleA(moduleName);
+    pxLibrary.Handle.Data =  GetModuleHandleA(moduleName);
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, bufferName, 0, sizeof(bufferName));
+    PXTextFromAddressA(&pxText, bufferName, 0, sizeof(bufferName));
     PXLibraryName(&pxLibrary, &pxText); // PXDebugModuleNameShort
 
 #if PXLogEnable
@@ -440,20 +440,20 @@ static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
 PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary* PXREF pxLibraryList, PXSize PXREF amount)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
 
-    if(!pxProcessHandle)
+    if(!pxProcessHandle.Data)
     {
-        pxProcessHandle = GetCurrentProcess();
+        pxProcessHandle.Data = GetCurrentProcess();
     }
 
     PXWindowsEnumCallBackRope pxWindowsEnumCallBackRope;
     pxWindowsEnumCallBackRope.Amount = 0;
     pxWindowsEnumCallBackRope.ListObject = pxLibraryList;
         
-    EnumerateLoadedModulesEx(pxProcessHandle, PXWindowsLibraryLoadedEnumCallback, &pxWindowsEnumCallBackRope);
+    EnumerateLoadedModulesEx(pxProcessHandle.Data, PXWindowsLibraryLoadedEnumCallback, &pxWindowsEnumCallBackRope);
 
     if(amount)
     {
@@ -463,7 +463,7 @@ PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibra
     return PXResultOK;
 
 #else
-    return PXActionRefusedNotSupportedByLibrary;
+    return PXResultRefusedNotSupportedByLibrary;
 #endif
 }
 
@@ -477,7 +477,7 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
         {
             pxTextLibraryName->SizeUsed = GetModuleFileNameA
             (
-                pxLibrary->ModuleHandle,
+                pxLibrary->Handle.Data,
                 pxTextLibraryName->A,
                 pxTextLibraryName->SizeAllocated
             );
@@ -487,7 +487,7 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
         {
             pxTextLibraryName->SizeUsed = GetModuleFileNameW
             (
-                pxLibrary->ModuleHandle,
+                pxLibrary->Handle.Data,
                 pxTextLibraryName->W,
                 pxTextLibraryName->SizeAllocated
             );
@@ -519,11 +519,11 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
 #endif
 }
 
-PXResult PXAPI PXLibraryNameFromAdress
+PXResult PXAPI PXLibraryNameFromAddress
 (
     PXLibrary* pxLibraryREF, 
     PXText PXREF pxTextLibraryName, 
-    const void PXREF adress
+    const void PXREF address
 )
 {
     PXLibrary placeHolder;
@@ -534,7 +534,7 @@ PXResult PXAPI PXLibraryNameFromAdress
         pxLibraryREF = &placeHolder;
     }
 
-    PXResult pxResult = PXLibraryFromAdress(pxLibraryREF, adress);
+    PXResult pxResult = PXLibraryFromAddress(pxLibraryREF, address);
 
     if(PXResultOK != pxResult)
     {
@@ -546,12 +546,12 @@ PXResult PXAPI PXLibraryNameFromAdress
     return pxResult;
 }
 
-PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF adress)
+PXResult PXAPI PXLibraryFromAddress(PXLibrary PXREF pxLibrary, const void PXREF address)
 {
 #if OSUnix && 0
     Dl_info info;
 
-    const int resultID = dladdr(adress, &info); // dlfcn.h
+    const int resultID = dladdr(address, &info); // dlfcn.h
     const PXResult moduleFetchResult = PXErrorCurrent(0 != resultID);
 
     return moduleFetchResult;
@@ -559,8 +559,8 @@ PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF a
     const PXBool moduleFetchSuccess = GetModuleHandleEx
     (
         GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-        (LPCTSTR)adress,
-        &pxLibrary->ModuleHandle
+        (LPCTSTR)address,
+        &pxLibrary->Handle.Data
     );
     const PXResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
 
@@ -568,7 +568,7 @@ PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF a
 #else
     pxLibrary->ModuleHandle = PXNull;
 
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -615,7 +615,7 @@ moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleNameBuffer, 260);
 moduleFetchResult = PXErrorCurrent(0 != moduleNameLength);
 
 #else
-return PXActionRefusedNotSupportedByLibrary;
+return PXResultRefusedNotSupportedByLibrary;
 #endif
 
 

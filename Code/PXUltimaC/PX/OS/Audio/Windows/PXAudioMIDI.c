@@ -106,7 +106,7 @@ PXResult PXAPI PXMIDIInitialize(PXAudio PXREF pxAudio)
 
         if (PXResultOK != loadLibResult)
         {
-            return PXActionLibraryNotFound;
+            return PXResultLibraryNotFound;
         }
     }
 
@@ -172,7 +172,7 @@ PXResult PXAPI PXMIDIInitialize(PXAudio PXREF pxAudio)
     }
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIRelease(PXAudio PXREF pxAudio)
@@ -310,7 +310,7 @@ PXResult PXAPI PXMIDIDeviceOpen(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAud
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     return PXResultOK;
 }
@@ -336,7 +336,7 @@ PXResult PXAPI PXMIDIDeviceClose(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     pxAudio->DirectSoundInterface = PXNull;
 
@@ -345,167 +345,167 @@ PXResult PXAPI PXMIDIDeviceClose(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
 
 PXResult PXAPI PXMIDIDeviceLoad(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePlayCursorSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXSize offset)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePlayCursorGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXSize PXREF offset)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePlaySpeedSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U frequency)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePlaySpeedGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF frequency)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePositionSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePositionGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 PXREF x, PXF32 PXREF y, PXF32 PXREF z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeAnglesSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U dwInsideConeAngle, const PXI32U dwOutsideConeAngle)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeAnglesGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pdwInsideConeAngle, PXI32U PXREF pdwOutsideConeAngle)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeOrientationGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 PXREF x, PXF32 PXREF y, PXF32 PXREF z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeOrientationSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeOutsideVolumeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF plConeOutsideVolume)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceConeOutsideVolumeSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U lConeOutsideVolume)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceMaxGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 PXREF pflMaxDistance)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceMaxSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXF32 flMaxDistance)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceMinGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 PXREF pflMinDistance)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceMinSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXF32 flMinDistance)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceModeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pdwMode)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceModeSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U dwMode)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceVelocityGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 PXREF x, PXF32 PXREF y, PXF32 PXREF z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceVelocitySet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceFactorGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pflDistanceFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDistanceFactorSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U flDistanceFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDopplerFactorGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pflDopplerFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDopplerFactorSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U flDopplerFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceOrientationGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pvOrientFront, PXI32U PXREF pvOrientTop)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceOrientationSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U xFront, const PXI32U yFront, const PXI32U zFront, const PXI32U xTop, const PXI32U yTop, const PXI32U zTop)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceRolloffFactorGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXI32U PXREF pflRolloffFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceRolloffFactorSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const PXI32U flRolloffFactor)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceDeferredSettingsCommit(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePitchIncrease(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 amount)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePitchSet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const unsigned int pitch)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDevicePitchReduce(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, PXF32 amount)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceVolumeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, unsigned short PXREF volume)
@@ -535,7 +535,7 @@ PXResult PXAPI PXMIDIDeviceVolumeGet(PXAudio PXREF pxAudio, PXAudioDevice PXREF 
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     pxAudio->DirectSoundInterface = PXNull;
 
@@ -563,7 +563,7 @@ PXResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio PXREF pxAudio, PXAudioDevice P
     }
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     pxAudio->DirectSoundInterface = PXNull;
 
@@ -572,7 +572,7 @@ PXResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio PXREF pxAudio, PXAudioDevice P
 
 PXResult PXAPI PXMIDIDeviceVolumeSetIndividual(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMIDIDeviceStart(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAudioDevice)
@@ -597,7 +597,7 @@ PXResult PXAPI PXMIDIDeviceStart(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     return PXResultOK;
 }
@@ -624,7 +624,7 @@ PXResult PXAPI PXMIDIDeviceStop(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAud
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     return PXResultOK;
 }
@@ -651,7 +651,7 @@ PXResult PXAPI PXMIDIDevicePause(PXAudio PXREF pxAudio, PXAudioDevice PXREF pxAu
 
     const PXResult result = PXWindowsMMAudioConvertFromID(resultID);
 
-    PXActionReturnOnError(result);
+    PXResultReturnOnError(result);
 
     return PXResultOK;
 }

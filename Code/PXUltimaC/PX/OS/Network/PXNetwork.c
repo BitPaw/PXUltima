@@ -4,6 +4,7 @@ const char PXNetworkText[] = "Network";
 const char PXAdapterText[] = "Adapter";
 const char PXWindowsWinSockDLL[] = "WS2_32.DLL";
 
+const char PXNetworkLocalIP[] = "127.0.0.1";
 
 #if OSUnix
 #ifndef _XOPEN_SOURCE
@@ -18,9 +19,12 @@ const char PXWindowsWinSockDLL[] = "WS2_32.DLL";
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
+#include <net/if.h> // IFNAMSIZ
+#include <ifaddrs.h>
 
-typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinfo)
-#define AdressInfoDelete freeaddrinfo
+typedef struct addrinfo AddressInfoType; //#define AddressInfoType (struct addrinfo)
+#define AddressInfoDelete freeaddrinfo
 #elif OSWindows
 
 #ifndef _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -35,8 +39,8 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
-#define AdressInfoType ADDRINFOA
-#define AdressInfoDelete FreeAddrInfoA
+#define AddressInfoType ADDRINFOA
+#define AddressInfoDelete FreeAddrInfoA
 #endif
 
 #include <PX/OS/Console/PXConsole.h>
@@ -215,7 +219,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
             // Connect
             {
                 PXText pxText;
-                PXTextFromAdressA(&pxText, PXWindowsWinSockDLL, sizeof(PXWindowsWinSockDLL), sizeof(PXWindowsWinSockDLL));
+                PXTextFromAddressA(&pxText, PXWindowsWinSockDLL, sizeof(PXWindowsWinSockDLL), sizeof(PXWindowsWinSockDLL));
                 const PXResult openResult = PXLibraryOpen(&_pxNetwork.NetworkLibrary, &pxText);
 
                 if(PXResultOK != openResult)
@@ -230,7 +234,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
                     );
 #endif
 
-                    return PXActionRefusedNotSupportedByOperatingSystem;
+                    return PXResultRefusedNotSupportedByOperatingSystem;
                 }
 
 #if PXLogEnable
@@ -246,7 +250,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
 
             // Fetch functions
             {
-                const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+                const PXLibraryFunctionEntry PXLibraryFunctionEntry[] =
                 {
                     { &_pxNetwork.SocketAccept, "accept"},
                     { &_pxNetwork.SocketBind, "bind"},
@@ -269,7 +273,7 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
                     { &_pxNetwork.SocketOptionSet, "setsockopt"},
                     { &_pxNetwork.SocketShutdown, "shutdown"},
                     { &_pxNetwork.SocketCreate, "socket"},
-                    { &_pxNetwork.AdressInfoGet, "getaddrinfo"},
+                    { &_pxNetwork.AddressInfoGet, "getaddrinfo"},
                     { &_pxNetwork.HostByNameGet, "gethostbyname"},
 
                     // Windows WSA
@@ -282,9 +286,9 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
 
                 };
 
-                const PXSize amounnt = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+                const PXSize amounnt = sizeof(PXLibraryFunctionEntry) / sizeof(PXLibraryFunctionEntry);
 
-                PXLibraryGetSymbolListA(&_pxNetwork.NetworkLibrary, pxLibraryFuntionEntry, amounnt);
+                PXLibraryGetSymbolListA(&_pxNetwork.NetworkLibrary, PXLibraryFunctionEntry, amounnt);
             }
 
 
@@ -342,1097 +346,6 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
     return PXResultOK;
 }
 
-PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo PXREF pxSocketCreateInfo)
-{
-    PXSocket PXREF pxSocket = pxSocketCreateInfo->SocketReference;
-
-    const int ipAdressFamilyID = PXIPAdressFamilyToID(pxSocketCreateInfo->AdressFamily);
-    const int socketTypeID = PXSocketTypeToID(pxSocketCreateInfo->Type);
-    const int protocolModeID = PXProtocolModeToID(pxSocketCreateInfo->ProtocolMode);
-
-    // Create socket
-    {
-        const PXSocketID socketIDResult = _pxNetwork.SocketCreate(ipAdressFamilyID, socketTypeID, protocolModeID);
-        const PXResult createResult = PXErrorCurrent(-1 != socketIDResult); // PXWindowsSocketAgentErrorFetch
-
-        if(PXResultOK != createResult)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXNetworkText,
-                "Socket-Create",
-                "Failed"
-            );
-#endif
-
-            return createResult;
-        }
-
-        pxSocket->ID = socketIDResult;
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXNetworkText,
-            "Socket-Create",
-            "New <%i>",
-            (int)pxSocket->ID
-        );
-#endif
-    }
-
-    // Socket config
-    {
-        const int level = SOL_SOCKET;
-
-        const int optionName =
-#if OSUnix
-            SO_REUSEADDR;      // Do not use SO_REUSEADDR, else the port can be hacked. SO_REUSEPORT
-#elif OSWindows
-            SO_EXCLUSIVEADDRUSE;
-#endif
-        const char opval = 1;
-        const int optionsocketResult = _pxNetwork.SocketOptionSet(pxSocket->ID, level, optionName, &opval, sizeof(int));
-        const PXBool sucessful = optionsocketResult == 0;
-    }
-
-    //pxSocket->Family = adressFamily;
-    //pxSocket->Protocol = protocolMode;
-    //pxSocket->Type = socketType;
-
-#if OSWindows
-    // make non blocking
-    u_long ul = 0;
-    int nRet = _pxNetwork.SocketControlIO(pxSocket->ID, FIONBIO, &ul);
-#endif
-
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkIPLocate(const PXIPAdress PXREF pxIPAdress)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXResult PXAPI PXNetworkSocketPeerGet(PXNetwork PXREF pxNetwork, PXSocketConnectionInfo PXREF pxSocketConnectionInfo)
-{
-#if OSUnix || OSWindows
-    struct sockaddr socketAdress;
-    int socketAdressSize = sizeof(struct sockaddr);
-
-    const int resultID = 0;// getpeername(socketID, &socketAdress, &socketAdressSize);
-
-    return PXResultInvalid;
-#else
-    return PXResultInvalid;
-#endif
-}
-
-PXResult PXAPI PXNetworkSocketDestroy(const PXSocketID pxSocketID)
-{
-#if OSUnix
-    close(pxSocket->ID);
-#elif OSWindows
-    _pxNetwork.SocketShutdown(pxSocketID, SD_SEND);
-    _pxNetwork.SocketClose(pxSocketID);
-#endif
-
-    // PXFunctionInvoke(pxSocket->EventList.SocketClosedCallBack, pxSocket->Owner, pxSocket);
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Destroy",
-        "Terminated <%i>",
-        pxSocketID
-    );
-#endif
-}
-
-PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo PXREF pxSocketConnectInfo)
-{
-    PXSocket PXREF pxSocket = pxSocketConnectInfo->SocketReference;
-
-    int serverAdressLength = 0;
-    struct sockaddr_in server;
-    PXClear(struct sockaddr_in, &server);
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Connect",
-        "Connecting <%i> to <IP:%s, Port:%i>",
-        (int)pxSocket->ID,
-        pxSocketConnectInfo->IP,
-        pxSocketConnectInfo->Port
-    );
-#endif
-
-    int connectResultID = -1;
-
-    // Hostname
-    {
-
-        if(_pxNetwork.AdressInfoGet) // Use modern
-        {
-#if OSWindows
-            ADDRINFOA* adressResult = PXNull;
-            ADDRINFOA adressInput;
-            PXClear(ADDRINFOA, &adressInput);
-
-            PXText portText;
-            PXTextConstructNamedBufferA(&portText, portTextBuffer, 32);
-            PXTextFromInt(&portText, pxSocketConnectInfo->Port);
-
-            adressInput.ai_family = PXIPAdressFamilyToID(pxSocketConnectInfo->AdressFamily);
-            adressInput.ai_socktype = PXSocketTypeToID(pxSocketConnectInfo->Type);
-            adressInput.ai_protocol = PXProtocolModeToID(pxSocketConnectInfo->ProtocolMode);
-#if OSWindows
-            adressInput.ai_flags = AI_CANONNAME;
-#endif
-
-            char localIP[] = "127.0.0.1";
-            char* adresspoint = pxSocketConnectInfo->IP.Text ? pxSocketConnectInfo->IP.Text : localIP;
-
-            const int resultID = _pxNetwork.AdressInfoGet
-            (
-                adresspoint,
-                portText.A,
-                &adressInput,
-                &adressResult
-            );
-            const PXBool success = 0 == resultID;
-
-#if OSWindows
-            if(!success)
-            {
-                const PXResult xxxx = PXWindowsSocketAgentErrorFromID(resultID);
-
-                return xxxx;
-            }
-#endif
-
-            for(ADDRINFOA* adress = adressResult; adress; adress = adressResult->ai_next)
-            {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    PXNetworkText,
-                    "Socket",
-                    "Name: %s",
-                    adress->ai_canonname
-                );
-#endif
-            }
-
-
-            connectResultID = _pxNetwork.SocketConnect(pxSocket->ID, adressResult->ai_addr, adressResult->ai_addrlen);
-
-            //PXNetworkPeerName(); // TODO: use?
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXNetworkText,
-                "Socket-Connect",
-                "Connected to %s",
-                adressResult->ai_canonname
-            );
-#endif
-
-#endif
-
-        }
-        else // Use legacy
-        {
-            // [Warning - Deprecated]: Can't understand and resolve IPv6 adresses. Will only utilize and understand IPv4
-            // Use getaddrinfo() because it is protocol-independent.
-            struct hostent* host = _pxNetwork.HostByNameGet(pxSocketConnectInfo->IP.Text);
-
-            if(!host)
-            {
-                return 0;
-            }
-
-            PXMemoryCopy(host->h_addr_list, &server.sin_addr, host->h_length);
-            server.sin_port = pxSocketConnectInfo->Port;
-            serverAdressLength = sizeof(struct sockaddr_in);
-
-            connectResultID = _pxNetwork.SocketConnect(pxSocket->ID, &server, serverAdressLength);
-        }
-    }
-
-    const PXResult connectResult = PXErrorCurrent(-1 != connectResult);
-
-    if(PXResultOK != connectResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXNetworkText,
-            "Socket-Connect",
-            "Connect to server failed! <%i> -> <IP:%s, Port:%i>",
-            (int)pxSocket->ID,
-            pxSocketConnectInfo->IP,
-            pxSocketConnectInfo->Port
-        );
-#endif
-
-        return connectResult;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Connect",
-        "Connecting <%i> successful",
-        (int)pxSocket->ID
-    );
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo PXREF pxSocketListenInfo)
-{
-    PXSocket PXREF pxSocket = pxSocketListenInfo->SocketReference;
-    const int listeningResult = _pxNetwork.SocketListen(pxSocket->ID, pxSocketListenInfo->ClientInQueueMaximal);
-    const PXResult listenResult = PXErrorCurrent(0 == listeningResult);
-
-    if(PXResultOK != listenResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXNetworkText,
-            "Socket-Listen",
-            "Failure <%i>",
-            (int)pxSocket->ID
-        );
-#endif
-
-        return listenResult;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Listen",
-        "Server <%i> now listening...",
-        (int)pxSocket->ID
-    );
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo PXREF pxSocketAcceptInfo)
-{
-    PXSocket PXREF pxSocketServer = pxSocketAcceptInfo->SocketServerReference;
-    PXSocket PXREF pxSocketClient = pxSocketAcceptInfo->SocketClientReference;
-
-    PXClear(PXSocket, pxSocketClient);
-
-
-    union
-    {
-        struct sockaddr SocketAdressInfo;
-        struct sockaddr_in SocketAdressInfoIPv4;
-        struct sockaddr_in6 SocketAdressInfoIPv6;
-    }
-    socketAdressInfo;
-
-
-    int socketAdressInfoSize = sizeof(socketAdressInfo);
-    PXClear(struct sockaddr, &socketAdressInfo);
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Accept",
-        "Server <%i> wait for client...",
-        (int)pxSocketServer->ID
-    );
-#endif
-
-
-    pxSocketClient->ID = _pxNetwork.SocketAccept(pxSocketServer->ID, &socketAdressInfo.SocketAdressInfo, &socketAdressInfoSize);
-    const PXResult acceptResult = PXErrorCurrent(-1 != pxSocketClient->ID);
-
-    if(PXResultOK != acceptResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXNetworkText,
-            "Socket-Accept",
-            "Server <%i> failed client accept",
-            (int)pxSocketServer->ID
-        );
-#endif
-
-        return acceptResult;
-    }
-
-    char ipname[128];
-    PXI8U ipNameLength = 128;
-
-    char hostname[300];
-    char servInfo[NI_MAXSERV];
-
-
-    // We have a socket now, get info
-    {
-        switch(socketAdressInfo.SocketAdressInfo.sa_family) // Depending on the protocol, we interpret the struct differently
-        {
-            // IPv4
-            case AF_INET:
-            {
-                struct sockaddr_in* socketAdressInfoIPv4 = &socketAdressInfo.SocketAdressInfoIPv4;
-
-                // const char* ipv4 = inet_ntoa(socketAdressInfoIPv4->sin_addr);
-                // PXTextCopyA(ipv4, 128, ipname, 128);
-
-#if OSWindows
-                const INT errorID = WSAAddressToStringA
-                (
-                    &socketAdressInfo.SocketAdressInfoIPv4,
-                    socketAdressInfoSize,
-                    PXNull,
-                    ipname,
-                    &ipNameLength
-                );
-#endif
-
-                break;
-            }
-            // IPv6
-            case AF_INET6:
-            {
-                struct sockaddr_in6* socketAdressInfoIPv6 = &socketAdressInfo.SocketAdressInfoIPv6;
-
-                // Copy data and set data to format
-
-#if OSWindows
-                const INT errorID = WSAAddressToStringA
-                (
-                    &socketAdressInfo.SocketAdressInfoIPv6,
-                    socketAdressInfoSize,
-                    PXNull,
-                    ipname,
-                    &ipNameLength
-                );
-#endif
-
-                break;
-            }
-            default:
-                break;
-        }
-
-        // Reverse DNS search for connected peer, does this work? On clients this should not quite work well.
-
-
-        const int dwRetval = getnameinfo
-        (
-            &socketAdressInfo.SocketAdressInfo,
-            socketAdressInfoSize,
-            hostname,
-            300,
-            servInfo,
-            NI_MAXSERV,
-            0
-        );
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Accept",
-        "Server <%i> accepted client <%i> @ %s:%s",
-        (int)pxSocketServer->ID,
-        (int)pxSocketClient->ID,
-        hostname,
-        servInfo
-    );
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo)
-{
-    if(!pxSocketBindInfo)
-    {
-        return PXResultRefusedParameterNull;
-    }
-
-    PXSocket PXREF pxSocket = pxSocketBindInfo->SocketReference;
-
-    struct sockaddr_in bindAdressInfo;
-    PXClear(struct sockaddr, &bindAdressInfo);
-    bindAdressInfo.sin_family = AF_INET;
-    bindAdressInfo.sin_addr.s_addr = _pxNetwork.Converthtonl(pxSocketBindInfo->IP); // INADDR_ANY
-    bindAdressInfo.sin_port = _pxNetwork.Converthtons(pxSocketBindInfo->Port);
-    const int bindAdressInfoSize = sizeof(struct sockaddr_in);
-
-
-    const int bindingResultID = _pxNetwork.SocketBind(pxSocket->ID, &bindAdressInfo, bindAdressInfoSize);
-    const PXResult bindingResult = PXErrorCurrent(-1 != bindingResultID);
-
-    if(PXResultOK != bindingResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXNetworkText,
-            "Socket-Bind",
-            "Server <%i> bind failed for <%s, %i>",
-            (int)pxSocket->ID,
-            pxSocketBindInfo->IP,
-            pxSocketBindInfo->Port
-        );
-#endif
-
-        return bindingResult;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNetworkText,
-        "Socket-Bind",
-        "Server <%i> bond to <%s, %i>",
-        (int)pxSocket->ID,
-        pxSocketBindInfo->IP,
-        pxSocketBindInfo->Port
-    );
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo)
-{
-    PXResult pxResult = PXResultInvalid;
-
-    if(!(pxSocketDataInfo))
-    {
-        return PXResultRefusedParameterNull;
-    }
-
-    const SOCKET socketID = pxSocketDataInfo->SocketIDCurrent;
-
-    PXByte* data = (PXByte*)pxSocketDataInfo->Buffer + pxSocketDataInfo->BufferUsed;
-    int length = pxSocketDataInfo->BufferSize - (pxSocketDataInfo->BufferUsed + 1);
-
-    int readResult = 0;
-
-    struct sockaddr_in sockAdressInfo;
-    int sockAdressInfoLength = sizeof(sockAdressInfo);
-
-    // Get type of socket
-    int socketType;
-    socklen_t len = sizeof(socketType);
-
-    const int typeFetch = getsockopt(socketID, SOL_SOCKET, SO_TYPE, &socketType, &len);
-    const PXBool isUDP = SOCK_DGRAM == socketType;
-
-    if(isUDP) // No Connection
-    {
-        // UDP socket
-        readResult = recvfrom
-        (
-            socketID,
-            data,
-            length,
-            0,
-            &sockAdressInfo,
-            &sockAdressInfoLength
-        );
-    }
-    else // Contection
-    {
-        // TCP socket
-#if OSUnix
-            readResult = read(socketID, data, availableSize);
-#elif OSWindows
-            //_pxNetwork.SocketRecive(socketID, data, availableSize, 0); // MSG_PEEK
-
-            readResult = recv(socketID, data, length, 0);
-#endif
-    }
-
-    // Handle...
-    switch(readResult)
-    {
-        case 0:
-        {
-            pxResult = PXActionRefusedConnectionClosed;
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXNetworkText,
-                "Socket-Recive",
-                "Connection <%i> close signal detected!",
-                socketID
-            );
-#endif
-
-            PXNetworkSocketDestroy(socketID);
-
-            break;
-        }
-        case SOCKET_ERROR:
-        {
-            pxResult = PXErrorCurrent(0);
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                PXNetworkText,
-                "Socket-Recive",
-                "Read failure <%i>",
-                socketID
-            );
-#endif
-
-            break;
-        }
-        default:
-        {
-            pxSocketDataInfo->BufferUsed = readResult;
-            ((char*)pxSocketDataInfo->Buffer)[readResult] = 0;
-
-            // because we are connectionless, we need to
-            // translate the socket we are connected to
-
-            PXSocket PXREF pxSocket = pxSocketDataInfo->SocketPeer;
-
-            PXBool fetchExtendedData = isUDP && pxSocket;
-
-            if(fetchExtendedData)
-            {
-                pxSocket->Port = ntohs(sockAdressInfo.sin_port);
-                inet_ntop(sockAdressInfo.sin_family, &sockAdressInfo.sin_addr, pxSocket->IP, sizeof(pxSocket->IP));
-
-                getnameinfo((struct sockaddr*)&sockAdressInfo, sockAdressInfoLength, pxSocket->Name, sizeof(pxSocket->Name), NULL, 0, 0);
-            }
-
-#if PXLogEnable
-            char printableText[64];
-
-            PXTextFromNonTerminated(printableText, 64, pxSocketDataInfo->Buffer, readResult);
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXNetworkText,
-                "Socket-Recive",
-                "<%i> <-- <%i> %20s:%-5i - %-15s - %4i B, %s",
-                socketID,
-                0,          
-                pxSocket->IP,
-                pxSocket->Port,
-                pxSocket->Name,
-                readResult,
-                printableText
-            );
-#endif
-
-
-            break;
-        }
-    }
-    
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataInfo)
-{
-#if 0
-    PXSocket PXREF pxSocketReciever = pxSocketSendInfo->SocketRecieverReference;
-    PXSocket PXREF pxSocketSender = pxSocketSendInfo->SocketSenderReference;
-
-#if 0
-    // Check if socket is active and ready to send
-    {
-        const PXBool isSenderReady = PXSocketIsCurrentlyUsed(pxSocketSender);
-
-        if(!isSenderReady)
-        {
-            return PXActionRefusedObjectNotReady;
-        }
-
-        const PXBool isReceiverReady = pxSocketReceiverID != -1;
-
-        if(!isReceiverReady)
-        {
-            return PXActionRefusedSocketNotConnected;
-        }
-    }
-
-    // Do we even send anything? If not, quit
-    {
-        if(!pxSocketSender->BufferOutput.Data)
-        {
-            return PXActionRefuedOutputBufferNull;
-        }
-
-        const PXBool hasDataToSend = pxSocketSender->BufferOutput.SizeMaximum > 0;
-
-        if(!hasDataToSend)
-        {
-            return PXActionDidNothing; // Do not send anything if the message is empty
-        }
-    }
-#endif
-
-    // Send data
-    PXBool done = PXFalse;
-
-    do
-    {
-        const char* dataAdress = (PXByte*)pxSocketSendInfo->DataInfo.Buffer + pxSocketSendInfo->DataInfo.BufferOffset;
-
-        int dataSize = pxSocketSendInfo->DataInfo.BufferSize - pxSocketSendInfo->DataInfo.BufferOffset;
-
-        dataSize = PXMathMinimumI(dataSize, pxSocketSendInfo->DataInfo.SegmentSize);
-
-
-        const int writtenBytes =
-#if OSUnix
-            write(pxSocketReciever->ID, dataAdress, dataSize);
-#elif OSWindows
-            _pxNetwork.SocketSend(pxSocketReciever->ID, dataAdress, dataSize, 0);
-#endif
-
-        const PXResult sendResult = PXErrorCurrent(-1 != writtenBytes);
-
-        if(PXResultOK != sendResult)
-        {
-            return sendResult;
-        }
-
-        pxSocketSendInfo->DataInfo.MovedCurrent = writtenBytes;
-        pxSocketSendInfo->DataInfo.MovedTotal += writtenBytes;
-        pxSocketSendInfo->DataInfo.BufferOffset += writtenBytes;
-        pxSocketSendInfo->DataInfo.Percentage = ((PXF32)pxSocketSendInfo->DataInfo.BufferOffset / (PXF32)pxSocketSendInfo->DataInfo.BufferSize) * 100.0f;
-
-        if(pxSocketSendInfo->DataInfo.Percentage < 100 && pxSocketSendInfo->DataInfo.SegmentDelay > 0)
-        {
-            PXThreadSleep(PXNull, pxSocketSendInfo->DataInfo.SegmentDelay);
-        }
-
-#if 0
-        {
-            PXSocketDataSendEventData pxSocketDataSendEventData;
-            pxSocketDataSendEventData.SocketSending = pxSocketSender;
-            pxSocketDataSendEventData.SocketReceiving = pxSocketReceiverID;
-            pxSocketDataSendEventData.Data = dataAdress;
-            pxSocketDataSendEventData.DataSize = writtenBytes;
-
-            PXFunctionInvoke(pxSocketSender->EventList.SocketDataSendCallBack, pxSocketSender->Owner, &pxSocketDataSendEventData);
-        }
-#endif
-
-
-
-#if PXLogEnable
-        PXText pxTextTotal;
-        PXText pxTextTotalGain;
-
-        PXTextConstructNamedBufferA(&pxTextTotal, pxTextTotalBuffer, 32);
-        PXTextConstructNamedBufferA(&pxTextTotalGain, pxTextTotalGainBuffer, 32);
-
-        PXTextFormatSize(&pxTextTotalGain, pxSocketSendInfo->DataInfo.MovedCurrent);
-        PXTextFormatSize(&pxTextTotal, pxSocketSendInfo->DataInfo.MovedTotal);
-
-        if(pxSocketSender)
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "Network",
-                "Socket-Send",
-                "<%i> --> <%i> %-3i%% (+ %s), %s",
-                pxSocketSender->ID,
-                pxSocketReciever->ID,
-                pxSocketSendInfo->DataInfo.Percentage,
-                pxTextTotalGain.A,
-                pxTextTotal.A
-            );
-        }
-        else
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "Network",
-                "Socket-Send",
-                "<%i> --> Server %3i%% (+ %s), %s",
-                pxSocketReciever->ID,
-                pxSocketSendInfo->DataInfo.Percentage,
-                pxTextTotalGain.A,
-                pxTextTotal.A
-            );
-        }
-
-#endif
-
-        // Done with sending?
-        done = pxSocketSendInfo->DataInfo.BufferOffset >= pxSocketSendInfo->DataInfo.BufferSize;
-    } while(!done);
-
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketPoll()
-{
-#if 0
-    /*
-    PXSocketStateChange(pxSocket, SocketEventPolling);
-
-    if(pxSocket->PollingLock)
-    {
-        PXLockEngage(pxSocket->PollingLock);
-    }*/
-
-
-#if 0 // Use optimised OS function
-
-    const PXSize socketDataListSize = pxSocket->SocketPollingReadListSize;
-    struct pollfd* socketDataList = buffer;
-    int timeout = 50;
-
-    for(PXSize i = 0; i < socketDataListSize; ++i)
-    {
-        struct pollfd* pollingEntry = &socketDataList[i];
-
-        pollingEntry->fd = pxSocket->SocketPollingReadList[i]; // SocketID
-        pollingEntry->events = POLLRDNORM; // Poll-Read-Normal
-        pollingEntry->revents = 0; // Will be the result of the call
-    }
-
-
-    int amount = pxNetwork->SocketPoll(socketDataList, socketDataListSize, timeout); // Not thread safe??
-    const PXBool success = amount != -1;
-
-
-    if(!success)
-    {
-        amount = 0;
-#if 0
-
-        PXActionOnErrorFetchAndExit(!success);
-#endif
-    }
-
-
-
-
-
-
-    for(PXSize i = 0; i < amount; i++)
-    {
-        const struct pollfd PXREF currentPollData = &socketDataList[i];
-
-        switch(currentPollData->revents)
-        {
-            case 0: // Illegal state, undefined
-            {
-                const PXSocketID clientID = currentPollData->fd;
-                const PXBool isRegistered = PXSocketIsRegistered(pxSocket, clientID);
-
-                if(isRegistered)
-                {
-                    PXSocket clientSocket;
-                    PXSocketConstruct(&clientSocket);
-
-                    clientSocket.Owner = pxSocket->Owner;
-                    clientSocket.ID = clientID;
-                    clientSocket.EventList = pxSocket->EventList;
-
-                    char inputBuffer[1024];
-                    PXSize wrrit = 0;
-
-                    const PXResult succ = PXSocketReceive(&clientSocket, inputBuffer, 1024, &wrrit);
-
-                    if(succ != PXThreadSucessful)
-                    {
-                        PXSocketEventReadUnregister(pxSocket, currentPollData->fd);
-                        PXSocketClose(&clientSocket);
-                    }
-
-                }
-                else
-                {
-                    PXSocketEventReadRegister(pxSocket, clientID);
-                }
-
-                break;
-            }
-            case POLLERR: // An error has occurred.
-            case POLLHUP: // A stream - oriented connection was either disconnected or aborted.
-            {
-                PXSocketEventReadUnregister(pxSocket, currentPollData->fd);
-                break;
-            }
-            case POLLNVAL: // An invalid socket was used.
-            case POLLPRI: // Priority data may be read without blocking.This flag is not returned by the Microsoft Winsock provider.
-            case POLLRDBAND: // Priority band(out - of - band) data may be read without blocking.
-            case POLLRDNORM: // Normal data may be read without blocking.
-            {
-                PXSocketReadPendingHandle(pxSocket, currentPollData->fd);
-                break;
-            }
-            case POLLWRNORM: // Normal data may be written without blocking.
-
-            default:
-                break;
-        }
-    }
-
-    if(pxSocket->PollingLock)
-    {
-        PXLockRelease(&pxSocket->PollingLock);
-    }
-
-#elif 1
-
-    // FD_SETSIZE is stanard value 64
-
-    const PXSize registeredSocketIDs = pxSocket->SocketLookup.EntryAmountCurrent;
-    const PXSize neededFetches = (registeredSocketIDs / FD_SETSIZE) + 1;
-
-    //const TIMEVAL time = { 3,0 };
-
-    PXSize restValues = registeredSocketIDs;
-    PXSize socketIDIndex = 0;
-
-    for(PXSize i = 0; i < neededFetches; ++i) // All sockets
-    {
-        fd_set selectListenRead; // is a struct containing an int and a fixed list of int[64]
-        PXSize j = 0;
-        PXSize highestSocketID = 0;
-
-        PXMemoryClear(&selectListenRead, sizeof(selectListenRead));
-
-        for(; restValues > 0 && j < FD_SETSIZE; ++j) // all in 64x blocks
-        {
-            const PXSize index = i * FD_SETSIZE + j;
-
-            PXDictionaryEntry pxDictionaryEntry;
-            PXDictionaryIndex(&pxSocket->SocketLookup, socketIDIndex++, &pxDictionaryEntry);
-
-            const PXSocketID socketID = *(PXSocketID*)pxDictionaryEntry.Key;
-
-            if(socketID == (PXSocketID)-1)
-            {
-                --j;
-                continue;
-            }
-
-            highestSocketID = PXMathMaximumIU(highestSocketID, socketID);
-
-#if OSUnix
-#elif OSWindows
-            selectListenRead.fd_array[j] = socketID;
-#endif
-
-            --restValues;
-        }
-
-#if OSUnix
-#elif OSWindows
-        selectListenRead.fd_count = j;
-#endif
-
-        int numberOfSocketEvents = pxNetwork->SocketSelect(highestSocketID + 1, &selectListenRead, 0, 0, 0); // first parameter is ignored under windows
-        const PXBool success = -1 != numberOfSocketEvents;
-
-        if(!success)
-        {
-#if OSUnix
-            PXResult selectResult = PXErrorCurrent();
-#elif OSWindows
-            PXResult selectResult = PXWindowsSocketAgentErrorFetch();
-#endif
-
-            numberOfSocketEvents = 0;
-        }
-
-        //PXActionOnErrorFetchAndExit(!success);
-
-        for(PXSize readableSocketIndex = 0; readableSocketIndex < numberOfSocketEvents; ++readableSocketIndex)
-        {
-#if OSUnix
-            const PXSocketID socketID = 0;
-#elif OSWindows
-            const PXSocketID socketID = selectListenRead.fd_array[readableSocketIndex];
-#endif
-            const PXBool isServer = pxSocket->ID == socketID;
-
-            if(isServer)
-            {
-                PXSocketAccept(pxSocket);
-            }
-            else
-            {
-                PXSocketReceive(pxSocket, socketID);
-            }
-        }
-    }
-
-#else
-
-    for(PXSize i = 0; i < pxSocket->SocketPollingReadListSize; ++i)
-    {
-        PXSocketReadPendingHandle(pxSocket, pxSocket->SocketPollingReadList[i]); // Will block
-    }
-
-#endif
-
-    if(pxSocket->PollingLock)
-    {
-        PXLockRelease(pxSocket->PollingLock);
-    }
-
-    PXSocketStateChange(pxSocket, SocketIDLE);
-#endif
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket)
-{
-    int length = sizeof(struct sockaddr);
-    struct sockaddr socketAdress;
-    PXClear(struct sockaddr, &socketAdress);
-
-    int x = getpeername(pxSocket->ID, &socketAdress, &length);
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite)
-{
-    PXResult error = PXResultInvalid;
-
-    if(doWrite)
-    {
-#if OSUnix || OSForcePOSIXForWindows
-        char nameBuffer[IFNAMSIZ];
-        struct ifreq ifr;
-
-        PXNetworkSocketInterfaceName(pxSocket, nameBuffer, IFNAMSIZ);
-
-        strncpy(ifr.ifr_name, nameBuffer, IFNAMSIZ - 1);  // Replace "eth0" with your interface
-
-        const int resultID = ioctl(sock, SIOCGIFMTU, &ifr); // sys/ioctl.h
-        error = PXErrorCurrent(-1 != resultID);
-
-#elif OSWindows
-        const DWORD val = *value;
-        const INT errorID = WSASetIPUserMtu(pxSocket->ID, val); // Windows 10, Ws2_32.dll, ws2tcpip.h, WSAGetLastError 
-#endif
-    }
-    else
-    {
-#if OSUnix
-#elif OSWindows
-        DWORD val = 0;
-        const INT errorID = WSAGetIPUserMtu(pxSocket->ID, &val); // Windows 10, Ws2_32.dll, ws2tcpip.h, WSAGetLastError 
-
-        *value = val;
-#endif
-    }
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketName(const PXSocket PXREF pxSocket, char* name)
-{
-    struct sockaddr_in adressInfo;
-    socklen_t addr_len = sizeof(adressInfo);
-
-    const int res = getsockname(pxSocket->ID, (struct sockaddr*)&adressInfo, &addr_len);
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket PXREF pxSocket, char* name, const PXSize nameSize)
-{
-#if OSUnix
-
-    struct sockaddr_in addr;
-    socklen_t addr_len = sizeof(addr);
-
-    const int res = getsockname(pxSocket->ID, (struct sockaddr*)&addr, &addr_len);
-
-    if(res != 0)
-    {
-        return NULL;
-    }
-
-    struct ifaddrs* ifaddr, * ifa;
-
-    if(getifaddrs(&ifaddr) == -1)
-    {
-        return NULL;
-    }
-
-    const char* result = NULL;
-
-    for(ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
-    {
-        if(!ifa->ifa_addr || ifa->ifa_addr->sa_family != AF_INET)
-            continue;
-
-        struct sockaddr_in* in = (struct sockaddr_in*)ifa->ifa_addr;
-
-        if(in->sin_addr.s_addr == addr.sin_addr.s_addr)
-        {
-            result = ifa->ifa_name;
-            break;
-        }
-    }
-
-    freeifaddrs(ifaddr);
-#elif OSWindows
-#endif
-
-    return PXResultOK;
-}
-
 PXResult PXAPI PXNetworkMACFromIPv4A(PXMAC PXREF pxMAC, char PXREF ipv4Text)
 {
     PXIPv4 pxIPv4;
@@ -1448,7 +361,7 @@ PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4)
 #if OSUnix
 #elif OSWindows
 
-    ULONG maxAdressLength = sizeof(pxMAC->Data);
+    ULONG maxAddressLength = sizeof(pxMAC->Data);
 
     //IPAddr DestIp = inet_addr("192.168.1.1"); // Target IP
 
@@ -1457,13 +370,13 @@ PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4)
         pxIPv4->ID,
         0, // optional
         pxMAC->Data,
-        &maxAdressLength
+        &maxAddressLength
     ); // Windows 2000, Iphlpapi.dll, iphlpapi.h
     const PXBool success = NO_ERROR == result;
 
     switch(result) {
         case ERROR_GEN_FAILURE:
-            
+
             PXConsoleWrite(0," (ERROR_GEN_FAILURE)\n");
             break;
         case ERROR_INVALID_PARAMETER:
@@ -1515,6 +428,7 @@ PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4)
 #endif
 
 #else
+
 #endif
 
     return PXResultInvalid;
@@ -1522,16 +436,23 @@ PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4)
 
 PXResult PXAPI PXNetworkMACFromIPv6A(PXMAC PXREF pxMAC, char PXREF ipv6Text)
 {
+#if OSUnix
+
+#elif OSWindows
     PXIPv6 pxIPv6;
     const INT result = InetPtonA(AF_INET6, ipv6Text, pxIPv6.Data);
 
     return PXNetworkMACFromIPv6(pxMAC, &pxIPv6);
+#endif
 }
 
 PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6)
 {
     PXClear(PXMAC, pxMAC);
 
+#if OSUnix
+
+#elif OSWindows
     MIB_IPNET_ROW2 ipList;
     PXClear(MIB_IPNET_ROW2, &ipList);
 
@@ -1541,7 +462,7 @@ PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6)
     PXMemoryCopy(pxIPv6->Data, ipList.Address.Ipv6.sin6_addr.u.Byte, 16);
 
     // Resolve the MAC address
-    DWORD result = ResolveIpNetEntry2(&ipList, NULL);// Windows Vista, netioapi.h
+    DWORD result = ResolveIpNetEntry2(&ipList, NULL); // Windows Vista, netioapi.h
 
     if(NO_ERROR != result)
     {
@@ -1578,36 +499,48 @@ PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6)
     );
 #endif
 
+#endif
 
     return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkNameFromIPv4A(char PXREF name, char PXREF ipv4Text)
 {
+#if OSUnix
+
+#elif OSWindows
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_addr.s_addr = inet_addr(ipv4Text);
 
     char hostname[NI_MAXHOST];
     INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;
+#endif
 
     return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkNameFromIPv4(char PXREF name, PXIPv4 PXREF pxIPv4)
 {
+#if OSUnix
+
+#elif OSWindows
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_addr.s_addr = inet_addr("8.8.8.8"); // Example: Google's DNS server
 
     char hostname[NI_MAXHOST];
     INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;
+#endif
 
     return PXResultInvalid;
 }
 
 PXResult PXAPI PXNetworkAdapterFetch()
 {
+#if OSUnix
+
+#elif OSWindows
     WSADATA wsaData;
     int x = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
 
@@ -1630,7 +563,7 @@ PXResult PXAPI PXNetworkAdapterFetch()
     IP_ADAPTER_DNS_SERVER_ADDRESS* pDnServer = NULL;
     IP_ADAPTER_PREFIX* pPrefix = NULL;
 
-    // Documentation states that we should preallocate atlest 15KB for this function. 
+    // Documentation states that we should preallocate atlest 15KB for this function.
     // As it is extremly slow and a call to just get the size will still result in this loading time.
     // So we need to avoid any more then this call
     outBufLen = 1024 * 16 * 2;
@@ -1680,7 +613,7 @@ PXResult PXAPI PXNetworkAdapterFetch()
         PXTextCopyWA(pCurrAddresses->Description, PXTextUnkownLength, pxNetworkAdapter->Description, 64);
         PXTextCopyWA(pCurrAddresses->FriendlyName, PXTextUnkownLength, pxNetworkAdapter->Name, 32);
 
-        PXMemoryCopyX(pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength, pxNetworkAdapter->MACAdress.Data, 6);
+        PXMemoryCopyX(pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength, pxNetworkAdapter->MACAddress.Data, 6);
 
 
 #if PXLogEnable
@@ -1699,12 +632,12 @@ PXResult PXAPI PXNetworkAdapterFetch()
             "Description", pxNetworkAdapter->Description,
             "Name", pxNetworkAdapter->Name,
             "MAC",
-            pxNetworkAdapter->MACAdress.Data[0],
-            pxNetworkAdapter->MACAdress.Data[1],
-            pxNetworkAdapter->MACAdress.Data[2],
-            pxNetworkAdapter->MACAdress.Data[3],
-            pxNetworkAdapter->MACAdress.Data[4],
-            pxNetworkAdapter->MACAdress.Data[5],
+            pxNetworkAdapter->MACAddress.Data[0],
+            pxNetworkAdapter->MACAddress.Data[1],
+            pxNetworkAdapter->MACAddress.Data[2],
+            pxNetworkAdapter->MACAddress.Data[3],
+            pxNetworkAdapter->MACAddress.Data[4],
+            pxNetworkAdapter->MACAddress.Data[5],
             "SpeedTransmit", pxNetworkAdapter->SpeedTransmit,
             "SpeedRecieve", pxNetworkAdapter->SpeedRecieve
         );
@@ -1743,21 +676,21 @@ PXResult PXAPI PXNetworkAdapterFetch()
         {
             char* ipTypeName = 0;
             char ipStr[46]; // IPv6 max size (IPv4 fits too)
-            LPSOCKADDR socketAdress = unicast->Address.lpSockaddr;
+            LPSOCKADDR socketAddress = unicast->Address.lpSockaddr;
 
-            int family = socketAdress->sa_family;
+            int family = socketAddress->sa_family;
 
             switch(family)
             {
                 case AF_INET:
                 {
-                    inet_ntop(AF_INET, &((struct sockaddr_in*)socketAdress)->sin_addr, ipStr, sizeof(ipStr));
+                    inet_ntop(AF_INET, &((struct sockaddr_in*)socketAddress)->sin_addr, ipStr, sizeof(ipStr));
                     ipTypeName = "IPv4";
                     break;
                 }
                 case AF_INET6:
                 {
-                    inet_ntop(AF_INET6, &((struct sockaddr_in6*)socketAdress)->sin6_addr, ipStr, sizeof(ipStr));
+                    inet_ntop(AF_INET6, &((struct sockaddr_in6*)socketAddress)->sin6_addr, ipStr, sizeof(ipStr));
                     ipTypeName = "IPv6";
                     break;
                 }
@@ -1873,6 +806,8 @@ PXResult PXAPI PXNetworkAdapterFetch()
     if(pAddresses) {
         //FREE(pAddresses);
     }
+
+#endif
 
     return PXResultOK;
 }
@@ -2167,190 +1102,190 @@ PXI8U PXAPI PXSocketTypeToID(const PXSocketType socketType)
     }
 }
 
-IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXI8U ipMode)
+IPAddressFamily PXAPI PXIPAddressFamilyFromID(const PXI8U ipMode)
 {
     switch(ipMode)
     {
         case IPAF_UNSPEC:
-            return IPAdressFamilyUnspecified;
+            return IPAddressFamilyUnspecified;
         case IPAF_UNIX:
-            return IPAdressFamilyUNIX;
+            return IPAddressFamilyUNIX;
         case IPAF_INET:
-            return IPAdressFamilyINET;
+            return IPAddressFamilyINET;
         case IPAF_IMPLINK:
-            return IPAdressFamilyIMPLINK;
+            return IPAddressFamilyIMPLINK;
         case IPAF_PUP:
-            return IPAdressFamilyPUP;
+            return IPAddressFamilyPUP;
         case IPAF_CHAOS:
-            return IPAdressFamilyCHAOS;
+            return IPAddressFamilyCHAOS;
         case IPAF_NS:
-            return IPAdressFamilyNS;
-            //case IPAF_IPX: return IPAdressFamilyIPX;
+            return IPAddressFamilyNS;
+            //case IPAF_IPX: return IPAddressFamilyIPX;
         case IPAF_ISO:
-            return IPAdressFamilyISO;
-            //case IPAF_OSI: return IPAdressFamilyOSI;
+            return IPAddressFamilyISO;
+            //case IPAF_OSI: return IPAddressFamilyOSI;
         case IPAF_ECMA:
-            return IPAdressFamilyECMA;
+            return IPAddressFamilyECMA;
         case IPAF_DATAKIT:
-            return IPAdressFamilyDATAKIT;
+            return IPAddressFamilyDATAKIT;
         case IPAF_CCITT:
-            return IPAdressFamilyCCITT;
+            return IPAddressFamilyCCITT;
         case IPAF_SNA:
-            return IPAdressFamilySNA;
+            return IPAddressFamilySNA;
         case IPAF_DECnet:
-            return IPAdressFamilyDECnet;
+            return IPAddressFamilyDECnet;
         case IPAF_DLI:
-            return IPAdressFamilyDLI;
+            return IPAddressFamilyDLI;
         case IPAF_LAT:
-            return IPAdressFamilyLAT;
+            return IPAddressFamilyLAT;
         case IPAF_HYLINK:
-            return IPAdressFamilyHYLINK;
+            return IPAddressFamilyHYLINK;
         case IPAF_APPLETALK:
-            return IPAdressFamilyAPPLETALK;
+            return IPAddressFamilyAPPLETALK;
         case IPAF_NETBIOS:
-            return IPAdressFamilyNETBIOS;
+            return IPAddressFamilyNETBIOS;
         case IPAF_VOICEVIEW:
-            return IPAdressFamilyVOICEVIEW;
+            return IPAddressFamilyVOICEVIEW;
         case IPAF_FIREFOX:
-            return IPAdressFamilyFIREFOX;
+            return IPAddressFamilyFIREFOX;
         case IPAF_UNKNOWN1:
-            return IPAdressFamilyUNKNOWN1;
+            return IPAddressFamilyUNKNOWN1;
         case IPAF_BAN:
-            return IPAdressFamilyBAN;
-            //case IPAF_ATM: return IPAdressFamilyATM;
+            return IPAddressFamilyBAN;
+            //case IPAF_ATM: return IPAddressFamilyATM;
         case IPAF_INET6:
-            return IPAdressFamilyINET6;
+            return IPAddressFamilyINET6;
         case IPAF_CLUSTER:
-            return IPAdressFamilyCLUSTER;
+            return IPAddressFamilyCLUSTER;
         case IPAF_12844:
-            return IPAdressFamilyIEEE12844;
+            return IPAddressFamilyIEEE12844;
         case IPAF_IRDA:
-            return IPAdressFamilyIRDA;
+            return IPAddressFamilyIRDA;
         case IPAF_NETDES:
-            return IPAdressFamilyNETDES;
+            return IPAddressFamilyNETDES;
 
         default:
-            return IPAdressFamilyInvalid;
+            return IPAddressFamilyInvalid;
     }
 }
 
-PXI8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
+PXI8U PXAPI PXIPAddressFamilyToID(const IPAddressFamily ipMode)
 {
     switch(ipMode)
     {
         default:
-        case IPAdressFamilyInvalid:
+        case IPAddressFamilyInvalid:
             return IPAF_Invalid;
 
-        case IPAdressFamilyUnspecified:
+        case IPAddressFamilyUnspecified:
             return IPAF_UNSPEC;
 
-        case IPAdressFamilyUNIX:
+        case IPAddressFamilyUNIX:
             return IPAF_UNIX;
 
-        case IPAdressFamilyINET:
+        case IPAddressFamilyINET:
             return IPAF_INET;
 
-        case IPAdressFamilyIMPLINK:
+        case IPAddressFamilyIMPLINK:
             return IPAF_IMPLINK;
 
-        case IPAdressFamilyPUP:
+        case IPAddressFamilyPUP:
             return IPAF_PUP;
 
-        case IPAdressFamilyCHAOS:
+        case IPAddressFamilyCHAOS:
             return IPAF_CHAOS;
 
-        case IPAdressFamilyNS:
+        case IPAddressFamilyNS:
             return IPAF_NS;
 
-        case IPAdressFamilyIPX:
+        case IPAddressFamilyIPX:
             return IPAF_IPX;
 
-        case IPAdressFamilyISO:
+        case IPAddressFamilyISO:
             return IPAF_ISO;
 
-        case IPAdressFamilyOSI:
+        case IPAddressFamilyOSI:
             return IPAF_OSI;
 
-        case IPAdressFamilyECMA:
+        case IPAddressFamilyECMA:
             return IPAF_ECMA;
 
-        case IPAdressFamilyDATAKIT:
+        case IPAddressFamilyDATAKIT:
             return IPAF_DATAKIT;
 
-        case IPAdressFamilyCCITT:
+        case IPAddressFamilyCCITT:
             return IPAF_CCITT;
 
-        case IPAdressFamilySNA:
+        case IPAddressFamilySNA:
             return IPAF_SNA;
 
-        case IPAdressFamilyDECnet:
+        case IPAddressFamilyDECnet:
             return IPAF_DECnet;
 
-        case IPAdressFamilyDLI:
+        case IPAddressFamilyDLI:
             return IPAF_DLI;
 
-        case IPAdressFamilyLAT:
+        case IPAddressFamilyLAT:
             return IPAF_LAT;
 
-        case IPAdressFamilyHYLINK:
+        case IPAddressFamilyHYLINK:
             return IPAF_HYLINK;
 
-        case IPAdressFamilyAPPLETALK:
+        case IPAddressFamilyAPPLETALK:
             return IPAF_APPLETALK;
 
-        case IPAdressFamilyNETBIOS:
+        case IPAddressFamilyNETBIOS:
             return IPAF_NETBIOS;
 
-        case IPAdressFamilyVOICEVIEW:
+        case IPAddressFamilyVOICEVIEW:
             return IPAF_VOICEVIEW;
 
-        case IPAdressFamilyFIREFOX:
+        case IPAddressFamilyFIREFOX:
             return IPAF_FIREFOX;
 
-        case IPAdressFamilyUNKNOWN1:
+        case IPAddressFamilyUNKNOWN1:
             return IPAF_UNKNOWN1;
 
-        case IPAdressFamilyBAN:
+        case IPAddressFamilyBAN:
             return IPAF_BAN;
 
-        case IPAdressFamilyATM:
+        case IPAddressFamilyATM:
             return IPAF_ATM;
 
-        case IPAdressFamilyINET6:
+        case IPAddressFamilyINET6:
             return IPAF_INET6;
 
-        case IPAdressFamilyCLUSTER:
+        case IPAddressFamilyCLUSTER:
             return IPAF_CLUSTER;
 
-        case IPAdressFamilyIEEE12844:
+        case IPAddressFamilyIEEE12844:
             return IPAF_12844;
 
-        case IPAdressFamilyIRDA:
+        case IPAddressFamilyIRDA:
             return IPAF_IRDA;
 
-        case IPAdressFamilyNETDES:
+        case IPAddressFamilyNETDES:
             return IPAF_NETDES;
 
-        case IPAdressFamilyMAX:
+        case IPAddressFamilyMAX:
             return IPAF_MAX;
 
-        case IPAdressFamilyLINK:
+        case IPAddressFamilyLINK:
             return IPAF_LINK;
 
-        case IPAdressFamilyHYPERV:
+        case IPAddressFamilyHYPERV:
             return IPAF_HYPERV;
 
-        case IPAdressFamilyBTH:
+        case IPAddressFamilyBTH:
             return IPAF_BTH;
 
-        case IPAdressFamilyTCNPROCESS:
+        case IPAddressFamilyTCNPROCESS:
             return IPAF_TCNPROCESS;
 
-        case IPAdressFamilyTCNMESSAGE:
+        case IPAddressFamilyTCNMESSAGE:
             return IPAF_TCNMESSAGE;
 
-        case IPAdressFamilyICLFXBM:
+        case IPAddressFamilyICLFXBM:
             return IPAF_ICLFXBM;
     }
 }
@@ -2369,89 +1304,89 @@ PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID)
     switch(errorID)
     {
         case WSAEBADF: // fall through
-            //  case WSA_INVALID_HANDLE: return PXActionRefusedNotFound; // Specified event object handle is invalid.
+            //  case WSA_INVALID_HANDLE: return PXResultRefusedNotFound; // Specified event object handle is invalid.
         case WSA_NOT_ENOUGH_MEMORY:
-            return PXActionFailedMemoryAllocation; // Insufficient memory available.
+            return PXResultFailedMemoryAllocation; // Insufficient memory available.
         case WSAEINVAL: // fall through
         case WSA_INVALID_PARAMETER:
-            return PXActionRefuedInputInvalid; // One or more parameters are invalid.
+            return PXResultRefuedInputInvalid; // One or more parameters are invalid.
             //case WSA_OPERATION_ABORTED:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
             //case WSA_IO_INCOMPLETE: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
             //case WSA_IO_PENDING: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSAEINTR:
-            return PXActionInterruptedByFunctionCall; // xxxxxxxxxxxxxxxxx
-            //   case WSAEACCES: return PXActionRefuedPermissionDenied;
+            return PXResultInterruptedByFunctionCall; // xxxxxxxxxxxxxxxxx
+            //   case WSAEACCES: return PXResultRefuedPermissionDenied;
         case WSAEFAULT:
-            return PXActionRefuedAdressInvalid;
+            return PXResultRefuedAddressInvalid;
         case WSAEMFILE:
-            return PXActionFailedResourcedNotEnough;
+            return PXResultFailedResourcedNotEnough;
         case WSAEWOULDBLOCK:
-            return PXActionWouldBlock; // xxxxxxxxxxxxxxxxx
+            return PXResultWouldBlock; // xxxxxxxxxxxxxxxxx
         case WSAEINPROGRESS:
-            return PXActionNowInProgress; // xxxxxxxxxxxxxxxxx
+            return PXResultNowInProgress; // xxxxxxxxxxxxxxxxx
         case WSAEALREADY:
-            return PXActionAlreadyInProgress; // xxxxxxxxxxxxxxxxx
-            //  case WSAENOTSOCK: return PXActionRefusedNotFound; // Socket operation on nonsocket.
+            return PXResultAlreadyInProgress; // xxxxxxxxxxxxxxxxx
+            //  case WSAENOTSOCK: return PXResultRefusedNotFound; // Socket operation on nonsocket.
             //case WSAEDESTADDRREQ:  return xxxxxxxxxxxx; // Destination address required.
         case WSAEMSGSIZE:
-            return PXActionRefuedInputBufferTooBig; // Message too long.
+            return PXResultRefuedInputBufferTooBig; // Message too long.
         case WSAEPROTOTYPE:
-            return PXActionRefuedProtocolTypeInvalid; // Protocol wrong type for socket.
+            return PXResultRefuedProtocolTypeInvalid; // Protocol wrong type for socket.
         case WSAENOPROTOOPT:
-            return PXActionRefuedProtocolOptionInvalid; // Bad protocol option.
+            return PXResultRefuedProtocolOptionInvalid; // Bad protocol option.
         case WSAEPROTONOSUPPORT:
-            return PXActionRefuedProtocolNotSupported; // Protocol not supported.
-            // case WSAESOCKTNOSUPPORT: return PXActionRefuedObjectTypeNotSupported; // Socket type not supported.
+            return PXResultRefuedProtocolNotSupported; // Protocol not supported.
+            // case WSAESOCKTNOSUPPORT: return PXResultRefuedObjectTypeNotSupported; // Socket type not supported.
         case WSAEOPNOTSUPP:
-            return PXActionRefuedOperationNotSupported; // Operation not supported.
+            return PXResultRefuedOperationNotSupported; // Operation not supported.
         case WSAEPFNOSUPPORT:
-            return PXActionRefuedProtocolFamilyNotSupported; // Protocol family not supported.
+            return PXResultRefuedProtocolFamilyNotSupported; // Protocol family not supported.
         case WSAEAFNOSUPPORT:
-            return PXActionRefuedAddressFamilyNotSupportedByProtocol; // Address family not supported by protocol family.
+            return PXResultRefuedAddressFamilyNotSupportedByProtocol; // Address family not supported by protocol family.
         case WSAEADDRINUSE:
-            return PXActionRefuedAlreadyInUse; // Address already in use.
+            return PXResultRefuedAlreadyInUse; // Address already in use.
             //case WSAEADDRNOTAVAIL:   return xxxxxxxxxxxx; // Cannot assign requested address.
         case WSAENETDOWN:
-            return PXActionRefuedNetworkNotConnected; // Network is down.
+            return PXResultRefuedNetworkNotConnected; // Network is down.
         case WSAENETUNREACH:
-            return PXActionRefuedNetworkNotReachable; // Network is unreachable.
+            return PXResultRefuedNetworkNotReachable; // Network is unreachable.
         case WSAENETRESET:
-            return PXActionFailedConnectionTerminatedByNetwork; // Network dropped connection on reset.
+            return PXResultFailedConnectionTerminatedByNetwork; // Network dropped connection on reset.
         case WSAECONNABORTED:
-            return PXActionFailedConnectionTerminatedByOwnSoftware; // Software caused connection abort.
+            return PXResultFailedConnectionTerminatedByOwnSoftware; // Software caused connection abort.
         case WSAECONNRESET:
-            return PXActionFailedConnectionTerminatedByPeer; // Connection reset by peer.
+            return PXResultFailedConnectionTerminatedByPeer; // Connection reset by peer.
         case WSAENOBUFS:
-            return PXActionFailedMemoryAllocationInternal; // No buffer space available.
+            return PXResultFailedMemoryAllocationInternal; // No buffer space available.
         case WSAEISCONN:
-            return PXActionRefusedAlreadyConnected; // Socket is already connected.
+            return PXResultRefusedAlreadyConnected; // Socket is already connected.
         case WSAENOTCONN:
-            return PXActionFailedNotConnected; // Socket is not connected.
+            return PXResultFailedNotConnected; // Socket is not connected.
             //case WSAESHUTDOWN:  return WindowsSocketSystemWasShutdown; // Cannot send after socket shutdown.
             //case WSAETOOMANYREFS:   return xxxxxxxxxxxx; // Too many references.
             //case WSAETIMEDOUT:   return xxxxxxxxxxxx; // Connection timed out.
         case WSAECONNREFUSED:
-            return PXActionRefuedServiceNotRunning; // Connection refused.
+            return PXResultRefuedServiceNotRunning; // Connection refused.
             //case WSAELOOP:   return xxxxxxxxxxxx; // Cannot translate name.
             //case WSAENAMETOOLONG:   return xxxxxxxxxxxx; // Name too long.
             //case WSAEHOSTDOWN:   return xxxxxxxxxxxx; // Host is down.
             //case WSAEHOSTUNREACH:   return xxxxxxxxxxxx; // No route to host.
         case WSAENOTEMPTY:
-            return PXActionFailedDirectoryIsNotEmpty; // Directory not empty.
+            return PXResultFailedDirectoryIsNotEmpty; // Directory not empty.
         case WSAEPROCLIM:
-            return PXActionFailedTooManyProcesses; // Too many processes.
+            return PXResultFailedTooManyProcesses; // Too many processes.
         case WSAEUSERS:
-            return PXActionFailedUserQuotaExceeded; // User quota exceeded.
+            return PXResultFailedUserQuotaExceeded; // User quota exceeded.
         case WSAEDQUOT:
-            return PXActionFailedDiskQuotaExceeded; // Disk quota exceeded.
+            return PXResultFailedDiskQuotaExceeded; // Disk quota exceeded.
         case WSAESTALE:
-            return PXActionFailedHandleIsStale; // Stale file handle reference.
+            return PXResultFailedHandleIsStale; // Stale file handle reference.
         case WSAEREMOTE:
-            return PXActionFailedResourceNotAvailableLocally; // Item is remote.
-            //case WSASYSNOTREADY:   return PXActionFailedNetworkSubsystemNotReady; // Network subsystem is unavailable.
+            return PXResultFailedResourceNotAvailableLocally; // Item is remote.
+            //case WSASYSNOTREADY:   return PXResultFailedNetworkSubsystemNotReady; // Network subsystem is unavailable.
             //case WSAVERNOTSUPPORTED:   return WindowsSocketVersionNotSupported; // Winsock.dll version out of range.
             //case WSANOTINITIALISED:   return WindowsSocketSystemNotInitialized; // Successful WSAStartup not yet performed.
-            //case WSAEDISCON:   return PXActionRefusedResourceIsShuttingdown; // Graceful shutdown in progress.
+            //case WSAEDISCON:   return PXResultRefusedResourceIsShuttingdown; // Graceful shutdown in progress.
             //case WSAENOMORE:   return xxxxxxxxxxxx; // No more results.
             //case WSAECANCELLED:   return xxxxxxxxxxxx; // Call has been canceled.
             //case WSAEINVALIDPROCTABLE:   return xxxxxxxxxxxx; // Procedure call table is invalid.
@@ -2464,7 +1399,7 @@ PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID)
             //case WSA_E_CANCELLED:   return xxxxxxxxxxxx; // Call was canceled.
             //case WSAEREFUSED:   return xxxxxxxxxxxx; // Database query was refused.
         case WSAHOST_NOT_FOUND:
-            return PXActionFailedHostNotFound; // Host not found.
+            return PXResultFailedHostNotFound; // Host not found.
             //case WSATRY_AGAIN:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
             //case WSANO_RECOVERY:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
             //case WSANO_DATA:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx

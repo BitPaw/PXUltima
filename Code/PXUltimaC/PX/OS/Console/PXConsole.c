@@ -5,7 +5,7 @@
 
 #include <PX/Type/PXText.h>
 #include <PX/OS/Async/PXThread.h>
-#include <PX/OS/Time/PXTime.h>
+#include <PX/Type/PXTime.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/PXOS.h>
@@ -291,8 +291,41 @@ PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor
     return PXResultOK;
 
 #else
-    return PXActionRefusedNotSupportedByLibrary;
+    return PXResultRefusedNotSupportedByLibrary;
 #endif
+}
+
+PXConsole PXAPI PXConsoleFetch(const PXBool createIfNotExist)
+{
+    PXConsole pxConsole;
+    PXClear(PXConsole, &pxConsole);
+
+#if OSUnix
+#elif OSWindows
+    pxConsole.Handle = GetConsoleWindow();
+#endif
+
+    PXBool isDone = !createIfNotExist || pxConsole.Handle;
+
+    if(isDone)
+    {
+        return pxConsole;
+    }
+
+#if OSUnix
+#elif OSWindows
+    BOOL result = AllocConsole();
+
+    if(result)
+    {
+        FILE* fDummy;
+        freopen_s(&fDummy, "CONOUT$", "w", stdout);
+        freopen_s(&fDummy, "CONOUT$", "w", stderr);
+        freopen_s(&fDummy, "CONIN$", "r", stdin);
+    }
+#endif
+
+    return pxConsole;
 }
 
 void PXAPI PXConsoleClear()
@@ -300,10 +333,7 @@ void PXAPI PXConsoleClear()
 #if OSUnix || OSForcePOSIXForWindows
     printf("\033[H\033[J");
 #elif OSWindows
- 
 
-
-  
     HANDLE input_handle;
     HANDLE output_handle;
 
@@ -406,7 +436,7 @@ void PXAPI PXConsoleWrite(const PXSize length, const char PXREF source)
     const BOOL success = WriteConsoleA(consoleHandle, source, length, 0, 0);
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, source, length, length);
+    PXTextFromAddressA(&pxText, source, length, length);
 
     PXDebugLogMessage(&pxText);
 #endif
@@ -495,7 +525,6 @@ void PXAPI PXConsoleWriteTableInt(const PXI8U PXREF data, const PXSize amount, c
         PXConsoleWriteF(260, "\n");
     }
 }
-
 
 void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
 {
@@ -687,11 +716,13 @@ void PXAPI PXLogEnableASYNC()
 }
 
 
-char _formattedText[1024];
-char _exportTextBuffer[1024];
+
 
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, const char PXREF action, const char PXREF format, ...)
 {
+    char _formattedText[1024];
+    char _exportTextBuffer[1024];
+
     char loggingTypeSymbol;
 
     char symbolColor = '7';
@@ -758,12 +789,11 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
             break;
     }
 
-
     PXText formattedText;
     PXText exportText;
 
-    PXTextFromAdressA(&formattedText, _formattedText, 0, sizeof(_formattedText));
-    PXTextFromAdressA(&exportText, _exportTextBuffer, 0, sizeof(_exportTextBuffer));
+    PXTextFromAddressA(&formattedText, _formattedText, 0, sizeof(_formattedText));
+    PXTextFromAddressA(&exportText, _exportTextBuffer, 0, sizeof(_exportTextBuffer));
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -811,8 +841,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
         va_end(args);
 
         //OutputDebugStringA();
-    }
-
+    }  
 
 
 #if 0
@@ -827,7 +856,9 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
     }
 #endif
 
+   // PXLockEngage(_GLOBALCosolePrintLock, PXTrue);
     PXConsoleWriteWithColorCodes(&exportText);
+   // PXLockRelease(_GLOBALCosolePrintLock);
 
 
 #if 0
@@ -841,4 +872,6 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
         PXConsoleWrite(1, "\n");
     }
 #endif
+
+
 }

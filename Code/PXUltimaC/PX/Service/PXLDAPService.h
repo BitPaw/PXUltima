@@ -310,7 +310,7 @@ PXPublic PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const 
 PXPublic PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient);
 
 // Used an open connection to fetch data either syncrounous or asyncounous.
-// The result is fetched into an adress that need to be cleared before the next call.
+// The result is fetched into an address that need to be cleared before the next call.
 PXPublic PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchInfo PXREF pxLDAPSearchInfo);
 
 #endif

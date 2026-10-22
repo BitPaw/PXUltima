@@ -17,7 +17,7 @@ typedef struct PXWave_
 }
 PXWave;
 
-PXPublic PXResult PXAPI PXWaveLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWaveSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWaveLoadFromFile(PXSound PXREF pxSound, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWaveSaveToFile(PXSound PXREF pxSound, PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

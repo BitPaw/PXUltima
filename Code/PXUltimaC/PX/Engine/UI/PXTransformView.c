@@ -49,13 +49,13 @@ PXResult PXAPI PXTransformViewCreate(PXTransformView** pxTransformViewREF, PXTra
 
 PXResult PXAPI PXTransformViewRelease(PXTransformView PXREF pxTransformView)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 void DrawRect
 (
     PXWindow PXREF pxWindow,
-    PXDrawInfo PXREF pxDrawInfo,
+    PXEngineUIDrawInfo PXREF pxDrawInfo,
     float x,
     float y,
     float w,
@@ -78,7 +78,7 @@ void DrawRect
 void DrawRectWithText
 (
     PXWindow PXREF pxWindow,
-    PXDrawInfo PXREF pxDrawInfo,
+    PXEngineUIDrawInfo PXREF pxDrawInfo,
     float x,
     float y,
     float w,
@@ -128,7 +128,7 @@ int GetTextWidth(PXWindow PXREF pxWindow, const char* text)
 #endif
 }
 
-const PXColorRGBF axisColors[4] =
+const PXColorRGB_F32 axisColors[4] =
 {
     {1.0f, 0.0f, 0.0f}, // X
     {0.0f, 1.0f, 0.0f}, // Y
@@ -146,7 +146,7 @@ const PXI8U componentCount = sizeof(axisLetters) / sizeof(char);
 const char unitText[] = "cm";
 const char title[] = "Position";
 
-void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDrawInfo PXREF pxDrawInfo, const PXSize index)
+void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXEngineUIDrawInfo PXREF pxDrawInfo, const PXSize index)
 {
     PXWindow* pxWindow = pxTransformView->WindowBase;
     PXText pxText;
@@ -156,7 +156,7 @@ void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDra
     float rowHeight = 20.0f;
     float fieldWidth = 175.0f;
 
-    PXDrawInfo old = *pxDrawInfo;
+    PXEngineUIDrawInfo old = *pxDrawInfo;
 
     // Axis colored box
     //pxDrawInfo->RectangleXYWH.Width = axisBoxWidth;
@@ -172,9 +172,9 @@ void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDra
     pxDrawInfo->Color.Blue = 0;
     //pxDrawInfo->RectangleXYWH.X += 5;
     //pxDrawInfo->RectangleXYWH.Y += 5;
-    PXTextFromAdressA(&pxText, buf, 0, sizeof(buf));
+    PXTextFromAddressA(&pxText, buf, 0, sizeof(buf));
     PXTextPrint(&pxText, "%c", axisLetters[index]);
-    PXWindowDrawText(pxWindow, pxDrawInfo);
+    PXEngineUIDrawText(pxWindow, pxDrawInfo);
     // pxDrawInfo->RectangleXYWH.X -= 5;
     //pxDrawInfo->RectangleXYWH.Y -= 5;
 
@@ -194,7 +194,7 @@ void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDra
     pxDrawInfo->Color.Red = 0;
     pxDrawInfo->Color.Green = 0;
     pxDrawInfo->Color.Blue = 0;
-    PXTextFromAdressA(&pxText, buf, 0, sizeof(buf));
+    PXTextFromAddressA(&pxText, buf, 0, sizeof(buf));
 
     if(pxTransformView->Position)
     {
@@ -206,17 +206,17 @@ void PXAPI PXTransformViewEntryDraw(PXTransformView PXREF pxTransformView, PXDra
     }
 
 
-    PXWindowDrawText(pxWindow, pxDrawInfo);
+    PXEngineUIDrawText(pxWindow, pxDrawInfo);
 #endif
 
     *pxDrawInfo = old;
 }
 
-PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     PXWindow* pxWindow = pxTransformView->WindowBase;
     PXVector3F32* values = pxTransformView->Position;
-    PXUITheme* theme = pxDrawInfo->UITheme;
+    PXEngineUITheme* theme = pxDrawInfo->UITheme;
     PXText pxText;
 
 #if OSWindows
@@ -249,14 +249,14 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
     // pxDrawInfo->RectangleXYWH.Width = 150;
     // pxDrawInfo->RectangleXYWH.Height = 20;
 
-    PXTextFromAdressA(&pxText, title, sizeof(title), sizeof(title));
-    PXWindowDrawText(pxWindow, pxDrawInfo);
+    PXTextFromAddressA(&pxText, title, sizeof(title), sizeof(title));
+    PXEngineUIDrawText(pxWindow, pxDrawInfo);
 
     PXTextDrawInfoRowNext(pxDrawInfo);
 
 #if 0
     pxDrawInfo->RectangleXYWH.X += sizeof(title);
-    PXTextFromAdressA(&pxText, unitText, sizeof(unitText), sizeof(unitText));
+    PXTextFromAddressA(&pxText, unitText, sizeof(unitText), sizeof(unitText));
     PXWindowDrawText(pxWindow, pxDrawInfo);
     pxDrawInfo->RectangleXYWH.X = 0.0;
 #endif
@@ -269,5 +269,5 @@ PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDraw
         PXTextDrawInfoRowNext(pxDrawInfo);
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

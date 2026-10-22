@@ -77,11 +77,11 @@ PXResult PXAPI PXDebugDebuggerInitialize(PXDebug PXREF pxDebug)
 #if OSUnix
 #elif PXOSWindowsDestop
 
-   
+
 
     // Init symbol server
     {
-      
+
     }
 
     return PXResultOK;
@@ -97,7 +97,7 @@ PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF app
     {
         PXThreadCreateInfo pxThreadCreateInfo;
         PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
-        PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXDebugerLoopText, 0, PXDebugerLoopTextLength);
+        PXTextFromAddressA(&pxThreadCreateInfo.Info.Name, PXDebugerLoopText, 0, PXDebugerLoopTextLength);
         pxThreadCreateInfo.ThreadFunction = PXDebugLoop;
         pxThreadCreateInfo.Parameter = pxDebug;
 
@@ -117,7 +117,7 @@ PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF app
 PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
 {
 #if OSUnix
-    __pid_t processID = pxDebug->Process.ProcessID;
+    pid_t  processID = pxDebug->Process.ProcessID.Data;
     const long result = ptrace(PTRACE_ATTACH, processID, 0, 0);
 
     //ptrace(PTRACE_PEEKTEXT, processID, addr, 0); // PTRACE_PEEKTEXT / PEEKDATA / PEEKUSER
@@ -133,7 +133,7 @@ PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
 
 
 #elif PXOSWindowsDestop
-    const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
+    const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID.Data);
     const PXResult pxResult = PXErrorCurrent(result);
 
     if(PXResultOK != pxResult)
@@ -167,7 +167,7 @@ void PXAPI OnDebugProcessExit(PXDebug PXREF pxDebug, const PXI32U exitCode)
 PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
 {
 #if OSUnix
-    __pid_t processID = pxDebug->Process.ProcessID;
+    __pid_t processID = pxDebug->Process.ProcessID.Data;
 
     // Trance
     {
@@ -194,9 +194,9 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
 
     return PXResultOK;
 
-#elif PXOSWindowsDestop 
+#elif PXOSWindowsDestop
 
-    DEBUG_EVENT debugEvent; 
+    DEBUG_EVENT debugEvent;
     DWORD dwContinueStatus = DBG_CONTINUE; // This flag need to be set for the debugger in this functiom
 
     const DWORD dwMilliseconds = 0;
@@ -519,7 +519,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
 
     // Resume executing the thread that reported the debugging event.
 
-    
+
 
     const PXResult pxContinueActionResult = PXDebugEventContinue(0, 0);
 
@@ -565,7 +565,7 @@ PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PX
 
 
    // PXSymbolListLoad();
-  
+
 
 
     PXSymbolServerCleanup();
@@ -574,7 +574,7 @@ PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PX
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -600,7 +600,7 @@ void PXAPI PXDebugLogMessage(PXText PXREF pxText)
 PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -653,7 +653,7 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
         // target += processHeapEntry.cbOverhead;
 
 
-        // As we have a memory space-adress here, we cant use the
+        // As we have a memory space-address here, we cant use the
         // windows symbol lookup, because they exist in a whole other memory region
         // To solve this we have a seperate lookup
 
@@ -805,12 +805,12 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 
                 PXSymbol pxSymbol;
 
-                void* adress = he.dwAddress;
+                void* address = he.dwAddress;
 
-                PXDebugFetchSymbolFromRougeAdress(pxDebug, &pxSymbol, adress);
+                PXDebugFetchSymbolFromRougeAddress(pxDebug, &pxSymbol, address);
 
 
-                printf("0x%p - %6i B   %s\n", adress, he.dwBlockSize, pxSymbol.NameUndecorated);
+                printf("0x%p - %6i B   %s\n", address, he.dwBlockSize, pxSymbol.NameUndecorated);
 
 
                 he.dwSize = sizeof(HEAPENTRY32);
@@ -836,7 +836,7 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
 {
     /*
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -849,7 +849,7 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
     }
 
 
-    void* adress = 0;
+    void* address = 0;
 
     // create thread handle if not exists
     if(!pxThread->ThreadHandle)
@@ -862,16 +862,16 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
     const NTSTATUS querryResult = NtQueryInformationThread
     (
         pxThread->ThreadHandle,
-        infoClass, 
-        &adress,
+        infoClass,
+        &address,
         sizeof(void*),
         PXNull
     ); // KERNEL
 
-    const PXResult symbolResult = PXDebugFetchSymbolFromRougeAdress(pxDebug, pxSymbol, adress);
+    const PXResult symbolResult = PXDebugFetchSymbolFromRougeAddress(pxDebug, pxSymbol, address);
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 */
 
@@ -954,10 +954,10 @@ BOOL CALLBACK PXENUMERATESYMBOLSUEUE(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PS
 }
 #endif
 
-PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* adress)
+PXResult PXAPI PXDebugFetchSymbolFromRougeAddress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* address)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
 
     PXClear(PXSymbol, pxSymbol);
@@ -967,7 +967,7 @@ PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol
 
 
     // Fetch symbol
-    PXSymbolFromAddress(pxSymbol, adress);
+    PXSymbolFromAddress(pxSymbol, address);
 
 
     return PXResultOK;
@@ -977,8 +977,8 @@ PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol
         PXSize displacement = 0;
 
     char symBuffer[PXDebugWindowsSymbolStringLength];
-    void* symbolAdress = 0;
-    void* moduleAdress = 0;
+    void* symbolAddress = 0;
+    void* moduleAddress = 0;
     IMAGEHLP_LINE64 imageHelperLine;
     imageHelperLine.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
     imageHelperLine.FileName = symBuffer;
@@ -998,34 +998,37 @@ PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol
 
 
     // this loops over allsymbols in a file
-    //const PXBool assaas = SymEnumLines(processHandle, moduleAdress, PXNull, PXNull, PXPSYM_ENUMLINES_CALLBACK, symbolAdress);
+    //const PXBool assaas = SymEnumLines(processHandle, moduleAddress, PXNull, PXNull, PXPSYM_ENUMLINES_CALLBACK, symbolAddress);
 
 
-    //const PXBool asd = SymGetSymFromAddr64(processHandle, symbolAdress, &displacement, imgsYMBOL64);
+    //const PXBool asd = SymGetSymFromAddr64(processHandle, symbolAddress, &displacement, imgsYMBOL64);
 
-    // const PXBool lineResultSHU = SymEnumSymbolsForAddr(processHandle, symbolAdress, PXENUMERATESYMBOLSUEUE, pSymbol);
+    // const PXBool lineResultSHU = SymEnumSymbolsForAddr(processHandle, symbolAddress, PXENUMERATESYMBOLSUEUE, pSymbol);
 
-    // always fails because the recieved adress here is always invalid
-    //  const PXBool lineResult = SymGetLineFromAddr(processHandle, symbolAdress, &displacement, &imageHelperLine);
+    // always fails because the recieved address here is always invalid
+    //  const PXBool lineResult = SymGetLineFromAddr(processHandle, symbolAddress, &displacement, &imageHelperLine);
     //  const PXResult linres = PXErrorCurrent();
 
 
     // Store symvol name
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
-PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug)
+PXThreadResult PXOSAPI PXDebugLoop(PXDebug PXREF pxDebug)
 {
+    PXThreadResult pxThreadResult;
+
     // Create process to debug on
     {
         const PXResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
 
         // If starting the process failed, stop.
-        //PXActionReturnOnError(result);
-        return -1;
+        pxThreadResult.Data = -1;
+
+        return pxThreadResult;
     }
 
     pxDebug->IsRunning = PXTrue;
@@ -1037,13 +1040,15 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug)
         pxResult = PXResultInvalid;
     }
 
-    return PXResultOK;
+    pxThreadResult.Data = PXResultOK;
+
+    return pxThreadResult;
 }
 
 PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows && 0
 
     const HANDLE hFile = CreateFileA("minidump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1069,7 +1074,7 @@ PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
     CloseHandle(hFile);
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 

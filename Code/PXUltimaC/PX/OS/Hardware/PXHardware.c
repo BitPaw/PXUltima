@@ -15,7 +15,7 @@ typedef struct PXWindowsWMIEntry_
 {
     enum VARENUM VarriantType;
     char* FieldName;
-    void* DataAdress;
+    void* DataAddress;
 }
 PXWindowsWMIEntry;
 
@@ -43,7 +43,7 @@ void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo PXREF pxHardwareInfo, PXWindo
             {
                 BSTR stri = varriant.bstrVal; // wchar_t
 
-                int x = WideCharToMultiByte(CP_UTF8, 0, stri, -1, valFetch->DataAdress, 128, NULL, NULL);
+                int x = WideCharToMultiByte(CP_UTF8, 0, stri, -1, valFetch->DataAddress, 128, NULL, NULL);
 
 
 
@@ -51,7 +51,7 @@ void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo PXREF pxHardwareInfo, PXWindo
             }
             case VT_I4:
             {
-                int* val = (int*)valFetch->DataAdress;
+                int* val = (int*)valFetch->DataAddress;
 
                 *val = varriant.intVal;
 
@@ -886,7 +886,7 @@ PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI
 PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
     SYSTEM_POWER_STATUS systemPowerStatus;
@@ -965,6 +965,6 @@ PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery)
     return PXResultOK;
 
 #else
-    return PXActionRefusedNotSupportedByLibrary;
+    return PXResultRefusedNotSupportedByLibrary;
 #endif
 }

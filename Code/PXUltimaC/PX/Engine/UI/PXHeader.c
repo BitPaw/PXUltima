@@ -1,5 +1,5 @@
 #include "PXHeader.h"
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/OS/Console/PXConsole.h>
 
 const char  PXHeaderText[] = "Header";
@@ -10,9 +10,9 @@ pxWindowCreateInfo->WindowClassName.A = WC_HEADER;
 #endif
 */
 
-PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    PXGUITheme* pxGUITheme = PXGUIThemeGet();
+    PXEngineUITheme* pxGUITheme = pxDrawInfo->UITheme;
 
    // const PXBool isHovered = (PXECSInfoSelected & pxWindow->Info.Behaviour) > 0;
     //PXWindowExtendedMenuItem PXREF pxWindowExtendedMenuItem = (PXWindowExtendedMenuItem*)pxWindow->ExtendedData;
@@ -52,7 +52,7 @@ PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo
         PXWindowMenuItem PXREF pxWindowMenuItem = &pxWindowExtendedMenuItem->MenuItemList[i];
 
 
-        //    PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
+        //    PXEngineUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
            // pxWindow->Position.Top = y;
            // pxWindow->Position.Right = pxWindow->Position.Right;

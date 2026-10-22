@@ -6,24 +6,17 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/PXMod.h>
 #include <PX/Engine/PXResource.h>
+#include <PX/Engine/PXEngineScene.h>
+#include <PX/Type/PXSprite.h>
+#include <PX/Engine/PXEngineModule.h>
 #include <PX/OS/Graphic/PXGraphic.h>
+#include "PXEngineModManager.h"
+#include "PXEngineMath.h"
+#include "PXEngineInput.h"
+#include "PXEngineTimer.h"
 
 typedef struct PXEngine_ PXEngine;
-
-//-----------------------------------------------------
-// StateChange
-//-----------------------------------------------------
-typedef struct PXEngineResourceStateChangeInfo_
-{
-    PXI32U Type;
-    void* Object;
-
-    PXBool Enable;
-}
-PXEngineResourceStateChangeInfo;
-//-----------------------------------------------------
-
-
+typedef struct PXEngineCreateInfo_ PXEngineCreateInfo;
 
 // Action to be committed to a given resource
 typedef enum PXEngineResourceActionType_
@@ -41,19 +34,6 @@ typedef enum PXEngineResourceActionType_
 }
 PXEngineResourceActionType;
 
-typedef struct PXEngineResourceActionInfo_
-{
-    PXEngineResourceActionType Type;
-
-    union
-    {
-        PXECSCreateInfo Create;
-        PXRenderEntity Render;
-        PXEngineResourceStateChangeInfo ChangeInfo;
-    };
-}
-PXEngineResourceActionInfo;
-
 typedef struct PXPlayerMoveInfo_
 {
     PXVector3F32 MovementWalk;
@@ -62,6 +42,22 @@ typedef struct PXPlayerMoveInfo_
     PXBool ActionCommit; // If this stays true, action will be commited
 }
 PXPlayerMoveInfo;
+
+
+typedef struct PXEngineContext_
+{
+    PXDictionaryECS SystemLookup;
+    PXEngineAudio* Audio;
+    PXEngineRender* Render;
+    PXEngineScene* Scene;
+    PXEngineInput* Input;
+    PXEngineUI* UI;
+    PXEngineTime* Time;
+    PXEngineMath* Math;
+    PXEngineModManager* ModManager;
+}
+PXEngineContext;
+
 
 
 typedef void (PXAPI* PXEngineResourceAdded)(void PXREF owner, PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxEngineResourceCreateInfo);
@@ -76,32 +72,19 @@ typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void PXREF owner, PXEngine PXRE
 typedef void (PXAPI* PXEngineGameUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine);
 typedef void (PXAPI* PXEngineRenderUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine);
 
-typedef struct PXEngineTimeData_
-{
-    PXI64U TimeNow;
 
-    PXI32U CounterTimeLast;
-    PXI32U CounterTimeDelta;
 
-    PXI32U CounterTimeWindow;
-    PXI32U CounterTimeUser;
-    PXI32U CounterTimeNetwork;
-    PXI64U CounterTimeRenderLast;
-    PXI32U CounterTimeGPU;
-    PXI32U CounterTimeCPU;
-    PXI32U TimeFrequency;
-
-    PXI32U FramesPerSecound;
-    PXI32U FrameTime;
-}
-PXEngineTimeData;
-
+//---------------------------------------------------------
+// Create engine and modlules
+//---------------------------------------------------------
 typedef struct PXEngineCreateInfo_
 {
     PXECSCreateInfo Info;
 
+    PXSize SystemInitializeAmount;
+    PXEngineModuleInitializeFunction* SystemInitializeList;
+
     PXGraphicInitializeMode Mode;
-    PXGraphicSystem System;
 
     PXEngineStartUpEvent OnStartUp;
     PXEngineShutDownEvent OnShutDown;
@@ -125,28 +108,61 @@ typedef struct PXEngineCreateInfo_
 }
 PXEngineCreateInfo;
 
-PXPrivate void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWindowEvent);
-PXPrivate PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
-PXPrivate PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
-PXPrivate PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+typedef PXResult(PXAPI* PXEngineModuleCreateFunction)(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+//---------------------------------------------------------
 
+
+
+//---------------------------------------------------------
+// Engine and module updates
+//---------------------------------------------------------
+typedef struct PXEngineUpdateInfo_
+{
+    // References
+    PXEngine* Engine;
+
+    // Time
+    //PXBool IsASYNC;
+}
+PXEngineUpdateInfo;
+//---------------------------------------------------------
+
+PXPrivate void PXAPI PXEngineWindowEvent(PXEngineUIEvent PXREF pxWindowEvent);
+
+PXPrivate PXResult PXAPI PXEngineCreateRender(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateInput(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateScene(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateUI(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateTime(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateMath(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateModManager(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+//---------------------------------------------------------
+// CREATE/DESTROY
 PXPublic void PXAPI PXEngineRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXEngineCreate(PXEngine** pxEngine, PXEngineCreateInfo PXREF pxEngineCreateInfo);
 PXPublic PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine);
-PXPublic PXWindow* PXAPI PXEngineWindowMainGet(const PXEngine PXREF pxEngine);
 
+
+PXPrivate PXThreadResult PXOSAPI PXEngineRootLoop(PXEngine PXREF pxEngine);
+PXPublic PXThread* PXAPI PXEngineRootThread(const PXEngine PXREF pxEngine);
+
+PXPrivate void PXAPI PXEngineModuleSerialActivate(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineModuleSerialDeactivate(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineModuleASYNCActivate(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineModuleASYNCDeactivate(PXEngine PXREF pxEngine);
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// STATE
 PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine);
-PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
-
-PXPublic PXWindow* PXAPI PXEngineWindowGet(const PXEngine PXREF pxEngine);
+PXPublic PXResult PXAPI PXEngineStop(PXEngine PXREF pxEngine);
 
 
-PXPublic void PXAPI PXEngineFPSTargetSet(PXEngine PXREF pxEngine, const PXI32U fpsTarget);
-
-// If engine is asleep, wake it up.
-PXPublic PXResult PXAPI PXEngineAwaken(PXEngine PXREF pxEngine);
-
-typedef PXResult (PXAPI* PXEngineUpdateFuntion)(PXEngine PXREF pxEngine);
+PXPublic PXResult PXAPI PXEngineEventOnTick(PXEngine PXREF pxEngine);
+PXPublic PXResult PXAPI PXEngineEventOnRender(PXEngine PXREF pxEngine);
+PXPublic PXResult PXAPI PXEngineEventOnUI(PXEngine PXREF pxEngine);
 
 // Single update
 PXPublic PXResult PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
@@ -154,24 +170,34 @@ PXPublic PXResult PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
 // Semi-permanent function to run as long as it does. 
 // Until an event singals a stop.
 PXPublic PXResult PXAPI PXEngineRun(PXEngine PXREF pxEngine);
-
-typedef void(PXAPI* PXEngineEvent)(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineEventWork(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineEventRender(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineEventOS(PXEngine PXREF pxEngine);
-
-PXPrivate void PXAPI PXEngineTimeSetEnd(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineTimeSetNow(PXEngine PXREF pxEngine);
-PXPrivate PXF64 PXAPI PXEngineTimeDelta(PXEngine PXREF pxEngine);
+//---------------------------------------------------------
 
 
-PXPrivate void PXAPI PXEngineUpdateAwait(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateTimers(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateNetwork(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateWindow(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateRender(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateUser(PXEngine PXREF pxEngine);
+//---------------------------------------------------------
+// Register module for sub-modules
+PXPublic PXSize PXAPI PXEngineModuleAmount(const PXEngine PXREF pxEngine);
+PXPublic PXEngineModule* PXAPI PXEngineModuleIndex(PXEngine PXREF pxEngine, const PXSize index);
+PXPublic PXResult PXAPI PXEngineModuleRegister
+(
+    PXEngine PXREF pxEngine,
+    PXEngineModule PXREF pxEngineModule
+
+);
+PXPublic PXResult PXAPI PXEngineModuleRelease(PXEngine PXREF pxEngine);
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// GET/SET
+PXPublic PXEngineContext* PXAPI PXEngineContextGet(const PXEngine PXREF pxEngine);
+
+PXPublic PXResult PXAPI PXEngineEventUIAviableSet(PXEngine PXREF pxEngine);
+PXPublic PXResult PXAPI PXEngineEventThreadDoneSet(PXEngine PXREF pxEngine);
+//---------------------------------------------------------
+
+
+
+PXPublic void PXAPI PXEngineDrawSceneDefault(PXEngine PXREF pxEngine, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 PXPrivate void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventMouseMoveData PXREF pxWindowEventInputMouseMove);
 PXPrivate void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboardData PXREF pxWindowEventInputKeyboard);
@@ -179,23 +205,12 @@ PXPrivate void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEve
 // Generate a random number with a maximum of the "limiter"
 PXPublic PXI32U PXAPI PXEngineGenerateRandom(PXEngine PXREF pxEngine, const PXI32U limiter);
 
-PXPublic PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo);
-PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfoList, const PXSize amount);
-
 PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxEngineResourceCreateInfo);
-PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity);
 
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine);
 
 PXPublic PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine);
 
-PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine PXREF pxEngine);
-
-PXPublic PXResult PXAPI PXEngineSpriteTextureSet(PXEngine PXREF pxEngine, PXSprite PXREF pxSprite, PXTexture PXREF PXTexture);
-
-
-PXPrivate void PXAPI PXEngineUpdateCollision(PXEngine PXREF pxEngine);
-PXPrivate void PXAPI PXEngineUpdateTimer(PXEngine PXREF pxEngine);
 PXPrivate void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine);
 
 #endif

@@ -4,8 +4,9 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Engine/PXResource.h>
 #include <math.h>
-#include <gl/GL.h>
-#include <gl/GLU.h>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 const char PXCameraName[] = "Camera";
 const PXI8U PXCameraNameLength = sizeof(PXCameraName);
@@ -41,8 +42,8 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     }
 
     pxCamera = *pxCameraREF;
-    pxCamera->WalkSpeed = 3;// 500;
-    pxCamera->ViewSpeed = 1;
+    pxCamera->WalkSpeed = 30;// 500;
+    pxCamera->ViewSpeed = 0.02f;
     pxCamera->FollowSpeed = 0.98f;
     pxCamera->FieldOfView = 90;
     pxCamera->Rectangle.Height = 1;
@@ -50,31 +51,20 @@ PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF p
     pxCamera->Near = 0.1;
     pxCamera->Far = 100000000000.f;
 
-    //PXMatrix4x4FIdentity(&camera->MatrixModel);
-    //PXMatrix4x4FIdentity(&camera->MatrixView);
-    //PXMatrix4x4FIdentity(&camera->MatrixProjection);
+    PXTransform4DInit(&pxCamera->Transform);
 
     PXCameraViewChange(pxCamera, pxCameraCreateInfo->Perspective);
 
     const PXVector3F32 position = { 0,0,0 };
-    PXCameraRotate(pxCamera, &position);
+    //PXCameraRotate(pxCamera, &position);
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
-
-
-
-
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 
 typedef struct GizLineVtx {
     unsigned char r, g, b, a;
@@ -83,17 +73,17 @@ typedef struct GizLineVtx {
 
 static void pushLine
 (
-    GizLineVtx* v, 
+    GizLineVtx* v,
     int* n,
-    unsigned char r, 
+    unsigned char r,
     unsigned char g,
     unsigned char b,
     unsigned char a,
     float x0,
     float y0,
     float z0,
-    float x1, 
-    float y1, 
+    float x1,
+    float y1,
     float z1
 )
 {
@@ -240,7 +230,7 @@ static void addFrustumHandles
 
 
 
-PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     if(!(pxCamera && pxDrawInfo))
     {
@@ -256,17 +246,17 @@ PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo
     float handleSize = 3;
     unsigned int handleMask;
 
-    if(nearD <= 0.0f) 
+    if(nearD <= 0.0f)
         nearD = 0.1f;
 
-    if(farD <= nearD) 
+    if(farD <= nearD)
         farD = nearD * 10.0f;
 
-    if(aspect <= 0.0f) 
+    if(aspect <= 0.0f)
         aspect = 1.0f;
 
     /* Prepare trig for frustum */
-    float fovY = fovY_deg * (float)(M_PI / 180.0);
+    float fovY = fovY_deg * (float)(PXMathPI / 180.0);
     float t = tanf(0.5f * fovY);
     float nh = t * nearD;
     float nw = nh * aspect;
@@ -335,7 +325,7 @@ PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo
 
     glPopAttrib();
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspective cameraPerspective)
@@ -363,13 +353,13 @@ PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspe
                 -1.0f,
                 +1.0f
             );
-            
+
             // Why did we add this???
             //glScalef(1.0f, -1.0f, 1.0f);
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
- 
+
             break;
         }
         case PXCameraPerspective3D:
@@ -381,10 +371,15 @@ PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspe
             gluPerspective(pxCamera->FieldOfView, aspectRatio, pxCamera->Near, pxCamera->Far);
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
-            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
-            glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
-            glTranslatef(-pxCamera->Position.X, -pxCamera->Position.Y, -pxCamera->Position.Z);
+            //glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.X), 1.0f, 0.0f, 0.0f);
+            //glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Y), 0.0f, 1.0f, 0.0f);
+            //glRotatef(-PXMathRadiansToDegree(pxCamera->CurrentRotation.Z), 0.0f, 0.0f, 1.0f);
+            glTranslatef
+            (
+                -pxCamera->Transform.Position.X, 
+                -pxCamera->Transform.Position.Y, 
+                -pxCamera->Transform.Position.Z
+            );
 
             break;
         }
@@ -395,11 +390,10 @@ PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspe
 
 void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)
 {
-    const PXF32 scaling = 0.005;
-    const PXF32 left = -(width / 2.0f) * scaling;
-    const PXF32 right = (width / 2.0f) * scaling;
-    const PXF32 bottom = -(height / 2.0f) * scaling;
-    const PXF32 top = (height / 2.0f) * scaling;
+    if(!camera)
+    {
+        return;
+    }
 
     camera->Perspective = PXCameraPerspective2D;
     camera->Rectangle.X = 0;
@@ -408,8 +402,6 @@ void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize 
     camera->Rectangle.Height = height;
     camera->Near = nearPlane;
     camera->Far = farPlane;
-
-   // PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);
 }
 
 void PXAPI PXCameraViewChangeToPerspective(PXCamera PXREF camera, const PXF32 fieldOfView, const PXF32 aspectRatio, const PXF32 nearPlane, const PXF32 farPlane)
@@ -423,8 +415,6 @@ void PXAPI PXCameraViewChangeToPerspective(PXCamera PXREF camera, const PXF32 fi
     camera->FieldOfView = fieldOfView;
     camera->Near = nearPlane;
     camera->Far = farPlane;
-
-    //PXMatrix4x4FPerspective(&camera->MatrixProjection, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
 void PXAPI PXCameraAspectRatioChange(PXCamera PXREF camera, const PXSize width, const PXSize height)
@@ -442,7 +432,21 @@ void PXAPI PXCameraAspectRatioChange(PXCamera PXREF camera, const PXSize width, 
 
 PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera)
 {
-    return (PXF32)camera->Rectangle.Width / (PXF32)camera->Rectangle.Height;
+    PXF32 aspectRatio = 1.0f;
+
+    if(!camera)
+    {
+        return aspectRatio;
+    }
+
+    if(!(camera->Rectangle.Width && camera->Rectangle.Height))
+    {
+        return aspectRatio;
+    }
+
+    aspectRatio = (PXF32)camera->Rectangle.Width / (PXF32)camera->Rectangle.Height;
+
+    return aspectRatio;
 }
 
 void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective cameraPerspective)
@@ -470,27 +474,111 @@ void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective c
 
 void PXAPI PXCameraRotate(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F)
 {
+    if(!(camera && vector3F))
+    {
+        return;
+    }
+
     if(camera->LockView)
     {
         return;
     }
 
-    const PXF32 maxValue = 85.0f;
-    const PXF32 minValue = -85.0f;
+    camera->AccumulatorRAD.Yaw += -vector3F->X * camera->ViewSpeed;
+    camera->AccumulatorRAD.Pitch += -vector3F->Y * camera->ViewSpeed;
 
-    camera->CurrentRotation.X -= vector3F->X * camera->ViewSpeed;
-    camera->CurrentRotation.Y -= vector3F->Y * camera->ViewSpeed;
+    PXRotor4DF32 pxRotorFinal = { 0 };
+    PXRotor4DF32 pitchRotor = { 0 };
+    PXRotor4DF32 yawRotor = { 0 };
 
-    camera->CurrentRotation.Y = PXMathLimit(camera->CurrentRotation.Y, minValue, maxValue);
+#if 1
 
-    const PXF32 pitchRAD = camera->CurrentRotation.Y;
-    const PXF32 yawRAD = camera->CurrentRotation.X;
-    const PXF32 rx = PXMathCosinusRADF32(pitchRAD) * PXMathCosinusRADF32(yawRAD);
-    const PXF32 ry = PXMathSinusRADF32(pitchRAD);
-    const PXF32 rz = PXMathCosinusRADF32(pitchRAD) * PXMathSinusRADF32(yawRAD);
+    const float MAX_PITCH = 89.0f * (PXMathPI / 180.0f); // 89 degrees in radians
 
-    PXVector3F32SetXYZ(&camera->LookAtPosition, rx, ry, rz);
-    PXVector3F32Normalize(&camera->LookAtPosition);
+#if 1
+    // Limit pitch
+    if(camera->AccumulatorRAD.Pitch > MAX_PITCH)
+        camera->AccumulatorRAD.Pitch = MAX_PITCH;
+
+    if(camera->AccumulatorRAD.Pitch < -MAX_PITCH)
+        camera->AccumulatorRAD.Pitch = -MAX_PITCH;
+#endif
+
+    // Limit yaw
+#if 1
+    if(camera->AccumulatorRAD.Yaw > PXMathPI) 
+    {
+        camera->AccumulatorRAD.Yaw -= 2.0f * PXMathPI;
+    }
+    else if(camera->AccumulatorRAD.Yaw < -PXMathPI) 
+    {
+        camera->AccumulatorRAD.Yaw += 2.0f * PXMathPI;
+    }
+#endif
+
+    PXRotor4DFromAngleAndPlane(&yawRotor, camera->AccumulatorRAD.Yaw, 0.0f, 0.0f, 1.0f); // ZX plane
+    PXRotor4DFromAngleAndPlane(&pitchRotor, camera->AccumulatorRAD.Pitch, 0.0f, 1.0f, 0.0f); // YZ plane
+
+#if 0
+    PXRotor4DF32Set(&pxRotorFinal, &pitchRotor);
+    PXRotor4DF32Multiply(&pxRotorFinal, &yawRotor);
+#else
+    PXRotor4DF32Set(&pxRotorFinal, &yawRotor);
+    PXRotor4DF32Multiply(&pxRotorFinal, &pitchRotor);
+#endif
+
+    PXRotor4DF32Normalize(&pxRotorFinal);
+
+    //PXRotor4DF32Set(&camera->Transform.Rotor, &pxRotorFinal);
+
+#else
+    const float maxPitch = 89.0f;
+    const float minPitch = -89.0f;
+
+    if(camera->AccumulatorRAD.Pitch > maxPitch) 
+        camera->AccumulatorRAD.Pitch = maxPitch;
+
+    if(camera->AccumulatorRAD.Pitch < minPitch) 
+        camera->AccumulatorRAD.Pitch = minPitch;
+
+    // 3. Keep Yaw within a friendly 0 to 360 circle to prevent float overflow over time
+    if(camera->AccumulatorRAD.Yaw > 360.0f)  
+        camera->AccumulatorRAD.Yaw -= 360.0f;
+
+    if(camera->AccumulatorRAD.Yaw < -360.0f) 
+        camera->AccumulatorRAD.Yaw += 360.0f;
+
+
+
+    // 4. Compute half-angles for the current total absolute rotation
+    float halfYaw = camera->AccumulatorRAD.Yaw * 0.5f;
+    float halfPitch = camera->AccumulatorRAD.Pitch * 0.5f;
+
+    // Convert degrees to radians if your cos/sin functions expect radians!
+    float cosY = PXMathCosinusDEGF32(halfYaw);
+    float sinY = PXMathSinusDEGF32(halfYaw);
+    float cosP = PXMathCosinusDEGF32(halfPitch);
+    float sinP = PXMathSinusDEGF32(halfPitch);    
+
+    
+
+    // 5. Build clean, independent absolute rotors for this frame
+    pitchRotor.Scalar = cosP;
+    pitchRotor.PlaneAngles[PXRotorAxisYZ] = sinP; // Local Pitch (YZ Plane)
+
+    yawRotor.Scalar = cosY;
+    yawRotor.PlaneAngles[PXRotorAxisZX] = sinY; // World Yaw (ZX Plane)
+
+    // 6. Rebuild the final camera rotor fresh (World Yaw * Local Pitch)
+    // We load yawRotor into our temporary final holder, then right-multiply by pitchRotor
+    PXRotor4DF32 finalOrientation;
+    PXRotor4DF32Set(&finalOrientation, &yawRotor);
+    PXRotor4DF32Multiply(&finalOrientation, &pitchRotor); // finalOrientation = yaw * pitch
+
+    // 7. Overwrite the camera transform with the fresh, stable calculation
+    PXRotor4DF32Set(&camera->Transform.Rotor, &finalOrientation);
+
+#endif
 }
 
 void PXAPI PXCameraRotateXYZ(PXCamera PXREF camera, const PXF32 x, const PXF32 y, const PXF32 z)
@@ -556,7 +644,7 @@ void PXAPI PXCameraMove(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F
         PXVector3F32Add(&targetedMovement, &zAxis);
         PXVector3F32MultiplyS(&targetedMovement, camera->WalkSpeed);
 
-        PXVector3F32Add(&camera->Position, &targetedMovement);
+        PXVector3F32Add(&camera->Transform.Position.V3, &targetedMovement);
 
         //PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement);
     }
@@ -667,44 +755,26 @@ void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
         return;
     }
 
-    const PXF32 walkSpeedSmoothed = camera->WalkSpeed * deltaTime;
-    const PXF32 viewSpeedSmoothed = camera->ViewSpeed * deltaTime;
-    const PXVector3F32 up = { 0,1,0 };
-    PXVector3F32 currentPosition;
-    PXVector3F32 centerPosition;
-
-   // PXMatrix4x4FPositionGet(&camera->MatrixModel, &currentPosition);
-    centerPosition = currentPosition;
-   // PXVector3F32Add(&centerPosition, &camera->LookAtPosition);
-
-   // PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up);
+    PXRotor4DF32Normalize(&camera->Transform.Rotor);
 }
 
 void PXAPI PXCameraForward(const PXCamera PXREF camera, PXVector3F32 PXREF forward)
 {
-    if(!(camera && forward))
-    {
+    if(!(camera && forward)) 
         return;
-    }
 
-    PXRotor4DF32 PXREF pxRotor = &camera->Rotation;
-      
-    float pitch = camera->CurrentRotation.X;
-    float yaw = camera->CurrentRotation.Y;
+    // 1. Define standard OpenGL 4D unit forward vector (points down -Z)
+    PXVector4F32 unitForward = { 0.0f, 0.0f, -1.0f, 0.0f };
+    PXVector4F32 forward4;
 
-    if(1)
-    {
-        forward->X = sinf(yaw);
-        forward->Y = 0.0f;
-        forward->Z = cosf(yaw);
-    }
-    else
-    {
-        forward->X = sinf(yaw) * cosf(pitch);
-        forward->Y = sinf(pitch);
-        forward->Z = cosf(yaw) * cosf(pitch);
-    }
+    // 2. Rotate the 4D vector using your 4D transform rotor
+    PXRotor4DF32RotateVector(&camera->Transform.Rotor, &unitForward, &forward4);
 
+    forward->X = forward4.X;
+    forward->Y = forward4.Y;
+    forward->Z = forward4.Z;
+
+    // Optional but safe: ensure precision loss from consecutive rotations doesn't shrink the vector
     PXVector3F32Normalize(forward);
 }
 
@@ -715,18 +785,15 @@ void PXAPI PXCameraRight(const PXCamera PXREF camera, PXVector3F32 PXREF right)
         return;
     }
 
-    PXRotor4DF32 PXREF pxRotor = &camera->Rotation;
-    float yaw = camera->CurrentRotation.Y;
+    // Standard OpenGL 4D unit right vector (points down +X)
+    PXVector4F32 unitRight = { 1.0f, 0.0f, 0.0f, 0.0f };
+    PXVector4F32 realRight;
 
-#if 0
-    right->X = -sin(yaw);
-    right->Y = 0.0;
-    right->Z = cos(yaw);
-#else
-    right->X = cosf(yaw);
-    right->Y = 0.0f;
-    right->Z = -sinf(yaw);
-#endif
+    PXRotor4DF32RotateVector(&camera->Transform.Rotor, &unitRight, &realRight);
+
+    right->X = realRight.X;
+    right->Y = realRight.Y;
+    right->Z = realRight.Z;
 
     PXVector3F32Normalize(right);
 }
@@ -738,11 +805,252 @@ void PXAPI PXCameraUp(const PXCamera PXREF camera, PXVector3F32 PXREF up)
         return;
     }
 
-    PXVector3F32 forward;
-    PXVector3F32 right;
+    // Standard OpenGL 4D unit up vector (points down +Y)
+    PXVector4F32 unitUp = { 0.0f, 1.0f, 0.0f, 0.0f };
+    PXVector4F32 realUp;
 
-    PXCameraForward(camera, &forward);
-    PXCameraRight(camera, &right);
+    PXRotor4DF32RotateVector(&camera->Transform.Rotor, &unitUp, &realUp);
 
-    PXVector3F32CrossProduct(up, &forward, &right);
+    up->X = realUp.X;
+    up->Y = realUp.Y;
+    up->Z = realUp.Z;
+
+    PXVector3F32Normalize(up);
 }
+
+void PXAPI PXCameraOrthonormalBasisGet
+(
+    const PXCamera PXREF camera,
+    PXVector3F32 PXREF out_right,
+    PXVector3F32 PXREF out_up,
+    PXVector3F32 PXREF out_forward
+)
+{
+    // 1. Define the World's True Up Vector (Y-axis assumed to be world up)
+    const PXVector3F32 WORLD_UP = { 0.0f, 1.0f, 0.0f };
+
+    // Step 1: Get the initial best estimate for Forward (Z axis).
+    // We reuse your original logic to get the direction vector.
+    // NOTE: You might need to embed or call your existing PXCameraForward function here.
+    // For simplicity, we assume a helper function that calculates Z based on rotation is available.
+    PXCameraForward(camera, out_forward); // Assume this populates 'forward'
+
+    // Step 2: Calculate Right Vector (X axis) using Cross Product.
+    // X = Normalize(WorldUp x Forward). This guarantees 'right' is perpendicular to the plane defined by WorldUp and Forward.
+
+    // Calculate WorldUp x Forward -> This vector is the Right axis (X)
+    PXVector3F32CrossProduct
+    (
+        out_right,
+        out_forward,
+        &WORLD_UP
+    );
+    PXVector3F32Normalize(out_right);
+
+
+    // Step 3: Calculate True Up Vector (Y axis) using Cross Product.
+    // Y = Forward x Right. This cross product guarantees that Y is perpendicular to both the calculated Z and X, 
+    // thus forcing orthogonality and solving the "roll" issue.
+
+    // Calculate Forward x Right -> This vector is the True Up axis (Y)
+    PXVector3F32CrossProduct(
+        out_up,
+        out_right,        // X-axis (Right)
+        out_forward    // Z-axis (Forward)
+    );
+    PXVector3F32Normalize(out_up);
+}
+
+
+void PXAPI PXCameraOrthonormalBasisGetEuler
+(
+    const PXCamera PXREF camera,
+    PXVector3F32 PXREF out_right,
+    PXVector3F32 PXREF out_up,
+    PXVector3F32 PXREF out_forward
+)
+{   
+    const PXEulerAngle3F32 PXREF pxEulerAngle = &camera->AccumulatorRAD;
+
+    /* 1. Convert angles from degrees to radians */
+    float yaw_rad = -pxEulerAngle->X;
+    float pitch_rad = pxEulerAngle->Y;
+
+    /* 2. Calculate trigs using our Taylor series functions */
+    float cos_yaw = PXMathCosinusRADF32(yaw_rad);
+    float sin_yaw = PXMathSinusRADF32(yaw_rad);
+    float cos_pitch = PXMathCosinusRADF32(pitch_rad);
+    float sin_pitch = PXMathSinusRADF32(pitch_rad);
+
+    /* 3. Compute Forward Vector from Euler coordinates */
+    out_forward->X = cos_yaw * cos_pitch;
+    out_forward->Y = sin_pitch;
+    out_forward->Z = sin_yaw * cos_pitch;
+
+    /* OpenGL looks towards negative Z, invert target direction for the matrix axis */
+    out_forward->X = -out_forward->X;
+    out_forward->Y = -out_forward->Y;
+    out_forward->Z = -out_forward->Z;
+    PXVector3F32Normalize(out_forward);
+
+    /* 4. Cross product with absolute World Up to get Right vector */
+    PXVector3F32 world_up = { 0.0f, 1.0f, 0.0f };
+
+    PXVector3F32CrossProduct(out_right, &world_up, out_forward);
+    PXVector3F32Normalize(out_right);
+
+    /* 5. Get localized Up vector */
+    PXVector3F32CrossProduct(out_up, out_forward, out_right);
+}
+
+void PXAPI PXCameraMakeMatrix
+(
+    PXCamera PXREF camera,
+    const PXTransform4D PXREF modelTransform,
+    PXMatrixModelViewProjection PXREF pxMatrixModelViewProjection
+)
+{
+    PXVector4F32 PXREF cameraPosition = &camera->Transform.Position;
+
+    PXVector3F32 cameraRight;
+    PXVector3F32 cameraUp;
+    PXVector3F32 cameraForward;
+
+
+    PXMatrix4x4F PXREF model = &pxMatrixModelViewProjection->MatrixModel;
+    PXMatrix4x4F PXREF view = &pxMatrixModelViewProjection->MatrixView;
+    PXMatrix4x4F PXREF projection = &pxMatrixModelViewProjection->MatrixProjection;
+
+    PXCameraOrthonormalBasisGetEuler(camera, &cameraRight, &cameraUp, &cameraForward);
+
+    //-----------------------------------------------------
+    // Model
+    // Note! DO NOT put camera transform here, dumbass.
+    PXTransform4DToMatrix(modelTransform, model);
+    //-----------------------------------------------------
+
+    //-----------------------------------------------------
+    // View
+#if 1
+   // PXEulerAngle3F32ToMatrix4x4(&camera->AccumulatorRAD, &pxMatrixModelViewProjection->MatrixView);
+    //PXMatrix4x4FMove3F(&pxMatrixModelViewProjection->MatrixView, &camera->Transform.Position);
+
+
+
+    view->Data[0] = cameraRight.X;
+    view->Data[1] = cameraUp.X;
+    view->Data[2] = cameraForward.X;
+    view->Data[3] = 0.0f;
+
+    /* Column 1 */
+    view->Data[4] = cameraRight.Y;
+    view->Data[5] = cameraUp.Y;
+    view->Data[6] = cameraForward.Y;
+    view->Data[7] = 0.0f;
+
+    /* Column 2 */
+    view->Data[8] = cameraRight.Z;
+    view->Data[9] = cameraUp.Z;
+    view->Data[10] = cameraForward.Z;
+    view->Data[11] = 0.0f;
+
+    /* Column 3 (Eye position translation mapping) */
+    view->Data[12] = -PXVector3F32DotProduct(&cameraRight, cameraPosition);
+    view->Data[13] = -PXVector3F32DotProduct(&cameraUp, cameraPosition);
+    view->Data[14] = -PXVector3F32DotProduct(&cameraForward, cameraPosition);
+    view->Data[15] = 1.0f;
+
+
+
+#else
+    PXVector4F32 currentPosition = camera->Transform.Position;
+
+    // --- STEP 2: Calculate Target Position (Position + Direction) ---
+    // The target is simply the current position moved forward by a defined look-ahead distance.
+    const float LOOK_AHEAD_DISTANCE = 1.0f; // How far ahead to "look"
+    PXVector3F32 targetPosition;
+
+    targetPosition.X = currentPosition.X + (cameraForward.X * LOOK_AHEAD_DISTANCE);
+    targetPosition.Y = currentPosition.Y + (cameraForward.Y * LOOK_AHEAD_DISTANCE); // Y remains constant for basic ground movement
+    targetPosition.Z = currentPosition.Z + (cameraForward.Z * LOOK_AHEAD_DISTANCE);
+
+
+    // --- STEP 3: Construct the View Matrix using LookAt ---
+    //PXVector3F32 worldUp = { 0.0f, 1.0f, 0.0f };
+
+    // Now we pass three *correctly calculated* vectors to LookAt:
+    // The actual current position, the calculated target (forward), and world up.
+    PXMatrix4x4FLookAt
+    (
+        &pxMatrixModelViewProjection->MatrixView,
+        &currentPosition,       // Anchor Point (P)
+        &targetPosition,       // Target Point (T = P + ForwardVector * Distance)
+        &cameraUp                // Up Vector (U)
+    );
+#endif
+
+    //PXMatrix4x4FInverse(&pxMatrixModelViewProjection->MatrixView);
+    //-----------------------------------------------------
+
+    //-----------------------------------------------------
+    // Perspective
+    const PXF32 aspectRatio = PXCameraAspectRatio(camera);
+
+    switch(camera->Perspective)
+    {
+        case PXCameraPerspective3D:
+        {
+            PXMatrix4x4FPerspective
+            (
+                projection,
+                camera->FieldOfView,
+                aspectRatio,
+                camera->Near,
+                camera->Far
+            );
+
+            break;
+        }
+        case PXCameraPerspective2D:
+        {
+            const PXF32 scaling = 0.005;
+            const PXF32 left = -(camera->Rectangle.Width / 2.0f) * scaling;
+            const PXF32 right = (camera->Rectangle.Width / 2.0f) * scaling;
+            const PXF32 bottom = -(camera->Rectangle.Height / 2.0f) * scaling;
+            const PXF32 top = (camera->Rectangle.Height / 2.0f) * scaling;
+
+            PXMatrix4x4FOrthographic
+            (
+                projection,
+                left, 
+                right, 
+                bottom, 
+                top,
+                camera->Near,
+                camera->Far
+            );
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
+/*
+void PXAPI PXCameraMakeMatrix2
+(
+    const PXCamera PXREF camera, 
+    const PXTransform4D PXREF modelTransform,
+    PXMatrixModelViewProjectionSquashed PXREF pxMatrixModelViewProjectionSquashed
+)
+{
+    PXMatrixModelViewProjection pxMatrixModelViewProjection;
+
+    PXCameraMakeMatrix(camera, modelTransform, &pxMatrixModelViewProjection);
+
+    PXMatrix4x4FCopy(&pxMatrixModelViewProjectionSquashed->MatrixModelView, &pxMatrixModelViewProjection.MatrixModel);
+    PXMatrix4x4FMultiply(&pxMatrixModelViewProjectionSquashed->MatrixModelView, &pxMatrixModelViewProjection.MatrixView);
+
+    pxMatrixModelViewProjectionSquashed->MatrixProjection = pxMatrixModelViewProjection.MatrixProjection;
+}*/

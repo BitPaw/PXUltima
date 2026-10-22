@@ -23,7 +23,7 @@ typedef struct PXSpriteMap_
 
     PXShaderProgram* Shader;
     PXModel* Model;
-    PXTexture* Texture;
+    PXTexture2D* Texture;
 
     PXSpriteMapEntity* SpriteMapEntityList;
 }

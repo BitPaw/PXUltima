@@ -3,11 +3,11 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 
-void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF key, const char PXREF data, const PXSize dataSize)
+void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF key, const void PXREF data, const PXSize dataSize)
 {
     if(!(pxListDynamic && key && data && dataSize))
     {
-        return PXResultRefusedParameterNull;
+        return  PXNull;//PXResultRefusedParameterNull;
     }
 
     const PXSize payLoadSize = dataSize + pxListDynamic->NullPaddingAmount;
@@ -17,74 +17,74 @@ void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF
     PXBufferEnsureAdditional(&pxListDynamic->Buffer, sizeRow);
 
     // Get current insert point to store data into
-    PXByte* insertAdress = PXListDynamicInsertFind(pxListDynamic);
+    PXByte* insertAddress = (PXByte*)PXListDynamicInsertFind(pxListDynamic);
 
-    if(!insertAdress)
+    if(!insertAddress)
     {
-        return PXResultRefusedNotEnoughMemory;
+        return PXNull;// PXResultRefusedNotEnoughMemory;
     }
 
     // Write Key
-    insertAdress += PXMemoryCopy(key, insertAdress, pxListDynamic->KeySize);
+    insertAddress += PXMemoryCopy(key, insertAddress, pxListDynamic->KeySize);
     
     // Write size for string
     switch(pxListDynamic->SizeInBytesOfLengthKey)
     {
         case PXListDynamicSizeObject1Byte:
         {
-            *(PXI8U*)insertAdress = dataSize;
+            *(PXI8U*)insertAddress = dataSize;
             break;
         }
         case PXListDynamicSizeObject2Byte:
         {
-            *(PXI16U*)insertAdress = dataSize;
+            *(PXI16U*)insertAddress = dataSize;
             break;
         }
         case PXListDynamicSizeObject4Byte:
         {
-            *(PXI32U*)insertAdress = dataSize;
+            *(PXI32U*)insertAddress = dataSize;
             break;
         }
         case PXListDynamicSizeObject8Byte:
         {
-            *(PXI64U*)insertAdress = dataSize;
+            *(PXI64U*)insertAddress = dataSize;
             break;
         }
         default:
             break;
     }
 
-    insertAdress += pxListDynamic->SizeInBytesOfLengthKey;
+    insertAddress += pxListDynamic->SizeInBytesOfLengthKey;
 
     // DEBUG
-    //PXMemorySet(insertAdress, 0xFF, dataSize + pxListDynamic->NullPaddingAmount);
+    //PXMemorySet(insertAddress, 0xFF, dataSize + pxListDynamic->NullPaddingAmount);
 
     // Writze Data
-    PXMemoryCopy(data, insertAdress, dataSize);
+    PXMemoryCopy(data, insertAddress, dataSize);
 
     // Special behaviour for using text. We need to add a \0 to be allowed to use this as a direct reference
-    PXMemoryClear(&insertAdress[dataSize], pxListDynamic->NullPaddingAmount);
+    PXMemoryClear(&insertAddress[dataSize], pxListDynamic->NullPaddingAmount);
 
     //pxListDynamic->InsertionPointOffset += rowSizeNew;
     ++(pxListDynamic->EntryAmount); // increse the amount of items we have stored
 
-    return insertAdress;
+    return insertAddress;
 }
 
-void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize)
+PXResult PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize)
 {
-    PXByte* dataAdress = pxListDynamic->Buffer.Data4;
+    PXByte* dataAddress = pxListDynamic->Buffer.Data;
 
-    if(!dataAdress)
+    if(!dataAddress)
     {
         return PXResultRefusedNotEnoughMemory;
     }
 
     for(PXSize i = 0; i < pxListDynamic->EntryAmount; i++)
     {
-        const PXBool isTarget = PXMemoryCompareN(dataAdress, key, pxListDynamic->KeySize);
+        const PXBool isTarget = PXMemoryCompareN(dataAddress, key, pxListDynamic->KeySize);
                
-        dataAdress += pxListDynamic->KeySize;
+        dataAddress += pxListDynamic->KeySize;
 
         PXSize dataLength = 0; 
 
@@ -92,26 +92,26 @@ void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF 
         {
             case PXListDynamicSizeObject1Byte:
             {
-                dataLength = *(PXI8U*)dataAdress;
+                dataLength = *(PXI8U*)dataAddress;
                 break;
             }
             case PXListDynamicSizeObject2Byte:
             {
-                dataLength = *(PXI16U*)dataAdress;
+                dataLength = *(PXI16U*)dataAddress;
                 break;
             }
             case PXListDynamicSizeObject4Byte:
             {
-                dataLength = *(PXI32U*)dataAdress;
+                dataLength = *(PXI32U*)dataAddress;
                 break;
             }
             case PXListDynamicSizeObject8Byte:
             {
-                dataLength = *(PXI64U*)dataAdress;
+                dataLength = *(PXI64U*)dataAddress;
                 break;
             }
         }
-        dataAdress += pxListDynamic->SizeInBytesOfLengthKey;
+        dataAddress += pxListDynamic->SizeInBytesOfLengthKey;
 
         if(isTarget)
         {
@@ -120,12 +120,12 @@ void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF 
                 *dataSize = dataLength;
             }
 
-            *data = dataAdress;
+            *data = dataAddress;
 
             return;
         }
 
-        dataAdress += dataLength + pxListDynamic->NullPaddingAmount;
+        dataAddress += dataLength + pxListDynamic->NullPaddingAmount;
     }
 
     if(dataSize)
@@ -134,11 +134,13 @@ void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF 
     }
 
     *data = 0;
+
+    return PXResultOK;
 }
 
 void PXAPI PXListDynamicClearAll(PXListDynamic PXREF pxListDynamic)
 {
-    PXMemoryClear(&pxListDynamic->Buffer.Data4, pxListDynamic->Buffer.SizeAllowedToUse);
+    PXMemoryClear(&pxListDynamic->Buffer.Data, pxListDynamic->Buffer.SizeAllowedToUse);
     pxListDynamic->EntryAmount = 0;
 }
 
@@ -163,7 +165,7 @@ void* PXAPI PXListDynamicInsertFind(PXListDynamic PXREF pxListDynamic)
 
     for(PXSize index = 0; index < pxBuffer->SizeAllowedToUse; ++index)
     {
-        PXByte* data = &pxBuffer->Data4[index];
+        PXByte* data = &pxBuffer->Data[index];
 
         PXSize payLoadSize = 0;
         PXI64U emptyKey = 0;

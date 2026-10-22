@@ -203,9 +203,11 @@ PXPublic void PXAPI PXMathIntrinsicInit();
 //---------------------------------------------------------
 // Range - 
 //---------------------------------------------------------
-PXPublic PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataAdressSize, const void* target);
+PXPublic PXBool PXAPI PXMathAddressInRange(const void PXREF dataAddress, const PXSize dataAddressSize, const void* target);
 
 
+PXPublic PXI8U PXAPI PXMathDetectMinimalTypeWidthS(const PXI64S value);
+PXPublic PXI8U PXAPI PXMathDetectMinimalTypeWidthU(const PXI64U value);
 
 //---------------------------------------------------------
 // Minimum - Smaler of two numbers
@@ -235,8 +237,8 @@ PXPublic PXSize PXAPI PXMathMaximumIU(const PXSize a, const PXSize b);
 //---------------------------------------------------------
 // Floor - Round down to the next whole number
 //---------------------------------------------------------
-PXPublic int PXAPI PXMathFloorI(const int a);
-PXPublic int PXAPI PXMathFloorD(const double a);
+PXPublic PXI32S PXAPI PXMathFloorF(const PXF32 a);
+PXPublic PXI32S PXAPI PXMathFloorD(const PXF64 a);
 //---------------------------------------------------------
 
 
@@ -245,6 +247,7 @@ PXPublic int PXAPI PXMathFloorD(const double a);
 //---------------------------------------------------------
 PXPublic PXI16U PXAPI PXMathAbsoluteI16(const PXI16S value);
 PXPublic PXI32U PXAPI PXMathAbsoluteI32(const PXI32S value);
+PXPublic PXI64U PXAPI PXMathAbsoluteI64(const PXI64S value);
 PXPublic PXF32 PXAPI PXMathAbsoluteF(const PXF32 value);
 PXPublic PXF64 PXAPI PXMathAbsoluteD(const PXF64 value);
 //---------------------------------------------------------
@@ -321,6 +324,7 @@ PXPublic PXF64 PXAPI PXMathRootNF64(const PXI32U amount, const PXF64 x);
 
 PXPublic PXF64 PXAPI PXMathRootF64(unsigned int rootNr, const PXF64 value);
 
+PXPublic PXI32U PXAPI PXMathRootSquareI32U(const PXI32U value);
 PXPublic PXF32 PXAPI PXMathRootSquareF32(const PXF32 value);
 PXPublic PXF64 PXAPI PXMathRootSquareF64(const PXF64 value);
 PXPublic void PXAPI PXMathRootSquareF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
@@ -328,9 +332,14 @@ PXPublic void PXAPI PXMathRootSquareF32VX4(PXF32 PXREF outputListY, const PXF32 
 PXPublic void PXAPI PXMathRootSquareF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathRootSquareF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
 
+// reciprocal square root
+PXPublic PXF32 PXAPI PXMathRootSquareInverseF32(const PXF32 value);
+PXPublic PXF64 PXAPI PXMathRootSquareInverseF64(const PXF64 value);
+
 PXPublic void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathRootSquareInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
+
 
 
 PXPublic double PXAPI PXMathRootCubic(double value);
@@ -424,6 +433,17 @@ PXPublic double PXAPI PXMathHyperbolicCosinus(const double x);
 //-----------------------------------------------------------------------------
 PXPublic void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32 PXREF valueSIN, PXF32 PXREF valueCOS);
 
+
+typedef struct PXMathSinCosRADF32Result_
+{
+    PXF32 InputAngles[4];
+    PXF32 DataSin[4];
+    PXF32 DataCos[4];
+}
+PXMathSinCosRADF32Result;
+
+PXPublic void PXAPI PXMathSinCosRADF32x4(PXMathSinCosRADF32Result PXREF pxMathSinCosRADF32Result);
+
 PXPublic void PXAPI PXMathSinCosRADF16V(PXF16 PXREF data, const PXSize amount);
 PXPublic void PXAPI PXMathSinCosRADF32V(PXF32 PXREF data, const PXSize amount);
 PXPublic void PXAPI PXMathSinCosRADF64V(PXF64 PXREF data, const PXSize amount);
@@ -501,8 +521,8 @@ PXPublic PXF64 PXAPI PXMathLogarithm10(const PXF64 exponent);
 //---------------------------------------------------------
 PXPublic void PXAPI PXMathShuffleI8
 (
-    const PXI8U PXREF input,
-    PXI8U PXREF output,
+    const PXI8U* input,
+    PXI8U* output,
     const PXSize amount,
     const PXI8U* mask, 
     const PXI8U maskAmount
@@ -512,6 +532,11 @@ PXPublic void PXAPI PXMathShuffleI8
 
 
 
+
+
+PXPublic PXSize PXAPI PXIndex2D(const PXSize width, const PXSize x, const PXSize y);
+PXPublic PXSize PXAPI PXIndex3D(const PXSize width, const PXSize x, const PXSize y, const PXSize z);
+PXPublic PXSize PXAPI PXIndex4D(const PXSize width, const PXSize x, const PXSize y, const PXSize z, const PXSize w);
 
 
 
@@ -556,9 +581,6 @@ PXPublic void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed PXREF pxMathRand
 PXPublic PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed PXREF pxMathRandomGeneratorSeed);
 
 
-
-
-
 // Liniar interpolate a value from the range of 'x' min and max to another range 'y'.
 PXPublic PXF32 PXAPI PXMathLiniarF(const PXF32 yMinimum, const PXF32 yMaximum, const PXF32 xMinimum, const PXF32 xMaximum, const PXF32 xValue);
 PXPublic PXF32 PXAPI PXMathNormalizeF(const PXF32 minimum, const PXF32 maximum, const PXF32 value);
@@ -573,8 +595,5 @@ PXPublic void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32 PXREF re
 PXPublic double PXAPI PXMathHornerD(double PXREF coefficientList, const PXI32U degree, const double x);
 
 PXPublic void PXAPI PXFastFourierTransform();
-
-
-
 
 #endif

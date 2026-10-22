@@ -26,7 +26,7 @@ PXResult PXAPI PXAVILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!isAVI)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
         }
     }
@@ -36,5 +36,5 @@ PXResult PXAPI PXAVILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXAVISaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

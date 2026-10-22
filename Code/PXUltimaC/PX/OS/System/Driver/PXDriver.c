@@ -13,7 +13,7 @@
 PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF listSize)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -34,22 +34,22 @@ PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF list
 #endif
 
     // Alloc space
-    PXSize driverImageBaseAdressListAmount = sizeOfList / sizeof(void*);
-    void** driverImageBaseAdressList = PXMemoryHeapCallocT(void*, driverImageBaseAdressListAmount);
+    PXSize driverImageBaseAddressListAmount = sizeOfList / sizeof(void*);
+    void** driverImageBaseAddressList = PXMemoryHeapCallocT(void*, driverImageBaseAddressListAmount);
 
-    const BOOL resB = EnumDeviceDrivers(driverImageBaseAdressList, sizeOfList, &sizeOfList);
+    const BOOL resB = EnumDeviceDrivers(driverImageBaseAddressList, sizeOfList, &sizeOfList);
 
 
-    *pxDriverList = PXMemoryHeapCallocT(PXDriver, driverImageBaseAdressListAmount);
+    *pxDriverList = PXMemoryHeapCallocT(PXDriver, driverImageBaseAddressListAmount);
 
-    for(PXSize i = 0; i < driverImageBaseAdressListAmount; ++i)
+    for(PXSize i = 0; i < driverImageBaseAddressListAmount; ++i)
     {
         PXDriver PXREF pxDriver = &(*pxDriverList)[i];
-        void* baseAdress = driverImageBaseAdressList[i];
+        void* baseAddress = driverImageBaseAddressList[i];
 
-        pxDriver->ImageBaseAdress = baseAdress;
+        pxDriver->ImageBaseAddress = baseAddress;
 
-        const DWORD resC = GetDeviceDriverBaseName(baseAdress, pxDriver->Name, 64);
+        const DWORD resC = GetDeviceDriverBaseName(baseAddress, pxDriver->Name, 64);
 
 #if PXLogEnable
         PXLogPrint
@@ -58,7 +58,7 @@ PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF list
             "Driver",
             "Scan",
             "[%p] %s",
-            baseAdress,
+            baseAddress,
             pxDriver->Name
         );
 #endif
@@ -67,6 +67,6 @@ PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF list
     return PXResultOK;
 
 #else
-    return PXActionRefusedTypeNotSupported;
+    return PXResultRefusedTypeNotSupported;
 #endif
 }

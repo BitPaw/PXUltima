@@ -47,10 +47,10 @@ PXResult PXAPI PXFieldEffectCreate(PXFieldEffect** pxFieldEffectREF, PXFieldEffe
 
 PXResult PXAPI PXFieldEffectRelease(PXFieldEffect PXREF pxFieldEffect)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXFieldEffectDraw(PXFieldEffect PXREF pxFieldEffect, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXFieldEffectDraw(PXFieldEffect PXREF pxFieldEffect, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

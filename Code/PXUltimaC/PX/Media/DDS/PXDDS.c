@@ -466,11 +466,11 @@ PXColorFormat PXAPI PXDDSTypeDetect(const char* signature)
     return PXDDSKeyFormat[index];
 }
 
-PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXDDSLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    if(!pxTexture)
+    if(!pxTexture2D)
     {
-        return PXResultOK;
+        return PXResultRefusedParameterNull;
     }
 
     PXDDSHeader pxDirectDrawTexture;
@@ -483,7 +483,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
         if(!valid)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -545,7 +545,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         {
         case 2: // D3D10_RESOURCE_DIMENSION_TEXTURE1D:
         {
-            pxTexture->Type = PXTextureType1D;
+         //   pxTexture->Type = PXTextureType1D;
 
             // D3DX writes 1D textures with a fixed Height of 1.
             if((pxDirectDrawTexture.Flags & DDS_HEIGHT) && pxDirectDrawTexture.Height != 1)
@@ -559,13 +559,13 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         {
             if(pxDirectDrawTexture.miscFlag & 4) // D3D11_RESOURCE_MISC_TEXTURECUBE
             {
-                pxTexture->Type = PXTextureTypeCube;
+               // pxTexture->Type = PXTextureTypeCube;
                 // arraySize *= 6;
                 // isCubeMap = true;
             }
             else
             {
-                pxTexture->Type = PXTextureType2D;
+              //  pxTexture->Type = PXTextureType2D;
             }
 
             break;
@@ -591,7 +591,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     {
         if(pxDirectDrawTexture.Flags & DDS_HEADER_FLAGS_VOLUME)
         {
-            pxTexture->Type = PXTextureType3D;
+          //  pxTexture->Type = PXTextureType3D;
         }
         else
         {
@@ -602,14 +602,14 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
                 {
                     return PXResultInvalid;
                 }
-                pxTexture->Type = PXTextureTypeCube;
+                //pxTexture->Type = PXTextureTypeCube;
 
                 //arraySize = 6;
                 //isCubeMap = true;
             }
             else
             {
-                pxTexture->Type = PXTextureType2D;
+              //  pxTexture->Type = PXTextureType2D;
             }
 
             // depth = 1;
@@ -716,9 +716,9 @@ PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     return PXResultOK;
 }
 
-PXResult PXAPI PXDDSSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXDDSSaveToFile(PXTexture2D PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

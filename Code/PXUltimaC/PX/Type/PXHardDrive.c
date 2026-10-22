@@ -48,7 +48,7 @@ PXResult PXAPI PXHardDriveFetchAll(PXHardDrive PXREF hardDriveList, const PXSize
 
         if (!hasEnoughSpace)
         {
-            return PXActionRefuedInputBufferTooSmal;
+            return PXResultRefuedInputBufferTooSmal;
         }
     }
 

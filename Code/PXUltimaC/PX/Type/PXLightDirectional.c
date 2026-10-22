@@ -40,10 +40,10 @@ PXResult PXAPI PXLightDirectionalCreate(PXLightDirectional** pxLightDirectionalR
 
 PXResult PXAPI PXLightDirectionalRelease(const PXLightDirectional PXREF pxLightDirectional)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXLightDirectionalDraw(const PXLightDirectional PXREF pxLightDirectional, struct PXDrawInfo_ PXREF pxDrawInfo)
+PXResult PXAPI PXLightDirectionalDraw(const PXLightDirectional PXREF pxLightDirectional, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

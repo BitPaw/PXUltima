@@ -29,9 +29,6 @@ typedef void* D3DMATERIAL9;
 #endif
 
 
-typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
-
-
 typedef enum PXDirectXDriverType_
 {
     PXDirectXDriverTypeHardwareDevice,
@@ -102,7 +99,6 @@ typedef struct PXDirectX12_
     struct IDXGISwapChain* SwapChain;
     struct ID3D12DescriptorHeap* HeapDescriptor;
     struct ID3D12CommandAllocator* CommandAllocator;
-    struct IDXGIFactory* GIFactory;
 }
 PXDirectX12;
 
@@ -258,7 +254,7 @@ typedef PXResult(PXAPI* PXDirectXDrawScriptExecute)(PXDirectX PXREF pxDirectX, P
 //-----------------------------------------------------
 // Direct X - Draw
 //-----------------------------------------------------
-typedef PXResult(PXAPI* PXDirectXClear)(PXDirectX PXREF pxDirectX, const PXColorRGBAF PXREF pxColorRGBAF);
+typedef PXResult(PXAPI* PXDirectXClear)(PXDirectX PXREF pxDirectX, const PXColorRGBA_F32 PXREF PXColorRGBA_F32);
 typedef PXResult(PXAPI* PXDirectXColorFill)(PXDirectX PXREF pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
 typedef PXResult(PXAPI* PXDirectXReset)(PXDirectX PXREF pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
 typedef PXResult(PXAPI* PXDirectXSceneDeploy)(PXDirectX PXREF pxDirectX);
@@ -382,9 +378,9 @@ typedef PXResult(PXAPI* PXDirectXModelRegister)(PXDirectX PXREF pxDirectX, PXMod
 // Direct X - Textures
 //-----------------------------------------------------
 typedef PXResult(PXAPI* PXDirectXTextureMemoryAvailable)(PXDirectX PXREF pxDirectX, PXI32U PXREF value);
-typedef PXResult(PXAPI* PXDirectXTexture2DCreate)(PXDirectX PXREF pxDirectX, PXTexture PXREF PXTexture);
-typedef PXResult(PXAPI* PXDirectXTexture3DCreate)(PXDirectX PXREF pxDirectX, PXTexture PXREF pxTexture);
-typedef PXResult(PXAPI* PXDirectXTextureCubeCreate)(PXDirectX PXREF pxDirectX, PXTexture PXREF pxTexture);
+typedef PXResult(PXAPI* PXDirectXTexture2DCreate)(PXDirectX PXREF pxDirectX, PXTexture2D PXREF pxTexture2D);
+typedef PXResult(PXAPI* PXDirectXTexture3DCreate)(PXDirectX PXREF pxDirectX, PXTexture2D PXREF pxTexture2D);
+typedef PXResult(PXAPI* PXDirectXTextureCubeCreate)(PXDirectX PXREF pxDirectX, PXTexture2D PXREF pxTexture2D);
 typedef PXResult(PXAPI* PXDirectXDevicePhysicalListAmountFunction)(PXDirectX PXREF pxDirectX, PXI32U PXREF amountOfAdapters);
 typedef PXResult(PXAPI* PXDirectXDevicePhysicalListFetchFunction)(PXDirectX PXREF pxDirectX, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical PXREF pxGraphicDevicePhysicalList);
 typedef PXResult(PXAPI* PXDirectXSwapIntervalSet)(PXDirectX PXREF pxDirectX, const PXI32U interval);
@@ -410,7 +406,10 @@ typedef struct PXDirectX
 }
 PXDirectX;
 
-PXPublic PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo);
 PXPublic PXResult PXAPI PXDirectXRelease(PXDirectX PXREF pxDirectX);
+
+PXPublic PXResult PXAPI PXDirectXGPUListRefresh(PXEngineRender PXREF pxEngineRender);
+
 
 #endif

@@ -28,7 +28,7 @@
 #include <PX/Type/PXTimer.h>
 #include <PX/Type/PXVideo.h>
 #include <PX/Type/PXWindow.h>
-#include <PX/Type/PXGraphicsCard.h>
+#include <PX/Type/PXGPU.h>
 #include <PX/Type/PXAudioEmitter.h>
 #include <PX/Type/PXAudioListener.h>
 #include <PX/Type/PXCamera.h>
@@ -51,12 +51,12 @@
 #include <PX/Engine/UI/PXColorPicker.h>
 #include <PX/Engine/UI/PXFooter.h>
 #include <PX/Engine/UI/PXECSEntityList.h>
-
 #include <PX/Engine/PXEngine.h>
-#include <PX/Engine/PXRenderingSystem.h>
-#include <PX/Engine/PXAudioSystem.h>
-
-
+#include <PX/Engine/PXEngineRender.h>
+#include <PX/Engine/PXEngineAudio.h>
+#include <PX/Engine/PXEngineScene.h>
+#include <PX/Engine/PXDictionaryECS.h>
+#include <PX/OS/File/PXFile.h>
 
 // Components
 
@@ -71,7 +71,7 @@ typedef struct PXECS_
     PXDictionaryT(PXID, PXECSTypeInfo)* LookupType;
 
     // Entity to Component
-    PXDictionaryT(PXID, PXECSReferece)* LookupEntry;
+    PXDictionaryECS LookupEntry;
 
     // For multithreading we need protection
     PXLock* ResourceLock;
@@ -91,7 +91,7 @@ PXECS _pxECS;
 const PXECSRegisterFunction pxECSRegisterList[] =
 {
     PXAudioListenerRegisterToECS,
-    PXAudioEmitteRegisterToECS,
+    PXAudioEmitterRegisterToECS,
     PXCameraRegisterToECS,
     PXFieldEffectRegisterToECS,
     PXGizmoRegisterToECS,
@@ -105,42 +105,32 @@ const PXECSRegisterFunction pxECSRegisterList[] =
     PXSpaceGridRegisterToECS,
     PXSpriteRegisterToECS,
     PXTesseractRegisterToECS,
-
     PXSoundRegisterToECS,
-
     PXVertexBufferRegisterToECS,
     PXIndexBufferRegisterToECS,
     PXAudioDeviceRegisterToECS,
-    PXTexturePoolRegisterToECS,
     PXFooterRegisterToECS,
-    PXMeshGeometryRegisterToECS,
     PXColorPickerRegisterToECS,
     PXTabListRegisterToECS,
-    PXGraphicsCardRegisterToECS,
+    PXGPURegisterToECS,
     PXSkyBoxRegisterToECS,
-    PXECSEntityInfoRegisterToECS,
-  
+    PXECSEntityInfoRegisterToECS,  
     PXTransformViewRegisterToECS,
     PXFileDirectoryRegisterToECS,
     PXLockRegisterToECS,
     PXThreadRegisterToECS,
     PXBrushRegisterToECS,
     PXFontRegisterToECS,
-    PXFrameBuffeRegisterToECS,
+    PXFrameBufferRegisterToECS,
     PXIconRegisterToECS,
     PXMeshRegisterToECS,
-
     PXECSEntityListRegisterToECS,
     PXDictionaryRegisterToECS,
-    PXTextureRegisterToECS,
-
     PXWindowRegisterToECS,
-
-    //PXAudioSystemRegisterToECS,
     PXEngineRegisterToECS,
     PXRenderingSystemRegisterToECS,
-    PXAudioSystemRegisterToECS
-    
+    PXEngineSceneRegisterToECS,
+    PXEngineAudioRegisterToECS    
 };
 const PXI16U _pxECSRegisterListAmount = sizeof(pxECSRegisterList) / sizeof(PXECSRegisterFunction);
 
@@ -279,9 +269,9 @@ PXResult PXAPI PXECSRegister(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 #if PXLogEnable
     char buffer[128];
     PXText pxTextModule;
-    PXTextFromAdressA(&pxTextModule, buffer, 0, sizeof(buffer));
+    PXTextFromAddressA(&pxTextModule, buffer, 0, sizeof(buffer));
 
-    PXLibraryNameFromAdress(PXNull, &pxTextModule, infoStatic->CreateCallback);
+    PXLibraryNameFromAddress(PXNull, &pxTextModule, infoStatic->CreateCallback);
 
     const char* typeName = PXECSTypeToString(infoStatic->Type);
 
@@ -312,9 +302,9 @@ PXResult PXAPI PXECSElementToString
 {
     char buffer[260];
     PXText pxTextModule;
-    PXTextFromAdressA(&pxTextModule, buffer, 0, sizeof(buffer));
+    PXTextFromAddressA(&pxTextModule, buffer, 0, sizeof(buffer));
 
-    PXLibraryNameFromAdress(PXNull, &pxTextModule, pxECSRegisterInfoStatic->CreateCallback);
+    PXLibraryNameFromAddress(PXNull, &pxTextModule, pxECSRegisterInfoStatic->CreateCallback);
 
     // Combine string
     PXTextPrint
@@ -338,6 +328,8 @@ PXResult PXAPI PXECSInit(void)
 {
     PXClear(PXECS, &_pxECS);
 
+    PXNamePoolInit();
+
     PXListDynamicInit(&_pxECS.NameCache, sizeof(PXID), 2);
     PXListDynamicInit(&_pxECS.SourcePathCache, sizeof(PXID), 2);
 
@@ -349,10 +341,8 @@ PXResult PXAPI PXECSInit(void)
 
     PXDictionaryCreate(&_pxECS.LookupType, &pxDictionaryCreateInfo);
 
-    pxDictionaryCreateInfo.ValueSize = sizeof(PXECSReferece);
-    PXDictionaryCreate(&_pxECS.LookupEntry, &pxDictionaryCreateInfo);
+    PXDictionaryECSCreate(&_pxECS.LookupEntry);
 
-    PXNamePoolInit();
 
     // Register all entitys
 #if PXLogEnable
@@ -408,7 +398,7 @@ PXResult PXAPI PXECSInit(void)
             );
 #endif
 
-            DebugBreak();
+            PXDebugBreak();
         }
     }
 
@@ -500,6 +490,16 @@ PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
     return PXResultInvalid;
 }
 
+PXBool PXAPI PXECSInfoCheckVSID(const PXECSInfo PXREF pxECSInfo, const PXID pxID)
+{
+    if(!pxECSInfo)
+    {
+        return PXFalse;
+    }
+
+    return pxECSInfo->ID == pxID;
+}
+
 PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXREF pxECSReferece)
 {
     if(!(pxDictionary && pxECSReferece)) // Is this NULL?
@@ -507,14 +507,14 @@ PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXRE
         return PXResultRefusedParameterNull; // Illegal call
     }
 
-    // Is adress in data range?
+    // Is address in data range?
     PXECSInfo* pxECSElement = pxECSReferece->Element;
 
     const PXBool isInRange = PXListIsAddresValid(&pxDictionary->List, pxECSReferece->Element);
 
     if(isInRange)
     {
-        // Because adress is valid, we can check now
+        // Because address is valid, we can check now
         const PXBool isDirectMatch = pxECSReferece->ExpectedID == pxECSElement->ID;
 
         if(isDirectMatch)
@@ -532,7 +532,7 @@ PXResult PXAPI PXECSRefCheck(PXDictionary PXREF pxDictionary, PXECSReferece PXRE
     PXDictionaryEntry pxDictionaryEntry;
     pxDictionaryEntry.KeyAddress = &pxECSReferece->ExpectedID;
     pxDictionaryEntry.KeySize = sizeof(PXID);
-    pxDictionaryEntry.ValueAdress = &pxECSReferece->Element;
+    pxDictionaryEntry.ValueAddress = &pxECSReferece->Element;
     pxDictionaryEntry.ValueSize = sizeof(PXECSInfo*);
 
     PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxDictionaryEntry);
@@ -587,7 +587,7 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
 
     if(!hasValidSize)
     {
-        return PXActionRefusedObjectSizeZero;
+        return PXResultRefusedObjectSizeZero;
     }
 
     // Create ID
@@ -599,27 +599,23 @@ PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECS
     // Allocations can fail, safely eject
     if(!pxECSInfo)
     {
-        return PXActionFailedMemoryAllocation;
+        return PXResultFailedMemoryAllocation;
     }
 
     pxECSInfo->ID = pxID;
-
-
-    PXECSReferece pxECSReferece;
-    pxECSReferece.ExpectedID = pxID;
-    pxECSReferece.Element = pxECSInfo;
-
-    PXResult pxResult = PXDictionaryEntryAdd(_pxECS.LookupEntry, &pxID, &pxECSReferece);
-
-
     *pxECSInfoREF = pxECSInfo;
+
+    // Name?
+    PXNamePoolStore(pxID, &pxECSCreateInfo->Name, &pxECSCreateInfo->Name);
+
+    PXECSEntryAdd(pxECSInfo);
 
     // Register?
 
 #if PXLogEnable
     char name[128];
     PXText pxTextName;
-    PXTextFromAdressA(&pxTextName, name, 0, sizeof(name));
+    PXTextFromAddressA(&pxTextName, name, 0, sizeof(name));
 
     PXECSElementToString(&pxTextName, pxECSInfo, pxECSCreateInfo->Static, pxECSCreateInfo->Dynamic);
 
@@ -655,30 +651,50 @@ PXResult PXAPI PXECSTypeGet(PXECSRegisterInfo PXREF pxECSTypeInfo, const PXSize 
         return pxResult;
     }
 
-    *pxECSTypeInfo = *(PXECSRegisterInfo*)pxDictionaryEntry.ValueAdress;
+    *pxECSTypeInfo = *(PXECSRegisterInfo*)pxDictionaryEntry.ValueAddress;
 
     return PXResultOK;
 }
 
 PXSize PXAPI PXECSEntryAmount(void)
 {
-    return PXDictionaryEntryAmount(_pxECS.LookupEntry);
+    return PXDictionaryECSAmount(&_pxECS.LookupEntry);
 }
 
-PXResult PXAPI PXECSEntryGet(PXECSReferece PXREF pxECSReferece, const PXSize index)
+PXResult PXAPI PXECSEntryAdd(PXECSInfo PXREF pxECSInfo)
 {
-    PXDictionaryEntry pxDictionaryEntry;
+    PXResult pxResult = PXDictionaryECSAdd(&_pxECS.LookupEntry, pxECSInfo);
 
-    PXResult pxResult = PXDictionaryIndex(_pxECS.LookupEntry, index, &pxDictionaryEntry);
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXECSText,
+        "Entry",
+        "PXID:<%4i> is registerd",
+        pxECSInfo->ID
+    );
+#endif
 
-    if(PXResultOK != pxResult)
-    {
-        return pxResult;
-    }
+    return pxResult;
+}
 
-    *pxECSReferece = *(PXECSReferece*)pxDictionaryEntry.ValueAdress;
+PXECSInfo* PXAPI PXECSEntryGetViaIndex(const PXSize index)
+{
+    return PXDictionaryECSGetViaIndex(&_pxECS.LookupEntry, index);
+}
 
-    return PXResultOK;
+PXECSInfo* PXAPI PXECSEntryGetViaID(const PXID pxID)
+{
+    return PXDictionaryECSGetViaID(&_pxECS.LookupEntry, pxID);
+}
+
+PXECSInfo* PXAPI PXECSEntryGetViaName(PXText PXREF pxText)
+{
+    const PXID pxID = PXNamePoolFindIDViaName(pxText);
+    PXECSInfo* pxECSInfo = (PXECSInfo*)PXECSEntryGetViaID(pxID);
+
+    return pxECSInfo;
 }
 
 PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo)
@@ -693,7 +709,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
     // parameter valid check
     {
         PXBool textValid = 
-            pxFilePath->Data4 &&
+            pxFilePath->Data &&
             pxFilePath->SizeUsed;
 
         if(!textValid)
@@ -731,7 +747,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             );
 #endif
 
-            return PXActionRefusedNotSupportedByLibrary;
+            return PXResultRefusedNotSupportedByLibrary;
         }
 
         if(!pxECSCreateInfo->FormatInfo.ResourceLoad)
@@ -746,7 +762,7 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             );
 #endif
 
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
         }
     }
 
@@ -894,10 +910,13 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
                 PXLoggingError,
                 PXECSText,
                 "Load-Extract",
-                "Failed. Took:%6.3f  ROPs:%-7i <%s>",
-                pxECSCreateInfo->TimeTransphere,
-                PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
-                pxFilePath->A
+                "Failed.\n"
+                "%20s : %-6.3f\n"
+                "%20s : %-7i\n"
+                "%20s : %s",
+                "Time taken", pxECSCreateInfo->TimeTransphere,
+                "ROPs", PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
+                "FilePath", pxFilePath->A
             );
 #endif
 
@@ -910,11 +929,15 @@ PXResult PXAPI PXECSLoad(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             PXLoggingInfo,
             PXECSText,
             "Load-Extract",
-            "OK! Took:%6.3f, ROPs:%-7i PageFaults:%-7i <%s>",
-            pxECSCreateInfo->TimeTransphere,
-            PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
-            pxPerformanceInfo.PageFaultCount,
-            pxFilePath->A
+            "OK!\n"
+            "%20s : %-6.3f\n"
+            "%20s : %-7i\n"
+            "%20s : %-7i\n"
+            "%20s : %s",
+            "Time taken", pxECSCreateInfo->TimeTransphere,
+            "ROPs", PXFileOperationsRead(pxECSCreateInfo->FileCurrent),
+            "PageFaults", pxPerformanceInfo.PageFaultCount,
+            "FilePath", pxFilePath->A
         );
 #endif
 
@@ -968,7 +991,7 @@ PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             );
 #endif
 
-            return PXActionRefusedNotSupportedByLibrary;
+            return PXResultRefusedNotSupportedByLibrary;
         }
 
         if(PXNull == pxECSCreateInfo->FormatInfo.ResourceSave)
@@ -983,11 +1006,11 @@ PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
             );
 #endif
 
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
         }
 
 #if PXLogEnable
-        const PXI64U timeStampA = PXTimeCounterStampGet();
+        const PXTimeStamp timeStampA = PXTimeStampNow();
 #endif
 
        // pxECSCreateInfo->FileReference = pxFile;
@@ -995,8 +1018,7 @@ PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
         const PXResult fileParsingResult = pxECSCreateInfo->FormatInfo.ResourceSave(pxECSInfo, pxECSCreateInfo);
 
 #if PXLogEnable
-        const PXI64U timeStampB = PXTimeCounterStampGet() - timeStampA;
-        const PXF32 timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
+        const PXF32 timeDelta = PXTimeStampDeltaSF(timeStampA);
 
         PXLogPrint
         (
@@ -1010,7 +1032,7 @@ PXResult PXAPI PXECSSave(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSC
         );
 #endif
 
-        // PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try
+        // PXResultReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try
 
         // return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
 
@@ -1093,7 +1115,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
             );
 #endif
 
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
 
         *pxResourceCreateInfo->ObjectReference = pxResourceEntryList;
@@ -1192,7 +1214,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
         );
 #endif
 
-        return PXActionRefusedObjectCreateCallbackMissing;
+        return PXResultRefusedObjectCreateCallbackMissing;
     }
 
     const PXResult pxActionCreate = pxResourceEntry->CreateFunction(pxResourceCreateInfo, *pxResourceCreateInfo->ObjectReference);

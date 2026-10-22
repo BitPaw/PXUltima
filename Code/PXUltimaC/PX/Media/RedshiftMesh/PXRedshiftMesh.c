@@ -178,7 +178,7 @@ PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxRe
 
     if(0 == pxR3D2->Header.VersionMajor || pxR3D2->Header.VersionMajor >= 4)
     {
-        return PXActionFailedFormatNotAsExpected;
+        return PXResultFailedFormatNotAsExpected;
     }
 
 
@@ -200,7 +200,7 @@ PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxRe
     {
         pxR3D2->VertexColors = PXMemoryHeapCallocT(PXVector3F32, pxR3D2->Header.VertexCount);
 
-        PXFileReadB(pxFile, pxR3D2->VertexColors, pxR3D2->Header.VertexCount * sizeof(PXColorRGBAI8));
+        PXFileReadB(pxFile, pxR3D2->VertexColors, pxR3D2->Header.VertexCount * sizeof(PXColorRGBA_U8));
     }
 
     PXFileReadB(pxFile, &pxR3D2->CentralPoint, sizeof(PXVector3F32));
@@ -214,7 +214,7 @@ PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxRe
     {
         R3D2MeshStaticFace PXREF r3D2MeshStaticFace = &pxR3D2->StaticFaceList[i];
 
-        PXFileReadB(pxFile, r3D2MeshStaticFace, sizeof(R3D2MeshStaticFace) - 3 * sizeof(PXColorRGBAI8));
+        PXFileReadB(pxFile, r3D2MeshStaticFace, sizeof(R3D2MeshStaticFace) - 3 * sizeof(PXColorRGBA_U8));
 
 #if PXLogEnable && 0
         PXLogPrint
@@ -241,7 +241,7 @@ PXResult PXAPI PXR3D2ParseBinary(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxRe
         {
             R3D2MeshStaticFace PXREF r3D2MeshStaticFace = &pxR3D2->StaticFaceList[i];
 
-            PXFileReadB(pxFile, r3D2MeshStaticFace->Color, 4 * sizeof(PXColorRGBAI8));
+            PXFileReadB(pxFile, r3D2MeshStaticFace->Color, 4 * sizeof(PXColorRGBA_U8));
         }
     }
 
@@ -348,7 +348,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
     if(!isValid)
     {
-        return PXActionFailedFormatNotAsExpected;
+        return PXResultFailedFormatNotAsExpected;
     }
 
     PXCompilerSymbolEntryForward(&pxCompiler);
@@ -356,7 +356,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
     if(!isValid)
     {
-        return PXActionFailedFormatNotAsExpected;
+        return PXResultFailedFormatNotAsExpected;
     }
 
     PXCompilerSymbolEntryForward(&pxCompiler);
@@ -364,7 +364,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
     if(!isValid)
     {
-        return PXActionFailedFormatNotAsExpected;
+        return PXResultFailedFormatNotAsExpected;
     }
 
     PXCompilerSymbolEntryForward(&pxCompiler);
@@ -391,7 +391,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
         if(-1 == isValid)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -407,13 +407,13 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
             case 1:
             {
                 PXSize uhh = 0;
-                PXCompilerParseF32V(&pxCompiler, pxR3D2->CentralPoint.Data4, 3, &uhh);
+                PXCompilerParseF32V(&pxCompiler, pxR3D2->CentralPoint.Data, 3, &uhh);
                 break;
             }
             case 2:
             {
                 PXSize uhh = 0;
-                PXCompilerParseF32V(&pxCompiler, pxR3D2->PivotPoint.Data4, 3, &uhh);
+                PXCompilerParseF32V(&pxCompiler, pxR3D2->PivotPoint.Data, 3, &uhh);
                 break;
             }
             case 3:
@@ -424,7 +424,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
                 PXCompilerSymbolEntryForward(&pxCompiler);
 
                 PXSize uhh = 0;
-                PXCompilerParseF32V(&pxCompiler, pxR3D2->VertexData->Data4, pxR3D2->Header.VertexCount*3, &uhh);
+                PXCompilerParseF32V(&pxCompiler, pxR3D2->VertexData->Data, pxR3D2->Header.VertexCount*3, &uhh);
 
                 break;
             }
@@ -454,7 +454,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
                     PXCompilerParseI32V(&pxCompiler, r3D2MeshStaticFace->VertexID, 3);
                     PXCompilerParseText(&pxCompiler, r3D2MeshStaticFace->Material, 64, 0);
-                    PXCompilerParseF32V(&pxCompiler, r3D2MeshStaticFace->UV->Data4, 6, &x);
+                    PXCompilerParseF32V(&pxCompiler, r3D2MeshStaticFace->UV->Data, 6, &x);
                 } 
 
                 break;
@@ -468,7 +468,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
         if(!isValid)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -476,7 +476,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
         if(!isValid)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -484,7 +484,7 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
         if(!isValid)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -506,5 +506,5 @@ PXResult PXAPI PXR3D2ParseText(PXR3D2 PXREF pxR3D2, PXECSCreateInfo PXREF pxReso
 
 PXResult PXAPI PXR3D2SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

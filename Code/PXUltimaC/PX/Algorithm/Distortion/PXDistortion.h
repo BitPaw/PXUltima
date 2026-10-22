@@ -3,15 +3,15 @@
 #ifndef PXFilterDistortionIncluded
 #define PXFilterDistortionIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
 
 typedef struct PXFilterDistortion_
 {
-    PXFAudio Gain;
-    PXFAudio Edge;
-    PXFAudio PostEQCenterFrequency;
-    PXFAudio PostEQBandwidth;
-    PXFAudio PreLowpassCutoff;
+    PXF32 Gain;
+    PXF32 Edge;
+    PXF32 PostEQCenterFrequency;
+    PXF32 PostEQBandwidth;
+    PXF32 PreLowpassCutoff;
 }
 PXFilterDistortion;
 

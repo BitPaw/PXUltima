@@ -1,13 +1,15 @@
 #include "PXFileDirectory.h"
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXIcon.h>
-#include <PX/Engine/PXGUI.h>
+
 
 
 #if OSUnix
 #elif OSWindows
 #include <CommCtrl.h>
 #endif
+#include <PX/OS/File/PXFile.h>
+#include <PX/Engine/PXEngineUI.h>
 
 const char PXFileDirectoryName[] = "FileDirectory";
 const PXI8U PXFileDirectoryNameLength = sizeof(PXFileDirectoryName);
@@ -36,7 +38,7 @@ const char PXLocalPath[] = "./";
 const PXI8U PXLocalPathLength = sizeof(PXLocalPath);
 
 
-void PXAPI PXFileDirectoryEntryDraw(PXFileDirectory PXREF pxFileDirectory, PXWindow PXREF pxWindow, PXFileEntry PXREF pxFileEntry, PXDrawInfo PXREF pxTextDrawInfo)
+void PXAPI PXFileDirectoryEntryDraw(PXFileDirectory PXREF pxFileDirectory, PXWindow PXREF pxWindow, PXFileEntry PXREF pxFileEntry, PXEngineUIDrawInfo PXREF pxTextDrawInfo)
 {
     PXText PXREF pxText = pxTextDrawInfo->Text;
 
@@ -56,26 +58,27 @@ void PXAPI PXFileDirectoryEntryDraw(PXFileDirectory PXREF pxFileDirectory, PXWin
 
        // PXI32S rowY = (pxDrawInfo->RectangleXYWH.Height * (i));
 
-    PXDrawInfo old = *pxTextDrawInfo;
+    PXEngineUIDrawInfo old = *pxTextDrawInfo;
 
     // pxTextDrawInfo->RectangleXYWH.Height = 16;
     //pxTextDrawInfo->RectangleXYWH.Width = 16;
     PXWindowDrawRectangle(pxWindow, pxTextDrawInfo);
 
     // Let's try to get the icon?
-
+       
+   
     // Draw icon
-    PXWindowDrawIcon
+    PXEngineUIDrawIcon_GL
     (
         pxWindow,
         pxTextDrawInfo,
-        &pxFileEntry->Icon
+        0//&pxFileEntry->Icon
     );
 
 
 #endif
 
-    int x = PXFileElementInfoTypeFile;
+    int x = 0;// PXFileElementInfoTypeFile;
 
     //pxTextDrawInfo->RectangleXYWH.X += 20;
 
@@ -89,12 +92,12 @@ void PXAPI PXFileDirectoryEntryDraw(PXFileDirectory PXREF pxFileDirectory, PXWin
 
             pxText->Format = TextFormatUNICODE;
 
-            PXWindowDrawText(pxWindow, pxTextDrawInfo);
+            PXEngineUIDrawText(pxWindow, pxTextDrawInfo);
 
 #if 0
 
             PXText pxA;
-            PXTextConstructFromAdressA(&pxA, pxFileEntry->FilePathData, pxFileEntry->FilePathSize, pxFileEntry->FilePathSize);
+            PXTextConstructFromAddressA(&pxA, pxFileEntry->FilePathData, pxFileEntry->FilePathSize, pxFileEntry->FilePathSize);
 
             PXText pxTextB;
             PXTextConstructBufferA(&pxTextB, 64);
@@ -128,11 +131,11 @@ void PXAPI PXFileDirectoryEntryDraw(PXFileDirectory PXREF pxFileDirectory, PXWin
     *pxTextDrawInfo = old;
 }
 
-PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     PXDirectorySearchCache PXREF pxDirectorySearchCache = &pxFileDirectory->DirectorySearchCache;
     
-    PXGUITheme PXREF pxGUITheme = PXGUIThemeGet();
+    PXEngineUITheme PXREF pxGUITheme = pxDrawInfo->UITheme;
     PXWindow PXREF pxWindow = pxFileDirectory->WindowBase;
 
 #if PXLogEnable && 0
@@ -154,7 +157,7 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
     if(pxFileDirectory->IsDirty)
     {
         PXText pxTExt;
-        PXTextFromAdressA(&pxTExt, PXLocalPath, PXLocalPathLength, PXLocalPathLength);
+        PXTextFromAddressA(&pxTExt, PXLocalPath, PXLocalPathLength, PXLocalPathLength);
 
         PXDirectorySearch(pxDirectorySearchCache, &pxTExt);
 
@@ -165,14 +168,14 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
     char textBuffer[128];
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, textBuffer, sizeof(textBuffer), sizeof(textBuffer));
+    PXTextFromAddressA(&pxText, textBuffer, sizeof(textBuffer), sizeof(textBuffer));
     PXTextPrint(&pxText, "FilePath");
     
     pxDrawInfo->Text = &pxText;
     //pxDrawInfo->RectangleXYWH.Width = 150;
     //pxDrawInfo->RectangleXYWH.Height = 20;
 
-    PXWindowDrawText(pxWindow, pxDrawInfo);
+    PXEngineUIDrawText(pxWindow, pxDrawInfo);
 
 
     if(1)
@@ -205,11 +208,11 @@ PXResult PXAPI PXFileDirectoryDraw(PXFileDirectory PXREF pxFileDirectory, PXDraw
 
     if(0 == pxDirectorySearchCache->FilePathCache.EntryAmount)
     {   
-        PXTextFromAdressA(&pxText, PXFileNone, sizeof(PXFileNone), sizeof(PXFileNone));
+        PXTextFromAddressA(&pxText, PXFileNone, sizeof(PXFileNone), sizeof(PXFileNone));
 
         PXTextDrawInfoRowNext(pxDrawInfo);
       
-        PXWindowDrawText(pxWindow, pxDrawInfo);
+        PXEngineUIDrawText(pxWindow, pxDrawInfo);
     }
 
     for(PXSize i = 0; i < pxDirectorySearchCache->FilePathCache.EntryAmount; ++i)

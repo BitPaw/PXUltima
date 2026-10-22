@@ -68,7 +68,7 @@ typedef struct PXSectionTable_
 
     PXI32U VirtualAddress;
     PXI32U SectionRawDataSize;
-    PXI32U SectionRawDataAdress;
+    PXI32U SectionRawDataAddress;
     PXI32U PointerToRelocations;
     PXI32U PointerToLinenumbers;
     PXI16U NumberOfRelocations;

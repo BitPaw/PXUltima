@@ -3,13 +3,13 @@
 #ifndef PXFilterEqualizerIncluded
 #define PXFilterEqualizerIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
 
 typedef struct PXFilterEqualizer_
 {
-    PXFAudio Center;
-    PXFAudio Bandwidth;
-    PXFAudio Gain;
+    PXF32 Center;
+    PXF32 Bandwidth;
+    PXF32 Gain;
 }
 PXFilterEqualizer;
 

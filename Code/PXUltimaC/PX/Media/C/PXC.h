@@ -10,8 +10,8 @@
 #define MemberFieldFlagIsConstType (1 << 0)
 #define MemberFieldFlagIsSigned (1 << 1)
 
-#define MemberFieldFlagIsAdressConst (1 << 2)
-#define MemberFieldFlagIsAdress (1 << 3)
+#define MemberFieldFlagIsAddressConst (1 << 2)
+#define MemberFieldFlagIsAddress (1 << 3)
 #define MemberFieldFlagVolatile (1 << 4)
 #define MemberFieldFlagRegister (1 << 5)
 #define MemberFieldFlagResticted (1 << 6)

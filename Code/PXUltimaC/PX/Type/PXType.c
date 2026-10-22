@@ -153,12 +153,12 @@ void PXAPI PXEndianSwap(void PXREF data, const PXSize dataSize, const PXEndian e
         }
     }
     const PXSize runntime = dataSize / 2;
-    const PXByte* endAdress = (PXByte*)data + (dataSize - 1);
+    const PXByte* endAddress = (PXByte*)data + (dataSize - 1);
 
     for (PXSize i = 0; i < runntime; ++i)
     {
         PXByte* a = (PXByte*)data + i;
-        PXByte* b = (PXByte*)endAdress - i;
+        PXByte* b = (PXByte*)endAddress - i;
 
         PXByte c = *a; // Backup a
         *a = *b; // b -> a

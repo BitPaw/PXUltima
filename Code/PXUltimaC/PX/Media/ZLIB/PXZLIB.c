@@ -102,7 +102,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
         }
         case 0x1F:
         {
-            return PXActionRefuedImageFormatInvalid;
+            return PXResultRefuedImageFormatInvalid;
         }
         default:
         {
@@ -172,7 +172,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
 
             if(!validFlags)
             {
-                return PXActionRefusedInvalidHeaderSignature;// assert(validFlags);
+                return PXResultRefusedInvalidHeaderSignature;// assert(validFlags);
             }
         }
 
@@ -191,7 +191,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
 
             if(!isCompressionInfoValid)
             {
-                return PXActionRefusedVersionInvalid;
+                return PXResultRefusedVersionInvalid;
             }
 
             //assert(isCompressionInfoValid);
@@ -245,7 +245,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
         case PXZLIBCompressionMethodReserved:
         case PXZLIBCompressionMethodInvalid:
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
     }
 

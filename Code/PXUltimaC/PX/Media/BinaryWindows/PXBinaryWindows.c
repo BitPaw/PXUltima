@@ -105,7 +105,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadI
 
         if (!isValidFile)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
       //  if(!validSize)
@@ -296,10 +296,10 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadI
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXBinaryWindowsSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

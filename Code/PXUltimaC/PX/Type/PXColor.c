@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 
-PXBool PXAPI PXColorRGBFIsBlack(const PXColorRGBF PXREF pxColorRGBF)
+PXBool PXAPI PXColorRGBFIsBlack(const PXColorRGB_F32 PXREF pxColorRGBF)
 {
     return pxColorRGBF->Blue == 0 && pxColorRGBF->Green == 0 && pxColorRGBF->Red == 0;
 }
@@ -32,64 +32,66 @@ int clip(int val)
     return (val < 0) ? 0 : (val > 255) ? 255 : val;
 }
 
-void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGBI8 PXREF pxColorRGBI8)
+void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGB_U8 PXREF PXColorRGB_U8)
 {
     int C = pxColorYUV->Y - 16;
     int D = pxColorYUV->U - 128;
     int E = pxColorYUV->V - 128;
 
-    pxColorRGBI8->Red = clip((298 * C + 409 * E + 128) >> 8);
-    pxColorRGBI8->Green = clip((298 * C - 100 * D - 208 * E + 128) >> 8);
-    pxColorRGBI8->Blue = clip((298 * C + 516 * D + 128) >> 8);
+    PXColorRGB_U8->Red = clip((298 * C + 409 * E + 128) >> 8);
+    PXColorRGB_U8->Green = clip((298 * C - 100 * D - 208 * E + 128) >> 8);
+    PXColorRGB_U8->Blue = clip((298 * C + 516 * D + 128) >> 8);
 }
 
 PXI8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 {
-    switch (imageDataFormat)
+    switch(imageDataFormat)
     {
-    default:
-    case PXColorFormatInvalid:
-        return 0;
+        default:
+        case PXColorFormatInvalid:
+            return 0;
 
-    case PXColorFormatAlphaBinary:
-    case PXColorFormatA8:
-        return 1;
+        case PXColorFormatAlphaBinary:
+        case PXColorFormatA8:
+            return 1;
 
-    case PXColorFormatRGBI8:
-    case PXColorFormatBGRI8:
-        return sizeof(PXI8U) * 3u;
+        case PXColorFormatRGBI8:
+        case PXColorFormatBGRI8:
+            return sizeof(PXI8U) * 3u;
 
-    case PXColorFormatRGBAI8:
-    case PXColorFormatBGRAI8:
-        return sizeof(PXI8U) * 4u;
+        case PXColorFormatRGBAI8:
+        case PXColorFormatBGRAI8:
+            return sizeof(PXI8U) * 4u;
 
-    case PXColorFormatRGBI16:
-    case PXColorFormatBGRI16:
-        return sizeof(PXI16U) * 3u;
+        case PXColorFormatRGBI16:
+        case PXColorFormatBGRI16:
+            return sizeof(PXI16U) * 3u;
 
-    case PXColorFormatRGBAI16:
-    case PXColorFormatBGRAI16:
-        return sizeof(PXI16U) * 4u;
+        case PXColorFormatRGBAI16:
+        case PXColorFormatBGRAI16:
+            return sizeof(PXI16U) * 4u;
 
-    case PXColorFormatRGBI32:
-    case PXColorFormatBGRI32:
-    case PXColorFormatRGBF:
-    case PXColorFormatBGRF:
-        return sizeof(PXI32U) * 3u;
+        case PXColorFormatRGBI32:
+        case PXColorFormatBGRI32:
+            return sizeof(PXI32U) * 3u;  
 
-    case PXColorFormatRGBAF:
-    case PXColorFormatBGRAF:
-    case PXColorFormatRGBAI32:
-    case PXColorFormatBGRAI32:
-        return sizeof(PXI32U) * 4u;
+        case PXColorFormatRGBAF:
+        case PXColorFormatBGRAF:
+        case PXColorFormatRGBAI32:
+        case PXColorFormatBGRAI32:
+            return sizeof(PXI32U) * 4u;
 
-    case PXColorFormatRGBD:
-    case PXColorFormatBGRD:
-        return sizeof(double) * 3u;
+        case PXColorFormatRGBF:
+        case PXColorFormatBGRF:
+            return sizeof(PXF32) * 3u;
 
-    case PXColorFormatRGBAD:
-    case PXColorFormatBGRAD:
-        return sizeof(double) * 4u;
+        case PXColorFormatRGBD:
+        case PXColorFormatBGRD:
+            return sizeof(PXF64) * 3u;
+
+        case PXColorFormatRGBAD:
+        case PXColorFormatBGRAD:
+            return sizeof(PXF64) * 4u;
     }
 }
 
@@ -98,14 +100,14 @@ PXI8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat)
     return PXColorFormatBytePerPixel(imageDataFormat) * 8u;
 }
 
-void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8 PXREF colorRGB, PXColorYCbCrI8 PXREF ColorYCbCr)
+void PXAPI PXColorRGBToYCbCr(const PXColorRGB_U8 PXREF colorRGB, PXColorYCbCrI8 PXREF ColorYCbCr)
 {
     ColorYCbCr->Y = 0.299 * colorRGB->Red + 0.587 * colorRGB->Green + 0.114 * colorRGB->Blue;
     ColorYCbCr->Cb = -0.1687 * colorRGB->Red - 0.3313 * colorRGB->Green + 0.5 * colorRGB->Blue + 128u;
     ColorYCbCr->Cr = 0.5 * colorRGB->Red - 0.4187 * colorRGB->Green - 0.0813 * colorRGB->Blue + 128u;
 }
 
-void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8 PXREF colorYCbCr, PXColorRGBI8 PXREF colorRGB)
+void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8 PXREF colorYCbCr, PXColorRGB_U8 PXREF colorRGB)
 {
     colorRGB->Red = colorYCbCr->Y + 1.402 * (colorYCbCr->Cr - 128u);
     colorRGB->Green = colorYCbCr->Y - 0.34414 * (colorYCbCr->Cb - 128u) - 0.71414 * (colorYCbCr->Cr - 128u);
@@ -128,7 +130,7 @@ PXF32 PXAPI PXColorRGBToCr(const PXF32 red, const PXF32 green, const PXF32 blue)
 } // ITU: +0.5f      * r -0.418688f * g -0.081312f * b
 
 
-void PXAPI PXColorHSVToRGBF(PXColorHSV PXREF pxColorHSV, PXColorRGBF PXREF pxColorRGBF)
+void PXAPI PXColorHSVToRGBF(PXColorHSV PXREF pxColorHSV, PXColorRGB_F32 PXREF pxColorRGBF)
 {
     PXF32 baseColor = pxColorHSV->Hue / 60.0f;
     int baseColorInterval = PXMathFloor(baseColor);
@@ -185,19 +187,19 @@ void PXAPI PXColorHSVToRGBF(PXColorHSV PXREF pxColorHSV, PXColorRGBF PXREF pxCol
     }
 }
 
-void PXAPI PXColorHSVToRGBAF(PXColorHSV PXREF pxColorHSV, PXColorRGBAF PXREF pxColorRGBF)
+void PXAPI PXColorHSVToRGBAF(PXColorHSV PXREF pxColorHSV, PXColorRGBA_F32 PXREF pxColorRGBF)
 {
-    PXColorHSVToRGBF(pxColorHSV, (PXColorRGBF*)pxColorRGBF);
+    PXColorHSVToRGBF(pxColorHSV, (PXColorRGB_F32*)pxColorRGBF);
     pxColorRGBF->Alpha = 1.0f;
 }
 
-void PXAPI PXColorHSVToRGBAI8(PXColorHSV PXREF pxColorHSV, PXColorRGBAI8 PXREF pxColorRGBAI8)
+void PXAPI PXColorHSVToRGBAI8(PXColorHSV PXREF pxColorHSV, PXColorRGBA_U8 PXREF PXColorRGBA_U8)
 {
-    PXColorRGBF pxColorRGBF;
+    PXColorRGB_F32 pxColorRGBF;
 
     PXColorHSVToRGBAF(pxColorHSV, &pxColorRGBF);
 
-    pxColorRGBAI8->Red = pxColorRGBF.Red * 0xFF;
-    pxColorRGBAI8->Green = pxColorRGBF.Green * 0xFF;
-    pxColorRGBAI8->Blue = pxColorRGBF.Blue * 0xFF;
+    PXColorRGBA_U8->Red = pxColorRGBF.Red * 0xFF;
+    PXColorRGBA_U8->Green = pxColorRGBF.Green * 0xFF;
+    PXColorRGBA_U8->Blue = pxColorRGBF.Blue * 0xFF;
 }

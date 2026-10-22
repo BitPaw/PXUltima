@@ -8,24 +8,29 @@
 #include <PX/OS/File/PXFileFormat.h>
 #include <PX/Math/PXMatrix.h>
 #include <PX/Type/PXColor.h>
-#include <PX/Type/PXIcon.h>
+//#include <PX/Type/PXIcon.h>
 #include <PX/Type/PXFont.h>
-#include <PX/Type/PXWindow.h>
-#include <PX/Type/PXTexture.h>
-#include <PX/Type/PXSprite.h>
-#include <PX/Type/PXShader.h>
+//#include <PX/Type/PXWindow.h>
+//#include <PX/Type/PXTexture.h>
+//#include <PX/Type/PXSprite.h>
+//#include <PX/Type/PXShader.h>
 #include <PX/Type/PXMonitor.h>
-#include <PX/Type/PXCamera.h>
-#include <PX/Type/PXRectangle.h>
+//#include <PX/Type/PXCamera.h>
+//#include <PX/Type/PXRectangle.h>
+#include <PX/OS/Console/PXConsole.h>
 
 #if OSUnix
 #include <stdio.h>
 #include <X11/X.h> // X11 XID, ulong 8 Byte
 #include <X11/Xlib.h> // XDisplay
+#else
+#include <windows.h>
 #endif
 
 #include <stdarg.h>
 
+
+#if 0
 typedef enum PXGraphicResourceLocation_
 {
     PXGraphicResourceLocationInvalid,
@@ -35,27 +40,11 @@ typedef enum PXGraphicResourceLocation_
     PXGraphicResourceLocationRegisteredOnly, // Resouce is uploaded and not loaded anymore.
 }
 PXGraphicResourceLocation;
-
-
-typedef
-#if OSUnix
-int
-#elif OSWindows
-HWND
-#else
-void*
 #endif
-PXWindowHandle;
 
-typedef
-#if OSUnix
-int
-#elif OSWindows
-HMONITOR
-#else
-void*
-#endif
-PXMonitorHandle;
+
+
+
 
 
 //---------------------------------------------------------
@@ -71,11 +60,11 @@ PXMonitorHandle;
     // Resource Level A - Indepepended
     //-----------------------------------------------------
 #define PXResourceTypeTexture     2       // Image for pixeldata
-#define PXResourceTypeSound       3      
-#define PXResourceTypeVideo       4      
+#define PXResourceTypeSound       3
+#define PXResourceTypeVideo       4
 #define PXResourceTypeModel       5       // 3D model, collection of vertex data
 #define PXResourceTypeFont        6       // Collection of spites or points to render text
-#define PXResourceTypeMaterial    7      
+#define PXResourceTypeMaterial    7
     //-----------------------------------------------------
 
 
@@ -84,13 +73,13 @@ PXMonitorHandle;
     //-----------------------------------------------------
 #define PXResourceTypeBrush         8
 #define PXResourceTypeTexture2D      9    // Texture to render on a surface
-#define PXResourceTypeTextureCube    10   
-#define PXResourceTypeShaderProgram  11  
-#define PXResourceTypeSkybox         12   
-#define PXResourceTypeSprite         13 
+#define PXResourceTypeTextureCube    10
+#define PXResourceTypeShaderProgram  11
+#define PXResourceTypeSkybox         12
+#define PXResourceTypeSprite         13
 #define PXResourceTypeIcon            14
-#define PXResourceTypeIconAtlas       15 
-#define PXResourceTypeSpriteAnimator  16 
+#define PXResourceTypeIconAtlas       15
+#define PXResourceTypeSpriteAnimator  16
 #define PXResourceTypeText            17
 #define PXResourceTypeTimer           18
 #define PXResourceTypeEngineSound     19
@@ -114,20 +103,6 @@ PXMonitorHandle;
 
 
 #define ResourceIDNameLength 64
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -161,7 +136,7 @@ PXHandleType;
 typedef struct PXHandleInfo_
 {
     char Description[256];
-    char TypeName[32]; 
+    char TypeName[32];
     PXHandleType Type;
 }
 PXHandleInfo;
@@ -204,7 +179,7 @@ if(!(condition)) \
 { \
     const char* buffer = _PX_FILENAME_; \
     PXLogPrint(PXLoggingError, buffer, "Assert", message); \
-    DebugBreak(); \
+    PXDebugBreak(); \
 }
 
 
@@ -219,11 +194,11 @@ if(!(condition)) \
 #define PXModuleStateDoInitialize   1<<0
 #define PXModuleStateDoRelease      1<<1
 
-typedef PXResult(PXAPI* PXModuleStateFunction)(void** moduleAdress, const PXI32U flags); // Initialize or Releases a module.
+typedef PXResult(PXAPI* PXModuleStateFunction)(void** moduleAddress, const PXI32U flags); // Initialize or Releases a module.
 
 typedef struct PXModule_
 {
-    void* ModuleAdress;
+    void* ModuleAddress;
     PXModuleStateFunction StateChange;
 }
 PXModule;
@@ -235,7 +210,7 @@ PXModule;
 typedef struct PXResource_
 {
     PXI32U Type;
-    void* ResourceAdress;
+    void* ResourceAddress;
 }
 PXResource;
 
@@ -310,7 +285,7 @@ typedef struct PXTexture_
     PXGraphicImageLayout LayoutFar;
     PXGraphicImageWrap WrapWidth;
 
-    PXTexture* Image;
+    PXTexture2D* Image;
 }
 PXTexture;
 
@@ -324,7 +299,7 @@ typedef struct PXTexture_
     PXGraphicImageWrap WrapHeight;
     PXGraphicImageWrap WrapWidth;
 
-    PXTexture* Image;
+    PXTexture2D* Image;
 }
 PXTexture;
 
@@ -332,7 +307,7 @@ typedef struct PXTexture_
 {
     PXECSInfo Info;
 
-    PXTexture* Image;
+    PXTexture2D* Image;
 }
 PXTexture;
 
@@ -343,12 +318,12 @@ typedef struct PXTexture_
 
     PXColorFormat Format;
 
-    PXTexture* ImageA;
-    PXTexture* ImageB;
-    PXTexture* ImageC;
-    PXTexture* ImageD;
-    PXTexture* ImageE;
-    PXTexture* ImageF;
+    PXTexture2D* ImageA;
+    PXTexture2D* ImageB;
+    PXTexture2D* ImageC;
+    PXTexture2D* ImageD;
+    PXTexture2D* ImageE;
+    PXTexture2D* ImageF;
 }
 PXTexture;
 
@@ -421,19 +396,6 @@ PXDialogText;
 
 
 
-// Shapes
-
-typedef struct PXRectangleF_
-{
-    PXF32 X;
-    PXF32 Y;
-    PXF32 Width;
-    PXF32 Height;
-}
-PXRectangleF;
-
-
-
 typedef struct PXMatrixModelViewProjection_
 {
     PXMatrix4x4F MatrixModel;
@@ -444,48 +406,13 @@ PXMatrixModelViewProjection;
 
 
 
-
-
-
-
-
-//---------------------------------------------------------
-// Graphic system
-//---------------------------------------------------------
-#define PXGraphicSystemInvalid  0
-#define PXGraphicSystemNative   1
-#define PXGraphicSystemOpenGL   2
-#define PXGraphicSystemDirectX  3
-#define PXGraphicSystemVulcan   4
-
-typedef PXI8U PXGraphicSystem;
-//---------------------------------------------------------
-
-
-typedef struct PXNativDraw_
+typedef struct PXMatrixModelViewProjectionSquashed_
 {
-    PXSize MonitorListAmount;
-    PXMonitor* MonitorList;
-
-    PXSize DisplayListAmount;
-    PXDisplay* DisplayList;
-
-    PXGUIManager* GUISystem;
+    PXMatrix4x4F MatrixModelView;
+    PXMatrix4x4F MatrixProjection;
 }
-PXNativDraw;
+PXMatrixModelViewProjectionSquashed;
 
-
-
-
-
-typedef enum PXWindowPropertyUpdateType_
-{
-    PXWindowPropertyUpdateTypeInvalid,
-    PXWindowPropertyUpdateTypeRead,
-    PXWindowPropertyUpdateTypeWrite,
-    PXWindowPropertyUpdateTypeCompare
-}
-PXWindowPropertyUpdateType;
 
 
 

@@ -307,8 +307,8 @@ typedef struct PXMIPSProcessor_
     PXSize ROMOffsetCurrent;
     PXSize ROMOffsetMaximal;
 
-    void* RAMAdressVirtual;
-    void* RAMAdress;
+    void* RAMAddressVirtual;
+    void* RAMAddress;
     PXSize RAMSize;
 
     void* ProgramCounter;
@@ -330,7 +330,7 @@ typedef struct PXCodeSegment_
 {
     void* Start;
     void* Stop;
-    void* SourceAdress;
+    void* SourceAddress;
     PXSize SourceSize;
     char* NameShort;
     char* NameLong;
@@ -342,8 +342,8 @@ PXCodeSegment;
 
 typedef struct PXMIPSTInstruction_
 {
-    PXByte* Adress;
-    PXByte* AdressVirtual;
+    PXByte* Address;
+    PXByte* AddressVirtual;
     PXI16U Immediate;
 
     PXI32U OperationCode;
@@ -473,7 +473,7 @@ typedef enum PXMIPSMemoryRegion_
 }
 PXMIPSMemoryRegion;
 
-PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAdress);
+PXPublic void* PXAPI PXMIPSTranslateVirtualAddress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAddress);
 
 PXPrivate void PXAPI PXMIPSProgramCounterAdvance(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize amount);
 

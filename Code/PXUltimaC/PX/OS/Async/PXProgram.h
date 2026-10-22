@@ -5,25 +5,20 @@
 
 #include <PX/OS/Async/PXThread.h>
 
+
 #if OSUnix
 #include <unistd.h>
-typedef pid_t ProcessHandle;
-typedef unsigned int ProcessID;
 #elif OSWindows
 #include <windows.h>
-typedef HANDLE ProcessHandle;
-typedef DWORD ProcessID;
 #endif
+
 
 typedef void (PXAPI* PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXResult errorCode);
 
 typedef struct PXProgram_
 {
-    ProcessHandle Handle;
-
-#if OSUnix
-    int MemoryFileHandle;
-#endif
+    PXProcessHandle Handle;
+    PXProcessID ID;
 
     wchar_t FilePath[260];
 
@@ -51,12 +46,10 @@ PXPublic PXResult PXAPI PXProgramExecuteWS(PXProgram PXREF program, const wchar_
 
 PXPublic PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF returnCode);
 
-PXPublic ProcessHandle PXAPI PXProgramCurrentProcess();
-PXPublic ProcessID PXAPI PXProgramCurrentProcessID();
 
 PXPublic PXResult PXAPI PXProgramAttach(PXProgram PXREF pxProgram);
 PXPublic PXResult PXAPI PXProgramDetach(PXProgram PXREF pxProgram);
-PXPublic PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF adress, void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
-PXPublic PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF adress, const void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
+PXPublic PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF address, void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
+PXPublic PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF address, const void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
 
 #endif

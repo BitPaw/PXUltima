@@ -25,7 +25,7 @@
 // TODO: as "strerror()" does not work, we have this bad solution
 const char* PXERRNOList[][2] =
 {
-    {"EPERM","Not owner, no permission"},//	1
+    {"EPERM","Not owner, no permission"},//    1
     { "ENOENT", "No such file or directory" }, // 2
 {"ESRCH", "No such process" }, // 3
 {"EINTR", "Interrupted system call" }, // 4
@@ -167,7 +167,7 @@ PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
     if(80 != errorID)
     {
-        //DebugBreak();
+        //PXDebugBreak();
     }
 
 #if OSUnix
@@ -181,6 +181,41 @@ PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     return pxResult;
 }
 
+#if OSUnix
+PXResult PXAPI PXErrorFromX11(const int errorID)
+{
+    switch(errorID)
+    {
+        // X11 error messages
+        case BadRequest:        return PXResultRefusedRequestInvalid;
+        case BadValue:          return PXResultRefusedValueInvalid;
+        case BadWindow:         return PXResultRefusedWindowInvalid;
+        case BadPixmap:         return PXResultRefusedPixmapInvalid;
+        case BadAtom:           return PXResultRefusedAtomInvalid;
+        case BadCursor:         return PXResultRefusedCursorInvalid;
+        case BadFont:           return PXResultRefusedFontInvalid;
+        case BadMatch:          return PXResultRefusedIncompatible;
+        case BadDrawable:       return PXResultRefusedDrawableInvalid;
+        case BadAccess:         return PXResultRefusedAccessDenied;
+        case BadAlloc:          return PXResultFailedMemoryAllocation;
+        case BadColor:          return PXResultRefusedColorInvalid;
+        case BadGC:             return PXResultRefusedGraphicsContextInvalid;
+        case BadIDChoice:       return PXResultRefusedResourceIDInvalid;
+        case BadName:           return PXResultRefusedNameInvalid;
+        case BadLength:         return PXResultRefusedLengthInvalid;
+        case BadImplementation: return PXResultRefusedOperationUnsupported;
+       
+        // GLX, Linux opengl error messages.
+        case GLXBadDrawable:    return PXResultRefusedDrawableInvalid;
+        case GLXBadContext:     return PXResultRefusedContextInvalid;
+        case GLXBadContextState:return PXResultRefusedContextStateInvalid;
+        case GLXBadCurrentWindow:return PXResultRefusedWindowInvalid;
+
+        default:                return PXResultUnknown;
+    }
+}
+#endif
+
 PXResult PXAPI PXErrorCodeFromID(const int errorCode)
 {
     switch(errorCode)
@@ -189,10 +224,10 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return PXResultOK;
 
         case EOTHER:
-            return PXActionFailedUnkownError;
+            return PXResultFailedUnkownError;
 
         case EACCES:
-            return PXActionDeniedNoPermission;
+            return PXResultDeniedNoPermission;
 
         case EADDRINUSE:
             return AddressInUse;
@@ -216,7 +251,7 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return BadMessage;
 
         case EBUSY:
-            return PXActionRefusedResourceBusy;
+            return PXResultRefusedResourceBusy;
 
         case ECANCELED:
             return OperationCanceled;
@@ -243,13 +278,13 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return PXMathematicsArgumentOutOfDomainOfFunction;
 
         case EEXIST:
-            return PXResultInvalid;//PXActionRefusedObjectAlreadyExists;
+            return PXResultInvalid;//PXResultRefusedObjectAlreadyExists;
 
         case EFAULT:
             return BadAddress;
 
         case EFBIG:
-            return PXActionFailedFileTooLarge;
+            return PXResultFailedFileTooLarge;
 
         case EHOSTUNREACH:
             return HostIsUnreachable;
@@ -273,37 +308,37 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return IOFailure;
 
         case EISCONN:
-            return PXActionRefusedAlreadyConnected;
+            return PXResultRefusedAlreadyConnected;
 
         case EISDIR:
-            return PXActionRefusedTargetIsDirectory;
+            return PXResultRefusedTargetIsDirectory;
 
         case ELOOP:
-            return PXActionCanceledLoopDeteced;
+            return PXResultCanceledLoopDeteced;
 
         case EMFILE:
-            return PXActionFailedFileDescriptorValueTooLarge;
+            return PXResultFailedFileDescriptorValueTooLarge;
 
         case EMLINK:
-            return PXActionFailedTooManyLinks;
+            return PXResultFailedTooManyLinks;
 
         case EMSGSIZE:
             return MessageTooLarge;
 
         case ENAMETOOLONG:
-            return PXActionFailedFileNameTooLong;
+            return PXResultFailedFileNameTooLong;
 
         case ENETDOWN:
-            return PXActionRefusedNetworkIsDown;
+            return PXResultRefusedNetworkIsDown;
 
         case ENETRESET:
-            return PXActionFailedConnectionAbortedByNetwork;
+            return PXResultFailedConnectionAbortedByNetwork;
 
         case ENETUNREACH:
-            return PXActionFailedNetworkUnreachable;
+            return PXResultFailedNetworkUnreachable;
 
         case ENFILE:
-            return PXActionFailedTooManyFilesOpenInSystem;
+            return PXResultFailedTooManyFilesOpenInSystem;
 
         case ENOBUFS:
             return NoBufferSpaceAvailable;
@@ -327,7 +362,7 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return LinkHasBeenSevered;
 
         case ENOMEM:
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
 
         case ENOMSG:
             return NoMessageOfTheDesiredType;
@@ -348,19 +383,19 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return FunctionNotSupported;
 
         case ENOTCONN:
-            return PXActionFailedNotConnected;
+            return PXResultFailedNotConnected;
 
         case ENOTDIR:
-            return PXActionRefusedNotADirectory;
+            return PXResultRefusedNotADirectory;
 
         case ENOTEMPTY:
-            return PXActionRefusedDirectoryNotEmpty;
+            return PXResultRefusedDirectoryNotEmpty;
 
         case ENOTRECOVERABLE:
             return StateNotRecoverable;
 
         case ENOTSOCK:
-            return PXActionRefusedNotASocket;
+            return PXResultRefusedNotASocket;
 
         case ENOTTY:
             return InappropriateIOControlOperation;
@@ -372,16 +407,16 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return OperationWouldBlock;
 
         case ENOTSUP: // Same as 'EOPNOTSUPP' in linux
-            return PXResultInvalid;//PXActionNotSupportedByOperatingSystem;
+            return PXResultInvalid;//PXResultNotSupportedByOperatingSystem;
 #if OSWindows
         case EAGAIN: // Same as 'EWOULDBLOCK' in linux
-            return PXActionFailedResourceUnavailableTryAgain;
+            return PXResultFailedResourceUnavailableTryAgain;
 
         case EOPNOTSUPP:
             return OperationNotSupportedOnSocket;
 
         case ERROR_INVALID_ADDRESS:
-            return PXActionRefusedAdressInvalid;
+            return PXResultRefusedAddressInvalid;
 #endif
 
         case EOVERFLOW:
@@ -412,7 +447,7 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return ReadOnlyFileSystem;
 
         case ESPIPE:
-            return PXActionRefusedInvalidSeek;
+            return PXResultRefusedInvalidSeek;
 
         case ESRCH:
             return NoSuchProcess;
@@ -421,7 +456,7 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return StreamTimeout;
 
         case ETIMEDOUT:
-            return PXActionFailedConnectionTimedOut;
+            return PXResultFailedConnectionTimedOut;
 
         case ETXTBSY:
             return TextFileBusy;
@@ -430,19 +465,19 @@ PXResult PXAPI PXErrorCodeFromID(const int errorCode)
             return CrossDeviceLink;
 
         case 145:
-            return PXActionRefusedDirectoryNotEmpty;
+            return PXResultRefusedDirectoryNotEmpty;
 
         case 317: // Cant resolve error text
-            return PXActionFailedUnkownError;
+            return PXResultFailedUnkownError;
 
         case 1400:
-            return PXActionRefusedObjectIDInvalid;
+            return PXResultRefusedObjectIDInvalid;
 
 #if OSWindows
         case ERROR_INVALID_PARAMETER:
             return  PXResultRefusedParameterInvalid;
         case STATUS_INVALID_HANDLE:
-            return PXActionRefusedObjectIDInvalid;
+            return PXResultRefusedObjectIDInvalid;
 #endif
 
         default:
@@ -461,29 +496,25 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
         //-------------------------------------------------
 
         // case S_OK:
-        case ERROR_SUCCESS:
-            return PXResultOK; // The operation completed successfully.    0 (0x0)
-
+        case ERROR_SUCCESS: return PXResultOK;
             // case S_FALSE:
-        case ERROR_INVALID_FUNCTION:
-            return PXResultOK; // Incorrect function.    1 (0x1)
+        case ERROR_INVALID_FUNCTION: return PXResultOK; // Incorrect function.    1 (0x1)
 
         case 0xC0070006: // FACILITY_WIN32 | ERROR_INVALID_HANDLE
-            return PXActionRefusedObjectIDInvalid;
-
+            return PXResultRefusedObjectIDInvalid;
 
 
         case ERROR_CLASS_ALREADY_EXISTS:
-            return PXActionRefusedObjectAlreadyExists;
+            return PXResultRefusedObjectAlreadyExists;
 
         case    ERROR_FILE_NOT_FOUND:
-            return PXActionRefusedNotFound; //    The system cannot find the file specified.    2 (0x2)
+            return PXResultRefusedNotFound; //    The system cannot find the file specified.    2 (0x2)
         case    ERROR_PATH_NOT_FOUND:
-            return PXActionRefusedNotFound; //    The system cannot find the path specified.    3 (0x3)
+            return PXResultRefusedNotFound; //    The system cannot find the path specified.    3 (0x3)
         case    ERROR_TOO_MANY_OPEN_FILES:
             return PXResultInvalid; //    The system cannot open the file.    4 (0x4)
         case    ERROR_ACCESS_DENIED:
-            return PXActionDeniedNoPermission; //    Access is denied.    5 (0x5)
+            return PXResultDeniedNoPermission; //    Access is denied.    5 (0x5)
         case    ERROR_INVALID_HANDLE:
             return PXResultInvalid; //    The handle is invalid.    6 (0x6)
         case    ERROR_ARENA_TRASHED:
@@ -741,8 +772,10 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
             return PXResultInvalid; //    No more threads can be created in the system.    164 (0xA4)
         case    ERROR_LOCK_FAILED:
             return PXResultInvalid; //    Unable to lock a region of a file.    167 (0xA7)
-        case    ERROR_BUSY:
-            return PXResultInvalid; //    The requested resource is in use.    170 (0xAA)
+       
+        case 0x800700aa:
+        case ERROR_BUSY:
+            return PXResultRefusedInstanceAlreadyInUse;
 
 #if WindowsAtleastVista
         case    ERROR_DEVICE_SUPPORT_IN_PROGRESS:
@@ -1593,17 +1626,17 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
             // Some methods in WMI classes can return system and network error codes(64 for example).You can check the definition of these types of error codes by using the net helpmsg command in the command prompt window.For example, the command net helpmsg 64 returns the message : The specified network name is no longer available.In C++, you can call FormatMessage and specify C : \Windows\System32\wbem\wmiutils.dll as the message module.
             //-------------------------------------------------
         case     WBEM_E_FAILED:
-            return PXActionFailedUnkownError; //    Call failed.    2147749889 (0x80041001)
+            return PXResultFailedUnkownError; //    Call failed.    2147749889 (0x80041001)
         case     WBEM_E_NOT_FOUND:
-            return PXActionRefusedNotFound; //    Object cannot be found.    2147749890 (0x80041002)
+            return PXResultRefusedNotFound; //    Object cannot be found.    2147749890 (0x80041002)
         case     WBEM_E_ACCESS_DENIED:
-            return PXActionDeniedNoPermission; //    Current user does not have permission to perform the action.    2147749891 (0x80041003)
+            return PXResultDeniedNoPermission; //    Current user does not have permission to perform the action.    2147749891 (0x80041003)
         case     WBEM_E_PROVIDER_FAILURE:
             return PXResultInvalid; //    Provider has failed at some time other than during initialization.    2147749892 (0x80041004)
         case     WBEM_E_TYPE_MISMATCH:
-            return PXActionRefusedTypeMissmatch; //    Type mismatch occurred.    2147749893 (0x80041005)
+            return PXResultRefusedTypeMissmatch; //    Type mismatch occurred.    2147749893 (0x80041005)
         case     WBEM_E_OUT_OF_MEMORY:
-            return PXActionFailedMemoryAllocation; //    Not enough memory for the operation.    2147749894 (0x80041006)
+            return PXResultFailedMemoryAllocation; //    Not enough memory for the operation.    2147749894 (0x80041006)
         case     WBEM_E_INVALID_CONTEXT:
             return PXResultInvalid; //    The IWbemContext object is not valid.    2147749895 (0x80041007)
         case     WBEM_E_INVALID_PARAMETER:
@@ -1615,15 +1648,15 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
         case     WBEM_E_INVALID_STREAM:
             return PXResultInvalid; //    One or more network packets were corrupted during a remote session.    2147749899 (0x8004100B)
         case     WBEM_E_NOT_SUPPORTED:
-            PXResultInvalid;//return PXActionRefusedNotSupported; //    Feature or operation is not supported.    2147749900 (0x8004100C)
+            PXResultInvalid;//return PXResultRefusedNotSupported; //    Feature or operation is not supported.    2147749900 (0x8004100C)
         case     WBEM_E_INVALID_SUPERCLASS:
-            return PXActionRefusedObjectParentInvalid; //    Parent class specified is not valid.    2147749901 (0x8004100D)
+            return PXResultRefusedObjectParentInvalid; //    Parent class specified is not valid.    2147749901 (0x8004100D)
         case     WBEM_E_INVALID_NAMESPACE:
-            return PXActionRefusedNameSpaceInvalid; //    Namespace specified cannot be found.    2147749902 (0x8004100E)
+            return PXResultRefusedNameSpaceInvalid; //    Namespace specified cannot be found.    2147749902 (0x8004100E)
         case     WBEM_E_INVALID_OBJECT:
-            return PXActionRefusedObjectNameInvalid; //    Specified instance is not valid.    2147749903 (0x8004100F)
+            return PXResultRefusedObjectNameInvalid; //    Specified instance is not valid.    2147749903 (0x8004100F)
         case     WBEM_E_INVALID_CLASS:
-            return PXActionRefusedWindowsClassNameInvalid; //    Specified class is not valid.    2147749904 (0x80041010)
+            return PXResultRefusedWindowsClassNameInvalid; //    Specified class is not valid.    2147749904 (0x80041010)
         case     WBEM_E_PROVIDER_NOT_FOUND:
             return PXResultInvalid; //    Provider referenced in the schema does not have a corresponding registration.    2147749905 (0x80041011)
         case     WBEM_E_INVALID_PROVIDER_REGISTRATION:
@@ -1956,26 +1989,26 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
             // Also can indicate that the type of server you requested in the CLSCTX
             // enumeration is not registered or the values for the server types in the registry are corrupt.
         case REGDB_E_CLASSNOTREG:
-            return PXResultInvalid;//PXActionRefuedObjectNotInizialized;
+            return PXResultInvalid;//PXResultRefuedObjectNotInizialized;
 
             // The ppv parameter is NULL.
         case E_POINTER:
             return PXResultRefusedParameterNull;
 
         case RPC_E_CHANGED_MODE:
-            return PXResultInvalid;//PXActionRedundantAlreadyInitialized;
+            return PXResultInvalid;//PXResultRedundantAlreadyInitialized;
 
             // The call succeeded, but we had to substitute the 3D algorithm
         case DS_NO_VIRTUALIZATION:
-            return PXActionSuccessWithSubstitution;
+            return PXResultSuccessWithSubstitution;
 
             // The call failed because resources (such as a priority level) were already being used by another caller
         case DSERR_ALLOCATED:
-            return PXResultInvalid;//PXActionRefuedObjectAlreadyExists;
+            return PXResultInvalid;//PXResultRefuedObjectAlreadyExists;
 
             // The control (vol, pan, etc.) requested by the caller is not available
         case DSERR_CONTROLUNAVAIL:
-            return PXResultInvalid;//PXActionRefuedObjectPropertyNotAvailable;
+            return PXResultInvalid;//PXResultRefuedObjectPropertyNotAvailable;
 
             // An invalid parameter was passed to the returning function
         case DSERR_INVALIDPARAM:
@@ -1983,95 +2016,95 @@ PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
 
             // This call is not valid for the current state of this object
         case DSERR_INVALIDCALL:
-            return PXResultInvalid;// PXActionRefuedObjectStateDoesNotAllowAction;
+            return PXResultInvalid;// PXResultRefuedObjectStateDoesNotAllowAction;
 
             // An undetermined error occurred inside the DirectSound subsystem
         case DSERR_GENERIC:
-            return PXActionFailedUnkownError;
+            return PXResultFailedUnkownError;
 
             // The caller does not have the priority level required for the function to succeed
         case DSERR_PRIOLEVELNEEDED:
-            return PXActionDeniedPriorityTooLow;
+            return PXResultDeniedPriorityTooLow;
 
             // Not enough free memory is available to complete the operation
         case DSERR_OUTOFMEMORY:
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
 
             // The specified WAVE format is not supported
         case DSERR_BADFORMAT:
-            return PXActionRefuedFormatIllegal;
+            return PXResultRefuedFormatIllegal;
 
             // The function called is not supported at this time
         case DSERR_UNSUPPORTED:
-            return PXActionRefuedFormatNotSupported;
+            return PXResultRefuedFormatNotSupported;
 
             // No sound driver is available for use
         case DSERR_NODRIVER:
-            return PXActionRefuedDriverMissing;
+            return PXResultRefuedDriverMissing;
 
             // This object is already initialized
         case DSERR_ALREADYINITIALIZED:
-            return PXResultInvalid;//PXActionRefuedObjectAlreadyInizialized;
+            return PXResultInvalid;//PXResultRefuedObjectAlreadyInizialized;
 
         case CLASS_E_NOAGGREGATION: // This class cannot be created as part of an aggregate.
             //case DSERR_NOAGGREGATION: // This object does not support aggregation
-            return PXResultInvalid;//PXActionRefuedObjectAggregationNotSupported;
+            return PXResultInvalid;//PXResultRefuedObjectAggregationNotSupported;
 
             // The buffer memory has been lost, and must be restored
         case DSERR_BUFFERLOST:
-            return PXActionFailedBufferRefernceLost;
+            return PXResultFailedBufferRefernceLost;
 
             // Another app has a higher priority level, preventing this call from succeeding
         case DSERR_OTHERAPPHASPRIO:
-            return PXActionYieldToOtherProcessWithHigherPriority;
+            return PXResultYieldToOtherProcessWithHigherPriority;
 
             // This object has not been initialized
         case DSERR_UNINITIALIZED:
-            return PXResultInvalid;//PXActionRefuedObjectNotInizialized;
+            return PXResultInvalid;//PXResultRefuedObjectNotInizialized;
 
             // The specified class does not implement the requested interface,
             // or the controlling IUnknown does not expose the requested interface.
             //case E_NOINTERFACE:
         case DSERR_NOINTERFACE: // The requested COM interface is not available
-            return PXActionRefuedObjectInterfaceNotAvailable;
+            return PXResultRefuedObjectInterfaceNotAvailable;
 
             // Access is denied
         case DSERR_ACCESSDENIED:
-            return PXActionDeniedNoPermission;
+            return PXResultDeniedNoPermission;
 
             // Tried to create a DSBCAPS_CTRLFX buffer shorter than DSBSIZE_FX_MIN milliseconds
         case DSERR_BUFFERTOOSMALL:
-            return PXActionRefuedBufferSizeTooSmal;
+            return PXResultRefuedBufferSizeTooSmal;
 
             // Attempt to use DirectSound 8 functionality on an older DirectSound object
         case DSERR_DS8_REQUIRED:
-            return PXResultInvalid;//PXActionRefusedLibraryRequiredUpgrade;
+            return PXResultInvalid;//PXResultRefusedLibraryRequiredUpgrade;
 
             // A circular loop of send effects was detected
         case DSERR_SENDLOOP:
-            return PXActionCanceledLoopDeteced;
+            return PXResultCanceledLoopDeteced;
 
             // The GUID specified in an audiopath file does not match a valid MIXIN buffer
         case DSERR_BADSENDBUFFERGUID:
-            return PXActionRefusedNotFound;
+            return PXResultRefusedNotFound;
 
             // The object requested was not found (numerically equal to DMUS_E_NOT_FOUND)
         case DSERR_OBJECTNOTFOUND:
-            return PXActionRefusedNotFound;
+            return PXResultRefusedNotFound;
 
             // The effects requested could not be found on the system, or they were found
             // but in the wrong order, or in the wrong hardware/software locations.
         case DSERR_FXUNAVAILABLE:
-            return PXResultInvalid;//PXActionRefusedEffectNotAvailable;
+            return PXResultInvalid;//PXResultRefusedEffectNotAvailable;
 
             // Media Foundation
-        case 0xc00d36b4: return PXActionRefusedDeviceFunctionNotSupported; // MF_E_INVALIDMEDIATYPE
+        case 0xc00d36b4: return PXResultRefusedDeviceFunctionNotSupported; // MF_E_INVALIDMEDIATYPE
 
 
             // .NET runtime
-        case 0x80070002:    return PXActionFailedNotFoundLibrary;
-        case 0x80131522:    return PXActionFailedNotFoundClass; // COR_E_MISSINGMETHOD
-        case 0x80131513:    return PXActionFailedNotFoundMethod;
+        case 0x80070002:    return PXResultFailedNotFoundLibrary;
+        case 0x80131522:    return PXResultFailedNotFoundClass; // COR_E_MISSINGMETHOD
+        case 0x80131513:    return PXResultFailedNotFoundMethod;
         case 0x80131621: return PXResultInvalid;  // COR_E_TARGETINVOCATION
 
             // WSA Errors
@@ -2099,8 +2132,8 @@ PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
             //case MMSYSERR_INVALHANDLE:  return AudioResultDeviceHandleInvalid;
             //case MMSYSERR_NODRIVER:   return AudioResultDeviceNoDriver;
         case MMSYSERR_NOMEM:
-            return PXActionFailedMemoryAllocation;
-            //case MMSYSERR_NOTSUPPORTED: return PXActionRefusedNotSupported;
+            return PXResultFailedMemoryAllocation;
+            //case MMSYSERR_NOTSUPPORTED: return PXResultRefusedNotSupported;
         case MMSYSERR_BADERRNUM:
             return AudioResultErrorValueInvalid;
         case MMSYSERR_INVALFLAG:
@@ -2121,7 +2154,7 @@ PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
             //case MMSYSERR_MOREDATA:   return AudioResultMoreData;
 
         case WAVERR_BADFORMAT:
-            return PXActionRefusedFormatNotSupported;
+            return PXResultRefusedFormatNotSupported;
         case WAVERR_STILLPLAYING:
             return AudioResultDeviceIsStillPlaying;
         case WAVERR_UNPREPARED:
@@ -2135,61 +2168,7 @@ PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
 }
 #endif
 
-
-
-
 #define PXJumpOldUse 1
-
-
-
-#if OSUnix
-const PXI8U PXSingalIDList[] =
-{
-    SIGINT,
-    SIGILL,
-    SIGFPE,
-    SIGSEGV,
-    SIGTERM,
-    SIGABRT,
-#if OSWindows
-    SIGBREAK // Windows only
-#endif
-};
-const PXResult PXPOSIXSignalResultList[] =
-{
-    SIGINT,
-    PXResultExceptionIllegalInstruction,
-    SIGFPE,
-    PXResultExceptionAccessViolation,
-    SIGTERM,
-    PXResultExceptionControlCExit,
-    PXResultDebugEventBreakPoint
-};
-const PXI8U PXSingalIDListAmount = sizeof(PXSingalIDList);
-
-void PXUnixSignalHandler(const int signalID)
-{
-    // This function triggers from a signal handler, when an exception accurs.
-    // We will translate this code into our own error code to remove the OS dependecy
-
-    const PXI8U index = PXMemoryCompareI8V(PXSingalIDList, PXSingalIDListAmount, signalID);
-    const PXResult pxResultTranslated = PXPOSIXSignalResultList[index];
-
-    // We need to recover the point where we need to go?
-    PXThreadContext pxThreadContext;
-    PXResult pxResultContext = PXThreadContextIO(&pxThreadContext, PXNull, PXFalse);
-
-    PXAssert(PXResultOK == pxResultContext, "This cant ever fail");
-
-    // Actual recover, secound Parameter will be the element returned by setjmp()
-#if PXJumpOldUse
-    longjmp(pxThreadContext.POSIXJumpBuffer, pxResultTranslated);
-#else
-    siglongjmp(pxThreadContext.POSIXJumpBuffer, pxResultTranslated);  // Jump back to recovery point
-#endif
-}
-#endif
-
 
 #if OSWindows
 const PXResult PXWindowsExceptionPXResultList[] =
@@ -2213,51 +2192,67 @@ PXResultExceptionPrivilehedInstruction,
 PXResultExceptionPageLost,
 PXResultExceptionIllegalInstruction,
 PXResultExceptionNONCONTINUABLE_EXCEPTION,
-PXResultExceptionSTACK_OVERFLOW,
+PXResultExceptionStackOverflow,
 PXResultExceptionINVALID_DISPOSITION,
 PXResultExceptionGUARD_PAGE_VIOLATION,
-PXResultExceptionINVALID_HANDLE,
+PXResultRefusedHandleInvalid,
 //STATUS_POSSIBLE_DEADLOCK,
 PXResultExceptionControlCExit
 };
 const DWORD PXWindowsExceptionList[] =
 {
-STATUS_PENDING,
-STATUS_ACCESS_VIOLATION, // The thread tried to read from or write to a virtual address for which it does not have the appropriate access.
-STATUS_DATATYPE_MISALIGNMENT,
-STATUS_BREAKPOINT,
-STATUS_SINGLE_STEP,
-STATUS_ARRAY_BOUNDS_EXCEEDED,
-STATUS_FLOAT_DENORMAL_OPERAND,
-STATUS_FLOAT_DIVIDE_BY_ZERO,
-STATUS_FLOAT_INEXACT_RESULT,
-STATUS_FLOAT_INVALID_OPERATION,
-STATUS_FLOAT_OVERFLOW,
-STATUS_FLOAT_STACK_CHECK,
-STATUS_FLOAT_UNDERFLOW,
-STATUS_INTEGER_DIVIDE_BY_ZERO,
-STATUS_INTEGER_OVERFLOW,
-STATUS_PRIVILEGED_INSTRUCTION,
-STATUS_IN_PAGE_ERROR,
-STATUS_ILLEGAL_INSTRUCTION,
-STATUS_NONCONTINUABLE_EXCEPTION,
-STATUS_STACK_OVERFLOW,
-STATUS_INVALID_DISPOSITION,
-STATUS_GUARD_PAGE_VIOLATION,
-STATUS_INVALID_HANDLE,
-//STATUS_POSSIBLE_DEADLOCK,
-STATUS_CONTROL_C_EXIT
+    STATUS_PENDING,
+    STATUS_ACCESS_VIOLATION, // The thread tried to read from or write to a virtual address for which it does not have the appropriate access.
+    STATUS_DATATYPE_MISALIGNMENT,
+    STATUS_BREAKPOINT,
+    STATUS_SINGLE_STEP,
+    STATUS_ARRAY_BOUNDS_EXCEEDED,
+    STATUS_FLOAT_DENORMAL_OPERAND,
+    STATUS_FLOAT_DIVIDE_BY_ZERO,
+    STATUS_FLOAT_INEXACT_RESULT,
+    STATUS_FLOAT_INVALID_OPERATION,
+    STATUS_FLOAT_OVERFLOW,
+    STATUS_FLOAT_STACK_CHECK,
+    STATUS_FLOAT_UNDERFLOW,
+    STATUS_INTEGER_DIVIDE_BY_ZERO,
+    STATUS_INTEGER_OVERFLOW,
+    STATUS_PRIVILEGED_INSTRUCTION,
+    STATUS_IN_PAGE_ERROR,
+    STATUS_ILLEGAL_INSTRUCTION,
+    STATUS_NONCONTINUABLE_EXCEPTION,
+    STATUS_STACK_OVERFLOW,
+    STATUS_INVALID_DISPOSITION,
+    STATUS_GUARD_PAGE_VIOLATION,
+    STATUS_INVALID_HANDLE,
+    //STATUS_POSSIBLE_DEADLOCK,
+    STATUS_CONTROL_C_EXIT
 };
 const PXI8U PXWindowsExceptionListAmount = sizeof(PXWindowsExceptionList) / sizeof(DWORD);
 #endif
 
 
-PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
+
+
+void PXAPI PXExceptionFromWindows(PXException PXREF pxException, EXCEPTION_POINTERS PXREF exceptionPointer)
+{
+    pxException->Triggered = PXTrue;
+
+    // We need to translate this error into our version
+    const DWORD exceptionCode = exceptionPointer->ExceptionRecord->ExceptionCode;
+
+    pxException->FaultAddress = exceptionPointer->ExceptionRecord->ExceptionAddress;
+
+    // Translate exceptionCode to index
+    const PXSize index = PXMemoryCompareI32UV(PXWindowsExceptionList, PXWindowsExceptionListAmount, exceptionCode);
+
+    pxException->Result = PXWindowsExceptionPXResultList[index];
+}
+
+PXResult PXAPI PXSafeCallx1(PXCallX1 pxCallX1, void* p1)
 {
     PXException pxException;
     PXClear(PXException, &pxException);
-
-    PXResult pxResult = PXResultInvalid;
+    pxException.Result = PXResultInvalid;
 
 #if OSUnix || OSForcePOSIXForWindows
 
@@ -2285,19 +2280,6 @@ PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
 
 
 #if PXJumpOldUse
-    // Store handler callback for this thread
-    signal(SIGINT, PXUnixSignalHandler);
-    signal(SIGILL, PXUnixSignalHandler); // Bad instruction
-    signal(SIGFPE, PXUnixSignalHandler); // float error
-    signal(SIGSEGV, PXUnixSignalHandler); // Bad address
-    signal(SIGTERM, PXUnixSignalHandler);
-#if OSWindows
-    signal(SIGBREAK, PXUnixSignalHandler);
-#endif
-    signal(SIGABRT, PXUnixSignalHandler); // Abnormal termination
-    //signal(SIGBUS, signalHandler); // BUS error, SIGSEGV is used by os
-    //signal(SIGTRAP, signalHandler); // Breakpoint?
-
     const int signalID = setjmp(&snapshot); // Store current context
 #else
     const int signalID = sigsetjmp(&snapshot, 1); // the 1 means we store the even mask aswell
@@ -2319,32 +2301,108 @@ PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
 
 
 #elif OSWindows
-
     EXCEPTION_POINTERS* exceptionPointer = PXNull;
 
     __try
     {
-        pxResult = pxCallX1(p1);
+        pxException.Result = pxCallX1(p1);
     }
     __except(exceptionPointer = GetExceptionInformation(), EXCEPTION_EXECUTE_HANDLER)
     {
-        // We need to translate this error into our version
-        const DWORD exceptionCode = exceptionPointer->ExceptionRecord->ExceptionCode;
-
-        pxException.FaultAddress = exceptionPointer->ExceptionRecord->ExceptionAddress;
-
-        // Translate exceptionCode to index
-        const PXSize index = PXMemoryCompareI32UV(PXWindowsExceptionList, PXWindowsExceptionListAmount, exceptionCode);
-
-        pxResult = PXWindowsExceptionPXResultList[index];
+        PXExceptionFromWindows(&pxException, exceptionPointer);
     }
-
 #endif
+
+    if(!pxException.Triggered)
+    {
+        return pxException.Result;
+    }
 
     // Optional for tracking
     PXExceptionTrigger(&pxException);
 
-    return pxResult;
+    return pxException.Result;
+}
+
+PXResult PXAPI PXSafeCallx2(PXCallX2 pxCallX2, void* p1, void* p2)
+{
+    PXException pxException;
+    PXClear(PXException, &pxException);
+    pxException.Result = PXResultInvalid;
+
+    if(!pxCallX2)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+#if OSUnix || OSForcePOSIXForWindows
+
+    jmp_buf snapshot;
+    PXClear(jmp_buf, &snapshot);
+
+    // This implementation uses the POSIX implementation
+    // Windows supports this behaviour on paper but in practise it does not.
+    // Because of this, Linux only.
+
+    // Setup for callbacks
+#if PXJumpOldUse
+#else
+    struct sigaction signalAction;
+    PXClear(struct sigaction, &signalAction);
+    sigemptyset(&signalAction.sa_mask);
+    signalAction.sa_handler = signal_handler; // Callback
+
+    // Set the every signal, to catch if they accur
+    for(PXI8U i = 0; i < PXSingalIDListAmount; ++i)
+    {
+        const int result = sigaction(PXSingalIDList[i], &signalAction, NULL);
+    }
+#endif
+
+
+#if PXJumpOldUse
+    const int signalID = setjmp(&snapshot); // Store current context
+#else
+    const int signalID = sigsetjmp(&snapshot, 1); // the 1 means we store the even mask aswell
+#endif
+
+    PXBool isFirstTry = 0 == signalID;
+
+    // if 0, we store the state, that is our first call
+    // if any other number, this is not our first call and we failed before!
+    if(isFirstTry)
+    {
+        pxResult = pxCallX2(p1, p2);
+    }
+    else
+    {
+        // Translate buffer into actual data
+        pxResult = (PXResult)signalID;
+    }
+
+
+#elif OSWindows
+    EXCEPTION_POINTERS* exceptionPointer = PXNull;
+
+    __try
+    {
+        pxException.Result = pxCallX2(p1, p2);
+    }
+    __except(exceptionPointer = GetExceptionInformation(), EXCEPTION_EXECUTE_HANDLER)
+    {
+        PXExceptionFromWindows(&pxException, exceptionPointer);
+    }
+#endif
+
+    if(!pxException.Triggered)
+    {
+        return pxException.Result;
+    }
+
+    // Optional for tracking
+    PXExceptionTrigger(&pxException);
+
+    return pxException.Result;
 }
 
 void PXAPI PXExceptionTrigger(PXException PXREF pxException)
@@ -2355,7 +2413,7 @@ void PXAPI PXExceptionTrigger(PXException PXREF pxException)
         PXLoggingError,
         "Exception",
         "???",
-        "%x8.8x - %p",
+        "%8.8x - %p",
         pxException->WindowCode,
         pxException->FaultAddress
     );

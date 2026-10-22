@@ -159,7 +159,7 @@ PXResult PXAPI PXSBPClientSendMessage(PXSBPClient PXREF pxSBPClient, const void 
 
 PXResult PXAPI PXSBPClientSendFile(PXSBPClient PXREF pxSBPClient, const PXText PXREF filePath)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache PXREF pxSBPMessageChunk, const void PXREF data, const PXSize dataSize)
@@ -170,7 +170,7 @@ PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache PXREF pxSBPMessageChunk, con
         return PXFalse;
     }
 
-    const PXBool hasValidSignature = ((PXAdress)data)[0] == (PXByte)'°' && ((PXAdress)data)[1] == (PXByte)'°';
+    const PXBool hasValidSignature = ((PXAddress)data)[0] == (PXByte)'°' && ((PXAddress)data)[1] == (PXByte)'°';
 
     if (!hasValidSignature)
     {
@@ -178,8 +178,8 @@ PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache PXREF pxSBPMessageChunk, con
         return PXFalse;
     }
 
-    pxSBPMessageChunk->ID = PXI16MakeEndianBig(((PXAdress)data)[2], ((PXAdress)data)[3]);
-    pxSBPMessageChunk->SizeExpected = PXI16MakeEndianBig(((PXAdress)data)[4], ((PXAdress)data)[5]);
+    pxSBPMessageChunk->ID = PXI16MakeEndianBig(((PXAddress)data)[2], ((PXAddress)data)[3]);
+    pxSBPMessageChunk->SizeExpected = PXI16MakeEndianBig(((PXAddress)data)[4], ((PXAddress)data)[5]);
     pxSBPMessageChunk->Message = data;
     pxSBPMessageChunk->SizeCurrent = dataSize - PXSBPMessageChunkHeaderSize;
 
@@ -209,8 +209,8 @@ PXBool PXAPI PXSBPMessageSizeComplete(PXSBPChunkCache PXREF pxSBPMessage)
 PXSize PXAPI PXSBPMessageChunkDataConsume(PXSBPChunkCache PXREF pxSBPMessage, const void PXREF data, const PXSize dataSize)
 {
     const PXSize before = PXSBPMessageSizeMissing(pxSBPMessage);
-    const PXAdress* adress = (PXAdress)pxSBPMessage->Message + pxSBPMessage->SizeCurrent;
-    const PXSize copyedSize = PXMemoryCopy(data, dataSize, adress, before);
+    const PXAddress* address = (PXAddress)pxSBPMessage->Message + pxSBPMessage->SizeCurrent;
+    const PXSize copyedSize = PXMemoryCopy(data, dataSize, address, before);
 
     pxSBPMessage->SizeCurrent += copyedSize;
 
@@ -296,7 +296,7 @@ void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSock
             if (containsMultible) // Message contains multible blocks and needs to be copped
             {
                 const PXSize additionalDataSize = pxSBPReceiver->MessageChunkCurrent.SizeCurrent - pxSBPReceiver->MessageChunkCurrent.SizeExpected;
-                const PXAdress additionalDataAdress = (PXAdress)pxSBPReceiver->MessageChunkCurrent.Message + pxSBPReceiver->MessageChunkCurrent.SizeExpected;
+                const PXAddress additionalDataAddress = (PXAddress)pxSBPReceiver->MessageChunkCurrent.Message + pxSBPReceiver->MessageChunkCurrent.SizeExpected;
                 PXSBPChunk pxSBPChunk;
                 pxSBPChunk.Data = pxSBPReceiver->MessageChunkCurrent.Message;
                 pxSBPChunk.ChannelID = pxSBPReceiver->MessageChunkCurrent.ID;
@@ -310,7 +310,7 @@ void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSock
                     PXSocketDataReceivedEventData pxSocketDataMoveEventInfoSubSegment;
                     pxSocketDataMoveEventInfoSubSegment.SocketSending = pxSocketDataReceivedEventData->SocketSending;
                     pxSocketDataMoveEventInfoSubSegment.SocketReceiving = pxSocketDataReceivedEventData->SocketReceiving;
-                    pxSocketDataMoveEventInfoSubSegment.Data = additionalDataAdress;
+                    pxSocketDataMoveEventInfoSubSegment.Data = additionalDataAddress;
                     pxSocketDataMoveEventInfoSubSegment.DataSize = additionalDataSize;
 
                     PXSBPOnDataRawReceive(pxSBPReceiver, &pxSocketDataMoveEventInfoSubSegment); // Handle additional messages
@@ -325,7 +325,7 @@ void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSock
 
         {
             PXSBPChunk pxSBPChunk;
-            pxSBPChunk.Data = (PXAdress)pxSBPReceiver->MessageChunkCurrent.Message + PXSBPMessageChunkHeaderSize;
+            pxSBPChunk.Data = (PXAddress)pxSBPReceiver->MessageChunkCurrent.Message + PXSBPMessageChunkHeaderSize;
             pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeCurrent - PXSBPMessageChunkHeaderSize;
             pxSBPChunk.ChannelID = pxSBPReceiver->MessageChunkCurrent.ID;
 
@@ -364,7 +364,7 @@ void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSock
         if (!hasAdditionalData)          // We have additional data
         {
             const PXSize additionalDataSize = pxSBPReceiver->MessageChunkCurrent.SizeCurrent - pxSBPReceiver->MessageChunkCurrent.SizeExpected;
-            const PXAdress additionalDataAdress = (PXAdress)pxSBPReceiver->MessageChunkCurrent.Message + pxSBPReceiver->MessageChunkCurrent.SizeExpected;
+            const PXAddress additionalDataAddress = (PXAddress)pxSBPReceiver->MessageChunkCurrent.Message + pxSBPReceiver->MessageChunkCurrent.SizeExpected;
 
             pxSBPChunk.DataSize = pxSBPReceiver->MessageChunkCurrent.SizeExpected; // truncate message size
 
@@ -376,7 +376,7 @@ void PXAPI PXSBPOnDataRawReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSock
                 PXSocketDataReceivedEventData pxSocketDataMoveEventInfoSubSegment;
                 pxSocketDataMoveEventInfoSubSegment.SocketSending = pxSocketDataReceivedEventData->SocketSending;
                 pxSocketDataMoveEventInfoSubSegment.SocketReceiving = pxSocketDataReceivedEventData->SocketReceiving;
-                pxSocketDataMoveEventInfoSubSegment.Data = additionalDataAdress;
+                pxSocketDataMoveEventInfoSubSegment.Data = additionalDataAddress;
                 pxSocketDataMoveEventInfoSubSegment.DataSize = additionalDataSize;
 
                 PXSBPOnDataRawReceive(pxSBPReceiver, &pxSocketDataMoveEventInfoSubSegment); // Handle additional messages
@@ -411,7 +411,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSB
         {
             pxSBPMessage->DataSizeExpected += PXMemoryCopy
                                               (
-                                                  (PXAdress)pxSBPMessage->Data + pxSBPMessage->DataSizeExpected,
+                                                  (PXAddress)pxSBPMessage->Data + pxSBPMessage->DataSizeExpected,
                                                   pxSBPMessage->DataSizeCurrent - pxSBPMessage->DataSizeExpected,
                                                   pxSBPChunk->Data,
                                                   pxSBPChunk->DataSize
@@ -498,7 +498,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver PXREF pxSBPReceiver, const PXSB
             }
 
             pxSBPMessage.DataSizeCurrent -= pxFile.DataCursor;
-            pxSBPMessage.Data = (PXAdress)pxSBPChunk->Data + pxFile.DataCursor;
+            pxSBPMessage.Data = (PXAddress)pxSBPChunk->Data + pxFile.DataCursor;
             pxSBPMessage.Owner = pxSBPReceiver->EventList.Owner;
         }
 
@@ -538,7 +538,7 @@ PXResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter PXREF pxSBPEmitter, const void PX
     for (PXSize i = 0; i < numberOfPackages; ++i)
     {
         PXI16U packageSizeCurrent = PXMathMinimumIU(accumulator, pxSBPEmitter->PackageSizeMaximal);
-        const PXAdress dataSourcePoint = (PXAdress)message + (messageSize - accumulator);
+        const PXAddress dataSourcePoint = (PXAddress)message + (messageSize - accumulator);
 
         accumulator -= packageSizeCurrent;
 

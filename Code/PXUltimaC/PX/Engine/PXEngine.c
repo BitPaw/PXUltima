@@ -1,63 +1,83 @@
 #include "PXEngine.h"
 
-#include <PX/Math/PXMath.h>
-#include <PX/Engine/Dialog/PXDialogBox.h>
-#include <PX/Media/ADLER/PXAdler32.h>
-#include <PX/Type/PXProcessor.h>
-#include <PX/OS/Console/PXConsole.h>
-#include <PX/OS/Async/PXProcess.h>
-#include <PX/OS/File/PXFile.h>
-#include <PX/OS/Debug/PXDebug.h>
-#include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
-#include <PX/OS/Async/PXThreadPool.h>
-#include <PX/Math/PXCollision.h>
-#include <PX/OS/PXOS.h>
-#include <PX/OS/Graphic/PXGraphic.h>
+#include <PX/Container/Dictionary/PXDictionary.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/Engine/UI/PXButton.h>
+#include <PX/Engine/UI/PXECSEntityInfo.h>
+#include <PX/Engine/UI/PXECSEntityList.h>
+#include <PX/Engine/UI/PXFileDirectory.h>
+#include <PX/Engine/UI/PXFooter.h>
+#include <PX/Engine/UI/PXSceneView.h>
+#include <PX/Engine/UI/PXTransformView.h>
+#include <PX/Math/PXCollision.h>
+#include <PX/Math/PXMath.h>
+#include <PX/Media/ADLER/PXAdler32.h>
+#include <PX/Media/D8X/PXD8D.h>
+#include <PX/OS/Async/PXProcess.h>
+#include <PX/OS/Async/PXThreadPool.h>
+#include <PX/OS/Audio/Windows/PXDirectSound.h>
+#include <PX/OS/Audio/Windows/PXMultiMedia.h>
+#include <PX/OS/Audio/Windows/PXWASAPI.h>
+#include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/DataBase/PXDataBase.h>
+#include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/File/PXFile.h>
+#include <PX/OS/PXOS.h>
 #include <PX/Type/PXBrush.h>
 #include <PX/Type/PXCamera.h>
+#include <PX/Type/PXCPU.h>
+#include <PX/Type/PXDialogBox.h>
+#include <PX/Type/PXFieldEffect.h>
 #include <PX/Type/PXFont.h>
 #include <PX/Type/PXMesh.h>
 #include <PX/Type/PXModel.h>
-#include <PX/Type/PXSpaceGrid.h>
-#include <PX/Type/PXSkyBox.h>
-#include <PX/Type/PXWindow.h>
-#include <PX/Engine/UI/PXButton.h>
-#include <PX/Engine/UI/PXFooter.h>
-#include <PX/Engine/UI/PXSceneView.h>
-#include <PX/Engine/UI/PXECSEntityInfo.h>
-#include <PX/Engine/UI/PXFileDirectory.h>
-#include <PX/Engine/UI/PXTransformView.h>
-#include <PX/Engine/UI/PXECSEntityList.h>
-#include <PX/Media/D8X/PXD8D.h>
 #include <PX/Type/PXScene.h>
-#include <PX/Container/Dictionary/PXDictionary.h>
-#include <assert.h>
-#include "PXAudioSystem.h"
-#include <PX/OS/DataBase/PXDataBase.h>
+#include <PX/Type/PXSkyBox.h>
+#include <PX/Type/PXSpaceGrid.h>
+#include <PX/Type/PXSprite.h>
+#include <PX/Type/PXWindow.h>
+#include <PX/OS/Async/PXThread.h>
 
-#pragma comment(lib, "dinput8.lib")
+//-------------------------------------
+// Modules
+#include <PX/Engine/PXEngineAudio.h>
+#include <PX/Engine/PXEngineRender.h>
+#include <PX/Engine/PXEngineScene.h>
+#include <PX/Engine/PXEngineTimer.h>
+#include <PX/Engine/PXEngineInput.h>
+#include <PX/Engine/PXEngineNetwork.h>
+//-------------------------------------
+
+
+
 
 #if OSWindows
 #include <Xinput.h>
 #include <stdio.h>
 
 #pragma comment(lib, "Xinput.lib")
+#pragma comment(lib, "dinput8.lib")
 #endif
+
+#include <assert.h>
+#include <math.h>
+#include "PXEngineMath.h"
+#include "PXEngineModManager.h"
 
 typedef struct PXEngine_
 {
     PXECSInfo Info;
 
-    //PXResourceManager* ResourceManager;
-    PXGUIManager GUISystem;
-    PXGraphic Graphic;
-    PXWindow* WindowMain;
-    PXModLoader ModLoader;
-    PXAudioSystem* Audio;
-    PXRenderer* Renderer;
+    //-------------------------------------------
+    PXThread* ThreadConductor; // Orchestrator of the main engine loop
+    //-------------------------------------------
+
+
     //PXControllerSystem ControllerSystem;
     PXDataBase DataBase;
+
+    PXEngineContext Context;
+
 
     //PXKeyBoard KeyBoardCurrentInput;
     //PXMouse MouseCurrentInput;
@@ -77,11 +97,13 @@ typedef struct PXEngine_
     PXEngineRenderUpdateEvent OnRenderUpdate;
     PXEngineInteractCallBack OnInteract;
 
-    PXEngineTimeData TimeData;
-
     PXBool IsRunning;
     PXBool UpdateUI;
     PXBool DoRendering;
+
+    // Time/Event
+    PXBool EventUIAviable;
+    PXBool EventEngineThreadDone;
 
 
     // Input
@@ -106,36 +128,16 @@ typedef struct PXEngine_
 
     //---------------------------------
     // Time
-    #if OSWindows
-    LARGE_INTEGER PerformanceFrequency; // LARGE_INTEGER, Timer frequency. Irellevant, only for caching
-    #endif
-    PXF64 TimeDeltaTimeTarget;
-    PXF64 TimeDeltaTimeCurrent;
-
-    PXF64 TimeStampLast; // Time after last frame.
-    PXF64 TimeStampCurrent; // Our "NOW"
-    PXF64 TimeStampNext; // Expected time to update
-
-    PXF64 FPSCurrent;
-    PXF64 FPSTarget;
-    PXF64 FrameTime;
-
-
     PXBool UseImgameTimer; // A special timer to react every x FPS
     //---------------------------------
 
     // EventDrivenSystem
-#if OSUnix
-#elif OSWindows
 
-    HANDLE EventWorkHandle;
-    HANDLE EventRenderHandle;
-#endif
 }
 PXEngine;
 
 
-const char PXEngineText[] = "PX-Engine";
+const char PXEngineText[] = "Engine-PX";
 const char PXRegisterText[] = "Register";
 const PXI8U PXEngineTextLength = sizeof(PXEngineText);
 const PXECSRegisterInfoStatic PXEngineRegisterInfoStatic =
@@ -151,6 +153,7 @@ const PXECSRegisterInfoStatic PXEngineRegisterInfoStatic =
 PXECSRegisterInfoDynamic PXEngineRegisterInfoDynamic;
 
 
+#if 0
 PXEngineUpdateFuntion _pxEngineUpdateFuntionList[] =
 {
     PXEngineUpdateAwait,
@@ -164,12 +167,37 @@ PXEngineUpdateFuntion _pxEngineUpdateFuntionList[] =
     PXEngineUpdateUser,
     PXEngineUpdateRender
 };
-const PXI8U _pxEngineUpdateFuntionListAmount = sizeof(_pxEngineUpdateFuntionList) / sizeof(PXEngineUpdateFuntion);
+#endif
+
+PXEngineModuleCreateFunction pxEngineModuleCreateList[] =
+{
+    // No dependecy
+    PXEngineCreateMath,
+    PXEngineCreateTime,
+    PXEngineCreateModManager,
+
+    // Minor dependecy
+    PXEngineCreateUI,
+    PXEngineCreateRender,
+    PXEngineCreateAudio,
+    PXEngineCreateInput,
+    PXEngineCreateScene
+};
+const PXI8U pxEngineModuleCreateAmount = sizeof(pxEngineModuleCreateList) / sizeof(PXEngineModuleCreateFunction);
 
 
-
-
-
+PXAudioInitializeFunction _pxAudioInitializeList[] =
+{
+#if OSUnix
+    PXALSAInitialize,
+    PXPulseInitialize
+#elif OSWindows
+    PXMultiMediaInitialize,
+    PXDirectSoundInitialize,
+    PXWASAPIInitialize
+#endif
+};
+const PXI8U _pxAudioInitializeListAmount = sizeof(_pxAudioInitializeList) / sizeof(PXAudioInitializeFunction);
 
 
 void PXAPI PXEngineRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
@@ -181,6 +209,7 @@ void PXAPI PXEngineRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 PXResult PXAPI PXEngineCreate(PXEngine** pxEngineREF, PXEngineCreateInfo PXREF pxEngineCreateInfo)
 {
     PXEngine* pxEngine = PXNull;
+    PXResult pxResult = PXResultInvalid;
 
     if(!(pxEngineREF && pxEngineCreateInfo))
     {
@@ -190,7 +219,7 @@ PXResult PXAPI PXEngineCreate(PXEngine** pxEngineREF, PXEngineCreateInfo PXREF p
     pxEngineCreateInfo->Info.Static = &PXEngineRegisterInfoStatic;
     pxEngineCreateInfo->Info.Dynamic = &PXEngineRegisterInfoDynamic;
 
-    PXResult pxResult = PXECSCreate(pxEngineREF, pxEngineCreateInfo);
+    pxResult = PXECSCreate(pxEngineREF, pxEngineCreateInfo);
 
     if(PXResultOK != pxResult)
     {
@@ -209,53 +238,67 @@ PXResult PXAPI PXEngineCreate(PXEngine** pxEngineREF, PXEngineCreateInfo PXREF p
 
     PXTextCopyA(pxEngineCreateInfo->Name, PXTextLengthUnkown, pxEngine->ApplicationName, 64);
 
-    /*
-    PXCameraCreateInfo pxCameraCreateInfo;
-    PXClear(PXCameraCreateInfo, &pxCameraCreateInfo);
-    pxCameraCreateInfo.Perspective = PXCameraPerspective3D;
+    // Setup core systems
+    pxResult = PXDictionaryECSCreate(&pxEngine->Context.SystemLookup);
 
-    PXCameraCreate(&pxEngine->CameraCurrent, &pxCameraCreateInfo);
-    */
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingEvent,
+        PXEngineText,
+        "Create",
+        "Loading modules <%i>...",
+        pxEngineModuleCreateAmount
+    );
+#endif
 
+    PXThreadCreateInfo pxThreadCreateInfo;
+    PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
+    pxThreadCreateInfo.CreateSuspended = PXTrue;
+    pxThreadCreateInfo.Parameter = pxEngine;
+    pxThreadCreateInfo.ThreadFunction = PXEngineRootLoop;
 
-    // Load mods, do not init them, just to preload
-    PXEngineCreateMod(pxEngine, pxEngineCreateInfo);
+    pxResult = PXThreadCreate(&pxEngine->ThreadConductor, &pxThreadCreateInfo);
+    
+    // We start all threads one after each 
+    // other because they rely on a spesific order.
 
-    // Init rendering system
+    for(PXSize i = 0; i < pxEngineModuleCreateAmount; ++i)
     {
-        PXECSCreateInfo pxECSCreateInfo;
-        PXClear(PXECSCreateInfo, &pxECSCreateInfo);
+        PXEngineModuleCreateFunction pxEngineModuleCreate = pxEngineModuleCreateList[i];
 
-        PXRendererCreate(&pxEngine->Renderer, &pxECSCreateInfo);
+        if(!pxEngineModuleCreate)
+        {
+            continue;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingEvent,
+            PXEngineText,
+            "Create",
+            "Module <%2i/%-2i>",
+            i+1,
+            pxEngineModuleCreateAmount
+        );
+#endif
+        
+        PXResult pxResult = pxEngineModuleCreate(pxEngine, pxEngineCreateInfo);        
     }
-
-    // Init graphical API, DirectX OpenGL or the OS-WindowManager
-    PXEngineCreateGraphic(pxEngine, pxEngineCreateInfo);
-
-    // Audio system
-    PXEngineCreateAudio(pxEngine, pxEngineCreateInfo);
-
-
-    //-----------------------------------------------------
-    // Input
-    //-----------------------------------------------------
-    if(pxEngineCreateInfo->UseMouseInput)
-    {
-        //    PXGUIMouseMovementEnable(pxEngine->Window->Info.Handle.WindowHandle);
-
-       // PXControllerSystemInitilize(&pxEngine->ControllerSystem);
-       // PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
-    }
-    //-----------------------------------------------------
-    // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine)
 {
+    if(!pxEngine)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     //PXControllerSystemShutdown(&pxEngine->ControllerSystem);
-    PXGraphicRelease(&pxEngine->Graphic);
+    //PXGraphicRelease(&pxEngine->Graphic);
 
 #if PXLogEnable
     PXLogPrint
@@ -303,8 +346,6 @@ PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine)
         }
     }
 
-
-
     // list all open handles
 
     // list all open pointers
@@ -319,23 +360,112 @@ PXResult PXAPI PXEngineRelease(PXEngine PXREF pxEngine)
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXWindow* PXAPI PXEngineWindowMainGet(const PXEngine PXREF pxEngine)
+PXThreadResult PXOSAPI PXEngineRootLoop(PXEngine PXREF pxEngine)
 {
-    return pxEngine->WindowMain;
+    PXResult pxResult = PXResultOK;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineText,
+        "ASYNC-Loop",
+        "START"
+    );
+#endif
+
+    PXThreadResult pxThreadResult;
+    pxThreadResult.Data = 0;
+
+    PXEngineModuleASYNCActivate(pxEngine);
+
+    for(;;)
+    {
+        pxResult = PXEngineTimeWaitGAME(pxEngine, pxEngine->Context.Time);
+
+        if(PXResultNoWorkToDo == pxResult)
+        {
+            // If we did nothing an entire loop, that can mean our 
+            // pgysics aswell as rendering system is gone, which 
+            // makes this loop not viable and can be closed.
+            break; 
+        }
+    }
+
+    PXEngineModuleASYNCDeactivate(pxEngine);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineText,
+        "ASYNC-Loop",
+        "STOP"
+    );
+#endif
+
+    return pxThreadResult;
 }
+
+PXThread* PXAPI PXEngineRootThread(const PXEngine PXREF pxEngine)
+{
+    if(!pxEngine)
+    {
+        return PXNull;
+    }
+
+    return pxEngine->ThreadConductor;
+}
+
+void PXAPI PXEngineModuleSerialActivate(PXEngine PXREF pxEngine)
+{
+    const PXSize moduleAmount = PXEngineModuleAmount(pxEngine);
+
+    for(PXSize i = 0; i < moduleAmount; ++i)
+    {
+        PXEngineModule PXREF pxEngineModule = PXEngineModuleIndex(pxEngine, i);
+
+        PXEngineModuleActivate(pxEngineModule, pxEngine);
+    }
+}
+
+void PXAPI PXEngineModuleSerialDeactivate(PXEngine PXREF pxEngine)
+{
+   
+}
+
+void PXAPI PXEngineModuleASYNCActivate(PXEngine PXREF pxEngine)
+{
+    const PXSize moduleAmount = PXEngineModuleAmount(pxEngine);
+
+    for(PXSize i = 0; i < moduleAmount; ++i)
+    {
+        PXEngineModule PXREF pxEngineModule = PXEngineModuleIndex(pxEngine, i);
+
+        PXEngineModuleActivate(pxEngineModule, pxEngine);
+    }
+}
+
+void PXAPI PXEngineModuleASYNCDeactivate(PXEngine PXREF pxEngine)
+{
+   
+}
+
 
 #define UseOSDelta 0
 
-void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWindowEvent)
+void PXAPI PXEngineWindowEvent(PXEngineUIEvent PXREF pxWindowEvent)
 {
+    PXEngine PXREF pxEngine = (PXEngine*)pxWindowEvent->Owner;
+
     switch(pxWindowEvent->Type)
     {
         case PXWindowEventTypeElementDestroy:
         {
-            pxEngine->WindowMain = PXNull; // Window is beeing destroyed, reference illegal
+            //pxEngine->WindowMain = PXNull; // Window is beeing destroyed, reference illegal
             break;
         }
         case PXWindowEventTypeElementResize:
@@ -1264,11 +1394,21 @@ void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWi
 
 PXResult PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
 {
-    if(!pxEngine->IsRunning)
+    PXResult pxResult = PXResultOK;
+
+    if(!pxEngine)
     {
-        return PXActionRefuedServiceNotRunning; // Engine is not running, we dont release
+        return PXResultRefusedParameterNull;
     }
 
+    if(!pxEngine->IsRunning)
+    {
+        return PXResultRefuedServiceNotRunning; // Engine is not running, we don't release.
+    }
+
+    pxResult = PXEngineTimeWaitUI(pxEngine, pxEngine->Context.Time);
+
+    pxResult = PXEngineEventOnUI(pxEngine);
 
 #if 0
     PXConsoleGoToXY(0, 0);
@@ -1289,7 +1429,7 @@ PXResult PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
     PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
 
-    //PXThreadSleep(PXNull, 1);
+    return pxResult;
 }
 
 PXResult PXAPI PXEngineRun(PXEngine PXREF pxEngine)
@@ -1299,518 +1439,185 @@ PXResult PXAPI PXEngineRun(PXEngine PXREF pxEngine)
         return PXResultRefusedParameterNull;
     }
 
+    PXEngineModuleSerialActivate(pxEngine);
+
+    PXResult pxResult = PXResultOK;
+    PXThread PXREF pxThread = PXEngineRootThread(pxEngine);
+
+    // Forever loop
     for(;;)
     {
-        for(PXI8U i = 0; i < _pxEngineUpdateFuntionListAmount; i++)
+        pxResult = PXEngineUpdate(pxEngine);
+
+        PXThreadState threadState = PXThreadStateGet(pxThread);
+
+        PXBool quitLoop =
+            (PXThreadStateFinished == threadState) ||
+            (PXResultNoWorkToDo == pxResult);
+
+        if(quitLoop)
         {
-            _pxEngineUpdateFuntionList[i](pxEngine);
+            break;
         }
-
-        ++(pxEngine->TimeData.CounterTimeWindow);
-        ++(pxEngine->TimeData.CounterTimeUser);
-        ++(pxEngine->TimeData.CounterTimeNetwork);
-        ++(pxEngine->TimeData.CounterTimeCPU);
-        ++(pxEngine->TimeData.CounterTimeGPU);
-
-        PXThreadYieldToOtherThreads();
     }
+
+    PXEngineModuleSerialDeactivate(pxEngine);
 
     return PXResultOK;
 }
 
-void PXAPI PXEngineEventWork(PXEngine PXREF pxEngine)
+void PXAPI PXEngineDrawSceneDefault(PXEngine PXREF pxEngine, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-#if OSUnix
-#elif OSWindows
-        ResetEvent(pxEngine->EventWorkHandle);
-#endif
-}
+    PXWindow PXREF pxWindow = pxDrawInfo->Window;
 
-void PXAPI PXEngineEventRender(PXEngine PXREF pxEngine)
-{
-    // ???
-    //PXWindowRedraw(pxEngine->WindowMain);
-    //PXEngineUpdateRender(pxEngine->WindowMain);
-    PXEngineTimeSetEnd(pxEngine);
-}
+    PXRectangleXYWHI32 spaceDraw;
+    PXRectangleXYWHI32 spaceBox;
+    PXRectangleXYWHI32 spaceContent;
 
-void PXAPI PXEngineEventOS(PXEngine PXREF pxEngine)
-{
-#if OSUnix
-#elif OSWindows
-    MSG msg;
-    while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    PXWindowSpaceDrawGet(pxWindow, &spaceDraw);
+    PXWindowSpaceBoxGet(pxWindow, &spaceBox);
+    PXWindowSpaceContentGet(pxWindow, &spaceContent);
+
+    PXEngineScene PXREF pxEngineScene = pxEngine->Context.Scene;
+    PXEngineRender PXREF pxEngineRender = pxEngine->Context.Render;
+    PXBool isRendererAttached = pxEngineRender > 0;
+
+    PXScene PXREF pxScene = PXEngineSceneSceneCurrent(pxEngineScene);
+    PXBool canRender = isRendererAttached && pxScene;
+
+    if(!canRender)
     {
-        if(msg.message == WM_QUIT)
-        {
-            PXEngineStop(pxEngine);
-            return;
-        }
+        PXWindowDrawHelloWorldTriangle
+        (
+            pxWindow,
+            spaceDraw.X,
+            spaceDraw.Y,
+            spaceDraw.Width,
+            spaceDraw.Height
+        );
 
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-#endif
-}
-
-void PXAPI PXEngineTimeSetEnd(PXEngine PXREF pxEngine)
-{
-#if OSUnix
-#elif OSWindows
-    LARGE_INTEGER performanceCounterNow;
-    QueryPerformanceCounter(&performanceCounterNow);
-
-    pxEngine->TimeStampLast = (PXF64)performanceCounterNow.QuadPart / (PXF64)pxEngine->PerformanceFrequency.QuadPart;
-    pxEngine->TimeStampNext = pxEngine->TimeStampLast + pxEngine->TimeDeltaTimeTarget;
-#endif
-}
-
-void PXAPI PXEngineTimeSetNow(PXEngine PXREF pxEngine)
-{
-#if OSUnix
-#elif OSWindows
-    LARGE_INTEGER performanceCounterNow;
-    QueryPerformanceCounter(&performanceCounterNow);
-
-    pxEngine->TimeStampCurrent = (PXF64)performanceCounterNow.QuadPart / (PXF64)pxEngine->PerformanceFrequency.QuadPart;
-    pxEngine->TimeDeltaTimeCurrent = pxEngine->TimeStampCurrent - pxEngine->TimeStampLast;
-    pxEngine->FrameTime = pxEngine->TimeDeltaTimeCurrent * 1000.0;
-    pxEngine->FPSCurrent = 1.0 / pxEngine->FrameTime;
-#endif
-}
-
-PXF64 PXAPI PXEngineTimeDelta(PXEngine PXREF pxEngine)
-{
-    PXF64 delta = pxEngine->TimeStampNext - pxEngine->TimeStampCurrent;
-
-    if(delta < 0)
-    {
-        return 0;
-    }
-
-    return delta;
-}
-
-void PXAPI PXEngineUpdateAwait(PXEngine PXREF pxEngine)
-{
-#if 0
-    if(1)
-    {
         return;
     }
+    else
+    {
+        glEnable(GL_DEPTH_TEST);
+        PXColorRGB_F32 ClearColor = { 0.2, 0.2, 0.4 };
+
+        glClearColor(ClearColor.Red, ClearColor.Green, ClearColor.Blue, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#if 1
+        PXWindowDrawRect
+        (
+            pxWindow,
+            spaceDraw.X,
+            spaceDraw.Y,
+            spaceDraw.Width,
+            spaceDraw.Height
+        );
 #endif
-
-#if OSWindows
-
-    PXI8U timeCounter = 1;
-
-    // Reset events
-    ResetEvent(pxEngine->EventWorkHandle);
-
-    PXEngineTimeSetNow(pxEngine);
-
-#if 0
-    PXConsoleGoToXY(0, 0);
-    printf
-    (
-        "%25s : %12.3f ms\n"
-        "%25s : %12.3f ms\n"
-        "%25s : %12.3f s\n"
-        "%25s : %12.3f s\n"
-        "%25s : %12.3f s\n"
-        "%25s : %12.3f s\n"
-        "%25s : %12.3f s\n"
-        "%25s : %12.3f ms\n",
-        "TimeDeltaTimeTarget", pxEngine->TimeDeltaTimeTarget * 1000,
-        "TimeDeltaTimeCurrent", pxEngine->TimeDeltaTimeCurrent * 1000,
-        "TimeStampLast", pxEngine->TimeStampLast,
-        "TimeStampCurrent", pxEngine->TimeStampCurrent,
-        "TimeStampNext", pxEngine->TimeStampNext,
-        "FPSTarget", pxEngine->FPSTarget,
-        "FPSCurrent", pxEngine->FPSCurrent,
-        "FrameTime", pxEngine->FrameTime * 1000
-    );
-#endif
-
-    if(pxEngine->UseImgameTimer)
-    {
-        const PXF64 timeToWait = PXEngineTimeDelta(pxEngine);
-        PXBool doWait = timeToWait > 0;
-
-        if(doWait)
-        {
-            // Convert absolute target time to FILETIME-style 100ns units
-            // SetWaitableTimer expects a LARGE_INTEGER in 100ns units.
-            // We'll use a *relative* negative value here for simplicity,
-            // but it's derived from the absolute schedule.
-            LONGLONG wait_100ns = (LONGLONG)(timeToWait * 10000000.0);
-            LARGE_INTEGER due_time;
-            due_time.QuadPart = -wait_100ns; // negative = relative
-
-            BOOL result = SetWaitableTimer(pxEngine->EventRenderHandle, &due_time, 0, NULL, NULL, FALSE);
-
-            ++timeCounter; // We use one more timer
-        }
-        else
-        {
-            // We need to update right now, no time to wait.
-            PXEngineEventRender(pxEngine);
-            return;
-        }
     }
 
+    pxDrawInfo->Scene = pxScene;
+    pxDrawInfo->Camera = PXSceneCameraCurrent(pxScene);
 
-    PXEngineEvent pxEngineEventList[] =
-    {
-        PXEngineEventWork,  // WAIT_OBJECT_0,
-        PXEngineEventOS,  // WAIT_OBJECT_0 + 1,
-        PXEngineEventOS // WAIT_OBJECT_0 + 2, Generic events are always +1 more than our events
-    };
-
-    if(timeCounter == 2)
-    {
-        pxEngineEventList[1] = PXEngineEventRender;
-    }
-
-    HANDLE handleList[] =
-    {
-        pxEngine->EventWorkHandle,
-        pxEngine->EventRenderHandle
-    };
-
-
-
-
-    const PXI8U handleListAmount = sizeof(handleList) / sizeof(HANDLE);
-
-    const DWORD result = MsgWaitForMultipleObjects
-    (
-        timeCounter,
-        handleList,
-        FALSE,
-        INFINITE,
-        QS_ALLINPUT
-    ); // Windows NT 3.1
-
-    // We need to refetch the time, we dont know how long we waited.
-    PXEngineTimeSetNow(pxEngine);
-
-    pxEngineEventList[result](pxEngine);
-
-    //PXEngineTimeSetEnd(pxEngine);
-
-#endif
-
-    return PXResultOK;
-}
-
-void PXAPI PXEngineUpdateTimers(PXEngine PXREF pxEngine)
-{
-    pxEngine->TimeData.TimeNow = PXTimeCounterStampGet();
-
-    pxEngine->TimeData.CounterTimeDelta = pxEngine->TimeData.TimeNow - pxEngine->TimeData.CounterTimeLast;
-    pxEngine->TimeData.CounterTimeLast = pxEngine->TimeData.TimeNow;
-    pxEngine->TimeData.TimeFrequency = PXTimeCounterFrequencyGet();
-    pxEngine->TimeData.FramesPerSecound = PXMathFloor(pxEngine->TimeData.TimeFrequency / (PXF32)pxEngine->TimeData.CounterTimeDelta);
-    pxEngine->TimeData.FrameTime = PXMathCeilingF((1000000 * pxEngine->TimeData.CounterTimeDelta) / (PXF32)pxEngine->TimeData.TimeFrequency);
-
-    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet();
-    //PXWindowUpdate(&pxEngine->Window);
-    pxEngine->TimeData.CounterTimeWindow = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeWindow;
-}
-
-void PXAPI PXEngineUpdateInput(PXEngine PXREF pxEngine)
-{
-    #if OSUnix
-    #elif OSWindows
-    XINPUT_STATE inputState;
-    ZeroMemory(&inputState, sizeof(inputState));
-
-    DWORD errorCode = XInputGetState(0, &inputState); // Windows XP?, Xinput.lib, xinput.h
-    PXBool isOK = ERROR_SUCCESS == errorCode;
-
-    if(isOK)
-    {
-        SHORT lx = inputState.Gamepad.sThumbLX;
-        SHORT ly = inputState.Gamepad.sThumbLY;
-        BYTE a = (inputState.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
-
-        printf("[XINPUT] LX=%d LY=%d A=%d\n", lx, ly, a);
-    }
-    #endif
-}
-
-void PXAPI PXEngineUpdateNetwork(PXEngine PXREF pxEngine)
-{
-    pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet();
-    PXFunctionInvoke(pxEngine->OnNetworkUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeNetwork;
-}
-
-void PXAPI PXEngineUpdateWindow(PXEngine PXREF pxEngine)
-{
-    // Fetch Window input if SYNC
-    {
-        const PXBool isRunningASYNC = 0;// pxEngine->Window->Win.MessageThread.ThreadID != 0;
-
-        if(!isRunningASYNC)
-        {
-            PXWindowEventPoll(pxEngine->WindowMain);
-
-
-            // PXWindowShow(pxEngine);
-
-             //PXNativeDrawChildrenReDraw(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
-
-             // After we updated, lets do manual updates that might not have been fetched
-             //PXNativDrawCursorCollisionCheck(&pxEngine->GUISystem.NativDraw);
-
-             // if window does not exist anymore
-            if(!pxEngine->WindowMain)
-            {
-                PXEngineStop(pxEngine);
-                return;
-            }
-
-            // PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
-        }
-
-        //Sleep(1);
-
-        //LockWindowUpdate(e);
-// PXWindowOpenGLEnable(e);
-    }
-
-    PXWindow* pxWindow = pxEngine->WindowMain;
-
-    // Extended windows resize check
-    if(pxEngine->UpdateUI)
-    {
-        PXGUIProperty pxGUIProperty;
-        PXClear(PXGUIProperty, &pxGUIProperty);
-        //pxGUIProperty.WindowCurrent = pxWindow;
-        pxGUIProperty.Property = PXUIElementPropertySize;
-
-        PXGUIPropertyFetch(pxWindow, &pxGUIProperty, 1, PXFalse);
-
-        PXViewPort pxViewPort;
-        pxViewPort.X = 0;
-        pxViewPort.Y = 0;
-        pxViewPort.Width = pxGUIProperty.Size.Width;
-        pxViewPort.Height = pxGUIProperty.Size.Height;
-        pxViewPort.ClippingMinimum = 0;
-        pxViewPort.ClippingMaximum = 1;
-
-        pxEngine->UpdateUI = PXFalse;
-
-        PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
-
-        // Update camera?
-
-        // PXWindowhSizeRefresAll(&pxEngine->GUISystem);
-
-        PXNativDrawWindowPrintHirachy(&pxEngine->GUISystem.NativDraw, pxEngine->WindowMain, 0);
-
-        PXNativeDrawRefreshSizeAllChildren(&pxEngine->GUISystem.NativDraw, pxEngine->WindowMain);
-    }
-}
-
-void PXAPI PXEngineUpdateRender(PXEngine PXREF pxEngine)
-{
-    PXWindowLayoutCompute(pxEngine->WindowMain);
-    PXWindowDraw(pxEngine->WindowMain);
-}
-
-void PXAPI PXEngineUpdateUser(PXEngine PXREF pxEngine)
-{
-    pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet();
-    PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
-    pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeCPU;
+    PXEngineRenderDrawScene(pxEngineRender, pxScene);
+    
 }
 
 void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventMouseMoveData PXREF pxWindowEventInputMouseMove)
 {
-    PXRenderer PXREF pxRenderer = pxEngine->Renderer;
-    PXCamera PXREF pxCamera = PXRendererCameraCurrent(pxRenderer);
-    PXWindow* pxWindow = pxEngine->WindowMain;
+    PXScene PXREF pxScene = PXEngineSceneSceneCurrent(pxEngine->Context.Scene);
+    PXCamera PXREF pxCamera = PXSceneCameraCurrent(pxScene);
+    //PXEngineRender PXREF pxEngineRender = pxEngine->Renderer;
+    //PXWindow* pxWindow = pxEngine->WindowMain;
 
     //pxWindowEventInputMouseMove
 
-    PXVector3F32 pxVector3F32;
-    pxVector3F32.X = 0;
-    pxVector3F32.Y = pxWindowEventInputMouseMove->Delta.X;
-    pxVector3F32.Z = 0;
+    PXVector3F32 mouseInput;
+    mouseInput.X = pxWindowEventInputMouseMove->Delta.X;
+    mouseInput.Y = pxWindowEventInputMouseMove->Delta.Y;
+    mouseInput.Z = 0.0f; // No roll/Z rotation input from a standard mouse
 
-    pxCamera->CurrentRotation.X -= pxWindowEventInputMouseMove->Delta.Y * 0.02;
-    pxCamera->CurrentRotation.Y -= pxWindowEventInputMouseMove->Delta.X * 0.02;
-
-
-
-
-    const PXF32 maxValue = PXMathDegreeToRadians(85.0f);
-    const PXF32 minValue = PXMathDegreeToRadians(-85.0f);
-
-    pxCamera->CurrentRotation.X = PXMathLimit(pxCamera->CurrentRotation.X, minValue, maxValue);
-
-   // PXCameraRotate(pxEngine->CameraCurrent, &pxVector3F32);
-  //  PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
-
-#if 0
-
-    if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
-    {
-        PXController PXREF pxController = &pxEngine->ControllerSystem.DeviceListData[0];
-
-        // pxEngine->CameraCurrent->WalkSpeed = 1;
-        // pxEngine->CameraCurrent->ViewSpeed = 1;
-
-       //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
-       //  PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
-
-
-
-         // Up
-        if(pxController->ButtonPressedBitList & PXControllerButton1)
-        {
-            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
-        }
-
-        // Down
-        if(pxController->ButtonPressedBitList & PXControllerButton2)
-        {
-            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
-        }
-
-        // If we have a target, we want to move the camera to it to track it
-       // if(pxEngine->CameraCurrent->Target)
-        {
-            // PXMatrix4x4FMove3F(pxEngine->CameraCurrent->Target, &pxPlayerMoveInfo.MovementWalk);
-
-            PXCameraFollow(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta / 1000000.0f);
-        }
-        // else
-        {
-            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-        }
-
-        // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-
-        PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
-
-
-#if 0
-        // PXControllerSystemDebugPrint(pxController);
-
-        const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
-        const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
-        const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
-
-        if(hasAnyChanged)
-        {
-            pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
-            pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
-            pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
-            pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
-
-            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
-
-            PXMouseInputReset(mouse);
-
-            if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
-            {
-                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-                PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-                PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
-
-                // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
-            }
-        }
-#endif
-    }
-
-#endif
+    // 2. Pass the input vector straight to your 4D-Rotor camera function
+    PXCameraRotate(pxCamera, &mouseInput);
 }
 
 void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboardData PXREF pxWindowEventInputKeyboard)
 {
-    PXRenderer PXREF pxRenderer = pxEngine->Renderer;
-    PXCamera PXREF pxCamera = PXRendererCameraCurrent(pxRenderer);
+    PXScene PXREF pxScene = PXEngineSceneSceneCurrent(pxEngine->Context.Scene);
+    PXCamera PXREF pxCamera = PXSceneCameraCurrent(pxScene);
 
-    PXVector3F32 move = {0,0,0};
+    if(!pxCamera)
+    {
+        return;
+    }
 
+
+    // 1. Initialize a unified 4D movement accumulator vector
+    PXVector4F32 move = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    // 2. Fetch the current directional vectors from the 4D camera rotor
     PXVector3F32 forward;
     PXVector3F32 right;
-    PXVector3F32 up;
-
+    PXVector3F32 up = {0,1,0};
     PXCameraForward(pxCamera, &forward);
     PXCameraRight(pxCamera, &right);
-    PXCameraUp(pxCamera, &up);
+    //PXCameraUp(pxCamera, &up);
 
-    if(pxWindowEventInputKeyboard->CharacterW == L'o')
+    // Disable Y 
+    right.Y = 0;
+    forward.Y = 0;
+
+    PXVector3F32Normalize(&right);
+    PXVector3F32Normalize(&forward);
+
+
+    // 3. Accumulate directional inputs into the 4D vector
+    // Standard WASD / QE 3D space movement
+    if(pxWindowEventInputKeyboard->CharacterW == L's') { move.X -= forward.X; move.Y -= forward.Y; move.Z -= forward.Z; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'w') { move.X += forward.X; move.Y += forward.Y; move.Z += forward.Z; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'a') { move.X -= right.X;   move.Y -= right.Y;   move.Z -= right.Z; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'd') { move.X += right.X;   move.Y += right.Y;   move.Z += right.Z; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'q') { move.X += up.X;      move.Y += up.Y;      move.Z += up.Z; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'e') { move.X -= up.X;      move.Y -= up.Y;      move.Z -= up.Z; }
+
+    // 4D Ana / Kata movement along the raw W axis
+    if(pxWindowEventInputKeyboard->CharacterW == L'o') { move.W -= 1.0f; }
+    if(pxWindowEventInputKeyboard->CharacterW == L'p') { move.W += 1.0f; }
+
+    // 4. Calculate the magnitude across all 4 spatial dimensions
+    float lengthSq = (move.X * move.X) + (move.Y * move.Y) + (move.Z * move.Z) + (move.W * move.W);
+
+    if(lengthSq > 0.0001f)
     {
-        pxCamera->Position.W -= 1 * 0.5;
-        PXCameraUpdate(pxCamera, pxEngine->TimeData.CounterTimeDelta);
+        float invLength = 1.0f / sqrtf(lengthSq);
+
+        // Normalize the 4D displacement vector
+        move.X *= invLength;
+        move.Y *= invLength;
+        move.Z *= invLength;
+        move.W *= invLength;
+
+        // 5. Scale the 4D movement vector by velocity and your engine's delta time
+        float dt = 1;// pxEngine->TimeData.CounterTimeDelta;
+        float currentSpeed = pxCamera->WalkSpeed * dt * 0.00000005;
+
+        move.X *= currentSpeed;
+        move.Y *= currentSpeed;
+        move.Z *= currentSpeed;
+        move.W *= currentSpeed;
+
+        // 6. Apply displacement to the 4D spatial transform position
+        pxCamera->Transform.Position.X += move.X;
+        pxCamera->Transform.Position.Y += move.Y;
+        pxCamera->Transform.Position.Z += move.Z;
+        pxCamera->Transform.Position.W += move.W;
+               
     }
 
-    if(pxWindowEventInputKeyboard->CharacterW == L'p')
-    {
-        pxCamera->Position.W += 1 * 0.5;
-        PXCameraUpdate(pxCamera, pxEngine->TimeData.CounterTimeDelta);
-    }
-
-
-    if(pxWindowEventInputKeyboard->CharacterW == L'q')
-    {
-        PXVector3F32Add(&move, &up);
-    }
-    if(pxWindowEventInputKeyboard->CharacterW == L'e')
-    {
-        PXVector3F32Substract(&move, &up);
-    }
-
-
-
-    if(pxWindowEventInputKeyboard->CharacterW == L'w')
-    {
-        PXVector3F32Substract(&move, &forward);
-    }
-    if(pxWindowEventInputKeyboard->CharacterW == L's')
-    {
-        PXVector3F32Add(&move, &forward);
-    }
-
-
-
-    if(pxWindowEventInputKeyboard->CharacterW == L'd')
-    {
-        PXVector3F32Add(&move, &right);
-    }
-    if(pxWindowEventInputKeyboard->CharacterW == L'a')
-    {
-        PXVector3F32Substract(&move, &right);
-    }
-
-
-
-    PXF32 length = PXVector3F32Length(&move);
-    if(length > 0.0f)
-    {
-        PXVector3F32Normalize(&move);
-    }
-
-
-    PXVector2F32 movementSpeed;
-    movementSpeed.X = pxCamera->WalkSpeed;
-    movementSpeed.Y = pxCamera->WalkSpeed;
-
-    PXVector2F32Multiply(&move, &movementSpeed);
-
-
-    PXVector3F32Add(&pxCamera->Position, &move);
-
-    //PXCameraMove(pxEngine->CameraCurrent, &move);
-    //PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
+    // 7. Fire a unified single update command after processing all spatial input modifications
+    PXCameraUpdate(pxCamera, 1); // pxEngine->TimeData.CounterTimeDelta
 
 #if PXLogEnable && 0
     PXLogPrint
@@ -1919,264 +1726,138 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
     }
 }
 
-PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo)
-{
-    if(!(pxEngine && pxEngineResourceActionInfo))
-    {
-        return PXResultRefusedParameterNull;
-    }
-
-    switch(pxEngineResourceActionInfo->Type)
-    {
-        case PXEngineResourceActionTypeCreate:
-        {
-            return PXEngineResourceCreate(pxEngine, &pxEngineResourceActionInfo->Create);
-        }
-        case PXEngineResourceActionTypeDestroy:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXEngineResourceActionTypeUpdate:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXEngineResourceActionTypeFetch:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXEngineResourceActionTypeSelect:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXEngineResourceActionTypeRender:
-        {
-            return PXEngineResourceRender(pxEngine, &pxEngineResourceActionInfo->Render);
-        }
-        case PXEngineResourceActionTypePlay:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        case PXEngineResourceActionTypeStateChange:
-        {
-            /*
-            PXEngineResourceStateChangeInfo PXREF pxEngineResourceStateChangeInfo = &pxEngineResourceActionInfo->ChangeInfo;
-
-            if (!pxEngineResourceStateChangeInfo->Object)
-            {
-                return PXResultRefusedParameterNull;
-            }
-
-            switch (pxEngineResourceStateChangeInfo->Type)
-            {
-                case PXEngineCreateTypeModel:
-                {
-                    PXModel PXREF pxModel = (PXModel*)pxEngineResourceStateChangeInfo->Object;
-
-                    pxModel->Enabled = pxEngineResourceStateChangeInfo->Enable;
-
-                    break;
-                }
-                case PXEngineCreateTypeSkybox:
-                {
-
-                    break;
-                }
-                case PXEngineCreateTypeSprite:
-                {
-                    PXSprite PXREF pxSprite = (PXSprite*)pxEngineResourceStateChangeInfo->Object;
-
-                    pxSprite->Enabled = pxEngineResourceStateChangeInfo->Enable;
-
-            #if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PX",
-                        "Sprite",
-                        "Enable:%s",
-                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
-                    );
-            #endif
-
-                    break;
-                }
-                case PXEngineCreateTypeText:
-                {
-                    PXEngineText PXREF pxEngineText = (PXEngineText*)pxEngineResourceStateChangeInfo->Object;
-
-                    if(pxEngineResourceStateChangeInfo->Enable)
-                    {
-                        pxEngineText->Info.Handle.Flags |= PXECSInfoEnabled;
-                    }
-
-            #if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PX",
-                        "Text",
-                        "Enable:%s",
-                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
-                    );
-            #endif
-
-                    break;
-                }
-                case PXEngineCreateTypeTimer:
-                {
-                    PXTimer PXREF pxEngineTimer = (PXTimer*)pxEngineResourceStateChangeInfo->Object;
-
-                    if(pxEngineResourceStateChangeInfo->Enable)
-                    {
-                        pxEngineTimer->Info.Handle.Flags |= PXECSInfoEnabled;
-                    }
-
-                    pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
-
-            #if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PX",
-                        "Timer",
-                        "Enable:%s",
-                        pxEngineResourceStateChangeInfo->Enable ? "Yes" : "No"
-                    );
-            #endif
-
-                    break;
-                }
-                case PXEngineCreateTypeUIElement:
-                {
-
-                    break;
-                }
-                default:
-                    break;
-            }
-
-
-            return PXActionRefusedNotImplemented;
-                */
-        }
-
-        case PXEngineResourceActionTypeCustom:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        default:
-            return PXResultRefusedParameterInvalid;
-    }
-
-    return PXResultOK;
-}
-
-PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfoList, const PXSize amount)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXEngineText,
-        "Resource",
-        "Action Batch <%i>",
-        amount
-    );
-#endif
-
-    for(PXSize i = 0; i < amount; ++i)
-    {
-        PXEngineResourceActionInfo PXREF pxEngineResourceAction = &pxEngineResourceActionInfoList[i];
-
-        PXEngineResourceAction(pxEngine, pxEngineResourceAction);
-    }
-
-    return PXResultOK;
-}
-
 PXI32U PXAPI PXEngineGenerateRandom(PXEngine PXREF pxEngine, const PXI32U limiter)
 {
     return PXMathRandomeNumber(&pxEngine->RandomGeneratorSeed) % limiter;
 }
 
-PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateRender(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
 {
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXEngineText,
-        "Start",
-        "Audio..."
-    );
-#endif
+    PXEngineRenderCreateInfo pxEngineRenderCreateInfo;
+    PXClear(PXEngineRenderCreateInfo, &pxEngineRenderCreateInfo);
+    pxEngineRenderCreateInfo.Info.Engine = pxEngine;
+    pxEngineRenderCreateInfo.Mode = PXGraphicInitializeModeWindowfull;
+    pxEngineRenderCreateInfo.GraphicSystem = PXGraphicAPIOpenGL;
+    pxEngineRenderCreateInfo.WindowReference = PXEngineUIWindowRootGet(pxEngine->Context.UI);
+    pxEngineRenderCreateInfo.Width = -1;
+    pxEngineRenderCreateInfo.Height = -1;
+    pxEngineRenderCreateInfo.DirectXVersion = PXDirectXVersionNewest;
+    pxEngineRenderCreateInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
 
-    PXAudioSystemCreateInfo pxAudioSystemCreateInfo;
-    PXClear(PXAudioSystemCreateInfo, &pxAudioSystemCreateInfo);
-    pxAudioSystemCreateInfo.System = PXAudioSystemWindowsAudioSessionAPI;
+    PXResult pxResult = PXEngineRenderCreate(&pxEngine->Context.Render, &pxEngineRenderCreateInfo);
 
-    const PXResult audioInitResult = PXAudioSystemCreate(&pxEngine->Audio, &pxAudioSystemCreateInfo);
+    PXEngineRender PXREF pxEngineRender = pxEngine->Context.Render;
+   
+    PXEngineModuleRegister(pxEngine, pxEngineRender);
 
-    if(PXResultOK != audioInitResult)
-    {
-        return audioInitResult;
-    }
-
-    //PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
-
-    //pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
-
-    /*
-
-    for(PXI32U i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; ++i)
-    {
-        PXAudioDevice* pxAudioDevice;
-
-        pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
-    }
-
-    for(PXI32U i = 0; i < pxAudioDeviceAmountInfo.DeviceOutput; ++i)
-    {
-        PXAudioDevice* pxAudioDevice;
-
-        pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
-    }
-
-    pxEngine->Audio->DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
-
-    pxEngine->Audio->DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
-
-    */
+    return pxResult;
 }
 
-PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
 {
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXEngineText,
-        "Start",
-        "Window..."
-    );
-#endif
+    PXResult pxResult = PXResultInvalid;
+
+    PXEngineAudioCreateInfo pxEngineAudioCreateInfo;
+    PXClear(PXEngineAudioCreateInfo, &pxEngineAudioCreateInfo);
+    pxEngineAudioCreateInfo.Info.Engine = pxEngine;
+    pxEngineAudioCreateInfo.AudioInitializeIndexTarget = 1;
+    pxEngineAudioCreateInfo.AudioInitializeList = _pxAudioInitializeList;
+    pxEngineAudioCreateInfo.AudioInitializeListAmount = _pxAudioInitializeListAmount;
+
+    pxResult = PXEngineAudioCreate(&pxEngine->Context.Audio, &pxEngineAudioCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        // HANDLE
+    }
+
+    PXEngineAudio PXREF pxEngineAudio = pxEngine->Context.Audio;
+
+    PXEngineModuleRegister(pxEngine, pxEngineAudio);
+    
+    pxEngineAudio->DeviceInputAmount(pxEngineAudio);
+    pxEngineAudio->DeviceOutputAmount(pxEngineAudio);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineCreateInput(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+{
+    PXResult pxResult = PXResultInvalid;
+
+    PXEngineInputCreateInfo pxEngineInputCreateInfo;
+    PXClear(PXEngineInputCreateInfo, &pxEngineInputCreateInfo);
+    pxEngineInputCreateInfo.Info.Engine = pxEngine;
+    // No settings?
+
+    pxResult = PXEngineInputCreate(&pxEngine->Context.Input, &pxEngineInputCreateInfo);
+
+    PXEngineInput PXREF pxEngineInput = pxEngine->Context.Input;
+
+    PXEngineModuleRegister(pxEngine, pxEngineInput);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineCreateScene(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+{
+    PXResult pxResult = PXResultInvalid;
+
+    PXEngineSceneCreateInfo pxEngineSceneCreateInfo;
+    PXClear(PXEngineSceneCreateInfo, &pxEngineSceneCreateInfo);
+    pxEngineSceneCreateInfo.Info.Engine = pxEngine;
+    // No settings?
+
+    pxResult = PXEngineSceneCreate(&pxEngine->Context.Scene, &pxEngineSceneCreateInfo);
+
+    PXEngineScene PXREF pxEngineScene = pxEngine->Context.Scene;
+    pxEngineScene->RenderSystem = pxEngine->Context.Render;
+
+    PXEngineModuleRegister(pxEngine, pxEngineScene);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineCreateUI(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+{
+    PXResult pxResult = PXResultInvalid;
+
+
+    PXEngineUIInfo pxUIInfo;
+    PXClear(PXEngineUIInfo, &pxUIInfo);
+    pxUIInfo.Info.Engine = pxEngine;
+    //PXTextFromAddressA(&pxUIInfo.WindowRootName, "pxMainWindow", 13, 13);
+
+    pxResult = PXEngineUICreate(&pxEngine->Context.UI, &pxUIInfo);
+
+    PXEngineUI PXREF pxEngineUI = pxEngine->Context.UI;
+
+    pxResult = PXEngineModuleRegister(pxEngine, pxEngineUI);
+
+
+
+
+    PXWindow* pxWindowRoot = PXNull;
 
     PXWindowCreateInfo pxWindowCreateInfo;
     PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
     pxWindowCreateInfo.Info.Type = PXResourceTypeGUIElement;
-    pxWindowCreateInfo.Type = PXUIElementTypeWindow;
+    PXTextFromAddressA(&pxWindowCreateInfo.Info.Name, "pxMainWindow", 13, 13);
+    pxWindowCreateInfo.Type = PXEngineUIElementTypeWindow;
     pxWindowCreateInfo.Setting = PXWindowBehaviourBorder;
-    pxWindowCreateInfo.UsePhysical = PXTrue;
+    pxWindowCreateInfo.SkipHandleCreation = PXTrue;
     pxWindowCreateInfo.EventList.CallBackOwner = pxEngine;
+    //pxWindowCreateInfo.EventList.CallBackDraw = PXEngineEventDraw; // This is only drawing the background!
     pxWindowCreateInfo.EventList.CallBackEvent = PXEngineWindowEvent;
     //pxWindowCreateInfo.Layout.abs.Width = pxEngineStartInfo->Width;
     //pxWindowCreateInfo.Layout.abs.Height = pxEngineStartInfo->Height;
     pxWindowCreateInfo.WindowParent = pxEngineStartInfo->WindowRenderParent;
-    pxWindowCreateInfo.Engine = pxEngine;
-    pxWindowCreateInfo.Renderer = pxEngine->Renderer;
+    pxWindowCreateInfo.EngineUI = pxEngineUI;
+    pxWindowCreateInfo.BackGroundColor.Red = 0x20;
+    pxWindowCreateInfo.BackGroundColor.Green = 0x20;
+    pxWindowCreateInfo.BackGroundColor.Blue = 0x20;
 
-    PXWindowCreate(&pxEngine->WindowMain, &pxWindowCreateInfo);
-
+    pxResult = PXWindowCreate(&pxWindowRoot, &pxWindowCreateInfo);
 
     //pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
     //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
@@ -2184,144 +1865,63 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo
     //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Blue = 38;
     //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Alpha = 0xFF;
 
-    // Consume all events that are used for creation
-    PXWindowEventPoll(pxEngine->WindowMain);
-
-    PXWindowMouseMovementEnable(pxEngine->WindowMain);
+    pxResult = PXWindowMouseMovementEnable(pxWindowRoot);
 
     //PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxEngineStartInfo->Width, pxEngineStartInfo->Height);
 
-    if(0)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            PXEngineText,
-            "Start",
-            "Creation of graphical not enabled!"
-        );
-#endif
-        return PXResultOK;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXEngineText,
-        "Start",
-        "Graphics..."
-    );
-#endif
-
-    PXGraphicInitializeInfo pxGraphicInitializeInfo;
-    PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
-    pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
-    pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
-    pxGraphicInitializeInfo.WindowReference = pxEngine->WindowMain;
-    pxGraphicInitializeInfo.Width = -1;
-    pxGraphicInitializeInfo.Height = -1;
-    pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersionNewest;
-    pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
-
-    if(pxEngineStartInfo->WindowRenderTarget)
-    {
-        pxGraphicInitializeInfo.WindowReference = pxEngineStartInfo->WindowRenderTarget;
-        pxEngine->WindowMain = pxEngineStartInfo->WindowRenderTarget;
-    }
-
-
 #if OSUnix
-    //pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
-#endif
-
-    const PXResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
-
-    if(PXResultOK != graphicInit)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXEngineText,
-            "Instantiate",
-            "Failed to create graphical instance!\n"
-            "Graphics card driver is not able to provide a rendering context.\n"
-            "Either the card itself is not capable or a driver is missing and needs to be installed."
-        );
-#endif
-
-        if(1) // If its really important that the graphic API exists, we can exit now.
-        {
-            return graphicInit;
-        }
-    }
-
-    pxEngine->HasGraphicInterface = PXTrue;
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXEngineText,
-        "Start",
-        "OK, Created graphical instance"
-    );
-#endif
-
-    PXFunctionInvoke(pxEngine->Graphic.Select, pxEngine->Graphic.EventOwner);
-    PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);
-
-
-    PXWindow* pxMainWindow = pxEngine->WindowMain;
-
+#elif OSWindows && 0
     InitDockContainerStyles(pxMainWindow);
 
-    PXWindowCreateInfo pxWindowCreateInfoSub;
-
     LayoutDockedEx(pxMainWindow, NULL);
+#endif
 
-    return PXResultOK;
+    PXWindowHide(pxWindowRoot);
+    PXWindowShow(pxWindowRoot);
+
+    PXEngineUIWindowRootSet(pxEngineUI, pxWindowRoot);
+
+
+    return pxResult;
 }
 
-PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateTime(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
 {
-    // Load all mods now, not fully tho, they may need very early checks before anything happens
-    if(pxEngineStartInfo->UseMods)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXEngineText,
-            "Start",
-            "Mods..."
-        );
-#endif
+    PXEngineTimeCreateInfo pxEngineTimeCreateInfo;
+    PXClear(PXEngineTimeCreateInfo, &pxEngineTimeCreateInfo);
+    pxEngineTimeCreateInfo.Info.Engine = pxEngine;
+    pxEngineTimeCreateInfo.RefreshHz = 60;
 
-        PXText pxText;
-        PXTextMakeFixedA(&pxText, "Mod\\");
+    PXResult pxResult = PXEngineTimeCreate(&pxEngine->Context.Time, &pxEngineTimeCreateInfo);
 
-        PXModLoaderScan(&pxEngine->ModLoader, &pxText);
-    }
-    else
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            PXEngineText,
-            "Start",
-            "Mod loading is not enabled."
-        );
-#endif
-    }
+    PXEngineTime PXREF pxEngineTime = pxEngine->Context.Time;
 
-    return PXResultOK;
+    pxResult = PXEngineModuleRegister(pxEngine, pxEngineTime);
+
+    return pxResult;
 }
 
+PXResult PXAPI PXEngineCreateMath(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+{
+    PXEngineMathCreateInfo pxEngineMathCreateInfo;
+    PXClear(PXEngineTimeCreateInfo, &pxEngineMathCreateInfo);
+
+    PXResult pxResult = PXEngineMathCreate(&pxEngine->Context.Math, &pxEngineMathCreateInfo);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineCreateModManager(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo)
+{
+    PXEngineModManagerCreateInfo pxEngineModManagerCreateInfo;
+    PXClear(PXEngineModManagerCreateInfo, &pxEngineModManagerCreateInfo);
+    PXTextFromAddressA(&pxEngineModManagerCreateInfo.FilePathModFolder, "Mod/", 4, 4);
+    pxEngineModManagerCreateInfo.AvoidLoadingMods = PXTrue;
+
+    PXResult pxResult = PXEngineModManagerCreate(&pxEngine->Context.ModManager, &pxEngineModManagerCreateInfo);
+
+    return pxResult;
+}
 PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
 {
     if(!(pxEngine))
@@ -2329,47 +1929,17 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
         return PXResultRefusedParameterNull;
     }
 
-    // INIT
-  //  PXResourceManagerGet();
-
-   // PXCameraConstruct(&pxEngine->CameraDefault);
-
-    PXNativDraw* pxNativDraw = PXNativDrawInstantance();
-
-
-    // pxEngine->ResourceManager = PXResourceManagerGet();
-
-   //  if(!pxNativDraw->ResourceManager)
-    {
-        //  pxNativDraw->ResourceManager = pxEngine->ResourceManager;
-        pxNativDraw->GUISystem = &pxEngine->GUISystem;
-    }
-
-
     //   pxEngine->CameraCurrent = &pxEngine->CameraDefault;
-    pxEngine->TimeData.CounterTimeLast = 0;
-    pxEngine->TimeData.CounterTimeGPU = 0;
-    pxEngine->TimeData.CounterTimeCPU = 0;
-    pxEngine->TimeData.FramesPerSecound = 0;
-    pxEngine->TimeData.FrameTime = 0;
+    //pxEngine->TimeData.CounterTimeLast = 0;
+    //pxEngine->TimeData.CounterTimeGPU = 0;
+    //pxEngine->TimeData.CounterTimeCPU = 0;
+    //pxEngine->TimeData.FramesPerSecound = 0;
+    //pxEngine->TimeData.FrameTime = 0;
     pxEngine->IsRunning = PXFalse;
     pxEngine->HasGraphicInterface = PXFalse;
 
-    PXEngineFPSTargetSet(pxEngine, 144);
-    PXEngineTimeSetEnd(pxEngine);
-
-
     // pxEngine->CameraCurrent->ViewSpeed = 1;
     //PXCameraRotateXYZ(pxEngine->CameraCurrent, 80, 0, 0);
-
-
-    #if OSWindows
-    // Create a waitable object, so we can reduce CPU time (EventDriven)
-    // If waiting, we HAVE to call SetEvent() from another thread to wake up!
-    pxEngine->EventWorkHandle = CreateEvent(NULL, TRUE, FALSE, NULL); // "PX_External"
-    pxEngine->EventRenderHandle = CreateWaitableTimer(NULL, TRUE, NULL); // "PX_Render"
-    #endif
-
 
 #if PXLogEnable
     // Create Banner
@@ -2425,10 +1995,8 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
 
     PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
-    // TODO: silly
-   // pxEngine->GUISystem.NativDraw.ResourceManager = pxEngine->ResourceManager;
-    pxEngine->GUISystem.NativDraw.GUISystem = &pxEngine->GUISystem;
-
+    // After creating all systems in a liniar way, we now can let our 
+    // system handle ASYNC work. 
 
     pxEngine->IsRunning = PXTrue;
 
@@ -2443,37 +2011,11 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
         );
 #endif
 
-        PXFunctionInvoke(pxEngine->OnStartUp, pxEngine->Owner, pxEngine);
+        if(pxEngine->OnStartUp) 
+        {
+            pxEngine->OnStartUp(pxEngine->Owner, pxEngine);
+        }
     }
-
-#if 0
-    PXSize amount = 0;
-    PXResult res = PXProcessHandleCountGet(PXNull, &amount);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "PX",
-        "Currently <%i> Handles open",
-        amount
-    );
-
-    //PXResult ww = PXProcessHandleListAll(PXNull);
-    // printf("");
-#endif
-
-
-
-
-    // Post rendering fixup, camera needs to be ajusted and also the window itself
-   // PXWindowSizeInfo pxWindowSizeInfo;
-
-    //PXWindowSizeGet(pxEngine->Window->ID, &pxWindowSizeInfo);
-
-    // PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindowSizeInfo.Width, pxWindowSizeInfo.Width);
-    // PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 90, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
-    //  PXCameraUpdate(pxEngine->CameraCurrent, 1);
-
 
 #if PXLogEnable
     PXLogPrint
@@ -2485,35 +2027,18 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine)
     );
 #endif
 
-
-
-
-
-    //PXInputSystemDevicesRefresh();
-
-
-    // test
-#if 0
-    WCHAR ms[] = L"\\\\?\\HID#VID_0079&PID_0006#9&3087077&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
-
-    SendVibration_0079_0006(0xFF, 0xFF);
-
-    while(1)
-    {
-        SendVibration_HIDPATH(ms, 120, 120);
-        Sleep(10);
-    }
-#endif
-
-   // PXInputDevice* pxInputDevice = PXInputControllerGet(1);
-    //PXInputDeviceOpen(pxInputDevice, pxEngine->Window);
-
+    PXThreadResume(pxEngine->ThreadConductor);
 
     return PXResultOK;
 }
 
-void PXAPI PXEngineStop(PXEngine PXREF pxEngine)
+PXResult PXAPI PXEngineStop(PXEngine PXREF pxEngine)
 {
+    if(!pxEngine)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     if(!pxEngine->IsRunning)
     {
         return; // Engine is not running, we dont release
@@ -2525,69 +2050,163 @@ void PXAPI PXEngineStop(PXEngine PXREF pxEngine)
         PXLoggingInfo,
         PXEngineText,
         "Shutdown",
-        "All running systems are beeing cloed down"
+        "All running systems are being closed down"
     );
 #endif
 
+
+    //-----------------------------------------------------
+    // Activate modules
+    const PXSize moduleAmount = PXEngineModuleAmount(pxEngine);
+
+    for(PXSize i = 0; i < moduleAmount; ++i)
+    {
+        PXEngineModule PXREF pxEngineModule = PXEngineModuleIndex(pxEngine, i);
+
+        PXEngineModuleDeactivate(pxEngineModule, pxEngine);
+    }
+    //-----------------------------------------------------
+
     pxEngine->IsRunning = PXFalse;
 
-    PXFunctionInvoke(pxEngine->OnShutDown, pxEngine->Owner, pxEngine);
+    if(pxEngine->OnShutDown)
+    {
+        pxEngine->OnShutDown(pxEngine->Owner, pxEngine);
+    }
 }
 
-PXWindow* PXAPI PXEngineWindowGet(const PXEngine PXREF pxEngine)
+PXResult PXAPI PXEngineEventOnTick(PXEngine PXREF pxEngine)
+{
+    PXEngineUpdateInfo pxEngineUpdateInfo;
+    PXClear(PXEngineUpdateInfo, &pxEngineUpdateInfo);
+    pxEngineUpdateInfo.Engine = pxEngine;
+
+    //PXResult pxResult = PXEnginePhysicsUpdate(pxEngine->Ph, &pxEngineUpdateInfo);
+
+    PXResult pxResult = PXResultNoWorkToDo;
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineEventOnRender(PXEngine PXREF pxEngine)
+{
+    PXEngineUpdateInfo pxEngineUpdateInfo;
+    PXClear(PXEngineUpdateInfo, &pxEngineUpdateInfo);
+    pxEngineUpdateInfo.Engine = pxEngine;
+
+    PXEngineRender PXREF pxEngineRender = pxEngine->Context.Render;
+
+    if(!pxEngineRender->ModuleInfo.IsActive)
+    {
+        return PXResultNoWorkToDo;
+    }   
+
+    PXResult pxResult = PXEngineModuleUpdateASYNC(pxEngine->Context.Render, &pxEngineUpdateInfo);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineEventOnUI(PXEngine PXREF pxEngine)
+{    
+    if(!pxEngine)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    PXEngineUpdateInfo pxEngineUpdateInfo;
+    PXClear(PXEngineUpdateInfo, &pxEngineUpdateInfo);
+    pxEngineUpdateInfo.Engine = pxEngine;
+
+    //PXResult pxResult = PXEngineModuleUpdateSerial(pxEngine->UI, &pxEngineUpdateInfo);
+
+    const PXSize moduleAmount = PXEngineModuleAmount(pxEngine);
+
+    for(PXSize i = 0; i < moduleAmount; i++)
+    {
+        PXEngineModule PXREF pxEngineModule = PXEngineModuleIndex(pxEngine, i);
+
+        PXEngineModuleUpdateSerial(pxEngineModule, &pxEngineUpdateInfo);
+    }
+
+    //pxEngine->TimeData.CounterTimeCPU = PXTimeStampNow();
+    //PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
+    //pxEngine->TimeData.CounterTimeCPU = PXTimeStampNow() - pxEngine->TimeData.CounterTimeCPU;
+
+
+    return PXResultOK;;
+}
+
+PXSize PXAPI PXEngineModuleAmount(const PXEngine PXREF pxEngine)
+{
+    if(!pxEngine)
+    {
+        return 0;
+    }
+
+    return PXDictionaryECSAmount(&pxEngine->Context.SystemLookup);
+}
+
+PXEngineModule* PXAPI PXEngineModuleIndex(PXEngine PXREF pxEngine, const PXSize index)
 {
     if(!pxEngine)
     {
         return PXNull;
     }
 
-    return pxEngine->WindowMain;
+    return (PXEngineModule*)PXDictionaryECSGetViaIndex(&pxEngine->Context.SystemLookup, index);;
 }
 
-void PXAPI PXEngineFPSTargetSet(PXEngine PXREF pxEngine, const PXI32U fpsTarget)
+PXResult PXAPI PXEngineModuleRegister
+(
+    PXEngine PXREF pxEngine,
+    PXEngineModule PXREF pxEngineModule
+)
+{
+    PXResult pxResult = PXDictionaryECSAdd(&pxEngine->Context.SystemLookup, pxEngineModule);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    return pxResult;
+}
+
+PXResult PXAPI PXEngineModuleRelease(PXEngine PXREF pxEngine)
+{
+    return PXResultOK;
+}
+
+PXEngineContext* PXAPI PXEngineContextGet(const PXEngine PXREF pxEngine)
 {
     if(!pxEngine)
     {
-        return;
+        return PXNull;
     }
 
-#if OSUnix
-#elif OSWindows
-    LARGE_INTEGER now;
-
-    QueryPerformanceFrequency(&pxEngine->PerformanceFrequency);
-    QueryPerformanceCounter(&now);
-
-    //PXEngineTimeRefresh(pxEngine);
-
-    pxEngine->TimeStampCurrent = (PXF64)now.QuadPart / (PXF64)pxEngine->PerformanceFrequency.QuadPart;
-    pxEngine->FPSTarget = fpsTarget;
-    pxEngine->TimeDeltaTimeTarget = 1.0 / (PXF64)fpsTarget;
-    pxEngine->TimeStampNext = pxEngine->TimeStampCurrent + pxEngine->TimeDeltaTimeTarget;
-    pxEngine->UseImgameTimer = PXTrue;
-#endif
+    return &pxEngine->Context;
 }
 
-PXResult PXAPI PXEngineAwaken(PXEngine PXREF pxEngine)
+PXResult PXAPI PXEngineEventUIAviableSet(PXEngine PXREF pxEngine)
 {
-    if(!pxEngine)
-    {
-        return PXResultRefusedParameterNull;
-    }
+    pxEngine->EventUIAviable = PXTrue;
 
-#if OSUnix
-#elif OSWindows
-    BOOL result = SetEvent(pxEngine->EventWorkHandle);
-#endif
+    return PXResultOK;
+}
+
+PXResult PXAPI PXEngineEventThreadDoneSet(PXEngine PXREF pxEngine)
+{
+    pxEngine->EventEngineThreadDone = PXTrue;
 
     return PXResultOK;
 }
 
 
+
 /*
 
 
-PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture PXREF PXTexture, const PXText PXREF PXTextureFilePath)
+PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture2D PXREF pxTexture2D, const PXText PXREF PXTextureFilePath)
 {
     // Create checksum
     const PXI32U checkSum = PXAdler32Create(1, PXTextureFilePath->A, PXTextureFilePath->SizeUsed);
@@ -2595,7 +2214,7 @@ PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture PXREF PXT
 
     // Check if already loaded
     {
-        PXTexture* PXTextureFoundEntry = PXNull;
+        PXTexture2D* PXTextureFoundEntry = PXNull;
 
         const PXBool foundEntry = PXDictionaryFindEntry(&pxGraphic->ResourceImageLookUp, &checkSum, &PXTextureFoundEntry);
 
@@ -2632,7 +2251,7 @@ PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture PXREF PXT
             );
         }
 
-        PXActionReturnOnError(loadResult);
+        PXResultReturnOnError(loadResult);
 
         PXLogPrint
         (
@@ -2670,9 +2289,9 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
         }
     }
 
-    assert(pxResourceCreateInfo->ObjectReference);
+    //assert(pxResourceCreateInfo->ObjectReference);
     //   assert(*pxResourceCreateInfo->ObjectReference);
-
+    /*
     switch(pxResourceCreateInfo->Type)
     {
         case PXResourceTypeTexture:
@@ -2683,7 +2302,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
         case PXResourceTypeTextureCube:
         {
             PXTextureCreateInfo PXREF pxTextureCreateData = 0;//& pxResourceCreateInfo->Texture;
-            PXTexture* pxTexture = *(PXTexture**)pxResourceCreateInfo->ObjectReference;
+            PXTexture2D* pxTexture = *(PXTexture2D**)pxResourceCreateInfo->ObjectReference;
 
             assert(pxTexture);
 
@@ -2699,7 +2318,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                 );
 #endif
 
-                return PXActionFailedNoSystemToHandleData;
+                return PXResultFailedNoSystemToHandleData;
             }
 
             PXTextureInfo pxGraphicTexturInfo;
@@ -2731,7 +2350,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                 );
 #endif
 
-                return PXActionFailedNoSystemToHandleData;
+                return PXResultFailedNoSystemToHandleData;
             }
 
 #if PXLogEnable
@@ -2771,7 +2390,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
         case PXResourceTypeTexture2D:
         {
             //PXEngineTexture2DCreateData PXREF pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
-            PXTexture* pxTexture = *(PXTexture**)pxResourceCreateInfo->ObjectReference;
+            PXTexture2D* pxTexture = *(PXTexture2D**)pxResourceCreateInfo->ObjectReference;
 
             assert(pxTexture);
 
@@ -2788,7 +2407,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                 );
 #endif
 
-                return PXActionFailedNoSystemToHandleData;
+                return PXResultFailedNoSystemToHandleData;
             }
 
 
@@ -2835,7 +2454,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                     pxGraphicTexturInfo.Action = PXResourceActionCreate;
 
                     pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                }*/
+                }* /
             }
 
             break;
@@ -2857,7 +2476,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                 );
 #endif
 
-                return PXActionFailedNoSystemToHandleData;
+                return PXResultFailedNoSystemToHandleData;
             }
 
 
@@ -3046,7 +2665,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
 #endif
 
             }
-            */
+            * /
 
 
             break;
@@ -3060,7 +2679,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
               // pxWindowCreateInfo->U
 
               //pxUIElementCreateData.UIElement.Data.SceneRender.StartInfo->UseMouseInput
-             // pxWindowCreateInfo->Name = pxResourceCreateInfo->NameAdress;
+             // pxWindowCreateInfo->Name = pxResourceCreateInfo->NameAddress;
 
             //  if(pxEngine->Window)
             //  {
@@ -3073,8 +2692,8 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
 
              // PXWindow* pxWindow = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
-              //pxWindow->NameContent = pxResourceCreateInfo->NameAdress;
-              //pxWindow->NameContentSize = PXTextLengthA(pxResourceCreateInfo->NameAdress, 128);
+              //pxWindow->NameContent = pxResourceCreateInfo->NameAddress;
+              //pxWindow->NameContentSize = PXTextLengthA(pxResourceCreateInfo->NameAddress, 128);
 
             break;
         }
@@ -3095,7 +2714,7 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
                 );
 #endif
 
-                return PXActionFailedNoSystemToHandleData;
+                return PXResultFailedNoSystemToHandleData;
             }
 
             {
@@ -3121,446 +2740,9 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo P
         default:
             return PXResultRefusedParameterInvalid;
     }
-
+    */
     return PXResultOK;
 }
-
-PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity)
-{
-    if(!(pxEngine && pxRenderEntity))
-    {
-        return PXResultRefusedParameterNull;
-    }
-
-    if(!pxRenderEntity->ObjectReference)
-    {
-        return PXResultRefusedParameterInvalid;
-    }
-
-    // Base object, unsafe!
-    PXECSInfo PXREF renderEnity = 0;// (PXECSInfo*)pxRenderEntity->ObjectReference;
-
-    if(!renderEnity)
-    {
-        // DebugBreak();
-        return PXActionDidNothing; // No attached object
-    }
-
-    PXI32U resourceID = renderEnity->ID;
-
-#if 0
-    if(0 == resourceID)
-    {
-        // DebugBreak();
-        return PXActionDidNothing;
-    }
-#endif
-
-    const PXBool doRendering = PXECSInfoFlagStateCheck(renderEnity, PXECSFlagBehaviourCanRender);
-
-    if(!doRendering)
-    {
-        // DebugBreak();
-        return PXActionDidNothing; // We dont want to render. Its not visible
-    }
-
-
-#if 1
-    switch(pxRenderEntity->Type)
-    {
-        case PXResourceTypeModel:
-        {
-            PXModel PXREF pxModel = (PXModel*)pxRenderEntity->ObjectReference;
-
-            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
-
-            break;
-        }
-        case PXResourceTypeSkybox:
-        {
-            PXSkyBox PXREF pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
-
-            PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxRenderEntity);
-
-            break;
-        }
-        case PXResourceTypeSprite:
-        {
-            PXSprite PXREF pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
-
-            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
-
-            break;
-        }
-        case PXResourceTypeHitBox:
-        {
-            /*
-            PXHitBox PXREF pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
-
-            // PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
-
-            PXBool isEnabled = !(pxHitBox->Info.Behaviour & PXECSInfoActive);
-
-            PXF32 color[4];
-
-            // Store previous state
-
-
-            PXI32U drawstateBefore = pxHitBox->Model->Mesh.IndexBuffer.DrawModeID;
-
-            PXMaterial* material = pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.Material;
-
-            if(material == PXNull)
-            {
-                material = PXMemoryHeapCallocT(PXMaterial, 1);
-                //PXNewZerod(PXMaterialContainer, &pxHitBox->Model->MaterialContaierList);
-
-                pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.DataRange = 1;
-                pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.Material = material;
-
-                // pxHitBox->Model->MaterialContaierList[0].MaterialListAmount = 1;
-
-                //PXTextCopyA("Wonk", 4, material->Name, 64);
-
-                //PXCopy(PXMaterial, pxHitBox->Model->MaterialContaierList[0].MaterialList, &materialCopy);
-
-                // pxHitBox->Model->IndexBuffer.SegmentPrime.Material = pxHitBox->Model->MaterialContaierList[0].MaterialList;
-            }
-
-
-
-
-
-
-            //pxHitBox->Model->IndexBuffer.DrawModeID = PXDrawModeIDLineLoop;
-
-            // Draw red box
-            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourKeepOut)
-            {
-                // Red
-                material->Diffuse.Red = 1;
-                material->Diffuse.Green = 0;
-                material->Diffuse.Blue = 0;
-                material->Diffuse.Alpha = 0.4;
-
-                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
-            }
-
-            // Red border
-            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourKeepIn)
-            {
-                material->Diffuse.Red = 1;
-                material->Diffuse.Green = 0;
-                material->Diffuse.Blue = 0;
-                material->Diffuse.Alpha = 0.4;
-
-                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
-            }
-
-
-            // Blue border
-            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourDetect)
-            {
-                material->Diffuse.Red = 0;
-                material->Diffuse.Green = 0;
-                material->Diffuse.Blue = 1;
-                material->Diffuse.Alpha = 0.4;
-                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
-            }
-
-            material->Diffuse.Red = 1;
-            material->Diffuse.Green = 1;
-            material->Diffuse.Blue = 1;
-            material->Diffuse.Alpha = 1;
-
-            pxHitBox->Model->Mesh.IndexBuffer.DrawModeID = drawstateBefore;
-            */
-            break;
-        }
-        case PXResourceTypeText:
-        {
-#if 0
-            PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
-            PXEngineText PXREF pxEngineText = (PXEngineText*)pxRenderEntity->ObjectReference;
-
-            if(!pxEngineText->Text)
-            {
-                break; // No text, no content to render, done
-            }
-
-            PXText PXREF pxText = pxEngineText->Text;
-            PXFont PXREF pxFont = pxEngineText->Font;
-
-            PXVector2F32 offsetShadowCurrent = { 0.0f, 0.0f };
-            const PXVector2F32 shadowOffset = { 0.0045f, -0.005f };
-            PXBlendingMode blendingMode[2] = { PXBlendingModeSoureAlphaOnly, PXBlendingModeSoureAlphaOnly };
-
-            for(PXI8U j = 0; j < 2u; ++j)
-            {
-                pxEngineText->FontScaling = 1.5;
-
-                PXF32 offsetX = 0;
-                PXF32 offsetY = 0;
-
-                pxGraphic->ShaderProgramSelect(pxGraphic->EventOwner, PXNull);
-                PXOpenGLBlendingMode(&pxGraphic->OpenGLInstance, blendingMode[j]);
-
-                {
-                    PXTexturInfo pxGraphicTexturInfo;
-                    pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
-                    pxGraphicTexturInfo.Amount = 1u;
-                    pxGraphicTexturInfo.Type = PXTextureType2D;
-                    pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                    pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                }
-
-                for(PXSize i = 0; i < pxText->SizeUsed && i < pxEngineText->TextRenderAmount; ++i)
-                {
-                    const char character = pxText->A[i];
-                    PXFontPageCharacter PXREF pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->PagePrime, character);
-
-                    PXF32 textureWidth;
-                    PXF32 textureHeight;
-                    PXF32 charWidth;
-                    PXF32 charHeight;
-                    PXF32 charWidthSpacing;
-                    PXF32 tx1;
-                    PXF32 ty1;
-                    PXF32 tx2;
-                    PXF32 ty2;
-
-                    if(pxFontPageCharacter)
-                    {
-                        textureWidth = pxFont->PagePrime.Texture->Width;
-                        textureHeight = pxFont->PagePrime.Texture->Height;
-
-                        charWidth = pxFontPageCharacter->Size[0];
-                        charHeight = pxFontPageCharacter->Size[1];
-                        charWidthSpacing = pxFontPageCharacter->XAdvance;
-
-                        tx1 = pxFontPageCharacter->Position[0] / textureWidth;
-                        ty1 = pxFontPageCharacter->Position[1] / textureHeight;
-                        tx2 = ((pxFontPageCharacter->Position[0] + pxFontPageCharacter->Size[0]) / textureWidth);
-                        ty2 = ((pxFontPageCharacter->Position[1] + pxFontPageCharacter->Size[1]) / textureHeight);
-                    }
-                    else
-                    {
-                        textureWidth = 20;
-                        textureHeight = 20;
-
-                        charWidth = 40;
-                        charHeight = 60;
-                        charWidthSpacing = 45;
-
-                        tx1 = 0;
-                        ty1 = 0;
-                        tx2 = 1;
-                        ty2 = 1;
-                    }
-
-                    //pxWindow->TextInfo.Scale = 0.35;
-
-                    PXF32 sclaingWidth = (9.0f / 16.0f) * pxEngineText->FontScaling * pxEngineText->Scaling.X;
-                    PXF32 scalingHeight = pxEngineText->Scaling.Y;
-
-                    PXF32 x1 = -1 + offsetX + pxEngineText->Position.X + offsetShadowCurrent.X;// currentOffset.Left + offsetX; // offset // currentOffset.Left
-                    PXF32 y1 = -1 + offsetY + pxEngineText->Position.Y + offsetShadowCurrent.Y;// currentOffset.Bottom;
-
-                    // Add offset
-                    x1 += 0;// currentOffset.Left;
-                    y1 += 0;//currentOffset.Top;
-
-                    PXF32 x2 = (x1 + ((charWidth / textureWidth) * sclaingWidth));
-                    PXF32 y2 = (y1 + ((charHeight / textureHeight) * scalingHeight));
-
-                    offsetX += ((charWidthSpacing / textureWidth) * sclaingWidth);
-
-
-
-                    //x1 -= 1.0;
-                    //y1 += 0.9;
-                    //x2 -= 1.0;
-                    //y2 += 0.9;
-
-                    // Handle special characters
-                    switch(character)
-                    {
-                        case '\n':
-                        {
-                            // Reset X and go to next Y line
-                            offsetY -= 0.2f * scalingHeight;
-                            offsetX = 0;
-
-                            continue;
-                        }
-                        case ' ':
-                        {
-                            continue;
-                        }
-                    }
-
-
-#if 0
-                    pxGraphic->DrawColorRGBAF // Text color
-                    (
-                        pxGraphic->EventOwner,
-                        pxWindow->ColorTintReference->Red,
-                        pxWindow->ColorTintReference->Green,
-                        pxWindow->ColorTintReference->Blue,
-                        pxWindow->ColorTintReference->Alpha
-                    );
-#endif
-
-
-
-                    if(j == 0)
-                    {
-#if 0 // Text debug
-                        pxGraphic->Texture2DSelect(pxGraphic->EventOwner, 0);
-                        pxGraphic->DrawModeSet(pxGraphic->EventOwner, PXGraphicDrawFillModeFill);
-                        pxGraphic->DrawColorRGBAF(pxGraphic->EventOwner, 0, 1, 0, 1);
-                        pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
-#else
-
-                        pxGraphic->DrawColorRGBAF // Text color
-                        (
-                            pxGraphic->EventOwner,
-                            0.0f,
-                            0.0f,
-                            0.0f,
-                            1.0f
-                        );
-
-
-                        if(pxFontPageCharacter)
-                        {
-                            pxGraphic->RectangleDrawTx(pxGraphic->EventOwner, x1, y1, x2, y2, tx1, ty1, tx2, ty2, 0x01);
-                        }
-                        else
-                        {
-                            {
-                                PXTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = PXNull;
-                                pxGraphicTexturInfo.Amount = 1u;
-                                pxGraphicTexturInfo.Type = PXTextureType2D;
-                                pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                                pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                            }
-
-                            pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
-
-
-                            {
-                                PXTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
-                                pxGraphicTexturInfo.Amount = 1u;
-                                pxGraphicTexturInfo.Type = PXTextureType2D;
-                                pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                                pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        pxGraphic->DrawColorRGBAF // Text color
-                        (
-                            pxGraphic->EventOwner,
-                            0.95f,
-                            0.95f,
-                            0.95f,
-                            1.0f
-                        );
-
-                        if(pxFontPageCharacter)
-                        {
-                            pxGraphic->RectangleDrawTx(pxGraphic->EventOwner, x1, y1, x2, y2, tx1, ty1, tx2, ty2, 0x01);
-                        }
-                        else
-                        {
-                            {
-                                PXTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = PXNull;
-                                pxGraphicTexturInfo.Amount = 1u;
-                                pxGraphicTexturInfo.Type = PXTextureType2D;
-                                pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                                pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                            }
-
-                            pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
-
-                            {
-                                PXTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
-                                pxGraphicTexturInfo.Amount = 1u;
-                                pxGraphicTexturInfo.Type = PXTextureType2D;
-                                pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                                pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                            }
-                        }
-                    }
-
-
-#endif // Text debug
-
-                }
-
-
-                offsetShadowCurrent.X -= shadowOffset.X;
-                offsetShadowCurrent.Y -= shadowOffset.Y;
-
-                {
-                    PXTexturInfo pxGraphicTexturInfo;
-                    pxGraphicTexturInfo.TextureReference = PXNull;
-                    pxGraphicTexturInfo.Amount = 1u;
-                    pxGraphicTexturInfo.Type = PXTextureType2D;
-                    pxGraphicTexturInfo.Action = PXResourceActionSelect;
-
-                    pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                }
-
-                PXOpenGLBlendingMode(&pxGraphic->OpenGLInstance, PXBlendingModeNone);
-
-#if 0 // Text debug
-                pxGraphic->DrawModeSet(pxGraphic->EventOwner, PXGraphicDrawFillModeFill);
-                pxGraphic->DrawColorRGBAF(pxGraphic->EventOwner, 0, 1, 0, 1);
-                pxGraphic->RectangleDraw(pxGraphic->EventOwner, currentOffset.Left, currentOffset.Top, currentOffset.Right, currentOffset.Bottom, 0x02);
-#endif // Text debug
-
-            }
-#endif
-
-            break;
-        }
-        default:
-        {
-            return PXResultRefusedParameterInvalid;
-        }
-    }
-
-#endif
-
-    return PXResultOK;
-}
-
-/*
-      PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
-
-            PXTextureInfo pxGraphicTexturInfo;
-            PXClear(PXTextureInfo, &pxGraphicTexturInfo);
-            pxGraphicTexturInfo.TextureReference = &PXECSCreateInfo->ResourceTarget;
-            pxGraphicTexturInfo.Amount = 1;
-            pxGraphicTexturInfo.Type = PXTextureType2D;
-            pxGraphicTexturInfo.Action = PXResourceActionCreate;
-
-            const PXResult textureAction = pxGraphic->TextureAction(pxGraphic->EventOwner, &pxGraphicTexturInfo);
-
-*/
 
 void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
 {
@@ -3796,8 +2978,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
 
     // Create missing texture
     {
-        const PXColorRGBI8 pink = { 165, 5, 250 };
-        const PXColorRGBI8 black = { 30, 30, 30 };
+        const PXColorRGB_U8 pink = { 165, 5, 250 };
+        const PXColorRGB_U8 black = { 30, 30, 30 };
 
         const PXI8U colorData[4 * 4] =
         {
@@ -3807,7 +2989,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
             pink.Red, pink.Green, pink.Blue
         };
 
-        PXTexture* failbackTexture = 0;
+        PXTexture2D* failbackTexture = 0;
 
         PXClear(PXECSCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
@@ -3834,8 +3016,7 @@ PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine)
 {
     assert(pxEngine);
 
-    PXRenderEntity pxRenderEntity;
-
+   
     //glClearColor(0.1f, 0.2f, 0.3f, 1.0f); // Set background color
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -4044,386 +3225,6 @@ PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine)
     }
 #endif
     return PXResultOK;
-}
-
-void PXAPI PXEngineCollsisionSolve(PXEngine PXREF pxEngine)
-{
-#if 0
-
-    PXDictionary PXREF hitBoxLookUp = &pxEngine->ResourceManager->HitBoxLookUp;
-
-    for(PXSize indexA = 0; indexA < hitBoxLookUp->List.EntryAmountUsed; ++indexA)
-    {
-        PXDictionaryEntry pxDictionaryEntryA;
-        PXHitBox* pxHitBoxA = PXNull;
-
-        PXDictionaryIndex(hitBoxLookUp, indexA, &pxDictionaryEntryA);
-
-        pxHitBoxA = *(PXHitBox**)pxDictionaryEntryA.Value;
-
-        if(!(pxHitBoxA->Info.Behaviour & PXECSInfoActive))
-        {
-            continue;
-        }
-
-        for(PXSize indexB = 0; indexB < hitBoxLookUp->List.EntryAmountUsed; ++indexB)
-        {
-            PXDictionaryEntry pxDictionaryEntryB;
-            PXHitBox* hitBoxB = PXNull;
-
-            PXDictionaryIndex(hitBoxLookUp, indexB, &pxDictionaryEntryB);
-
-            hitBoxB = *(PXHitBox**)pxDictionaryEntryB.Value;
-
-            if(!(pxHitBoxA->Info.Behaviour & PXECSInfoActive))
-            {
-                continue;
-            }
-
-
-
-            /*
-            const PXBool isCollising = PXCollisionAABB
-            (
-                currentOffset.Left,
-                currentOffset.Top,
-                currentOffset.Right,
-                currentOffset.Bottom,
-                bfEngine->CollisionCheckInfo.MousePosition[0],
-                bfEngine->CollisionCheckInfo.MousePosition[1],
-                bfEngine->CollisionCheckInfo.MousePosition[2],
-                bfEngine->CollisionCheckInfo.MousePosition[3]
-            );*/
-        }
-    }
-
-#endif
-}
-
-PXResult PXAPI PXEngineSpriteTextureSet(PXEngine PXREF pxEngine, PXSprite PXREF pxSprite, PXTexture PXREF PXTexture)
-{
-#if 0
-    if(pxSprite->Model.IndexBuffer.SegmentListAmount > 0)
-    {
-        PXMaterial* materiial = pxSprite->Model.IndexBuffer.SegmentPrime.Material;
-
-        materiial->DiffuseTexture = PXTexture;
-    }
-    else
-    {
-        PXMaterial* materiial = PXNull;
-        PXNewZerod(PXMaterial, &materiial);
-
-        materiial->DiffuseTexture = pxSprite->Texture;
-
-        pxSprite->Model.IndexBuffer.SegmentListAmount = 1;
-        pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
-    }
-#endif
-
-    return PXResultOK;
-}
-
-void PXAPI PXEngineUpdateCollision(PXEngine PXREF pxEngine)
-{
-
-#if 0
-
-#if 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "HitBox",
-        "Compare",
-        "--- START ---"
-    );
-#endif
-
-    PXDictionary PXREF hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
-
-    PXSize amount = hitboxLookup->List.EntryAmountUsed;
-
-
-    PXDictionaryEntry pxDictionaryEntry;
-    PXHitBox* pxHitBoxA = PXNull;
-    PXHitBox* pxHitBoxB = PXNull;
-    PXVector3F32* pxHitBoxAVertex = PXNull;
-    PXVector3F32* pxHitBoxBVertex = PXNull;
-    PXSize pxHitBoxAAmount = 0;
-    PXSize pxHitBoxBAmount = 0;
-
-
-
-    // Player vs model
-    PXCamera PXREF pxCamera = pxEngine->CameraCurrent;
-
-
-    PXDictionary PXREF modelList = &pxEngine->ResourceManager->ModelLookUp;
-
-    PXVector3F32 position;
-    PXMatrix4x4FPositionGet(&pxCamera->MatrixView, &position);
-
-#if 0
-    PXConsoleGoToXY(0, 0);
-    PXConsoleWrite(7, "Camera POS\n");
-    PXConsoleWriteTablePXF32(&position, 3, 3);
-#endif
-
-
-    for(size_t i = 0; i < modelList->List.EntryAmountUsed; i++)
-    {
-        PXModel* pxModel = PXNull;
-
-        PXDictionaryIndex(modelList, i, &pxDictionaryEntry);
-
-        pxModel = *(PXModel**)pxDictionaryEntry.Value;
-
-
-
-        if(!pxModel->Mesh.VertexBufferList)
-        {
-            continue;
-        }
-
-        PXVertexBuffer PXREF pxVertexBuffer = &pxModel->Mesh.VertexBufferList[0];
-
-        PXIndexBuffer PXREF pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
-
-        /*
-        for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
-        {
-            pxIndexBuffer->SegmentList[]
-        }*/
-
-        PXVector3F32 forward = { 0,0,-1.0 };
-
-        const PXSize amount = PXMeshTriangleAmount(&pxModel->Mesh);
-
-
-        pxModel->Range = PXRayTriangleIntersect
-        (
-            &position,
-            &pxCamera->LookAtPosition,
-            pxVertexBuffer->VertexData.Data,
-            amount
-        );
-
-        if(pxModel->Range == -1)
-        {
-            continue;
-        }
-
-#if 1
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "HitBox",
-            "Compare",
-            "HIT-Range: %f",
-            pxModel->Range
-        );
-#endif
-    }
-
-
-
-
-
-
-#if 0
-    // Hitbox vs model
-    for(PXSize i = 0; i < amount; ++i)
-    {
-        PXDictionaryIndex(hitboxLookup, i, &pxDictionaryEntry);
-
-        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
-        pxHitBoxAAmount = PXMeshTriangleAmount(&pxHitBoxA->Model->Mesh);
-
-        for(PXSize j = i + 1; j < amount; ++j)
-        {
-            PXDictionaryIndex(hitboxLookup, j, &pxDictionaryEntry);
-
-            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
-            pxHitBoxBAmount = PXMeshTriangleAmount(&pxHitBoxB->Model->Mesh);
-
-            for(PXSize k = 0; k < pxHitBoxAAmount; k += 3)
-            {
-                float* x = pxHitBoxA->Model->Mesh.VertexBufferList[0].VertexData;
-
-                pxHitBoxAVertex = &x[k];
-
-                for(PXSize l = 0; l < pxHitBoxBAmount; l += 3)
-                {
-                    float* y = pxHitBoxB->Model->Mesh.VertexBufferList[0].VertexData;
-
-                    pxHitBoxBVertex = &y[l];
-
-                    PXF32 intersectionDistance = PXRayTriangleIntersect
-                    (
-                        pxHitBoxAVertex,
-                        PXNull,
-                        pxHitBoxBVertex
-                    );
-
-                    if(intersectionDistance)
-                    {
-                        // pxHitBoxA->Model->Info.Setting
-
-#if 1
-                        PXLogPrint
-                        (
-                            PXLoggingInfo,
-                            "HitBox",
-                            "Compare",
-                            "HIT"
-                        );
-#endif
-                    }
-                }
-            }
-        }
-    }
-#endif
-
-
-    /*
-
-    // Clear
-    {
-
-        for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
-        {
-            PXDictionaryEntry pxDictionaryEntry;
-            PXHitBox* pxHitBoxA = PXNull;
-
-            PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
-
-            pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
-
-            pxHitBoxA->ColliderChild = PXNull;
-            pxHitBoxA->ColliderParent = PXNull;
-        }
-    }
-
-
-    for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
-    {
-        PXDictionaryEntry pxDictionaryEntry;
-        PXHitBox* pxHitBoxA = PXNull;
-
-        PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
-
-        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
-
-        if(!(pxHitBoxA->Info.Behaviour & PXECSInfoActive))
-        {
-            continue;
-        }
-
-        for(PXSize indexB = 0; indexB < hitboxLookup->EntryAmountCurrent; ++indexB)
-        {
-            PXDictionaryEntry pxDictionaryEntry;
-            PXHitBox* pxHitBoxB = PXNull;
-
-            PXDictionaryIndex(hitboxLookup, indexB, &pxDictionaryEntry);
-
-            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
-
-            if(!(pxHitBoxB->Info.Behaviour & PXECSInfoActive))
-            {
-                continue;
-            }
-
-            if(pxHitBoxA->Info.ID == pxHitBoxB->Info.ID)
-            {
-                continue;
-            }
-
-
-            PXEngineHitBoxHandleAvsB(pxEngine, pxHitBoxA, pxHitBoxB);
-
-        }
-
-    }*/
-
-#if 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "HitBox",
-        "Compare",
-        "--- DONE ---"
-    );
-#endif
-
-
-#endif
-}
-
-void PXAPI PXEngineUpdateTimer(PXEngine PXREF pxEngine)
-{
-    return;
-
-    PXDictionary PXREF timerList = 0;// &pxEngine->ResourceManager->TimerLookUp;
-
-    for(PXSize timerIndex = 0; timerIndex < timerList->List.EntryAmountUsed; ++timerIndex)
-    {
-        PXDictionaryEntry pxDictionaryEntry;
-        PXTimer* pxTimer = PXNull;
-
-        PXDictionaryIndex(timerList, timerIndex, &pxDictionaryEntry);
-
-        pxTimer = *(PXTimer**)pxDictionaryEntry.ValueAdress;
-
-        const PXBool isActive = PXECSInfoFlagStateCheck(&pxTimer->Info, PXECSFlagBehaviourActive);
-
-        if(!isActive)
-        {
-            continue;
-        }
-
-        // Check timing, is it time to call yet?
-        const PXI32U timeStamp = PXTimeCounterStampGet();
-        const PXI32U timeerDeltaTime = timeStamp - pxTimer->TimeStampStart;
-        const PXBool isTimeDelayToStrong = ((PXI32S)pxTimer->TimeDeltaTarget + pxTimer->TimeDelayShift) < 0;
-        const PXBool isLongEnough =
-            isTimeDelayToStrong ||
-            (timeerDeltaTime > (pxTimer->TimeDeltaTarget + pxTimer->TimeDelayShift));
-
-        if(isLongEnough)
-        {
-            pxTimer->TimeStampStart = timeStamp;
-
-#if 1
-
-            PXText pxText;
-            PXTextConstructBufferA(&pxText, 64);
-
-            PXTextFormatTime(&pxText, timeerDeltaTime);
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "PX",
-                "Timer",
-                "Trigger, Waited for %10s",
-                pxText.A
-            );
-#endif
-
-#endif
-
-            if(pxTimer->CallBack)
-            {
-                PXTimerEventInfo pxEngineTimerEventInfo;
-                PXClear(PXTimerEventInfo, &pxEngineTimerEventInfo);
-                pxEngineTimerEventInfo.TimerReference = pxTimer;
-
-                pxTimer->CallBack(pxEngine, &pxEngineTimerEventInfo);
-            }
-        }
-    }
 }
 
 void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine)

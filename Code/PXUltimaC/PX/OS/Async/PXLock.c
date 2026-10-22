@@ -189,7 +189,7 @@ PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
     pxResult = PXErrorCurrent(pxLock->SemaphoreHandle != PXNull);
 
 #else
-    pxResult = PXActionRefusedNotImplemented;
+    pxResult = PXResultRefusedNotImplemented;
 #endif
 
 #if PXLogEnable
@@ -279,7 +279,7 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock, const PXBool forceEntering)
 #endif
 
 
-            waitResult = PXActionRefusedNotReady;
+            waitResult = PXResultRefusedNotReady;
             break;
         }
 
@@ -287,11 +287,11 @@ PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock, const PXBool forceEntering)
         switch(result)
         {
             case WAIT_ABANDONED:
-                waitResult = PXActionFailedWaitAbandoned;
+                waitResult = PXResultFailedWaitAbandoned;
                 break;
 
             case WAIT_FAILED:
-                waitResult = PXActionFailedWaitTimeout;
+                waitResult = PXResultFailedWaitTimeout;
                 break;
         }
     }
@@ -427,7 +427,7 @@ PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEnt
             );
 #endif
 
-            return PXActionFailedLockEnter;
+            return PXResultFailedLockEnter;
         }
     }
 

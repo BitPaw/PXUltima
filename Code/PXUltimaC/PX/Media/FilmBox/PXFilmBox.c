@@ -201,7 +201,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
         PXTextConstructNamedBufferA(&dataContent, dataContentBuffer, 64);
 
         PXTypeEntry pxFileDataElementType;
-        pxFileDataElementType.Adress = pxFilmBoxProperty->Data.Data;
+        pxFileDataElementType.Address = pxFilmBoxProperty->Data.Data;
         pxFileDataElementType.Type = pxFilmBoxProperty->PXType;
 
         PXTypeEntryInfo(&pxFileDataElementType, &dataType, &dataContent);
@@ -324,7 +324,7 @@ PXResult PXAPI PXFilmBoxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if(!isValidHeader)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         PXFileReadI32U(pxFile, &pxFilmBox.Version);
@@ -337,10 +337,10 @@ PXResult PXAPI PXFilmBoxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         PXFilmBoxReadNode(pxFile, &pxFilmBoxNodeRecord);
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXFilmBoxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

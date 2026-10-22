@@ -52,7 +52,7 @@ void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HANDLE proces
     PXClear(PXProcess, pxProcess);
 
 #if WindowsAtleastXP
-    pxProcess->ProcessID = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    pxProcess->ProcessID.Data = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 #endif
 }
 #endif
@@ -62,18 +62,18 @@ void PXAPI PXProcessParent(PXProcess PXREF pxProcess)
     PXClear(PXProcess, pxProcess);
 
 #if OSUnix
-    pxProcess->ProcessHandle = 0;
-    pxProcess->ProcessID = getppid();
+    pxProcess->ProcessHandle.Data = 0;
+    pxProcess->ProcessID.Data = getppid();
 #elif OSWindows
-    pxProcess->ProcessHandle = 0;
-    pxProcess->ProcessID = 0;
+    pxProcess->ProcessHandle.Data = 0;
+    pxProcess->ProcessID.Data = 0;
 #endif
 }
 
 void PXAPI PXProcessExitCurrent(const PXI32U exitCode)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
     ExitProcess(exitCode);
@@ -100,14 +100,14 @@ PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handle
     }
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows && WindowsAtleastXP
     DWORD handleCount = 0;
 
     const BOOL successful = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
     (
-        pxProcess->ProcessHandle,
+        pxProcess->ProcessHandle.Data,
         &handleCount
     );
     const PXResult pxResult = PXErrorCurrent(successful);
@@ -122,7 +122,7 @@ PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handle
     return PXResultOK;
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -247,7 +247,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
     //NtQuerySystemInformation();
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, PXKernelNT, PXKernelNTLength, PXKernelNTLength);
+    PXTextFromAddressA(&pxText, PXKernelNT, PXKernelNTLength, PXKernelNTLength);
 
     PXLibrary pxLibraryNTDLL;
     PXLibraryOpen(&pxLibraryNTDLL, &pxText);
@@ -304,7 +304,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
         SYSTEM_HANDLE_TABLE_ENTRY_INFO* sysHandle = &memory->Handles[i];
 
         HANDLE handleCurrent = (HANDLE)sysHandle->HandleValue;
-        const PXBool isSameProcess = pxProcess->ProcessID == sysHandle->UniqueProcessId;
+        const PXBool isSameProcess = pxProcess->ProcessID.Data == sysHandle->UniqueProcessId;
 
         // We only want our own handles, if we would want the others aswell
         // use OpenProcess() and DuplicateHandle() to fetch the handle to this process and use it
@@ -399,7 +399,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
 
                 // GetThreadInformation()
                 PXText buffer;
-                PXTextFromAdressA(&buffer, pxHandleInfo.Description, 0, 256);
+                PXTextFromAddressA(&buffer, pxHandleInfo.Description, 0, 256);
 
                // PXThreadNameGet(pxDebug, &pxThread, &buffer);
 
@@ -487,7 +487,7 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
         case TextFormatUTF8:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 
 #elif OSWindows
             STARTUPINFOA startupInfo;
@@ -524,10 +524,10 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
                 return pxResult;
             }
 
-            pxProcess->ProcessHandle = processInfo.hProcess;
-            pxProcess->ProcessID = processInfo.dwProcessId;
-            pxProcess->ThreadHandle = processInfo.hThread;
-            pxProcess->ThreadID = processInfo.dwThreadId;
+            pxProcess->ProcessHandle.Data = processInfo.hProcess;
+            pxProcess->ProcessID.Data = processInfo.dwProcessId;
+            pxProcess->ThreadHandle.Data = processInfo.hThread;
+            pxProcess->ThreadID.Data = processInfo.dwThreadId;
 
 #endif
 
@@ -536,7 +536,7 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
         case TextFormatUNICODE:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 
 #elif OSWindows
             STARTUPINFOW startupInfo;
@@ -567,10 +567,10 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
                 return pxResult;
             }
 
-            pxProcess->ProcessHandle = processInfo.hProcess;
-            pxProcess->ProcessID = processInfo.dwProcessId;
-            pxProcess->ThreadHandle = processInfo.hThread;
-            pxProcess->ThreadID = processInfo.dwThreadId;
+            pxProcess->ProcessHandle.Data = processInfo.hProcess;
+            pxProcess->ProcessID.Data = processInfo.dwProcessId;
+            pxProcess->ThreadHandle.Data = processInfo.hThread;
+            pxProcess->ThreadID.Data = processInfo.dwThreadId;
 
 #endif
 
@@ -584,11 +584,11 @@ PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF pro
 PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
     if(!pxProcessDetectedEvent)
     {
-        return PXActionRefusedMissingCallBack;
+        return PXResultRefusedMissingCallBack;
     }
 
     const DWORD flag = TH32CS_SNAPPROCESS;
@@ -616,16 +616,16 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     for(; successfulFetch; )
     {
         PXProcess pxProcess;
-        pxProcess.ProcessHandle = PXNull;
-        pxProcess.ProcessID = processEntryW.th32ProcessID;
-        pxProcess.ThreadHandle = PXNull;
-        pxProcess.ThreadID = 0;
+        pxProcess.ProcessHandle.Data = PXNull;
+        pxProcess.ProcessID.Data = processEntryW.th32ProcessID;
+        pxProcess.ThreadHandle.Data = PXNull;
+        pxProcess.ThreadID.Data = 0;
         pxProcess.ThreadsAtStart = processEntryW.cntThreads;
         pxProcess.ThreadBasePriority = processEntryW.pcPriClassBase;
         pxProcess.ProcessIDParent = processEntryW.th32ParentProcessID;
         pxProcess.ExecutableFilePath;
 
-        PXTextFromAdressA(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, PXTextLengthUnkown, PXTextLengthUnkown);
+        PXTextFromAddressA(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, PXTextLengthUnkown, PXTextLengthUnkown);
 
         PXFunctionInvoke(pxProcessDetectedEvent, &pxProcess);
 
@@ -634,7 +634,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -643,7 +643,7 @@ PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxT
     PXSize threadIndex = 0;
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
 
     PXDebug* pxDebug = PXDebugInstanceGet();
@@ -700,10 +700,10 @@ PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxT
 
 
 
-    PXSymbol pxSymbol[6];
+    //PXSymbol pxSymbol[6];
 
 
-    PXSymbolStackTrace(pxSymbol, 6, 0, 6);
+    //PXSymbolStackTrace(pxSymbol, 6, 0, 6);
     PXDebugHeapMemoryList(pxDebug);
 
 
@@ -712,7 +712,7 @@ PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxT
     *resultSIze = threadIndex;
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -721,10 +721,10 @@ PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID p
     PXClear(PXProcess, pxProcess);
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
     const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
-    const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID.Data); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxResult = PXErrorCurrent(processHandle != PXNull);
 
     if(PXResultOK != pxResult)
@@ -733,20 +733,20 @@ PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID p
     }
 
     pxProcess->ProcessID = pxProcessID;
-    pxProcess->ProcessHandle = processHandle;
+    pxProcess->ProcessHandle.Data = processHandle;
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
-    const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
+    const BOOL successful = CloseHandle(pxProcess->ProcessHandle.Data); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
     const PXResult pxResult = PXErrorCurrent(successful);
 
     if(PXResultOK != pxResult)
@@ -754,11 +754,11 @@ PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess)
         return pxResult;
     }
 
-    pxProcess->ProcessHandle = PXNull;
+    pxProcess->ProcessHandle.Data = PXNull;
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -918,7 +918,7 @@ PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemor
 void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
 {
 #if OSUnix
-    return  PXActionRefusedNotImplemented;
+    return  PXResultRefusedNotImplemented;
 
 #elif OSWindows
     PXProcess target;
@@ -926,7 +926,7 @@ void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
 
     if(pxProcess)
     {
-        processHandle = pxProcess->ProcessHandle;
+        processHandle = pxProcess->ProcessHandle.Data;
     }
     else
     {
@@ -955,6 +955,6 @@ void PXAPI PXProcessEcoModeSet(PXProcess* pxProcess, const PXBool enable)
     return pxResult;
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }

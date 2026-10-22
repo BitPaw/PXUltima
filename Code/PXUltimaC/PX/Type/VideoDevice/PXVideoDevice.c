@@ -2,13 +2,13 @@
 
 #if OSWindows
 #include <windows.h>
-
 #include <dshow.h> // Direct Show
 #include <mfapi.h> // Windows Vista
 #include <mfidl.h>
 #include <combaseapi.h>
 #include <mfreadwrite.h>
 #include <shlwapi.h>
+#include <mftransform.h>
 
 //#include <mfobjects.h>
 //#pragma comment(lib, "mfidl.lib")
@@ -22,13 +22,6 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Type/PXText.h>
 #include <PX/OS/PXOS.h>
-
-
-#if OSWindows
-#include <Windows.h>
-#include <mfapi.h>
-#include <mftransform.h>
-#endif
 
 
 
@@ -68,8 +61,6 @@ HRESULT WINAPI Release(IMFSourceReaderCallback* callBack)
     return S_OK;
 }
 
-
-
 HRESULT WINAPI OnFlush(IMFSourceReaderCallback* This, _In_  DWORD dwStreamIndex)
 {
     PXConsoleWrite(0, "EVENT - OnFlush\n");
@@ -94,12 +85,15 @@ HRESULT WINAPI PXVideoOnReadSample(HRESULT hrStatus, DWORD dwStreamIndex, DWORD 
 
 PXResult PXAPI PXVideoCaptureDeviceList()
 {
+    PXResult pxResult = PXEndianInvalid;
+
 #if OSUnix
 #elif OSWindows
+    HRESULT resultID = S_OK;
 
     PXVideoDeviceEE* pxVideoDeviceList = PXNull;
 
-    const HRESULT c = CoInitialize(PXNull);
+    resultID = CoInitialize(PXNull);
 
     IMFMediaSource* imfMediaSource;
 
@@ -108,9 +102,9 @@ PXResult PXAPI PXVideoCaptureDeviceList()
 
     // Create an attribute store to specify the enumeration parameters.
     {
-        const HRESULT hr = MFCreateAttributes(&attributeList, 2); // Windows Vista (+UWP), Mfplat.dll, mfapi.h
+        resultID = MFCreateAttributes(&attributeList, 2); // Windows Vista (+UWP), Mfplat.dll, mfapi.h
 
-        if(FAILED(hr))
+        if(FAILED(resultID))
         {
             goto done;
         }
@@ -119,14 +113,14 @@ PXResult PXAPI PXVideoCaptureDeviceList()
     {
         // Windows Vista, Mfuuid.lib, mfobjects.h
         // Source type: video capture devices
-        const HRESULT hr = attributeList->lpVtbl->SetGUID
+        resultID = attributeList->lpVtbl->SetGUID
         (
             attributeList,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID // MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID
         );
 
-        if(FAILED(hr))
+        if(FAILED(resultID))
         {
             goto done;
         }
@@ -137,9 +131,9 @@ PXResult PXAPI PXVideoCaptureDeviceList()
     // Enumerate devices.
   //  {
     UINT32 count = 0;
-    HRESULT hr = MFEnumDeviceSources(attributeList, &ppDevices, &count); // Windows 7, Mf.dll, mfidl.h
+    resultID = MFEnumDeviceSources(attributeList, &ppDevices, &count); // Windows 7, Mf.dll, mfidl.h
 
-    if(FAILED(hr))
+    if(FAILED(resultID))
     {
         goto done;
     }
@@ -158,7 +152,7 @@ PXResult PXAPI PXVideoCaptureDeviceList()
         PXVideoDeviceEE* pxVideoDevice = &pxVideoDeviceList[i];
         IMFActivate* device = ppDevices[i];
 
-        const HRESULT wwe = device->lpVtbl->ActivateObject
+        resultID = device->lpVtbl->ActivateObject
         (
             device,
             &IID_IMFMediaSource,
@@ -168,7 +162,7 @@ PXResult PXAPI PXVideoCaptureDeviceList()
         UINT32 bufferSize = 0;
         wchar_t* buffer = PXNull;
 
-        const HRESULT wweAA = device->lpVtbl->GetAllocatedString
+        resultID = device->lpVtbl->GetAllocatedString
         (
             device,
             &MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
@@ -179,7 +173,7 @@ PXResult PXAPI PXVideoCaptureDeviceList()
         PXTextCopyWA(buffer, bufferSize, pxVideoDevice->Name, 32);
 
 
-        const HRESULT aaaaa = device->lpVtbl->GetAllocatedString
+        resultID = device->lpVtbl->GetAllocatedString
         (
             device,
             &MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
@@ -187,7 +181,7 @@ PXResult PXAPI PXVideoCaptureDeviceList()
             &bufferSize
         );
 
-        const HRESULT bbbbbb = device->lpVtbl->GetAllocatedString
+        resultID = device->lpVtbl->GetAllocatedString
         (
             device,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
@@ -195,14 +189,14 @@ PXResult PXAPI PXVideoCaptureDeviceList()
             &bufferSize
         );
 
-        const HRESULT cccccc = attributeList->lpVtbl->SetString
+        resultID = attributeList->lpVtbl->SetString
         (
             attributeList,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
             buffer
         );
 
-        const HRESULT ddddd = MFCreateDeviceSource(attributeList, &imfMediaSource);
+        resultID = MFCreateDeviceSource(attributeList, &imfMediaSource);
 
         PXConsoleWrite(0, 0);
     }
@@ -215,11 +209,11 @@ PXResult PXAPI PXVideoCaptureDeviceList()
     IMFSourceReader* ppReader;
 
 
-    hr = S_OK;
+    resultID = S_OK;
     IMFAttributes* pAttributes = NULL;
 
-    hr = MFCreateAttributes(&pAttributes, 1);
-    if(FAILED(hr))
+    resultID = MFCreateAttributes(&pAttributes, 1);
+    if(FAILED(resultID))
     {
         goto done;
     }
@@ -242,28 +236,22 @@ PXResult PXAPI PXVideoCaptureDeviceList()
      //  iUnknown.lpVtbl->
 
 
-    hr = pAttributes->lpVtbl->SetUnknown
+    resultID = pAttributes->lpVtbl->SetUnknown
     (
         pAttributes,
         &MF_SOURCE_READER_ASYNC_CALLBACK,
         &imfSourceReaderCallback
     );
 
-    if(FAILED(hr))
+    if(FAILED(resultID))
     {
         goto done;
     }
 
-    hr = MFCreateSourceReaderFromURL(pszURL, pAttributes, &ppReader);
-
-
-
-
-
-
+    resultID = MFCreateSourceReaderFromURL(pszURL, pAttributes, &ppReader);
 
     // Request the first sample.
-    hr = ppReader->lpVtbl->ReadSample
+    resultID = ppReader->lpVtbl->ReadSample
     (
         ppReader,
         MF_SOURCE_READER_FIRST_VIDEO_STREAM,

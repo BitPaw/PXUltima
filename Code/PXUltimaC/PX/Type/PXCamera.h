@@ -3,11 +3,12 @@
 #ifndef PXCameraIncluded
 #define PXCameraIncluded
 
-
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Math/PXMatrix.h>
-#include <PX/Type/PXWindow.h>
 #include <PX/Math/PXRotation.h>
+#include <PX/Engine/PXResource.h>
+#include <PX/Type/PXRectangle.h>
+#include <PX/Math/PXTransform.h>
 
 #define PXCameraFollowPosition 0
 #define PXCameraFollowRotation 0
@@ -21,17 +22,17 @@ typedef enum PXCameraPerspective_
 }
 PXCameraPerspective;
 
-typedef struct PXCamera_ PXCamera;
-
 typedef struct PXCamera_
 {
     PXECSInfo Info;
 
-    PXVector4F32 Position;
-    PXRotor4DF32 Rotation;
+    PXTransform4D Transform;
+
+    PXEulerAngle3F32 AccumulatorRAD;
+
 
     PXVector3F32 LookAtPosition;
-    PXVector3F32 CurrentRotation;
+    //PXVector3F32 CurrentRotation;
 
     //---<Follow>---
     PXVector3F32 Offset;
@@ -68,7 +69,7 @@ PXPublic void PXAPI PXCameraRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterI
 
 PXPublic PXResult PXAPI PXCameraCreate(PXCamera** pxCameraREF, PXCameraCreateInfo PXREF pxCameraCreateInfo);
 PXPublic PXResult PXAPI PXCameraRelease(PXCamera PXREF pxCamera);
-PXPublic PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXCameraDraw(PXCamera PXREF pxCamera, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 PXPublic PXResult PXAPI PXCameraGLFPP(const PXCamera PXREF pxCamera, const PXCameraPerspective cameraPerspective);
 
@@ -99,5 +100,38 @@ PXPublic void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
 PXPublic void PXAPI PXCameraForward(const PXCamera PXREF camera, PXVector3F32 PXREF forward);
 PXPublic void PXAPI PXCameraRight(const PXCamera PXREF camera, PXVector3F32 PXREF right);
 PXPublic void PXAPI PXCameraUp(const PXCamera PXREF camera, PXVector3F32 PXREF up);
+
+
+
+PXPublic void PXAPI PXCameraOrthonormalBasisGet
+(
+    const PXCamera PXREF camera,
+    PXVector3F32 PXREF out_right,
+    PXVector3F32 PXREF out_up,
+    PXVector3F32 PXREF out_forward
+);
+PXPublic void PXAPI PXCameraOrthonormalBasisGetEuler
+(
+    const PXCamera PXREF camera,
+    PXVector3F32 PXREF out_right,
+    PXVector3F32 PXREF out_up,
+    PXVector3F32 PXREF out_forward
+);
+
+
+PXPublic void PXAPI PXCameraMakeMatrix
+(
+    PXCamera PXREF camera, 
+    const PXTransform4D PXREF modelTransform,
+    PXMatrixModelViewProjection PXREF pxMatrixModelViewProjection
+);
+/*
+PXPublic void PXAPI PXCameraMakeMatrix2
+(
+    const PXCamera PXREF camera, 
+    const PXTransform4D PXREF modelTransform,
+    PXMatrixModelViewProjectionSquashed PXREF pxMatrixModelViewProjectionSquashed
+);
+*/
 
 #endif

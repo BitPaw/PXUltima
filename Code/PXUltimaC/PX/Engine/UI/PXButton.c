@@ -2,7 +2,7 @@
 #include <PX/OS/Console/PXConsole.h>
 
 #include <PX/OS/PXOS.h>
-#include <PX/Engine/PXUI.h>
+#include <PX/Engine/PXEngineUI.h>
 
 #if OSUnix
 #elif OSWindows
@@ -11,9 +11,9 @@
 
 const char PXButtonName[] = "Button";
 
-PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXButtonDraw(PXButton PXREF pxButton, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    PXUITheme* pxGUITheme = pxDrawInfo->UITheme;
+    PXEngineUITheme* pxGUITheme = pxDrawInfo->UITheme;
     PXWindow PXREF pxWindow = pxButton->WindowBase;
 
 #if PXLogEnable && 0

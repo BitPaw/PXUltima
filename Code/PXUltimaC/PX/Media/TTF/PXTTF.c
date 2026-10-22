@@ -779,5 +779,5 @@ PXResult PXAPI PXTTFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXTTFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

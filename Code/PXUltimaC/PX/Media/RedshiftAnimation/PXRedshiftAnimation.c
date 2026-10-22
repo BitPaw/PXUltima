@@ -7,5 +7,5 @@ PXResult PXAPI PXRedshiftAnimationLoadFromFile(PXECSCreateInfo PXREF pxResourceL
 
 PXResult PXAPI PXRedshiftAnimationSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

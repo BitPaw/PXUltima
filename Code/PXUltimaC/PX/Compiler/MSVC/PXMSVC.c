@@ -256,7 +256,7 @@ int PXCompilerTEST()
 
     while(1)
     {
-        Sleep(1);
+        PXThreadSleep(PXNull,1);
     }
 
     return 0;

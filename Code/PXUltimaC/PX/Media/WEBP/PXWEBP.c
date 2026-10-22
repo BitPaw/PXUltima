@@ -6,7 +6,7 @@
 
 const char PXWEBPVP[4] = "VP8 ";
 
-PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWEBPLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileCurrent;
 
@@ -21,7 +21,7 @@ PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
 
         if (PXRIFFWebPicture != pxRiff.Format)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         PXFileEndianessSet(pxFile, pxRiff.EndianFormat);
@@ -33,36 +33,36 @@ PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
     {
         PXI32UCluster chunkID;
 
-        PXFileReadB(pxFile, chunkID.Data4, 4u);
+        PXFileReadB(pxFile, chunkID.Data, 4u);
 
-        switch (chunkID.Value)
+        switch(chunkID.Value)
         {
-        case PXI32Make('V', 'P', '8', 'L'):
-        {
-            PXI32U streamSize = 0;
-            PXFileReadI32UE(pxFile, &streamSize, PXEndianLittle);
+            case PXI32Make('V', 'P', '8', 'L'):
+            {
+                PXI32U streamSize = 0;
+                PXFileReadI32UE(pxFile, &streamSize, PXEndianLittle);
 
-            const char signature = 0x2f;
-            const PXBool isValid = PXFileReadAndCompare(pxFile, &signature, sizeof(char));
+                const char signature = 0x2f;
+                const PXBool isValid = PXFileReadAndCompare(pxFile, &signature, sizeof(char));
 
-            // Images can only be 16384x16384
-            pxTexture->Width = PXFileReadBits(pxFile, 14u) + 1u;
-            pxTexture->Height = PXFileReadBits(pxFile, 14u) + 1u;
+                // Images can only be 16384x16384
+                pxTexture2D->Width = PXFileReadBits(pxFile, 14u) + 1u;
+                pxTexture2D->Height = PXFileReadBits(pxFile, 14u) + 1u;
 
-            PXBool hasAlpha = PXFileReadBits(pxFile, 1u);
-            PXBool version = PXFileReadBits(pxFile, 3u);
+                PXBool hasAlpha = PXFileReadBits(pxFile, 1u);
+                PXBool version = PXFileReadBits(pxFile, 3u);
 
-            break;
-        }
-        default:
-            break;
+                break;
+            }
+            default:
+                break;
         }
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWEBPSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWEBPSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
     // Write RIFF
     {
@@ -74,5 +74,5 @@ PXResult PXAPI PXWEBPSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
         const PXResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileCurrent);
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

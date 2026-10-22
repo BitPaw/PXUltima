@@ -5,7 +5,6 @@
 
 #include <PX/Type/PXType.h>
 #include <PX/Type/PXSound.h>
-#include <PX/Type/PXAudioDevice.h>
 #include <PX/Type/PXAudioFilterBuffer.h>
 
 
@@ -71,8 +70,51 @@ typedef PXResult(PXAPI* PXAudioDeviceUnloadFunction)
 typedef struct PXAudioDeviceCreateInfo_
 {
     PXECSCreateInfo Info;
+
+    PXAudioDeviceType Type;
+
+#if OSUnix
+#elif OSWindows
+    GUID WindowsGUID;
+#endif
 }
 PXAudioDeviceCreateInfo;
+
+
+
+
+typedef struct PXAudioDeviceInput_
+{
+    union
+    {
+        // Windows MultiMedia
+        struct HWAVEIN__* WaveInHandle; // HWAVEIN
+
+        // DirectSound
+        struct IDirectSoundCapture* DS; // IDirectSoundCapture
+        struct IDirectSoundCapture* DS8; // IDirectSoundCapture8, LPDIRECTSOUNDCAPTURE8
+    };
+}
+PXAudioDeviceInput;
+
+typedef struct PXAudioDeviceOutPut_
+{
+    union
+    {
+        void* GenericHandle;
+
+        // Windows MultiMedia
+        struct HWAVEOUT__* WaveOutHandle; // HWAVEOUT
+
+        // DirectSound
+        struct IDirectSound* DS;
+        struct IDirectSound8* DS8;
+    };
+}
+PXAudioDeviceOutput;
+
+
+
 
 
 typedef struct PXAudioDevice_
@@ -81,18 +123,8 @@ typedef struct PXAudioDevice_
 
     union
     {
-        void* GenericHandle;
-
-        // Windows MultiMedia
-        struct HWAVEOUT__* WaveOutHandle; // HWAVEOUT
-        struct HWAVEIN__* WaveInHandle; // HWAVEIN
-
-        // DirectSound
-        struct IDirectSoundCapture* CaptureInterface; // LPDIRECTSOUND8
-        struct IDirectSoundCapture8* CaptureInterface8;
-
-        struct IDirectSound* OutputInterface;
-        struct IDirectSound8* OutputInterface8;
+        PXAudioDeviceInput Input;
+        PXAudioDeviceOutput Output;
     };
 
     PXAudioFilterBuffer FilterBuffer;
@@ -125,7 +157,6 @@ typedef struct PXAudioDevice_
     //-------------------------------------------------
     // General Shared Info
     //-------------------------------------------------
-    char DeviceName[PXAudioDeviceNameSize];
     PXI16U ManufacturerID;
     PXI16U ProductID;
     PXI8U DriverVersionMajor;
@@ -162,8 +193,7 @@ typedef struct PXAudioDevice_
     PXI32U dwChannelMask;          // Positions of the audio channels
 
 
-    struct IDirectSoundBuffer* SoundBuffer;
-    struct IDirectSound3DBuffer8* Buffer3DInterface;
+
     struct IDirectSound3DListener8* Listen3DInterface;
     void* FXGargle;
     void* FXChorus;

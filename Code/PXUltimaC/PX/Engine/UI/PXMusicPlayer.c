@@ -1,6 +1,6 @@
 #include "PXMusicPlayer.h"
 
-PXResult PXAPI PXMusicPlayerDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXMusicPlayerDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

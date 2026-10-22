@@ -18,7 +18,7 @@ typedef struct PXLabelCreateInfo_
     char* Content;
     struct PXFont_* FontID;
     PXF32 Scale;
-    PXUIElementAllign Allign;
+    PXEngineUIElementAllign Allign;
 }
 PXLabelCreateInfo;
 

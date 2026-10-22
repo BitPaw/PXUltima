@@ -29,7 +29,7 @@ PXPublic PXResult PXAPI PXDialogSystemRelease(PXDialogSystem PXREF pxDialogSyste
 PXPublic PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath);
 PXPublic PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath);
 
-PXPublic PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGBI8 PXREF color);
+PXPublic PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGB_U8 PXREF color);
 PXPublic PXBool PXAPI PXDialogFontSelect(PXDialogSystem PXREF pxDialogSystem);
 PXPublic PXBool PXAPI PXDialogPrint(PXDialogSystem PXREF pxDialogSystem);
 

@@ -101,12 +101,12 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstru
 
 void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, PXMIPSJump PXREF pxMIPSJump)
 {
-    const PXSize actualAdress = (PXSize)pxMIPSProcessor->ProgramCounter + 4;
-    const PXSize delaySlotAdress = (PXSize)pxMIPSProcessor->ROMOffsetVirtual + (PXSize)actualAdress;
+    const PXSize actualAddress = (PXSize)pxMIPSProcessor->ProgramCounter + 4;
+    const PXSize delaySlotAddress = (PXSize)pxMIPSProcessor->ROMOffsetVirtual + (PXSize)actualAddress;
 
     const PXSize res =
         ((0b00000011111111111111111111111111u & pxMIPSTInstruction->OperationCode) << 2) |
-        0b11110000000000000000000000000000u & delaySlotAdress;
+        0b11110000000000000000000000000000u & delaySlotAddress;
 
     // 26-Bit target, shifted left because the two lowest bits are always 0 anyway (allignment).
     // add the additional 4-bits of the delay slot
@@ -119,7 +119,7 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
         // We are two instructions further.
         // 4+ because of the next instcution that is executed before this jump (Delayinstuciton)
         // another 4+ to point to the actual next one.
-        pxMIPSProcessor->RegisterList[31] = delaySlotAdress + 4;
+        pxMIPSProcessor->RegisterList[31] = delaySlotAddress + 4;
     }
 
 
@@ -135,11 +135,11 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
 
 
 #if PXLogEnable
-    PXSize returnAdress = 0;
+    PXSize returnAddress = 0;
 
     if(pxMIPSJump->PreserveReturnPoint)
     {
-        returnAdress = pxMIPSProcessor->RegisterList[31];
+        returnAddress = pxMIPSProcessor->RegisterList[31];
     }
 
     PXLogPrint
@@ -149,7 +149,7 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
         "JumpCalc",
         "Jump to 0x%8.8X, return:0x%8.8X",
         pxMIPSJump->AddressVirual,
-        returnAdress
+        returnAddress
     );
 #endif
 }
@@ -451,12 +451,12 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 
     PXMIPSTInstruction pxMIPSTInstruction;
     pxMIPSTInstruction.IncrmentCounter = PXTrue;
-    pxMIPSTInstruction.Adress = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetActual, pxMIPSProcessor->ProgramCounter);
-    pxMIPSTInstruction.AdressVirtual = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetVirtual, pxMIPSProcessor->ProgramCounter);
+    pxMIPSTInstruction.Address = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetActual, pxMIPSProcessor->ProgramCounter);
+    pxMIPSTInstruction.AddressVirtual = (PXByte*)PXMemoryAddressAdd(pxMIPSProcessor->ROMOffsetVirtual, pxMIPSProcessor->ProgramCounter);
 
     // instruction is big endian, to use our bit extraction, we need to swap it
 
-    pxMIPSTInstruction.OperationCode = PXI32Make(pxMIPSTInstruction.Adress[3], pxMIPSTInstruction.Adress[2], pxMIPSTInstruction.Adress[1], pxMIPSTInstruction.Adress[0]);
+    pxMIPSTInstruction.OperationCode = PXI32Make(pxMIPSTInstruction.Address[3], pxMIPSTInstruction.Address[2], pxMIPSTInstruction.Address[1], pxMIPSTInstruction.Address[0]);
 
     if(pxMIPSTInstruction.OperationCode == 0)
     {
@@ -467,7 +467,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
             PXMIPSProcessorName,
             "NOOP",
             "0x%8.8X   --- No Operation ---",
-            pxMIPSTInstruction.AdressVirtual
+            pxMIPSTInstruction.AddressVirtual
         );
 #endif
 
@@ -517,11 +517,11 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction PXREF pxMIPSTInstruction)
         PXMIPSProcessorName,
         "Instruction",
         "0x%8.8X   %2.2X %2.2X %2.2X %2.2X   RS:%2.2X RT:%2.2X IMM:%4.4X   %2.2X:%-7s %s",
-        (int)pxMIPSTInstruction->AdressVirtual,
-        pxMIPSTInstruction->Adress[0],
-        pxMIPSTInstruction->Adress[1],
-        pxMIPSTInstruction->Adress[2],
-        pxMIPSTInstruction->Adress[3],
+        (int)pxMIPSTInstruction->AddressVirtual,
+        pxMIPSTInstruction->Address[0],
+        pxMIPSTInstruction->Address[1],
+        pxMIPSTInstruction->Address[2],
+        pxMIPSTInstruction->Address[3],
         pxMIPSTInstruction->RegisterSourceID,
         pxMIPSTInstruction->RegisterTargetID,
         pxMIPSTInstruction->Immediate,
@@ -544,10 +544,10 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
     const PXSize offset = (PXI16S)pxMIPSTInstruction->Immediate; // Sign extend
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] += offset; // add to register
 
-    const PXSize virtualAdress = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
+    const PXSize virtualAddress = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 
-    void* realAdressOffset = PXMIPSTranslateVirtualAdress(pxMIPSProcessor, (void*)virtualAdress); // Virtual adress to actual pointer
-    void* value = &pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID]; // Adress of value to store
+    void* realAddressOffset = PXMIPSTranslateVirtualAddress(pxMIPSProcessor, (void*)virtualAddress); // Virtual address to actual pointer
+    void* value = &pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID]; // Address of value to store
 
     const PXSize typeSize = datatype & PXTypeSizeMask;
 
@@ -561,13 +561,13 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
             "Memory-Store",
             "Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
             pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterTargetID],
-            virtualAdress,
+            virtualAddress,
             base,
             offset
         );
 #endif
 
-        PXMemoryCopy(value, realAdressOffset, typeSize);
+        PXMemoryCopy(value, realAddressOffset, typeSize);
     }
     else
     {
@@ -579,13 +579,13 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruct
             "Memory-Load",
             "Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
             pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
-            virtualAdress,
+            virtualAddress,
             base,
             offset
         );
 #endif
 
-        PXMemoryCopy(realAdressOffset, value, typeSize);
+        PXMemoryCopy(realAddressOffset, value, typeSize);
     }
 
 
@@ -877,13 +877,13 @@ void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor PXREF pxMIPSProcessor)
     PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
 }
 
-PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(const void* adress)
+PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(const void* address)
 {
-    const PXSize adressVal = (PXSize)adress;
+    const PXSize addressVal = (PXSize)address;
 
-    PXSize adressSpace = (adressVal >> 4) & 0xFFF00000;
+    PXSize addressSpace = (addressVal >> 4) & 0xFFF00000;
 
-    switch(adressSpace)
+    switch(addressSpace)
     {
         case 0x03F00000: return PXMIPSMemoryRegionRDRAMRegistersHandler;
         case 0x04000000: return PXMIPSMemoryRegionSPRegistersHandler;
@@ -907,17 +907,17 @@ PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(const void* adress)
 }
 
 
-void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAdress)
+void* PXAPI PXMIPSTranslateVirtualAddress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAddress)
 {
-    const PXBool virtualAdressValid = 0 == (0b11 & (PXSize)virtualAdress);
-    PXSize translatedAdress = (PXSize)virtualAdress;
+    const PXBool virtualAddressValid = 0 == (0b11 & (PXSize)virtualAddress);
+    PXSize translatedAddress = (PXSize)virtualAddress;
 
-    if(!virtualAdressValid)
+    if(!virtualAddressValid)
     {
         PXDebugBreak();
     }
 
-    const PXMIPSMemoryRegion region = PXMIPSMemoryRegionDetect(virtualAdress);
+    const PXMIPSMemoryRegion region = PXMIPSMemoryRegionDetect(virtualAddress);
 
     switch(region)
     {
@@ -967,8 +967,8 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, 
         }
         case PXMIPSMemoryRegionCartridgeDomain2Address2Handler:
         {
-            translatedAdress -= (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
-            translatedAdress += (PXSize)pxMIPSProcessor->ROMOffsetActual;
+            translatedAddress -= (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+            translatedAddress += (PXSize)pxMIPSProcessor->ROMOffsetActual;
             break;
         }
         case PXMIPSMemoryRegionISViewerHandler:
@@ -985,7 +985,7 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, 
         }
         default:
         {
-            translatedAdress += (PXSize)pxMIPSProcessor->RAMAdress;
+            translatedAddress += (PXSize)pxMIPSProcessor->RAMAddress;
             break;
         }
     }
@@ -996,20 +996,20 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, 
     (
         PXLoggingInfo,
         PXMIPSProcessorName,
-        "TranslateAdress",
+        "TranslateAddress",
         "V:0x%8.8X -> P:0x%p",
-        virtualAdress,
-        translatedAdress
+        virtualAddress,
+        translatedAddress
 
     );
 #endif
 
 
-    // Check in what range this adress is and then get the proper poition
-    //     void* target = (PXI8U*)pxMIPSProcessor->RAMAdress + realAdressOffset;
+    // Check in what range this address is and then get the proper poition
+    //     void* target = (PXI8U*)pxMIPSProcessor->RAMAddress + realAddressOffset;
 
 
-    return (void*)translatedAdress;
+    return (void*)translatedAddress;
 }
 
 void PXAPI PXMIPSProgramCounterAdvance(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize amount)
@@ -1572,12 +1572,12 @@ void PXAPI PXMIPSInstructionShiftRightArithmeticVariable(PXMIPSProcessor PXREF p
 
 void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
-    const PXSize adressVirtual = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
-    const PXSize adressPhysical = adressVirtual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+    const PXSize addressVirtual = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
+    const PXSize addressPhysical = addressVirtual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
 
-    const PXSize validAdress = 0 == (0b11 & adressVirtual); // Must be word alligned!
+    const PXSize validAddress = 0 == (0b11 & addressVirtual); // Must be word alligned!
 
-    if(!validAdress)
+    if(!validAddress)
     {
         PXDebugBreak();
     }
@@ -1591,11 +1591,11 @@ void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor PXREF pxMIPSProcessor, 
         PXMIPSProcessorName,
         "Jump Register",
         "Jump to 0x%8.8X (offset:%i)",
-        adressVirtual,
-        adressPhysical
+        addressVirtual,
+        addressPhysical
     );
 #endif
-    pxMIPSProcessor->ProgramCounter = (void*)adressPhysical;
+    pxMIPSProcessor->ProgramCounter = (void*)addressPhysical;
 
     pxMIPSTInstruction->IncrmentCounter = PXFalse; // Skip the +4 offset
 }

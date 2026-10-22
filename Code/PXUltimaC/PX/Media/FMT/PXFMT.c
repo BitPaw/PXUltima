@@ -14,7 +14,7 @@ PXResult PXAPI PXFMTLoadFromFile(PXFMT PXREF fmt, PXFile PXREF pxFile, const PXE
 
         if(!valid)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 

@@ -18,7 +18,7 @@ PXSpriteFrame;
 // KeyFrame, info about each animated frame
 typedef struct PXSpriteAnimatorTimeStamp_
 {
-    PXTexture* Texture;
+    PXTexture2D* Texture;
     PXF32 DeltaTime; // The time until we swap to the next screen
 }
 PXSpriteAnimatorTimeStamp;

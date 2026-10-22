@@ -1,6 +1,8 @@
-#pragma once\n#ifndef PXVideoIncluded
-#define PXVideoIncluded
+#pragma once
 
-#include <PX/Engine/PXResource.h>
+#ifndef PXEventHistoryIncluded
+#define PXEventHistoryIncluded
+
+#include <PX/Type/PXType.h>
 
 #endif

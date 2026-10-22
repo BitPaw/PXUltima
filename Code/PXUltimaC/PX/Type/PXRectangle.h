@@ -14,6 +14,19 @@ typedef struct PXRectangleXYWHI32_
 }
 PXRectangleXYWHI32;
 
+typedef struct PXRectangleXYWHF32_
+{
+    PXF32 X;
+    PXF32 Y;
+    PXF32 Width;
+    PXF32 Height;
+}
+PXRectangleXYWHF32;
+
+PXPublic PXBool PXAPI PXRectangleXYWHF32IsInPoint(const PXRectangleXYWHF32 PXREF pxRectangle, const PXF32 x, const PXF32 y);
+
+
+
 typedef struct PXRectangleLTRBI32_
 {
     PXI32S Left;

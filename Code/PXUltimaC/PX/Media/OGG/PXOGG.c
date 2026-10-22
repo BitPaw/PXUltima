@@ -50,7 +50,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if (!validHeaderSignature)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
 
@@ -136,5 +136,5 @@ PXResult PXAPI PXOGGSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXFileWriteB(pxFile, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -10,7 +10,6 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Type/PXMesh.h>
 #include <PX/Type/PXIndexBuffer.h>
-#include <PX/Type/PXMeshGeometry.h>
 
 #define PXWavefrontDetectMaterial 0
 
@@ -275,7 +274,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
-    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
+    PXTextFromAddressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
 #if PXLogEnable
     PXLogPrint
@@ -538,10 +537,10 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
         // Add positions
         {
             //pxVertexBufferLayout[0].AmountOfValues = counter.SizeOfVertexData * counter.EntrysPosition;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 3;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypePosition;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Position;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypePosition;
+           // pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Position;
 
             ++pxVertexBufferLayoutAmount;
         }
@@ -550,10 +549,10 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
         if(counter.EntrysNormal > 0)
         {
           //  pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfValues = counter.SizeOfVertexData * counter.EntrysNormal;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 3;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeNormal;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Normal;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypeNormal;
+           // pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Normal;
 
             ++pxVertexBufferLayoutAmount;
         }
@@ -563,10 +562,10 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
         if(counter.EntrysTexture > 0)
         {
            // pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfValues = counter.SizeOfVertexData * counter.EntrysTexture;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 2;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeTexturePos;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Texture;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypeTexturePos;
+           // pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Texture;
 
             ++pxVertexBufferLayoutAmount;
         }
@@ -575,28 +574,28 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
         // Index buffer
         if(1)
         {
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 1;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypePosition;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypePosition;
+            //pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
 
             ++pxIndexBufferLayoutAmount;
         }
         if(1)
         {
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 1;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeTexturePos;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypeTexturePos;
+            //pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
 
             ++pxIndexBufferLayoutAmount;
         }
         if(1)
         {
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeData = PXTypeF32;
             pxBufferLayoutEntry[pxVertexBufferLayoutAmount].AmountOfElements = 1;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeNormal;
-            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
+            pxBufferLayoutEntry[pxVertexBufferLayoutAmount].TypeUse = PXVertexBufferLayoutTypeNormal;
+            //pxBufferLayoutEntry[pxVertexBufferLayoutAmount].Entrys = counter.Face;
 
             ++pxIndexBufferLayoutAmount;
         }
@@ -604,19 +603,19 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 
 
 
-        PXMeshGeometryCreateInfo pxMeshGeometryCreateInfo;
-        PXClear(PXMeshGeometryCreateInfo, &pxMeshGeometryCreateInfo);
-        pxMeshGeometryCreateInfo.VertexBufferLayoutAmount = pxVertexBufferLayoutAmount;
-        pxMeshGeometryCreateInfo.VertexBufferLayoutList = pxBufferLayoutEntry;
-        pxMeshGeometryCreateInfo.IndexBufferLayoutAmount = pxIndexBufferLayoutAmount;
-        pxMeshGeometryCreateInfo.IndexBufferLayoutList = &pxBufferLayoutEntry[3];
-        pxMeshGeometryCreateInfo.PrimitveAmount = counter.Face;
-        pxMeshGeometryCreateInfo.SegmentAmount = counter.MaterialUse;
+        PXMeshCreateInfo pxMeshGeometryCreateInfo;
+        PXClear(PXMeshCreateInfo, &pxMeshGeometryCreateInfo);
+        //pxMeshGeometryCreateInfo.VertexBufferLayoutAmount = pxVertexBufferLayoutAmount;
+        //pxMeshGeometryCreateInfo.VertexBufferLayoutList = pxBufferLayoutEntry;
+        //pxMeshGeometryCreateInfo.IndexBufferLayoutAmount = pxIndexBufferLayoutAmount;
+        //pxMeshGeometryCreateInfo.IndexBufferLayoutList = &pxBufferLayoutEntry[3];
+        //pxMeshGeometryCreateInfo.PrimitveAmount = counter.Face;
+        //pxMeshGeometryCreateInfo.SegmentAmount = counter.MaterialUse;
 
-        PXMeshGeometryCreate(&pxMesh->Geometry, &pxMeshGeometryCreateInfo);
+        PXMeshCreate(pxMesh, &pxMeshGeometryCreateInfo);
 
-        pxMesh->MaterialContaierListAmount = counter.MaterialUse;
-        pxMesh->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, counter.MaterialUse);
+        //pxMesh->MaterialContaierListAmount = counter.MaterialUse;
+        //pxMesh->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, counter.MaterialUse);
      
 
         // Reset all size values 
@@ -624,9 +623,9 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
        // counter.DataNormal = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
        // counter.DataTexture = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
 
-        counter.DataVertex = pxMesh->Geometry->VertexBufferPrime[0]->VertexData.Data4;
-        counter.DataNormal = pxMesh->Geometry->VertexBufferPrime[1]->VertexData.Data4;
-        counter.DataTexture = pxMesh->Geometry->VertexBufferPrime[2]->VertexData.Data4;
+        //counter.DataVertex = pxMesh->VertexBufferPrime[0]->VertexData.Data;
+        //counter.DataNormal = pxMesh->VertexBufferPrime[1]->VertexData.Data;
+        //counter.DataTexture = pxMesh->VertexBufferPrime[2]->VertexData.Data;
 
         //counter.IndexVertex = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
         //counter.IndexNormal = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
@@ -653,9 +652,9 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
     );
 #endif
 
-    PXI8U typeSize = PXTypeSizeGet(pxMesh->Geometry->IndexBuffer->DataType);
+    //PXI8U typeSize = PXTypeSizeGet(pxMesh->IndexBuffer->DataType);
 
-    const PXIndexBufferIndexSET pxIndexBufferIndexSET = PXIndexBufferIndexFunc(pxMesh->Geometry->IndexBuffer);
+    const PXIndexBufferIndexSET pxIndexBufferIndexSET = PXIndexBufferIndexFunc(pxMesh->IndexBuffer);
 
     for(;;)
     {
@@ -697,7 +696,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
                 {
                     case PXWavefrontLineMaterialLibraryIncluded:
                     {
-                        PXMaterialContainer PXREF pxMaterialContaier = &pxMesh->MaterialContaierList[counter.MaterialInlcude++];
+                        //PXMaterialContainer PXREF pxMaterialContaier = &pxMesh->MaterialContaierList[counter.MaterialInlcude++];
                        
 #if 0
                         PXFile* materialFile = PXFileCreate();
@@ -727,8 +726,9 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
                     }
                     case PXWavefrontLineMaterialLibraryUse:
                     {
-                        PXIndexSegmentEntry PXREF pxIndexSegmentLast = 0;// &pxMesh->IndexBuffer->SegmentList[pxMesh->IndexBuffer->SegmentListAmount - 1];
-                        PXIndexSegmentEntry PXREF pxIndexSegmentCurrent = 0;//&pxMesh->IndexBuffer->SegmentList[counter.MaterialUse];
+#if 0
+                        //PXIndexSegmentEntry PXREF pxIndexSegmentLast = 0;// &pxMesh->IndexBuffer->SegmentList[pxMesh->IndexBuffer->SegmentListAmount - 1];
+                        //PXIndexSegmentEntry PXREF pxIndexSegmentCurrent = 0;//&pxMesh->IndexBuffer->SegmentList[counter.MaterialUse];
                        
                         /*
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind
@@ -753,10 +753,11 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
                         }
 
                         ++counter.MaterialUse;
-
+#endif
                         break;
                     }
                 }
+
 
                 break; // [OK]
             }
@@ -848,15 +849,14 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 #if 1
                     pxIndexBufferIndexSET
                     (
-                        pxMesh->Geometry->IndexBuffer,
+                        pxMesh->IndexBuffer,
                         counter.Face,
                         3,
                         vertexData
                     );
 #endif
 
-                    pxMesh->Geometry->IndexBuffer->Data.CursorOffsetByte +=
-                        PXTypeSizeGet(pxMesh->Geometry->IndexBuffer->DataType) * 3;
+                    pxMesh->IndexBuffer->Data.CursorOffsetByte += (pxMesh->IndexBuffer->BitPerIndex / 8u) * 3;
 
                     ++counter.Face;
                     ++cornerPoints;
@@ -939,21 +939,21 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 #endif
 
 
-    pxMesh->Geometry->VertexBufferPrime[0]->VertexData.CursorOffsetByte = counter.Position * sizeof(float) * 3;
-    pxMesh->Geometry->VertexBufferPrime[1]->VertexData.CursorOffsetByte = counter.Normal * sizeof(float) * 3;
-    pxMesh->Geometry->VertexBufferPrime[2]->VertexData.CursorOffsetByte = counter.Texture * sizeof(float) * 2;
+    //pxMesh->VertexBufferPrime[0]->VertexData.CursorOffsetByte = counter.Position * sizeof(float) * 3;
+    //pxMesh->VertexBufferPrime[1]->VertexData.CursorOffsetByte = counter.Normal * sizeof(float) * 3;
+    //pxMesh->VertexBufferPrime[2]->VertexData.CursorOffsetByte = counter.Texture * sizeof(float) * 2;
 
 
 
     // Mesh data right now has multible 
     // index attributes, this does not work with graphic APIs
     // We need to convert it.
-    PXMeshGeometry* pxMeshGeometryNEW;
+    //PXMeshGeometry* pxMeshGeometryNEW;
 
 
-    PXMeshGeometry PXREF pxMeshGeometryOld = pxMesh->Geometry;
-    PXVertexBuffer** pxVertexBufferOLD = PXMeshGeometryVertexBufferListGET(pxMeshGeometryOld);
-    PXIndexBuffer* pxIndexBufferOLD = pxMeshGeometryOld->IndexBuffer;
+    //PXMeshGeometry PXREF pxMeshGeometryOld = pxMesh->Geometry;
+    PXVertexBuffer** pxVertexBufferOLD = 0;//PXMeshVertexBufferListGET(pxMeshGeometryOld);
+    PXIndexBuffer* pxIndexBufferOLD = 0;// pxMeshGeometryOld->IndexBuffer;
 
     const PXSize vertexCounter = PXIndexBufferAmount(pxIndexBufferOLD);
 
@@ -962,68 +962,68 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
         PXBufferLayoutEntry pxBufferLayoutEntry[4];
         PXClearList(PXBufferLayoutEntry, pxBufferLayoutEntry, 4);
 
-        pxBufferLayoutEntry[0].Format = PXTypeF32;
+        pxBufferLayoutEntry[0].TypeData = PXTypeF32;
         pxBufferLayoutEntry[0].AmountOfElements = 3;
-        pxBufferLayoutEntry[0].Type = PXVertexBufferLayoutTypePosition;
-        pxBufferLayoutEntry[0].Entrys = vertexCounter;
+        pxBufferLayoutEntry[0].TypeUse = PXVertexBufferLayoutTypePosition;
+        //pxBufferLayoutEntry[0].Entrys = vertexCounter;
 
-        pxBufferLayoutEntry[1].Format = PXTypeF32;
+        pxBufferLayoutEntry[1].TypeData = PXTypeF32;
         pxBufferLayoutEntry[1].AmountOfElements = 3;
-        pxBufferLayoutEntry[1].Type = PXVertexBufferLayoutTypeNormal;
-        pxBufferLayoutEntry[1].Entrys = vertexCounter;
+        pxBufferLayoutEntry[1].TypeUse = PXVertexBufferLayoutTypeNormal;
+        //pxBufferLayoutEntry[1].Entrys = vertexCounter;
 
-        pxBufferLayoutEntry[2].Format = PXTypeF32;
+        pxBufferLayoutEntry[2].TypeData = PXTypeF32;
         pxBufferLayoutEntry[2].AmountOfElements = 2;
-        pxBufferLayoutEntry[2].Type = PXVertexBufferLayoutTypeTexturePos;
-        pxBufferLayoutEntry[2].Entrys = vertexCounter;
+        pxBufferLayoutEntry[2].TypeUse = PXVertexBufferLayoutTypeTexturePos;
+       // pxBufferLayoutEntry[2].Entrys = vertexCounter;
 
         // Index buffer
-        pxBufferLayoutEntry[3].Format = PXTypeI16U;
+        pxBufferLayoutEntry[3].TypeData = PXTypeI16U;
         pxBufferLayoutEntry[3].AmountOfElements = 1;
-        pxBufferLayoutEntry[3].Type = PXVertexBufferLayoutTypePosition;
-        pxBufferLayoutEntry[3].Entrys = vertexCounter;
+        pxBufferLayoutEntry[3].TypeUse = PXVertexBufferLayoutTypePosition;
+        //pxBufferLayoutEntry[3].Entrys = vertexCounter;
 
 
-        PXMeshGeometryCreateInfo pxMeshGeometryCreateInfo;
-        PXClear(PXMeshGeometryCreateInfo, &pxMeshGeometryCreateInfo);
-        pxMeshGeometryCreateInfo.VertexBufferLayoutAmount = 3;
-        pxMeshGeometryCreateInfo.VertexBufferLayoutList = pxBufferLayoutEntry;
-        pxMeshGeometryCreateInfo.IndexBufferLayoutAmount = 1;
-        pxMeshGeometryCreateInfo.IndexBufferLayoutList = &pxBufferLayoutEntry[3];
-        pxMeshGeometryCreateInfo.PrimitveAmount = vertexCounter;
-        pxMeshGeometryCreateInfo.SegmentAmount = pxIndexBufferOLD->Segment.SegmentListAmount;
+        PXMeshCreateInfo pxMeshGeometryCreateInfo;
+        PXClear(PXMeshCreateInfo, &pxMeshGeometryCreateInfo);
+        //pxMeshGeometryCreateInfo.VertexBufferLayoutAmount = 3;
+        //pxMeshGeometryCreateInfo.VertexBufferLayoutList = pxBufferLayoutEntry;
+        //pxMeshGeometryCreateInfo.IndexBufferLayoutAmount = 1;
+        //pxMeshGeometryCreateInfo.IndexBufferLayoutList = &pxBufferLayoutEntry[3];
+        //pxMeshGeometryCreateInfo.PrimitveAmount = vertexCounter;
+        //pxMeshGeometryCreateInfo.SegmentAmount = pxIndexBufferOLD->Segment.SegmentListAmount;
 
-        PXMeshGeometryCreate(&pxMeshGeometryNEW, &pxMeshGeometryCreateInfo);
+        PXMeshCreate(&pxMesh, &pxMeshGeometryCreateInfo);
 
         // update reference
-        pxMesh->Geometry = pxMeshGeometryNEW;
+        //pxMesh->Geometry = pxMeshGeometryNEW;
     }
 
-    PXVertexBuffer** pxVertexBufferNEW = PXMeshGeometryVertexBufferListGET(pxMeshGeometryNEW);
-    PXIndexBuffer* pxIndexBufferNEW = pxMeshGeometryNEW->IndexBuffer;
+    PXVertexBuffer** pxVertexBufferNEW = 0;//PXMeshVertexBufferListGET(pxMeshGeometryNEW);
+    PXIndexBuffer* pxIndexBufferNEW = 0;// pxMeshGeometryNEW->IndexBuffer;
 
-    switch(pxIndexBufferOLD->DataType)
+    switch(pxIndexBufferOLD->BitPerIndex)
     {
-        case PXTypeI16U:
+        case 16:
         {
             PXSize amount = PXIndexBufferAmount(pxIndexBufferOLD) /3;
 
             for(size_t i = 0; i < amount; ++i)
             {
-                PXI16U* dataIN = pxIndexBufferOLD->Data.Data4;
+                PXI16U* dataIN = pxIndexBufferOLD->Data.Data;
                 PXSize indexPosition = dataIN[i*3+0];
                 PXSize indexNormal = dataIN[i * 3 + 1];
                 PXSize indexTexture = dataIN[i * 3 + 2];
 
-                pxVertexBufferNEW[0]->VertexData.F32V3[i] = pxVertexBufferOLD[0]->VertexData.F32V3[indexPosition];
-                pxVertexBufferNEW[1]->VertexData.F32V3[i] = pxVertexBufferOLD[1]->VertexData.F32V3[indexPosition];
-                pxVertexBufferNEW[2]->VertexData.F32V3[i] = pxVertexBufferOLD[2]->VertexData.F32V3[indexPosition];
+                //pxVertexBufferNEW[0]->VertexData.F32V3[i] = pxVertexBufferOLD[0]->VertexData.F32V3[indexPosition];
+                //pxVertexBufferNEW[1]->VertexData.F32V3[i] = pxVertexBufferOLD[1]->VertexData.F32V3[indexPosition];
+                //pxVertexBufferNEW[2]->VertexData.F32V3[i] = pxVertexBufferOLD[2]->VertexData.F32V3[indexPosition];
                 pxIndexBufferNEW->Data.I16U[i] = i;
             }
 
             pxIndexBufferNEW->Data.CursorOffsetByte = amount * 2;
 
-            pxIndexBufferNEW->Segment = pxIndexBufferOLD->Segment;
+            //pxIndexBufferNEW->Segment = pxIndexBufferOLD->Segment;
 
             break;
         }
@@ -1032,9 +1032,9 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
             break;
     }
 
-    pxVertexBufferNEW[0]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 3;
-    pxVertexBufferNEW[1]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 3;
-    pxVertexBufferNEW[2]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 2;
+    //pxVertexBufferNEW[0]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 3;
+    //pxVertexBufferNEW[1]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 3;
+    //pxVertexBufferNEW[2]->VertexData.CursorOffsetByte = vertexCounter * sizeof(float) * 2;
 
 
     return PXResultOK;
@@ -1042,5 +1042,5 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXRE
 
 PXResult PXAPI PXWavefrontSaveFromFile(PXMesh PXREF pxMesh, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

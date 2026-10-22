@@ -6,7 +6,7 @@
 #include <PX/Type/PXType.h>
 
 // Refused => User error
-// Invalid => State errorPXActionRefusedArgumentInvalid
+// Invalid => State errorPXResultRefusedArgumentInvalid
 // Failed => Fundamental error
 // [Note]
 // enum by defined API forced to be 32-bit.
@@ -15,12 +15,16 @@ typedef enum PXResult_
 {
     //---<General>-----------------------
     PXResultInvalid, // Default iniitlialisation value, do not use.
+    PXResultUnknown, // Error code, undefined. Only use to handle unkown errors from APIs.
     PXResultOK, // Action finished successful
-    PXActionSuccessWithSubstitution,
-    PXActionCancelled, // Action was canceled early.
-    PXActionDidNothing, // if the function did nothing
-    PXActionFailedUnkownError, // [OTHER] Undefined error
+    PXResultSuccessWithSubstitution,
+    PXResultCancelled, // Action was canceled early.
+    PXResultNoWorkToDo, // if the function did nothing
+    PXResultFailedUnkownError, // [OTHER] Undefined error
     //-----------------------------------
+
+    // Exit
+    PXResultExitControlC, // [SIGINT][CONTROL_C_EXIT] Console event of control+C
 
     // Functions
     PXResultRefusedParameterNull, // Some needed Parameter is null
@@ -31,15 +35,16 @@ typedef enum PXResult_
     PXResultRefusedNotEnoughMemory,
 
     // Hard-Exceptions
-    PXResultExceptionAccessViolation, // [SIGSEGV] Read or write from invalid adress, EXCEPTION_ACCESS_VIOLATION
+    PXResultExceptionAccessViolation, // [SIGSEGV][EXCEPTION_ACCESS_VIOLATION] Read or write from invalid address.
     PXResultExceptionIndexOutOfBounds, // Index of an array is invalid
     PXResultExceptionDataMisalignment,
-    PXResultExceptionIllegalInstruction, // [SIGILL] Invalid or unsupported insruction executed by CPU.
-    PXResultExceptionPageLost, // STATUS_IN_PAGE_ERROR
+    PXResultExceptionIllegalInstruction, // [SIGILL][EXCEPTION_ILLEGAL_INSTRUCTION] Invalid or unsupported insruction executed by CPU.
+    PXResultExceptionPageLost, // [EXCEPTION_IN_PAGE_ERROR] Running program via network, connection is lost while running.
 
 
 
-
+    // Floats
+    PXResultExceptionFloatArithmeticFault, // [SIGFPE]
     PXResultExceptionFloatDENORMAL_OPERAND,
     PXResultExceptionFloatDIVIDE_BY_ZERO,
     PXResultExceptionFloatINEXACT_RESULT,
@@ -50,263 +55,331 @@ typedef enum PXResult_
     PXResultExceptionINTEGER_DIVIDE_BY_ZERO,
     PXResultExceptionINTEGER_OVERFLOW,
     PXResultExceptionPrivilehedInstruction,
-
     PXResultExceptionNONCONTINUABLE_EXCEPTION,
-    PXResultExceptionSTACK_OVERFLOW,
-    PXResultExceptionINVALID_DISPOSITION,
-    PXResultExceptionGUARD_PAGE_VIOLATION,
-    PXResultExceptionINVALID_HANDLE,
+    PXResultExceptionStackOverflow, // [EXCEPTION_STACK_OVERFLOW][GL_STACK_OVERFLOW]
+    PXResultExceptionStackUnderflow, // [GL_STACK_UNDERFLOW]
+    PXResultExceptionINVALID_DISPOSITION, // [EXCEPTION_INVALID_DISPOSITION]
+    PXResultExceptionGUARD_PAGE_VIOLATION, // [EXCEPTION_GUARD_PAGE]
+    PXResultRefusedHandleInvalid, // [EXCEPTION_INVALID_HANDLE] 
     //STATUS_POSSIBLE_DEADLOCK,
-    PXResultExceptionControlCExit, // [SIGABRT]
+    PXResultExceptionControlCExit,        // [SIGINT]
+    PXResultExceptionTerminateRequest,    // [SIGTERM]
+    PXResultExceptionAbort,               // [SIGABRT]
 
     // Debugging
-    PXResultDebugEventBreakPoint, // [SIGBREAK]
-    PXResultDebugEventSingleStep,
+    PXResultDebugEventBreakPoint, // [SIGBREAK][EXCEPTION_BREAKPOINT]
+    PXResultDebugEventSingleStep, // [EXCEPTION_SINGLE_STEP]
+
+    /*
+      PXSignalTokenInvalid,
+    PXSignalTokenAbort, // Abnormal termination
+    PXSignalTokenPXF32MathError, // PXF32ing-point errorc
+    PXSignalTokenIllegalInstruction, // Illegal instruction
+    PXSignalTokenINT, // CTRL+C signal
+    PXSignalTokenMemoryViolation, // Illegal storage access
+    PXSignalTokenTerminationRequest // Termination request
+    */
+
+
+    //-----------------------------------------------------
+    // Window
+    PXResultRefusedWindowDoesNotExist,
+    PXResultRefusedWindowHandleNull,
+    PXResultRefusedWindowInvalid, // BadWindow, GLXBadCurrentWindow
+    PXResultRefusedWindowSurfaceHidden,
+    PXResultRefusedWindowSurfaceSizeInvalid,
+    //-----------------------------------------------------
 
 
 
-    PXActionWaitOnResult, // The result is yet to be recieved
+    //-----------------------------------------------------
+    // Object
+    //-----------------------------------------------------
+    
+    // Resource is already beeing used (busy) and is not allowed to be used by other party (you).
+    PXResultRefusedInstanceAlreadyInUse, // ERROR_BUSY:170, 
+    //-----------------------------------------------------
 
-    PXActionRefusedKeyNotFound, // Key-Value, key not found
-    PXActionRefusedValueNotFound, // Key-value, value not found
 
-    PXActionFailedLockEnter,
+    PXResultRefusedRequestInvalid, // BadRequest
+    PXResultRefusedValueInvalid, // BadValue
 
-    PXActionFailedWaitTimeout,
-    PXActionFailedWaitAbandoned,
+    PXResultRefusedPixmapInvalid, // BadPixmap
+    PXResultRefusedAtomInvalid, // BadAtom
+    PXResultRefusedCursorInvalid, // BadCursor
+    PXResultRefusedFontInvalid, // BadFont
+    PXResultRefusedIncompatible, // BadMatch
+    PXResultRefusedDrawableInvalid, // BadDrawable, GLXBadDrawable
+    PXResultRefusedAccessDenied, // BadAccess
+    PXResultRefusedColorInvalid, // BadColor
+    PXResultRefusedGraphicsContextInvalid, // BadGC
+    PXResultRefusedResourceIDInvalid, // BadIDChoice
+    PXResultRefusedNameInvalid, // BadName
+    PXResultRefusedLengthInvalid, // BadLength
+    PXResultRefusedOperationUnsupported, // BadImplementation
 
-    PXActionFailedRead, // Value couln't be read
-    PXActionFailedRegister, // Value couln't be registered
-    PXActionFailedWrite, // Value couln't be written
-    PXActionFailedDelete,
-    PXActionFailedUpdate,
-    PXActionFailedCreate, // Creation of a resource failed
-    PXActionFailedLoad, // Loadin a resource failed
-    PXActionFailedCleanup,
-    PXActionFailedSave, // Saving a resource failed
-    PXActionFailedOpen, // Opening a resource failed
-    PXActionFailedClose, // Closing a resource failed
-    PXActionFailedSend, // Tryed to send data but failed
-    PXActionFailedRecieve, // Expected data to be recieved was not successful
+    // Draw, opengl, drectx, vulcan
+    PXResultRefusedContextInvalid, // GLXBadContext
+    PXResultRefusedContextStateInvalid, // GLXBadContextState
 
-    PXActionFailedStackOverflow,
-    PXActionFailedStackUnderflow,
 
-    PXActionFailedNoSystemToHandleData, // Action can not compleated, a vital component is missing or not loaded.
+    PXResultRefusedPayloadDataMissing, // When we upload data to somewhere but we didnt select any
 
-    PXActionRefusedNoDriver, // An object needs a driver to function but no driver is attached
-    PXActionRefusedFeatureNotAvailable, // Setting requested is not available on this device
+    //-------------------------------------------------------   
+    // Compile
+    //-------------------------------------------------------
+    PXResultFailedCompilerCodeBad,
+    PXResultFailedLinkerCodeMissmatch,
 
-    PXActionCanceledLoopDeteced, // LOOP
+
+    PXResultWaitOnResult, // The result is yet to be recieved
+
+    PXResultRefusedKeyNotFound, // Key-Value, key not found
+    PXResultRefusedValueNotFound, // Key-value, value not found
+
+    PXResultFailedLockEnter,
+
+    PXResultFailedWaitTimeout,
+    PXResultFailedWaitAbandoned,
+
+    PXResultFailedRead, // Value couln't be read
+    PXResultFailedRegister, // Value couln't be registered
+    PXResultFailedWrite, // Value couln't be written
+    PXResultFailedDelete,
+    PXResultFailedUpdate,
+    PXResultFailedCreate, // Creation of a resource failed
+    PXResultFailedLoad, // Loadin a resource failed
+    PXResultFailedCleanup,
+    PXResultFailedSave, // Saving a resource failed
+    PXResultFailedOpen, // Opening a resource failed
+    PXResultFailedClose, // Closing a resource failed
+    PXResultFailedSend, // Tryed to send data but failed
+    PXResultFailedRecieve, // Expected data to be recieved was not successful
+
+    PXResultFailedNoSystemToHandleData, // Action can not compleated, a vital component is missing or not loaded.
+
+    PXResultRefusedNoDriver, // An object needs a driver to function but no driver is attached
+    PXResultRefusedFeatureNotAvailable, // Setting requested is not available on this device
+
+    PXResultCanceledLoopDeteced, // LOOP
 
     //-------------------------------------------------------
     // Memory
     //-------------------------------------------------------
-    PXActionRefusedAdressInvalid, // Attempt to access invalid address.
+    PXResultRefusedAddressInvalid, // Attempt to access invalid address.
 
-    PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
-    PXActionFailedMemoryRelease,
+    PXResultFailedMemoryAllocation, // BadAlloc, A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+    PXResultFailedMemoryRelease,
 
-    PXActionRefusedIndexOutOfBounce, // A given index is outside of the given space of the array.
+    PXResultRefusedIndexOutOfBounce, // [EXCEPTION_ARRAY_BOUNDS_EXCEEDED] A given index is outside of the given space of the array.
 
-    PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord
-    PXActionRefuedBufferSizeTooSmal,
+    PXResultFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord
+    PXResultRefuedBufferSizeTooSmal,
 
-    PXActionRefuedInputBufferNull, // is NULL
-    PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
-    PXActionRefuedInputBufferTooSmal, // cant
-    PXActionRefuedInputBufferTooBig,
+PXResultRefuedInputBufferNull, // is NULL
+PXResultRefuedInputBufferEmpty, // has no data, address is not NULL but the data is
+PXResultRefuedInputBufferTooSmal, // cant
+PXResultRefuedInputBufferTooBig,
 
-    PXActionRefuedOutputBufferNull, // is NULL
-    PXActionRefuedOutputBufferTooSmal, //
+PXResultRefuedOutputBufferNull, // is NULL
+PXResultRefuedOutputBufferTooSmal, //
 
-    //-------------------------------------------------------
-    // Type
-    //-------------------------------------------------------
-    PXActionRefusedTypeMissmatch, // Fields expected to be same type are different types.
+//-------------------------------------------------------
+// Type
+//-------------------------------------------------------
+PXResultRefusedTypeMissmatch, // Fields expected to be same type are different types.
 
-    //-------------------------------------------------------
-    // Object / API / Library
-    //-------------------------------------------------------
-    PXActionRefusedNotInitialized, // Object can't be used before it has been initialized
-    PXActionFailedInitialization, // Initialization of this object was tyred but failed while doing so
-    PXActionFailedContextBinding, // Initialization was ok, binding the data to the thread failed
-    PXActionFailedContextRelease,
-    PXActionRefusedContextNotBound, // API is not bound to session
-    PXActionRefusedAlreadyInizialized, // Object has already been initialized
-    PXActionRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
-    PXActionRefusedTypeInvalid,
-    PXActionRefusedNoSuchFunction, // When the OS does not support that function or it does not exist
-    PXActionRefusedTypeNotSupported,
-    PXActionRefusedAggregationNotSupported,
-    PXActionRefusedPropertyNotAvailable,
-    PXActionRefusedNotReady, // Object can't process this function, setup is needed or its busy
-    PXActionRefusedNotFound, // [404] Invalid ID or HANDLE -> Does not exist
-    PXActionRefusedStateInvalid,
-    PXActionRefusedStateDoesNotAllowAction, // Action can't be used in this current state
-    PXActionRefuedObjectInterfaceNotAvailable,
+//-------------------------------------------------------
+// Object / API / Library
+//-------------------------------------------------------
+PXResultRefusedNotInitialized, // Object can't be used before it has been initialized
+PXResultFailedInitialization, // Initialization of this object was tyred but failed while doing so
+PXResultFailedContextBinding, // Initialization was ok, binding the data to the thread failed
+PXResultFailedContextRelease,
+PXResultRefusedContextNotBound, // API is not bound to session
+PXResultRefusedAlreadyInizialized, // Object has already been initialized
+PXResultRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
+PXResultRefusedAlreadyRegisterd,
+PXResultRefusedTypeInvalid,
+PXResultRefusedNoSuchFunction, // When the OS does not support that function or it does not exist
+PXResultRefusedTypeNotSupported,
+PXResultRefusedAggregationNotSupported,
+PXResultRefusedPropertyNotAvailable,
+PXResultRefusedNotReady, // Object can't process this function, setup is needed or its busy
+PXResultRefusedNotFound, // [404] Invalid ID or HANDLE -> Does not exist
+PXResultRefusedStateInvalid,
+PXResultRefusedStateAlreadyLikeRequested, // Requested state change but state is already like requested.
+PXResultRefusedStateDoesNotAllowAction, // Action can't be used in this current state
+PXResultRefuedObjectInterfaceNotAvailable,
 
-    PXActionRefusedObjectCreateCallbackMissing, // PX-OBJ-CREATE-FUN-MISSING
-
-
-    PXActionRefusedObjectSizeZero,
-    PXActionRefusedObjectAlreadyExists,
-    PXActionRefusedObjectNotCreated,    // PX-OBJ-NOID
-    PXActionRefusedObjectIDInvalid,     // Object handle invalid
-    PXActionRefusedObjectNameInvalid,   // PX-NAMEINVAL
-    PXActionRefusedWindowsClassNameInvalid, 
-    PXActionRefusedNameSpaceInvalid,
-    PXActionRefusedObjectParentInvalid,
-    PXActionRefusedObjectInternalDataMissing,
-
-    //-------------------------------------------------------
-    // Permission
-    //-------------------------------------------------------
-    PXActionDeniedNoPermission, // [ACCES] You do not have permission to use this command.
-    PXActionDeniedPriorityTooLow,
-    PXActionYieldToOtherProcessWithHigherPriority,
-    //PXActionDenied
-
-    //-------------------------------------------------------
-    // File I/O
-    //-------------------------------------------------------
-
-    // Resource is available and has been loaded but containing
-    // elements caused a compile error and thus can't be used.
-    PXActionFailedResourceCompile,
+PXResultRefusedObjectCreateCallbackMissing, // PX-OBJ-CREATE-FUN-MISSING
 
 
-    PXActionRefusedDirectoryNotEmpty, // [NOTEMPTY]
-    PXActionRefusedTargetIsDirectory, // [ISDIR]
-    PXActionRefusedNotADirectory, // [NOTDIR]
+PXResultRefusedObjectSizeZero,
+PXResultRefusedObjectAlreadyExists,
+PXResultRefusedObjectNotCreated,    // PX-OBJ-NOID
+PXResultRefusedHandleNull, // Proviced handle is null
+PXResultRefusedTextNull,
+PXResultRefusedObjectIDInvalid,     // Object handle invalid
+PXResultRefusedObjectNameInvalid,   // PX-NAMEINVAL
+PXResultRefusedWindowsClassNameInvalid,
+PXResultRefusedNameSpaceInvalid,
+PXResultRefusedObjectParentInvalid,
+PXResultRefusedObjectInternalDataMissing,
 
-    PXActionFailedFileNameTooLong, // NAMETOOLONG
+//-------------------------------------------------------
+// Permission
+//-------------------------------------------------------
+PXResultDeniedNoPermission, // [ACCES] You do not have permission to use this command.
+PXResultDeniedPriorityTooLow,
+PXResultYieldToOtherProcessWithHigherPriority,
+//PXResultDenied
 
-    PXActionFailedFileDescriptorValueTooLarge, // MFILE
-    PXActionFailedTooManyLinks, // MLINK
-    PXActionFailedFileTooLarge, // FBIG
-    PXActionRefusedInvalidSeek, // SPIPE
-    PXActionFailedTooManyFilesOpenInSystem, // NFILE
+//-------------------------------------------------------
+// File I/O
+//-------------------------------------------------------
 
-
-    PXActionRefusedDeviceFunctionNotSupported, // Tryed to call a function on a device that is not capable of doing so.
-
-    //-------------------------------------------------------
-    // Network
-    //-------------------------------------------------------
-    PXActionRefusedAlreadyConnected, // [ISCONN]
-    PXActionRefusedNetworkIsDown, // [NETDOWN]
-    PXActionFailedConnectionAbortedByNetwork, // [NETRESET]
-    PXActionFailedNetworkUnreachable, // [NETUNREACH]
-    PXActionRefusedNotASocket, // [NOTSOCK]
-    PXActionFailedConnectionTimedOut, // [TIMEDOUT]
-    PXActionFailedNotConnected, // [NOTCONN]
-    PXActionRefusedConnectionClosed,
+// Resource is available and has been loaded but containing
+// elements caused a compile error and thus can't be used.
+PXResultFailedResourceCompile,
 
 
-  
+PXResultRefusedDirectoryNotEmpty, // [NOTEMPTY]
+PXResultRefusedTargetIsDirectory, // [ISDIR]
+PXResultRefusedNotADirectory, // [NOTDIR]
+
+PXResultFailedFileNameTooLong, // NAMETOOLONG
+
+PXResultFailedFileDescriptorValueTooLarge, // MFILE
+PXResultFailedTooManyLinks, // MLINK
+PXResultFailedFileTooLarge, // FBIG
+PXResultRefusedInvalidSeek, // SPIPE
+PXResultFailedTooManyFilesOpenInSystem, // NFILE
+
+
+PXResultRefusedDeviceFunctionNotSupported, // Tryed to call a function on a device that is not capable of doing so.
+
+//-------------------------------------------------------
+// Network
+//-------------------------------------------------------
+PXResultRefusedAlreadyConnected, // [ISCONN]
+PXResultRefusedNetworkIsDown, // [NETDOWN]
+PXResultFailedConnectionAbortedByNetwork, // [NETRESET]
+PXResultFailedNetworkUnreachable, // [NETUNREACH]
+PXResultRefusedNotASocket, // [NOTSOCK]
+PXResultFailedConnectionTimedOut, // [TIMEDOUT]
+PXResultFailedNotConnected, // [NOTCONN]
+PXResultRefusedConnectionClosed,
+
+
+//-------------------------------------------------------
+// ASYNC
+//-------------------------------------------------------
+
+PXResultRefusedThreadOwnershipViolation,  // Resource is not allowed to be interacted from unowned thread.
+
 
     //-------------------------------------------------------
     // Library
     //-------------------------------------------------------
-    PXActionRefusedNotSupportedByOperatingSystem, // Given action can't be done due the OS not having the ability to do so
-    PXActionRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
-    PXActionRefusedNotImplemented, // Function that exists but does not contain any code
+    PXResultRefusedNotSupportedByOperatingSystem, // Given action can't be done due the OS not having the ability to do so
+    PXResultRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+    PXResultRefusedNotImplemented, // Function that exists but does not contain any code
 
-    PXActionFailedNotFoundObject, // Object was searched but not found
-    PXActionFailedNotFoundLibrary, // Object was searched but not found
-    PXActionFailedNotFoundClass, // Object was searched but not found
-    PXActionFailedNotFoundMethod, // Method does not exist in library
+    PXResultFailedNotFoundObject, // Object was searched but not found
+    PXResultFailedNotFoundLibrary, // Object was searched but not found
+    PXResultFailedNotFoundClass, // Object was searched but not found
+    PXResultFailedNotFoundMethod, // Method does not exist in library
 
-    PXActionRefusedVersionTooOld, // Object can't be used, it is requires an update
-    PXActionRefusedVersionTooNew, // Object can't be used, the system requires an update
-    PXActionRefusedVersionInvalid, // Object version is not defined
+    PXResultRefusedVersionTooOld, // Object can't be used, it is requires an update
+    PXResultRefusedVersionTooNew, // Object can't be used, the system requires an update
+    PXResultRefusedVersionInvalid, // Object version is not defined
 
-    PXActionRefusedMissingCallBack, // Callback is required but missing
+    PXResultRefusedMissingCallBack, // Callback is required but missing
 
-    PXActionFailedRelease, // Cleanup of an object failed
+    PXResultFailedRelease, // Cleanup of an object failed
 
 
 
-    PXActionInterruptedByEvent,
-    PXActionInterruptedByFunctionCall,
-    PXActionFailedResourcedNotEnough,
-    PXActionWouldBlock,
-    PXActionNowInProgress,
-    PXActionAlreadyInProgress,
-    PXActionRefusedInvalidOperationSpecified,
-    PXActionRefuedNetworkNotConnected,
-    PXActionRefuedNetworkNotReachable,
-    PXActionFailedHostNotFound,
-    PXActionRefuedServiceNotRunning,
-    PXActionRefuedAlreadyInUse,
-    PXActionRefuedProtocolTypeInvalid,
-    PXActionRefuedProtocolOptionInvalid,
-    PXActionRefuedProtocolNotSupported,
-    PXActionRefuedProtocolFamilyNotSupported,
-    PXActionRefuedAddressFamilyNotSupportedByProtocol,
-    PXActionRefuedOperationNotSupported,
+    PXResultInterruptedByEvent,
+    PXResultInterruptedByFunctionCall,
+    PXResultFailedResourcedNotEnough,
+    PXResultWouldBlock,
+    PXResultNowInProgress,
+    PXResultAlreadyInProgress,
+    PXResultRefusedInvalidOperationSpecified,
+    PXResultRefuedNetworkNotConnected,
+    PXResultRefuedNetworkNotReachable,
+    PXResultFailedHostNotFound,
+    PXResultRefuedServiceNotRunning,
+    PXResultRefuedAlreadyInUse,
+    PXResultRefuedProtocolTypeInvalid,
+    PXResultRefuedProtocolOptionInvalid,
+    PXResultRefuedProtocolNotSupported,
+    PXResultRefuedProtocolFamilyNotSupported,
+    PXResultRefuedAddressFamilyNotSupportedByProtocol,
+    PXResultRefuedOperationNotSupported,
 
     //---<Function input>---
-    PXActionRefuedAdressInvalid, // System detected an invalid pointer
+    PXResultRefuedAddressInvalid, // System detected an invalid pointer
 
-    PXActionRefuedTextFormatUnsupported,
-    PXActionRefuedInputInvalid,
-    PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
-    PXActionFailedElementNotFound,
-    PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
-    PXActionRefuedDriverInvalid,
-    PXActionRefuedDriverMissing,
-    PXActionRefuedFormatIllegal, // Parsed format is not a legal option. The file is wrongly written or corrupted
-    PXActionRefuedFormatNotSupported,
+    PXResultRefuedTextFormatUnsupported,
+    PXResultRefuedInputInvalid,
+    PXResultInvalidStateImpossible, // Is an object is used and has data that should not be possible
+    PXResultFailedElementNotFound,
+    PXResultInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
+    PXResultRefuedDriverInvalid,
+    PXResultRefuedDriverMissing,
+    PXResultRefuedFormatIllegal, // Parsed format is not a legal option. The file is wrongly written or corrupted
+    PXResultRefuedFormatNotSupported,
 
 
-        // Images
-        PXActionRefuedImageWidthIsZero,
-        PXActionRefuedImageHeightIsZero,
-        PXActionRefuedImageDepthIsZero,
-        PXActionRefuedImageFormatInvalid,
+    // Images
+    PXResultRefuedImageWidthIsZero,
+    PXResultRefuedImageHeightIsZero,
+    PXResultRefuedImageDepthIsZero,
+    PXResultRefuedImageFormatInvalid,
 
 
     //---<File-General>------------------
-    PXActionRefusedEmptyFilePath,
-    PXActionRefusedInvalidFilePath,
+    PXResultRefusedEmptyFilePath,
+    PXResultRefusedInvalidFilePath,
 
-    PXActionFailedFileNotFound,
-    PXActionFailedNotAFile,
+    PXResultFailedFileNotFound,
+    PXResultFailedNotAFile,
 
-    PXActionFailedFileMapping,// mmap() / CreateViewofFile() failed
+    PXResultFailedFileMapping,// mmap() / CreateViewofFile() failed
 
 
     //---<Socket>---------------------
-    PXActionRefusedSocketNotConnected,
+    PXResultRefusedSocketNotConnected,
 
-    PXActionFailedSocketConnect,
-    PXActionFailedSocketCreation,
-    PXActionFailedSocketOption,
-    PXActionFailedSocketBinding,
-    PXActionFailedSocketListening,
+    PXResultFailedSocketConnect,
+    PXResultFailedSocketCreation,
+    PXResultFailedSocketOption,
+    PXResultFailedSocketBinding,
+    PXResultFailedSocketListening,
 
-    PXActionRefusedSocketInavlidAdressFamily,
-    PXActionRefusedSocketInvalidFlags,
-    PXActionRefusedNameServerIsTemporaryOffline,
-    PXActionRefusedNameServerIsPermanentOffline,
-    PXActionRefusedSocketTypeNotSupported,
-    PXActionRefusedRequestedAddressFamilyNotSupported,
-    PXActionRefusedHostExistsButHasNoData,
-    PXActionRefusedHostHasNoNetworkAddresses,
-    PXActionRefusedIPOrPortNotKnown,
+    PXResultRefusedSocketInavlidAddressFamily,
+    PXResultRefusedSocketInvalidFlags,
+    PXResultRefusedNameServerIsTemporaryOffline,
+    PXResultRefusedNameServerIsPermanentOffline,
+    PXResultRefusedSocketTypeNotSupported,
+    PXResultRefusedRequestedAddressFamilyNotSupported,
+    PXResultRefusedHostExistsButHasNoData,
+    PXResultRefusedHostHasNoNetworkAddresses,
+    PXResultRefusedIPOrPortNotKnown,
     //-----------------------------------
 
     //---<File-Parsing>-------------------
-    PXActionFailedFormatNotDetected, // Format is not detected and thus unknown
-    PXActionRefusedFormatNotSupported, // Fromat was detected but is not supported
-    PXActionFailedFormatNotAsExpected, // Excpected format differs from what is detected
-    PXActionRefusedInvalidHeaderSignature, // Expected signature was not detected
+    PXResultFailedFormatNotDetected, // Format is not detected and thus unknown
+    PXResultRefusedFormatNotSupported, // Fromat was detected but is not supported
+    PXResultFailedFormatNotAsExpected, // Excpected format differs from what is detected
+    PXResultRefusedInvalidHeaderSignature, // Expected signature was not detected
     //-----------------------------------
 
     //---<File-Writing>------------------
-    PXActionRefusedFormatSettingNotAllowed,
+    PXResultRefusedFormatSettingNotAllowed,
     //-----------------------------------
 
 
@@ -314,17 +387,17 @@ typedef enum PXResult_
 
 
     //---<Service>-----------------------
-    PXActionNoResposeCountNotConnect,
-    PXActionFailedConnectionFailure,
-    PXActionRefusedNotConnected, // Trying to use a command that requires an already established connection.
-    PXActionFailedSettingsInvalid,
-    PXActionFailedCommandDeploy, // Failure to awns from source to target
-    PXActionFailedCommandExecute, // Faiure to execute on target
-    PXActionFailedCommandRetrieve, // Failure to retrieve result from target
+    PXResultNoResposeCountNotConnect,
+    PXResultFailedConnectionFailure,
+    PXResultRefusedNotConnected, // Trying to use a command that requires an already established connection.
+    PXResultFailedSettingsInvalid,
+    PXResultFailedCommandDeploy, // Failure to awns from source to target
+    PXResultFailedCommandExecute, // Faiure to execute on target
+    PXResultFailedCommandRetrieve, // Failure to retrieve result from target
     //-----------------------------------
 
     //---<Compiler>----------------------
-    PXActionRefusedParserSymbolNotAsExpected, // While parsing found symbol thats not supported to be read
+    PXResultRefusedParserSymbolNotAsExpected, // While parsing found symbol thats not supported to be read
     //-----------------------------------
 
     //---[ Windows Only (WindowsSocketAgent) ]-------
@@ -333,12 +406,12 @@ typedef enum PXResult_
     LimitReached,
     SocketIsBlocking,
 
-    PXActionFailedDirectoryIsNotEmpty,
-    PXActionFailedTooManyProcesses,
-    PXActionFailedUserQuotaExceeded,
-    PXActionFailedDiskQuotaExceeded,
-    PXActionFailedHandleIsStale,
-    PXActionFailedResourceNotAvailableLocally,
+    PXResultFailedDirectoryIsNotEmpty,
+    PXResultFailedTooManyProcesses,
+    PXResultFailedUserQuotaExceeded,
+    PXResultFailedDiskQuotaExceeded,
+    PXResultFailedHandleIsStale,
+    PXResultFailedResourceNotAvailableLocally,
     //-------------------------------------------------
 
     //---<Audio>---------------------------------------
@@ -361,11 +434,11 @@ typedef enum PXResult_
     AudioResultDeviceIsSynchronous,
     //-------------------------------------------------
 
-    PXActionFailedConnectionTerminatedByNetwork,
-    PXActionFailedConnectionTerminatedByOwnSoftware,
-    PXActionFailedConnectionTerminatedByPeer,
+    PXResultFailedConnectionTerminatedByNetwork,
+    PXResultFailedConnectionTerminatedByOwnSoftware,
+    PXResultFailedConnectionTerminatedByPeer,
 
-    PXActionFailedMemoryAllocationInternal,
+    PXResultFailedMemoryAllocationInternal,
 
 
     // POSIX Error codes, these are pre-defined
@@ -373,12 +446,12 @@ typedef enum PXResult_
     AddressInUse, // ADDRINUSE
     AddressNotAvailable, // ADDRNOTAVAIL
     AddressFamilyNotSupported, // AFNOSUPPORT
-    PXActionFailedResourceUnavailableTryAgain, // [AGAIN]
+    PXResultFailedResourceUnavailableTryAgain, // [AGAIN]
     ConnectionAlreadyInProgress, // ALREADY
     ArgumentListTooLong, // 2BIG
     BadFileDescriptor, // BADF
     BadMessage, // BADMSG
-    PXActionRefusedResourceBusy, // BUSY
+    PXResultRefusedResourceBusy, // BUSY
     OperationCanceled,// CANCELED
     NoChildProcesses, // CHILD
     ConnectionAborted, // CONNABORTED
@@ -440,6 +513,11 @@ PXExecutionSnapshot;
 PXPublic PXResult PXAPI PXErrorCodeFromID(const int errorCode);
 PXPublic PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 
+#if OSUnix
+PXPublic PXResult PXAPI PXErrorFromX11(const int errorID);
+#endif
+
+
 #if PXOSWindowsDestop
 
 // Interesting behaviour, you put in if we successfully did the last operation
@@ -449,15 +527,19 @@ PXPublic PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult);
 PXPublic PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID);
 #endif
 
-typedef PXResult(PXAPI* PXCallX1)(void PXREF pxCallX1);
+typedef PXResult(PXAPI* PXCallX1)(void PXREF parameterA);
+typedef PXResult(PXAPI* PXCallX2)(void PXREF parameterA, void PXREF parameterB);
 
-PXPublic PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1);
-
+PXPublic PXResult PXAPI PXSafeCallx1(PXCallX1 pxCallX1, void* p1);
+PXPublic PXResult PXAPI PXSafeCallx2(PXCallX2 pxCallX2, void* p1, void* p2);
 
 typedef struct PXException_
 {
     PXI32U WindowCode;
     void* FaultAddress;
+
+    PXResult Result;
+    PXBool Triggered;
 }
 PXException;
 

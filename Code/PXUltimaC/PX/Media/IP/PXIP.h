@@ -15,7 +15,7 @@ typedef enum PXIPVersion_
 PXIPVersion;
 
 PXPublic PXIPVersion PXAPI PXIPAnalyseVersion(const char* ip);
-PXPublic PXByte PXAPI PXIPIsValid(const char* ipAdress);
+PXPublic PXByte PXAPI PXIPIsValid(const char* ipAddress);
 /*
 Check if the given IPv4 is Valid
 
@@ -27,7 +27,7 @@ Returns the following:
 4 - Too long (>15)
 5 - Too many Octets (more that 4)
 */
-PXPublic PXByte PXAPI PXIPv4CheckIfValid(const char* ipv4Adress);
-PXPublic PXByte PXAPI PXIPv6CheckIfValid(const char* ipv6Adress);
+PXPublic PXByte PXAPI PXIPv4CheckIfValid(const char* ipv4Address);
+PXPublic PXByte PXAPI PXIPv6CheckIfValid(const char* ipv6Address);
 
 #endif

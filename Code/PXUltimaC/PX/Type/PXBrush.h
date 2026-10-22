@@ -30,8 +30,8 @@ typedef struct PXBrush_
 
     union
     {
-        PXColorRGBI8 ColorDate;
-        PXColorRGBI8* ColorReference;
+        PXColorRGB_U8 ColorDate;
+        PXColorRGB_U8* ColorReference;
     };
 }
 PXBrush;
@@ -40,7 +40,7 @@ typedef struct PXBrushCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXColorRGBI8 Color;
+    PXColorRGB_U8 Color;
 }
 PXBrushCreateInfo;
 

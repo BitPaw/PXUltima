@@ -11,13 +11,18 @@
 
 /*shared values used by multiple Adam7 related functions*/
 
-static const unsigned PXADAM7_IX[7] = { 0, 4, 0, 2, 0, 1, 0 }; /*x start values*/
-static const unsigned PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*/
-static const unsigned PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
-static const unsigned PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
+static const PXI8U PXADAM7_IX[7] = { 0, 4, 0, 2, 0, 1, 0 }; // x start values
+static const PXI8U PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; // y start values
+static const PXI8U PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; // x delta values
+static const PXI8U PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; // y delta values
 
 PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
 {
+    if(!pxADAM7)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
      Steps:
@@ -26,7 +31,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
      NOTE: the in buffer will be overwritten with intermediate data!
      */
 
-    // Input check
+     // Input check
     {
         const PXBool isValidInput = pxADAM7->DataInput && pxADAM7->DataOutput && pxADAM7->Width && pxADAM7->Height && pxADAM7->BitsPerPixel;
 
@@ -36,95 +41,94 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
 
     switch(pxADAM7->InterlaceMethod)
     {
-    default:
-    case PXPNGInterlaceInvalid:
-        return PXResultRefusedParameterInvalid;
+        default:
+        case PXPNGInterlaceInvalid:
+            return PXResultRefusedParameterInvalid;
 
-    case PXPNGInterlaceNone:
-    {
-        const PXBool additionalStep = pxADAM7->BitsPerPixel < 8 && pxADAM7->Width * pxADAM7->BitsPerPixel != ((pxADAM7->Width * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u;
-
-        if(additionalStep)
+        case PXPNGInterlaceNone:
         {
-            void* oldPosition = pxADAM7->DataOutput;
+            const PXBool additionalStep = pxADAM7->BitsPerPixel < 8 && pxADAM7->Width * pxADAM7->BitsPerPixel != ((pxADAM7->Width * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u;
 
-            pxADAM7->DataOutput = pxADAM7->DataInput;
-
-            const PXResult pxResult = PXADAM7unfilter(pxADAM7);
-
-            pxADAM7->DataOutput = (PXByte*)oldPosition;
-
-
-            PXADAM7removePaddingBits
-            (
-                pxADAM7->DataOutput,
-                pxADAM7->DataInput,
-                pxADAM7->Width * pxADAM7->BitsPerPixel,
-                ((pxADAM7->Width * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u,
-                pxADAM7->Height
-            );
-        }
-        else
-        {
-            // we can immediately filter into the out buffer, no other steps needed
-
-            const PXResult pxResult = PXADAM7unfilter(pxADAM7);
-        }
-
-        break;
-    }
-    case PXPNGInterlaceADAM7:
-    {
-        unsigned passw[7], passh[7];
-        PXSize filter_passstart[8], padded_passstart[8], passstart[8];
-
-        PXADAM7_getpassvalues
-        (
-            passw,
-            passh,
-            filter_passstart,
-            padded_passstart,
-            passstart,
-            pxADAM7->Width,
-            pxADAM7->Height,
-            pxADAM7->BitsPerPixel
-        );
-
-        for(PXSize i = 0; i != 7u; ++i)
-        {
-            PXADAM7 pxADAM7sub;
-            pxADAM7sub.DataInput = &pxADAM7->DataInput[filter_passstart[i]]; // Maybe wroong order?
-            pxADAM7sub.InputSize;
-            pxADAM7sub.DataOutput = &pxADAM7->DataInput[padded_passstart[i]];
-            pxADAM7sub.OutputSize;
-            pxADAM7sub.Width = passw[i];
-            pxADAM7sub.Height = passh[i];
-            pxADAM7sub.BitsPerPixel = pxADAM7->BitsPerPixel;
-            pxADAM7sub.InterlaceMethod = pxADAM7->InterlaceMethod;
-
-            const PXResult pxResult = PXADAM7unfilter(&pxADAM7sub);
-            // TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
-            // move bytes instead of bits or move not at all
-
-            if(pxADAM7->BitsPerPixel < 8)
+            if(additionalStep)
             {
-                // remove padding bits in scanlines; after this there still may be padding
-                // bits between the different reduced images: each reduced image still starts nicely at a byte
+                void* oldPosition = pxADAM7->DataOutput;
+
+                pxADAM7->DataOutput = pxADAM7->DataInput;
+
+                const PXResult pxResult = PXADAM7unfilter(pxADAM7);
+
+                pxADAM7->DataOutput = (PXByte*)oldPosition;
+
                 PXADAM7removePaddingBits
                 (
-                    &((PXByte*)pxADAM7->DataInput)[passstart[i]],
-                    &((PXByte*)pxADAM7->DataInput)[padded_passstart[i]],
-                    passw[i] * pxADAM7->BitsPerPixel,
-                    ((passw[i] * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u,
-                    passh[i]
+                    pxADAM7->DataOutput,
+                    pxADAM7->DataInput,
+                    pxADAM7->Width * pxADAM7->BitsPerPixel,
+                    ((pxADAM7->Width * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u,
+                    pxADAM7->Height
                 );
             }
+            else
+            {
+                // we can immediately filter into the out buffer, no other steps needed
+
+                const PXResult pxResult = PXADAM7unfilter(pxADAM7);
+            }
+
+            break;
         }
+        case PXPNGInterlaceADAM7:
+        {
+            unsigned passw[7], passh[7];
+            PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
-        PXADAM7Deinterlace(pxADAM7);
+            PXADAM7_getpassvalues
+            (
+                passw,
+                passh,
+                filter_passstart,
+                padded_passstart,
+                passstart,
+                pxADAM7->Width,
+                pxADAM7->Height,
+                pxADAM7->BitsPerPixel
+            );
 
-        break;
-    }
+            for(PXSize i = 0; i != 7u; ++i)
+            {
+                PXADAM7 pxADAM7sub;
+                pxADAM7sub.DataInput = &pxADAM7->DataInput[filter_passstart[i]]; // Maybe wroong order?
+                pxADAM7sub.InputSize;
+                pxADAM7sub.DataOutput = &pxADAM7->DataInput[padded_passstart[i]];
+                pxADAM7sub.OutputSize;
+                pxADAM7sub.Width = passw[i];
+                pxADAM7sub.Height = passh[i];
+                pxADAM7sub.BitsPerPixel = pxADAM7->BitsPerPixel;
+                pxADAM7sub.InterlaceMethod = pxADAM7->InterlaceMethod;
+
+                const PXResult pxResult = PXADAM7unfilter(&pxADAM7sub);
+                // TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
+                // move bytes instead of bits or move not at all
+
+                if(pxADAM7->BitsPerPixel < 8)
+                {
+                    // remove padding bits in scanlines; after this there still may be padding
+                    // bits between the different reduced images: each reduced image still starts nicely at a byte
+                    PXADAM7removePaddingBits
+                    (
+                        &((PXByte*)pxADAM7->DataInput)[passstart[i]],
+                        &((PXByte*)pxADAM7->DataInput)[padded_passstart[i]],
+                        passw[i] * pxADAM7->BitsPerPixel,
+                        ((passw[i] * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u,
+                        passh[i]
+                    );
+                }
+            }
+
+            PXADAM7Deinterlace(pxADAM7);
+
+            break;
+        }
     }
 
     return PXResultOK;
@@ -132,7 +136,7 @@ PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
 
 PXResult PXAPI PXADAM7ScanlinesEncode(PXADAM7 PXREF pxADAM7)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7 PXREF pxADAM7)
@@ -144,9 +148,9 @@ PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7 PXREF pxADAM7)
 
 unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
 {
-    short pa = PXMathAbsoluteI16(b - c);
-    short pb = PXMathAbsoluteI16(a - c);
-    short pc = PXMathAbsoluteI16(a + b - c - c);
+    PXI16U pa = PXMathAbsoluteI16(b - c);
+    PXI16U pb = PXMathAbsoluteI16(a - c);
+    PXI16U pc = PXMathAbsoluteI16(a + b - c - c);
     /* return input value associated with smallest of pa, pb, pc (with certain priority if equal) */
     if(pb < pa)
     {
@@ -170,152 +174,152 @@ PXResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char
 
     switch(filterType)
     {
-    case 0:
-        for(PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
-        break;
-    case 1:
-    {
-        PXSize j = 0;
-        for(PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-        for(PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + recon[j];
-        break;
-    }
-    case 2:
-        if(precon)
-        {
-            for(PXSize i = 0; i != length; ++i) recon[i] = scanline[i] + precon[i];
-        }
-        else
-        {
+        case 0:
             for(PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
-        }
-        break;
-    case 3:
-        if(precon)
-        {
-            PXSize j = 0;
-            PXSize i = 0;
-            for(i = 0; i != bytewidth; ++i) recon[i] = scanline[i] + (precon[i] >> 1u);
-            /* Unroll independent paths of this predictor. A 6x and 8x version is also possible but that adds
-            too much code. Whether this speeds up anything depends on compiler and settings. */
-            if(bytewidth >= 4)
-            {
-                for(; i + 3 < length; i += 4, j += 4)
-                {
-                    unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
-                    unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
-                    unsigned char s2 = scanline[i + 2], r2 = recon[j + 2], p2 = precon[i + 2];
-                    unsigned char s3 = scanline[i + 3], r3 = recon[j + 3], p3 = precon[i + 3];
-                    recon[i + 0] = s0 + ((r0 + p0) >> 1u);
-                    recon[i + 1] = s1 + ((r1 + p1) >> 1u);
-                    recon[i + 2] = s2 + ((r2 + p2) >> 1u);
-                    recon[i + 3] = s3 + ((r3 + p3) >> 1u);
-                }
-            }
-            else if(bytewidth >= 3)
-            {
-                for(; i + 2 < length; i += 3, j += 3)
-                {
-                    unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
-                    unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
-                    unsigned char s2 = scanline[i + 2], r2 = recon[j + 2], p2 = precon[i + 2];
-                    recon[i + 0] = s0 + ((r0 + p0) >> 1u);
-                    recon[i + 1] = s1 + ((r1 + p1) >> 1u);
-                    recon[i + 2] = s2 + ((r2 + p2) >> 1u);
-                }
-            }
-            else if(bytewidth >= 2)
-            {
-                for(; i + 1 < length; i += 2, j += 2)
-                {
-                    unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
-                    unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
-                    recon[i + 0] = s0 + ((r0 + p0) >> 1u);
-                    recon[i + 1] = s1 + ((r1 + p1) >> 1u);
-                }
-            }
-            for(; i != length; ++i, ++j) recon[i] = scanline[i] + ((recon[j] + precon[i]) >> 1u);
-        }
-        else
+            break;
+        case 1:
         {
             PXSize j = 0;
             for(PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-            for(PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
+            for(PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + recon[j];
+            break;
         }
-        break;
-    case 4:
-        if(precon)
-        {
-            PXSize j = 0;
-            PXSize i = 0;
-            for(i = 0; i != bytewidth; ++i)
+        case 2:
+            if(precon)
             {
-                recon[i] = (scanline[i] + precon[i]); /*paethPredictor(0, precon[i], 0) is always precon[i]*/
+                for(PXSize i = 0; i != length; ++i) recon[i] = scanline[i] + precon[i];
             }
+            else
+            {
+                for(PXSize i = 0; i != length; ++i) recon[i] = scanline[i];
+            }
+            break;
+        case 3:
+            if(precon)
+            {
+                PXSize j = 0;
+                PXSize i = 0;
+                for(i = 0; i != bytewidth; ++i) recon[i] = scanline[i] + (precon[i] >> 1u);
+                /* Unroll independent paths of this predictor. A 6x and 8x version is also possible but that adds
+                too much code. Whether this speeds up anything depends on compiler and settings. */
+                if(bytewidth >= 4)
+                {
+                    for(; i + 3 < length; i += 4, j += 4)
+                    {
+                        unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
+                        unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
+                        unsigned char s2 = scanline[i + 2], r2 = recon[j + 2], p2 = precon[i + 2];
+                        unsigned char s3 = scanline[i + 3], r3 = recon[j + 3], p3 = precon[i + 3];
+                        recon[i + 0] = s0 + ((r0 + p0) >> 1u);
+                        recon[i + 1] = s1 + ((r1 + p1) >> 1u);
+                        recon[i + 2] = s2 + ((r2 + p2) >> 1u);
+                        recon[i + 3] = s3 + ((r3 + p3) >> 1u);
+                    }
+                }
+                else if(bytewidth >= 3)
+                {
+                    for(; i + 2 < length; i += 3, j += 3)
+                    {
+                        unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
+                        unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
+                        unsigned char s2 = scanline[i + 2], r2 = recon[j + 2], p2 = precon[i + 2];
+                        recon[i + 0] = s0 + ((r0 + p0) >> 1u);
+                        recon[i + 1] = s1 + ((r1 + p1) >> 1u);
+                        recon[i + 2] = s2 + ((r2 + p2) >> 1u);
+                    }
+                }
+                else if(bytewidth >= 2)
+                {
+                    for(; i + 1 < length; i += 2, j += 2)
+                    {
+                        unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
+                        unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
+                        recon[i + 0] = s0 + ((r0 + p0) >> 1u);
+                        recon[i + 1] = s1 + ((r1 + p1) >> 1u);
+                    }
+                }
+                for(; i != length; ++i, ++j) recon[i] = scanline[i] + ((recon[j] + precon[i]) >> 1u);
+            }
+            else
+            {
+                PXSize j = 0;
+                for(PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
+                for(PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
+            }
+            break;
+        case 4:
+            if(precon)
+            {
+                PXSize j = 0;
+                PXSize i = 0;
+                for(i = 0; i != bytewidth; ++i)
+                {
+                    recon[i] = (scanline[i] + precon[i]); /*paethPredictor(0, precon[i], 0) is always precon[i]*/
+                }
 
-            /* Unroll independent paths of the paeth predictor. A 6x and 8x version is also possible but that
-            adds too much code. Whether this speeds up anything depends on compiler and settings. */
-            if(bytewidth >= 4)
-            {
-                for(; i + 3 < length; i += 4, j += 4)
+                /* Unroll independent paths of the paeth predictor. A 6x and 8x version is also possible but that
+                adds too much code. Whether this speeds up anything depends on compiler and settings. */
+                if(bytewidth >= 4)
                 {
-                    unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2], s3 = scanline[i + 3];
-                    unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2], r3 = recon[j + 3];
-                    unsigned char p0 = precon[i + 0], p1 = precon[i + 1], p2 = precon[i + 2], p3 = precon[i + 3];
-                    unsigned char q0 = precon[j + 0], q1 = precon[j + 1], q2 = precon[j + 2], q3 = precon[j + 3];
-                    recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
-                    recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
-                    recon[i + 2] = s2 + PXADAM7paethPredictor(r2, p2, q2);
-                    recon[i + 3] = s3 + PXADAM7paethPredictor(r3, p3, q3);
+                    for(; i + 3 < length; i += 4, j += 4)
+                    {
+                        unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2], s3 = scanline[i + 3];
+                        unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2], r3 = recon[j + 3];
+                        unsigned char p0 = precon[i + 0], p1 = precon[i + 1], p2 = precon[i + 2], p3 = precon[i + 3];
+                        unsigned char q0 = precon[j + 0], q1 = precon[j + 1], q2 = precon[j + 2], q3 = precon[j + 3];
+                        recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
+                        recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
+                        recon[i + 2] = s2 + PXADAM7paethPredictor(r2, p2, q2);
+                        recon[i + 3] = s3 + PXADAM7paethPredictor(r3, p3, q3);
+                    }
                 }
-            }
-            else if(bytewidth >= 3)
-            {
-                for(; i + 2 < length; i += 3, j += 3)
+                else if(bytewidth >= 3)
                 {
-                    unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2];
-                    unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2];
-                    unsigned char p0 = precon[i + 0], p1 = precon[i + 1], p2 = precon[i + 2];
-                    unsigned char q0 = precon[j + 0], q1 = precon[j + 1], q2 = precon[j + 2];
-                    recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
-                    recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
-                    recon[i + 2] = s2 + PXADAM7paethPredictor(r2, p2, q2);
+                    for(; i + 2 < length; i += 3, j += 3)
+                    {
+                        unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2];
+                        unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2];
+                        unsigned char p0 = precon[i + 0], p1 = precon[i + 1], p2 = precon[i + 2];
+                        unsigned char q0 = precon[j + 0], q1 = precon[j + 1], q2 = precon[j + 2];
+                        recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
+                        recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
+                        recon[i + 2] = s2 + PXADAM7paethPredictor(r2, p2, q2);
+                    }
                 }
-            }
-            else if(bytewidth >= 2)
-            {
-                for(; i + 1 < length; i += 2, j += 2)
+                else if(bytewidth >= 2)
                 {
-                    unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1];
-                    unsigned char r0 = recon[j + 0], r1 = recon[j + 1];
-                    unsigned char p0 = precon[i + 0], p1 = precon[i + 1];
-                    unsigned char q0 = precon[j + 0], q1 = precon[j + 1];
-                    recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
-                    recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
+                    for(; i + 1 < length; i += 2, j += 2)
+                    {
+                        unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1];
+                        unsigned char r0 = recon[j + 0], r1 = recon[j + 1];
+                        unsigned char p0 = precon[i + 0], p1 = precon[i + 1];
+                        unsigned char q0 = precon[j + 0], q1 = precon[j + 1];
+                        recon[i + 0] = s0 + PXADAM7paethPredictor(r0, p0, q0);
+                        recon[i + 1] = s1 + PXADAM7paethPredictor(r1, p1, q1);
+                    }
                 }
-            }
 
-            for(; i != length; ++i, ++j)
-            {
-                recon[i] = (scanline[i] + PXADAM7paethPredictor(recon[i - bytewidth], precon[i], precon[j]));
+                for(; i != length; ++i, ++j)
+                {
+                    recon[i] = (scanline[i] + PXADAM7paethPredictor(recon[i - bytewidth], precon[i], precon[j]));
+                }
             }
-        }
-        else
-        {
-            PXSize j = 0;
-            for(PXSize i = 0; i != bytewidth; ++i)
+            else
             {
-                recon[i] = scanline[i];
+                PXSize j = 0;
+                for(PXSize i = 0; i != bytewidth; ++i)
+                {
+                    recon[i] = scanline[i];
+                }
+                for(PXSize i = bytewidth; i != length; ++i, ++j)
+                {
+                    /*paethPredictor(recon[i - bytewidth], 0, 0) is always recon[i - bytewidth]*/
+                    recon[i] = (scanline[i] + recon[j]);
+                }
             }
-            for(PXSize i = bytewidth; i != length; ++i, ++j)
-            {
-                /*paethPredictor(recon[i - bytewidth], 0, 0) is always recon[i - bytewidth]*/
-                recon[i] = (scanline[i] + recon[j]);
-            }
-        }
-        break;
-    default:
-        return PXResultInvalid; /*error: invalid filter type given*/
+            break;
+        default:
+            return PXResultInvalid; /*error: invalid filter type given*/
     }
     return PXResultOK;
 }
@@ -355,10 +359,10 @@ PXResult PXAPI PXADAM7unfilter(PXADAM7 PXREF pxADAM7)
         const PXResult pxResult = PXADAM7unfilterScanline
         (
             &pxADAM7->DataOutput[outindex],
-            &pxADAM7->DataInput[inindex + 1], 
+            &pxADAM7->DataInput[inindex + 1],
             prevline,
             bytewidth,
-            filterType, 
+            filterType,
             linebytes
         );
 
@@ -405,15 +409,16 @@ unsigned char PXAPI PXADAM7readBitFromReversedStream(PXSize* bitpointer, const u
 void PXAPI PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
-    if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
-    else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
+    if(bit == 0) 
+        bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
+    else         
+        bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
+
     ++(*bitpointer);
 }
 
 void PXAPI PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp)
 {
-
-
     /*the passstart values have 8 values: the 8th one indicates the byte after the end of the 7th (= last) pass*/
     //unsigned i;
 

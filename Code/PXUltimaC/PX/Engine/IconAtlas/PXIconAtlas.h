@@ -10,7 +10,7 @@ typedef struct PXIconAtlas_
 {
     PXECSInfo Info;
 
-    PXTexture* IconTexture2D;
+    PXTexture2D* IconTexture2D;
 
     PXSize IconListAmount;
     PXIcon* IconList;

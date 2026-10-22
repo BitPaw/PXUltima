@@ -22,7 +22,7 @@ typedef struct PXDelegate_
     PXText NameNamespace;
     PXText NameClass;
     PXText NameFunction;
-    void* FunctionAdress;
+    void* FunctionAddress;
 }
 PXDelegate;
 

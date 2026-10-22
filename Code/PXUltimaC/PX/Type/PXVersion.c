@@ -10,7 +10,7 @@ PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, const char* versio
     int versionPatch = 0;
 
     PXText pxTextVersion;
-    PXTextFromAdressA(&pxTextVersion, versioNString, 0, PXTextUnkownLength);
+    PXTextFromAddressA(&pxTextVersion, versioNString, 0, PXTextUnkownLength);
 
     PXSize offset = 0;
 

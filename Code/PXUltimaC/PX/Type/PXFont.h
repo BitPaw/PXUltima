@@ -8,10 +8,12 @@
 #include <PX/Type/PXTexture.h>
 #include <PX/Type/PXShader.h>
 #include <PX/Type/PXText.h>
+#include <PX/Engine/PXEngineUI.h>
 
 #if OSUnix
 #include <X11/Xlib.h> // Font
 #endif
+
 
 #define PXFontAntialiased   (1<<0)
 #define PXFontItalic        (1<<1)
@@ -36,7 +38,7 @@ typedef struct PXFontPage_
     PXSize CharacteListEntrys;
     PXFontPageCharacter* CharacteList;
 
-    PXTexture* Texture;
+   // PXTexture2D* Texture;
 }
 PXFontPage;
 
@@ -44,8 +46,6 @@ PXFontPage;
 typedef struct PXFontCreateInfo_
 {
     PXECSCreateInfo Info;
-
-    PXShaderProgram* ShaderProgramCurrent;
 
     PXText RegisteredName; // Name of the font, registered by the OS
 }
@@ -58,6 +58,9 @@ typedef struct PXFont_
 #if OSUnix
     //struct XFontStruct* FontHandle; // Is this used?
     Font FontHandle; // X11, handle
+
+    PXEngineUI* UI; // [Warning: Architectural compromise] Needed because of X11 architecture.
+
 #elif OSWindows
     HFONT FontHandle;
 
@@ -101,9 +104,7 @@ PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF px
 
 PXPublic PXResult PXAPI PXFontListFetch();
 
-
 PXPublic PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCreateInfo);
 PXPublic PXResult PXAPI PXFontRelease(PXFont PXREF pxFont);
-
 
 #endif

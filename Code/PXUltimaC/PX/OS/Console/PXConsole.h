@@ -2,14 +2,17 @@
 
 #ifndef PXLogIncluded
 #define PXLogIncluded
-
-#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
-
 #include <stdarg.h>
 
 #define PXLogEnable         1
 #define PXLogEnableColor    0
+
+static const char PXCreateText[] = "Create"; // Initialize
+//static const char* const PXReleaseText = "Release";
+
+//static const char* const PXStartText = "----- [START] -----";
+//static const char* const PXDoneText = "----- [DONE] -----";
 
 //PXBool PXLogEnablePrint = 1;
 //PXBool PXLogEnableColor = 1;
@@ -100,9 +103,21 @@ PXLoggingEventData;
 
 typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char PXREF source, ...);
 
+
+typedef struct PXConsole_
+{
+#if OSUnix
+    int x;
+#elif OSWindows
+    HWND Handle;
+#endif
+}
+PXConsole;
+
 PXPublic PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
 PXPublic PXResult PXAPI PXConsoleTextColorSetFromID(const PXI16U coliorID);
 
+PXPublic PXConsole PXAPI PXConsoleFetch(const PXBool createIfNotExist);
 PXPublic void PXAPI PXConsoleClear();
 PXPublic void PXAPI PXConsoleGoToXY(const PXI32U x, const PXI32U y);
 PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char PXREF source, ...);

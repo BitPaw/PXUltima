@@ -24,7 +24,7 @@ typedef struct PXWEBP_
 }
 PXWEBP;
 
-PXPublic PXResult PXAPI PXWEBPLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWEBPSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWEBPLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWEBPSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

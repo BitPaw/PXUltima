@@ -52,7 +52,7 @@ PXResult PXAPI PXLevelSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
             PXFileWriteMultible(pxFile, pxFileDataElementList, pxFileDataElementListSize);
 
-            pxLevelEntry.DataAdress = PXFileDataPosition(pxFile);
+            pxLevelEntry.DataAddress = PXFileDataPosition(pxFile);
 
 #if PXLogEnable
             PXLogPrint
@@ -66,12 +66,12 @@ PXResult PXAPI PXLevelSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
                 ((char*)pxLevelEntry.ResourceType)[2],
                 ((char*)pxLevelEntry.ResourceType)[3],
                 pxLevelEntry.DataSize,
-                pxLevelEntry.DataAdress
+                pxLevelEntry.DataAddress
             );
 #endif
         }
     }
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -8,7 +8,7 @@
 #define PXListLinkedNodeNotUsed (PXSize)-1
 #define PXListLinkedNodeNoNext (PXSize)0
 
-#define PXListLinkedUseAdress (PXSize)-1
+#define PXListLinkedUseAddress (PXSize)-1
 
 typedef struct PXListLinkedNodeFixed_ PXListLinkedNodeFixed;
 

@@ -11,7 +11,7 @@
 PXResult PXAPI PXDNSFetch(const char* name)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
     PDNS_RECORD dnsRECORD;
 
@@ -27,6 +27,6 @@ PXResult PXAPI PXDNSFetch(const char* name)
 
     return PXResultOK;
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }

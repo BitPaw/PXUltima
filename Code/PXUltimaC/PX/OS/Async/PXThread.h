@@ -12,7 +12,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <setjmp.h>
-#define PXThreadIDUnused 0  // Adress
+#define PXThreadIDUnused 0  // Address
 #elif OSWindows
 #include <windows.h>
 #define PXThreadIDUnused nullptr
@@ -96,8 +96,8 @@ PXThreadPriorityMode;
 #define PXTaskDepended         (1 <<  9) // Task depends on other resources, wait for them to finish
 #define PXTaskTimeDecay        (1 << 10) // Is a given Task can't be executed until a spesific time, mark it s failed and dont try again.
 
-typedef PXResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
-typedef PXResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
+typedef PXResult (PXAPI* PXThreadX1CallFunction)(void* objectAddress);
+typedef PXResult (PXAPI* PXThreadX2CallFunction)(void* objectAddressA, void* objectAddressB);
 
 typedef struct PXTask_
 {
@@ -106,9 +106,9 @@ typedef struct PXTask_
     union
     {
         // Task function that is to be executed
-        void* FunctionAdress;
-        PXThreadX1CallFunction FunctionX1Adress;
-        PXThreadX2CallFunction FunctionX2Adress;
+        void* FunctionAddress;
+        PXThreadX1CallFunction FunctionX1Address;
+        PXThreadX2CallFunction FunctionX2Address;
     };
 
     void* ArgumentObject1; // Parameter that is given into the function
@@ -169,7 +169,7 @@ PXThreadContext32;
 
 typedef struct PXThreadContext64_
 {
-    // Parameter adress for integers. What are they for`?
+    // Parameter address for integers. What are they for`?
     PXI64U P1Home;
     PXI64U P2Home;
     PXI64U P3Home;
@@ -286,7 +286,18 @@ typedef struct PXThreadContext_
 PXThreadContext;
 
 
-typedef struct PXThread_ PXThread;
+//typedef struct PXThread_ PXThread;
+typedef struct PXThread_
+{
+    PXECSInfo Info;
+
+    PXThreadResult ReturnResultCode;
+
+    PXThreadHandle Handle;
+    PXThreadID ID;
+}
+PXThread;
+
 
 
 typedef struct PXThreadCreateInfo_
@@ -299,12 +310,22 @@ typedef struct PXThreadCreateInfo_
     void* Parameter;
     
     PXBool CreateSuspended; // When thread is started, it is not running
-
 }
 PXThreadCreateInfo;
 
 
 PXPublic void PXAPI PXThreadRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
+
+typedef enum PXThreadState_
+{
+    PXThreadStateInvalid,
+    PXThreadStateNULL,
+    PXThreadStateRunning,
+    PXThreadStateFinished
+}
+PXThreadState;
+
+PXPublic PXThreadState PXAPI PXThreadStateGet(const PXThread PXREF pxThread);
 
 PXPublic void PXAPI PXThreadDestruct(PXThread PXREF pxThread);
 

@@ -1,7 +1,7 @@
 #include "PXECSEntityInfo.h"
 
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/Type/PXFont.h>
 
 const char PXECSEntityInfoText[] = "ECS-EntityInfo";
@@ -29,9 +29,9 @@ PXResult PXAPI PXECSEntityInfoCreate(PXECSEntityInfo** pxECSEntityInfo, PXECSEnt
     return PXResultOK;
 }
 
-PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-       PXGUITheme* pxGUITheme = PXGUIThemeGet();
+       PXEngineUITheme* pxGUITheme = pxDrawInfo->UITheme;
        PXWindow PXREF pxWindow = pxECSEntityInfo->WindowBase;
        PXECSInfo* pxECSInfo = (PXECSInfo*)pxWindow;
 
@@ -46,7 +46,7 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDraw
        );
    #endif
 
-       PXWindowDrawRectangle2D
+       PXEngineUIDrawRectangle2D
        (
            pxWindow,
            pxDrawInfo
@@ -56,14 +56,14 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDraw
        char buffer[260];
 
        PXText pxText;
-       PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
+       PXTextFromAddressA(&pxText, buffer, 0, sizeof(buffer));
 
        PXTextPrint(&pxText, "PXID:%i", pxECSInfo->ID);
 
        pxDrawInfo->Text = &pxText;
        pxDrawInfo->Behaviour |= PXWindowAllignLeft;
 
-       PXWindowDrawText(pxWindow, pxDrawInfo);
+       PXEngineUIDrawText(pxWindow, pxDrawInfo);
        
 
        /*
@@ -148,7 +148,7 @@ PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDraw
 
        for(size_t i = 0; i < 16; i++)
        {
-           PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
+           PXEngineUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
            pxWindow->Position.Form.X = left;
            pxWindow->Position.Form.Y = y;

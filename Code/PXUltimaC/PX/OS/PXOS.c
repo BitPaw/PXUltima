@@ -7,6 +7,14 @@
 #include <PX/OS/File/PXFile.h>
 
 #if OSUnix
+#define _GNU_SOURCE
+#define __USE_GNU
+#include <sys/mman.h>
+#include <sys/utsname.h>
+#include <sys/ptrace.h>
+#include <fcntl.h> // O_RDONLY
+#include <dlfcn.h> // Dl_info
+#include <signal.h> // SIGTRAP
 #elif OSWindows
 #include <Windows.h>
 #include <DbgHelp.h>
@@ -14,11 +22,14 @@
 #endif
 
 
+const char PXUnknownElement[] = "???";
+
 //void _chkstk(size_t s) {};
 //extern int _fltused = 0;
 
 
-
+#if OSUnix
+#elif OSWindows
 typedef BOOL(WINAPI* PXDebugActiveProcessStopFunction)(_In_ DWORD dwProcessId);
 typedef BOOL(WINAPI* PXContinueDebugEventFunction)(_In_ DWORD dwProcessId, _In_ DWORD dwThreadId, _In_ DWORD dwContinueStatus);
 typedef BOOL(WINAPI* PXWaitForDebugEventFunction)(_Out_ LPDEBUG_EVENT lpDebugEvent, _In_ DWORD dwMilliseconds);
@@ -38,7 +49,6 @@ typedef BOOL(WINAPI* PXSymEnumSymbolsExFunction)(_In_ HANDLE hProcess, _In_ ULON
 typedef PVOID(WINAPI* PXSymFunctionTableAccessFunction)(__in HANDLE hProcess, __in DWORD AddrBase);
 typedef DWORD(WINAPI* PXSymGetModuleBaseFunction)(__in HANDLE hProcess, __in DWORD dwAddr);
 
-
 // Debug
 typedef BOOL(WINAPI* PXStackWalk64Function)
 (
@@ -55,16 +65,11 @@ typedef BOOL(WINAPI* PXStackWalk64Function)
 
 typedef DWORD(WINAPI* PXUnDecorateSymbolNameFunction)(_In_ PCSTR name, _Out_writes_(maxStringLength) PSTR outputString, _In_ DWORD maxStringLength, _In_ DWORD flags);
 typedef BOOL(WINAPI* PXSymGetSymFromAddr64Function)(_In_ HANDLE hProcess, _In_ DWORD64 qwAddr, _Out_opt_ PDWORD64 pdwDisplacement, _Inout_ PIMAGEHLP_SYMBOL64  Symbol);
-
-
-
-
-
-
+#endif
 
 typedef struct PXSymbolStackWalkInfo_
 {
-#if OSUnix 
+#if OSUnix
     int x;
 #elif OSWindows
     DWORD MachineType;
@@ -85,12 +90,7 @@ typedef struct PXSymbolStackWalkInfo_
 PXSymbolStackWalkInfo;
 
 
-
-
-
-
 PXOS _PXOS;
-
 
 const char PXOSName[] = "Kernel-OS";
 const char PXOSFile[] = "File";
@@ -144,13 +144,15 @@ PXResult PXAPI PXSystemPrelude()
 
     _PXOS.MainThreadID = PXThreadCurrentID();
 
+#if OSUnix
+#elif OSWindows
     // kernel32.dll
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsLibraryKernel32, sizeof(PXWindowsLibraryKernel32), sizeof(PXWindowsLibraryKernel32));
+        PXTextFromAddressA(&pxText, PXWindowsLibraryKernel32, sizeof(PXWindowsLibraryKernel32), sizeof(PXWindowsLibraryKernel32));
         PXLibraryOpen(&_PXOS.LibraryKernel, &pxText);
 
-        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntryList[] =
         {
             { &_PXOS.DebugEventContinue, "ContinueDebugEvent"},
             { &_PXOS.DebugBreak, "DebugBreak" },
@@ -163,18 +165,18 @@ PXResult PXAPI PXSystemPrelude()
             { &_PXOS.DebugActiveProcessStop, "DebugActiveProcessStop" }
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&_PXOS.LibraryKernel, pxLibraryFuntionEntryList, amount);
+        PXLibraryGetSymbolListA(&_PXOS.LibraryKernel, PXLibraryFunctionEntryList, amount);
     }
 
     // Dbghelp.dll
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsLibraryDebugHelp, sizeof(PXWindowsLibraryDebugHelp), sizeof(PXWindowsLibraryDebugHelp));
+        PXTextFromAddressA(&pxText, PXWindowsLibraryDebugHelp, sizeof(PXWindowsLibraryDebugHelp), sizeof(PXWindowsLibraryDebugHelp));
         PXLibraryOpen(&_PXOS.LibraryDebugHelp, &pxText);
 
-        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntryList[] =
         {
             { &_PXOS.SymbolServerInitialize, "SymInitialize"},
             { &_PXOS.SymbolStackWalk, "StackWalk64"},
@@ -187,28 +189,28 @@ PXResult PXAPI PXSystemPrelude()
             { &_PXOS.SymbolModuleBaseGet, "SymGetModuleBase" }
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&_PXOS.LibraryDebugHelp, pxLibraryFuntionEntryList, amount);
+        PXLibraryGetSymbolListA(&_PXOS.LibraryDebugHelp, PXLibraryFunctionEntryList, amount);
     }
 
     // ntdll.dll
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsLibrarNTDLL, sizeof(PXWindowsLibrarNTDLL), sizeof(PXWindowsLibrarNTDLL));
+        PXTextFromAddressA(&pxText, PXWindowsLibrarNTDLL, sizeof(PXWindowsLibrarNTDLL), sizeof(PXWindowsLibrarNTDLL));
         PXLibraryOpen(&_PXOS.LibraryNT, &pxText);
 
-        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntryList[] =
         {
             { &_PXOS.RtlGetVersion, "RtlGetVersion"}
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&_PXOS.LibraryNT, pxLibraryFuntionEntryList, amount);
+        PXLibraryGetSymbolListA(&_PXOS.LibraryNT, PXLibraryFunctionEntryList, amount);
     }
+#endif
 
-   
 
     _PXOS.Init = PXTrue;
 
@@ -231,9 +233,10 @@ PXResult PXAPI PXSystemPrelude()
 
 
 
-
+#if OSUnix
+#elif OSWindows
     SYSTEM_INFO systemInfo;
-    GetSystemInfo(&systemInfo); // Windows 2000 (+UWP), Kernel32.dll, sysinfoapi.h 
+    GetSystemInfo(&systemInfo); // Windows 2000 (+UWP), Kernel32.dll, sysinfoapi.h
 
     _PXOS.ApplicationAddressMinimum = systemInfo.lpMinimumApplicationAddress;
     _PXOS.ApplicationAddressMaximum = systemInfo.lpMaximumApplicationAddress;
@@ -247,7 +250,7 @@ PXResult PXAPI PXSystemPrelude()
     DWORD amountInBytes = 0;
     DWORD amountInObjects = 0;
 
-    // Get size
+        // Get size
     BOOL resLog = GetLogicalProcessorInformation(infoList, &amountInBytes);
 
     infoList = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)PXMemoryHeapCalloc(PXNull, amountInBytes, 1);
@@ -261,7 +264,7 @@ PXResult PXAPI PXSystemPrelude()
     for(size_t i = 0; i < amountInObjects; i++)
     {
         SYSTEM_LOGICAL_PROCESSOR_INFORMATION PXREF ptr = &infoList[i];
-                
+
         switch(ptr->Relationship)
         {
             case RelationNumaNode:
@@ -279,7 +282,7 @@ PXResult PXAPI PXSystemPrelude()
 
             case RelationCache:
             {
-                // Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
+                // Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache.
                 CACHE_DESCRIPTOR* cache = &ptr->Cache;
                 if(cache->Level == 1)
                 {
@@ -305,6 +308,7 @@ PXResult PXAPI PXSystemPrelude()
                 break;
         }
     }
+#endif
 
 
     //-----------------------------------------------------
@@ -355,16 +359,16 @@ PXResult PXAPI PXSystemPrelude()
     DWORD bufferSize = 0;
     GetLogicalProcessorInformation(NULL, &bufferSize);
 
-    
+
 
     SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)PXMemoryHeapCalloc(PXNull, 1, bufferSize);
     GetLogicalProcessorInformation(buffer, &bufferSize);
 
     const DWORD count = bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
 
-    for(DWORD i = 0; i < count; ++i) 
+    for(DWORD i = 0; i < count; ++i)
     {
-        if(buffer[i].Relationship == RelationCache && buffer[i].Cache.Level == 1) 
+        if(buffer[i].Relationship == RelationCache && buffer[i].Cache.Level == 1)
         {
             _PXOS.CacheLineSize = buffer[i].Cache.LineSize;
             break;
@@ -402,7 +406,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
     PXClear(PXOSVersion, pxOSVersion);
 
 #if OSUnix
-    FILE PXREF file = fopen("/etc/os-release", "r");
+    FILE* file = fopen("/etc/os-release", "r");
 
     if(!file)
         return;
@@ -422,7 +426,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
 
 
     // Kernel version
-    FILE* file = fopen("/proc/version", "r");
+    file = fopen("/proc/version", "r");
     if(!file) return;
 
     char buffer[512];
@@ -491,7 +495,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
 
 
     // Try DisplayVersion first (Windows 20H2+)
-    if(RegQueryValueExA(hKey, "DisplayVersion", NULL, &type, (LPBYTE)pxOSVersion->NameVersion, &value_length) == ERROR_SUCCESS) 
+    if(RegQueryValueExA(hKey, "DisplayVersion", NULL, &type, (LPBYTE)pxOSVersion->NameVersion, &value_length) == ERROR_SUCCESS)
     {
         pxOSVersion->NameVersionLength = value_length;
     }
@@ -499,7 +503,7 @@ PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
     {
         pxOSVersion->NameVersionLength = value_length;
     }
-    else 
+    else
     {
         pxOSVersion->NameVersionLength = PXTextCopyA(OSNameNotFound, sizeof(OSNameNotFound), pxOSVersion->NameVersion, value_length);
     }
@@ -520,21 +524,72 @@ void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
 {
 #if OSUnix
     struct utsname buffer;
-    if(uname(&buffer) != 0) {
-        return "Unable to get Linux version.";
+
+    int errorID = uname(&buffer); // Linux, sys/utsname.h
+    PXResult pxResult = PXErrorCurrent(0 == errorID);
+
+    if(PXResultOK != pxResult)
+    {
+        // Unable to get Linux version.
+        return pxResult;
     }
 
-    std::ifstream os_release("/etc/os-release");
-    std::string line, name, version;
-    while(std::getline(os_release, line)) {
-        if(line.find("PRETTY_NAME=") == 0) {
-            name = line.substr(13, line.length() - 14); // remove quotes
+    FILE* f = fopen("/etc/os-release", "r");
+
+    if(!f)
+    {
+        pxOSVersion->NameVersionLength = PXTextPrintA
+        (
+            pxOSVersion->NameProduct,
+            64,
+            "%s %s",
+            buffer.sysname,
+            buffer.release
+        );
+
+        return PXResultOK;;
+    }
+
+    char line[256];
+    char prettyName[256] = { 0 };
+
+    while(fgets(line, sizeof(line), f))
+    {
+        if(strncmp(line, "PRETTY_NAME=", 12) == 0)
+        {
+            /* Extract the value without quotes */
+            const char* start = strchr(line, '"');
+            const char* end = strrchr(line, '"');
+
+            if(start && end && end > start)
+            {
+                size_t len = end - start - 1;
+
+                if(len >= sizeof(prettyName))
+                    len = sizeof(prettyName) - 1;
+
+                memcpy(prettyName, start + 1, len);
+                prettyName[len] = '\0';
+            }
         }
     }
 
-    std::ostringstream oss;
-    oss << name << " (" << buffer.sysname << " " << buffer.release << ")";
-    return oss.str();
+    fclose(f);
+
+    if(prettyName[0] == '\0')
+        snprintf(prettyName, sizeof(prettyName), "Unknown Linux");
+
+    pxOSVersion->NameVersionLength = PXTextPrintA
+    (
+        pxOSVersion->NameProduct,
+        64,
+        "%s (%s %s)",
+        prettyName,
+        buffer.sysname,
+        buffer.release
+    );
+
+    return PXResultOK;
 #elif OSWindows
 
 
@@ -566,14 +621,14 @@ void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
     PXSystemVersionGetViaRegistry(pxOSVersion);
 
 
-    // GetVersionEx is debricated to the beginning of windows 10 
+    // GetVersionEx is debricated to the beginning of windows 10
     // and will only yield windows 8.1 as the highest option.
-    // This was choosen, because Microsoft planned to use Build numbers as versions. 
-    // VerifyVersionInfoA() is somewhat debricated aswell, as it relyes on 
+    // This was choosen, because Microsoft planned to use Build numbers as versions.
+    // VerifyVersionInfoA() is somewhat debricated aswell, as it relyes on
     // a manifest file that might not exist, then it also defaults to windows 8.1
     // Solution is to call the kernel function directly, as its better any bypasses this wierd behaviour
 
- 
+
     DWORD MajorVersion = 0;
     DWORD MinorVersion = 0;
     DWORD BuildNumber = 0;
@@ -590,10 +645,10 @@ void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
 
         MajorVersion = osVERSIONINFO.dwMajorVersion;
         MinorVersion = osVERSIONINFO.dwMinorVersion;
-        BuildNumber = osVERSIONINFO.dwBuildNumber; 
+        BuildNumber = osVERSIONINFO.dwBuildNumber;
     }
     else
-    {       
+    {
 
         OSVERSIONINFOEX osVERSIONINFOEx;
         ZeroMemory(&osVERSIONINFOEx, sizeof(OSVERSIONINFOEX));
@@ -731,7 +786,7 @@ void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
     (
         pxOSVersion->NameProduct,
       64,
-        "Windows %s (v.%i.%i - Build: %i)",   
+        "Windows %s (v.%i.%i - Build: %i)",
         osName,
         MajorVersion,
         MinorVersion,
@@ -784,12 +839,12 @@ PXResult PXAPI PXUserNameGet(PXText PXREF pxText)
         {
             success = GetUserNameW(pxText->W, &length); // Windows 2000, Advapi32.dll, winbase.h
             break;
-        }     
+        }
         case TextFormatInvalid:
         default:
             break;
     }
-   
+
     result = PXErrorCurrent(success);
 
     pxText->SizeUsed = length;
@@ -801,7 +856,7 @@ PXResult PXAPI PXUserNameGet(PXText PXREF pxText)
     }
 
 #else
-    result = PXActionRefusedNotImplemented;
+    result = PXResultRefusedNotImplemented;
 #endif
 
     return result;
@@ -823,7 +878,7 @@ PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, c
     PXResult pxResult;
 
 #if OSUnix
-    realpath()
+    //realpath()
 #elif OSWindows
     const DWORD length = GetFullPathNameA(pathInput, pathOutputSizeMAX, pathOutput, NULL); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
@@ -834,7 +889,7 @@ PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, c
         *pathOutputSizeWritten = length;
     }
 #else
-    pxResult = PXActionRefusedNotSupportedByLibrary;
+    pxResult = PXResultRefusedNotSupportedByLibrary;
 #endif
 
     return pxResult;
@@ -866,22 +921,62 @@ void PXAPI PXTextUNICODEToUTF8(char PXREF textOutput, const wchar_t PXREF textIn
 
 void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess)
 {
-    //const HANDLE processHandle = GetCurrentProcess();
-
     PXClear(PXProcess, pxProcess);
 
+    pxProcess->ProcessHandle = PXProcessCurrentHandle();
+    pxProcess->ProcessID = PXProcessCurrentID();
+}
+
+PXProcessHandle PXAPI PXProcessCurrentHandle()
+{
+    PXProcessHandle pxProcessHandle;
+
 #if OSUnix
-    pxProcess->ThreadHandle = 0;
-    pxProcess->ProcessID = getpid();
+    pxProcessHandle.Data = open("/proc/self", O_RDONLY);
 #elif OSWindows
     // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
-    pxProcess->ProcessHandle = GetCurrentProcess(); // Windows 2000 SP4, Kernel32.dll, processthreadsapi.h
+    pxProcessHandle.Data = GetCurrentProcess(); // Windows 2000 SP4, Kernel32.dll, processthreadsapi.h
+#else
+    pxProcessHandle.Data = 0;
+#endif
+
+    return pxProcessHandle;
+}
+
+PXProcessID PXAPI PXProcessCurrentID()
+{
+    PXProcessID pxProcessID;
+
+#if OSUnix
+    pxProcessID.Data = getpid(); // Linux, (get) (p)rocess (id)entification
+#elif OSWindows
+    pxProcessID.Data = GetCurrentProcessId();
+#else
+    pxProcessID.Data = 0;
+#endif
+
+    return pxProcessID;
+}
+
+PXProcessID PXAPI PXProcessHandleToID(const PXProcessHandle pxProcessHandle)
+{
+    PXProcessID pxProcessID;
+
+#if OSUnix
+
+    // ???
+
+#elif OSWindows
 
 #if WindowsAtleastXP
-    pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    pxProcessID.Data = GetProcessId(pxProcessHandle.Data); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+#else
+    pxProcessID.Data = 0;
 #endif
 
 #endif
+
+    return pxProcessID;
 }
 
 PXResult PXAPI PXProcessMemoryWrite
@@ -899,7 +994,7 @@ PXResult PXAPI PXProcessMemoryWrite
 #elif OSWindows
     const BOOL successful = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
     (
-        pxProcessHandle,
+        pxProcessHandle.Data,
         baseAddress,
         bufferData,
         bufferSizeMax,
@@ -907,7 +1002,7 @@ PXResult PXAPI PXProcessMemoryWrite
     );
     pxResult = PXErrorCurrent(successful);
 #else
-    pxResult = PXActionRefusedNotImplemented;
+    pxResult = PXResultRefusedNotImplemented;
 #endif
 
     return pxResult;
@@ -915,10 +1010,10 @@ PXResult PXAPI PXProcessMemoryWrite
 
 PXResult PXAPI PXProcessMemoryRead
 (
-    const PXProcessHandle pxProcessHandle, 
+    const PXProcessHandle pxProcessHandle,
     const void* baseAddress,
-    void PXREF bufferData, 
-    const PXSize bufferSizeMax, 
+    void PXREF bufferData,
+    const PXSize bufferSizeMax,
     PXSize PXREF bufferSizeWritten
 )
 {
@@ -928,7 +1023,7 @@ PXResult PXAPI PXProcessMemoryRead
 #elif OSWindows
     const BOOL successful = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
     (
-        pxProcessHandle,
+        pxProcessHandle.Data,
         baseAddress,
         bufferData,
         bufferSizeMax,
@@ -936,7 +1031,7 @@ PXResult PXAPI PXProcessMemoryRead
     );
     pxResult = PXErrorCurrent(successful);
 #else
-    pxResult = PXActionRefusedNotImplemented;
+    pxResult = PXResultRefusedNotImplemented;
 #endif
 
     return pxResult;
@@ -964,16 +1059,21 @@ PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap)
 
 void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap PXREF pxMemoryHeap)
 {
+#if OSUnix
+#elif OSWindows
     pxMemoryHeap->HeapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+#endif
+
     pxMemoryHeap->Allocated = 0;
 }
 
-PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF adress)
+PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF address)
 {
+    PXSize allocatedSize = 0;
     PXMemoryHeap redirectHeap;
 
     // HeapSize cant handle NULL pointers. If we get one here, it sure is 0.
-    if(!adress)
+    if(!address)
     {
         return 0;
     }
@@ -984,26 +1084,28 @@ PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF 
         pxMemoryHeap = &redirectHeap;
     }
 
-#if OSUnix  || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
+#if OSUnix
 
-    return _msize(adress);
+    allocatedSize = malloc_usable_size(address); // Linux
 
-#elif OSWindows  
+#elif OSWindows
 
-    const SIZE_T size = HeapSize(pxMemoryHeap->HeapHandle, 0, adress);
-    const PXResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
-
-    return size;
-#else
-    return 0;
+    #if PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
+    allocatedSize = _msize(address); // Windows CRT only
+    #else
+    allocatedSize = HeapSize(pxMemoryHeap->HeapHandle, 0, address);
+    const PXResult sizeError = PXErrorCurrent((SIZE_T)-1 != allocatedSize);
+    #endif
 #endif
+
+    return allocatedSize;
 }
 
 void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize)
 {
     const PXSize totalAmount = amount * objectSize;
     PXMemoryHeap redirectHeap;
-    void* adress = PXNull;
+    void* address = PXNull;
 
     if(!totalAmount)
     {
@@ -1017,9 +1119,9 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
     }
 
 #if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
-    adress = calloc(amount, objectSize);
+    address = calloc(amount, objectSize);
 #elif OSWindows
-    adress = HeapAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    address = HeapAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 #else
 #error Memory allocate seems not to be supported on this OS
 #endif
@@ -1028,16 +1130,16 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
     // Special logging behaviour
     {
         // PXSymbolMemory pxSymbolMemory;
-        // pxSymbolMemory.Adress = adress;
+        // pxSymbolMemory.Address = address;
         // pxSymbolMemory.Amount = amount;
          //pxSymbolMemory.ObjectSize = objectSize;
 
         PXSymbol pxSymbol;
-        PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
+        PXSymbolCaller(&pxSymbol);
 
-        //  pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-         // PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-         // PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        //  pxSymbolMemory.ModuleAddress = pxSymbol.ModuleAddress;
+         // PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAddress, 64);
+         // PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAddress, 64);
          // pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
 
           //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
@@ -1048,24 +1150,24 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
             PXOSName,
             "Heap-Alloc",
             "<%p> %6ix %4i B %s::%s::%s::%i",
-            adress,
+            address,
             amount,
             objectSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
             pxSymbol.LineNumber
-        );        
+        );
     }
 #endif
 
-    return adress;
+    return address;
 }
 
 void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize)
 {
     PXMemoryHeap redirectHeap;
-    void* adress = PXNull;
+    void* address = PXNull;
 
     if(!memorySize)
     {
@@ -1079,9 +1181,9 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
     }
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    adress = malloc(memorySize);
+    address = malloc(memorySize);
 #elif OSWindows
-    adress = HeapAlloc(pxMemoryHeap->HeapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    address = HeapAlloc(pxMemoryHeap->HeapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 #else
 #error Memory allocate seems not to be supported on this OS
 #endif
@@ -1089,28 +1191,28 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
     // Special logging behaviour
     {
         PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Address = address;
         pxSymbolMemory.Amount = 1;
         pxSymbolMemory.ObjectSize = memorySize;
 
         PXSymbol pxSymbol;
-        PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
+        PXSymbolCaller(&pxSymbol);
 
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.ModuleAddress = pxSymbol.AddressModule;
+        PXTextCopyA(pxSymbol.NameFile, sizeof(pxSymbol.NameFile), pxSymbolMemory.FileAddress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, sizeof(pxSymbol.NameSymbol), pxSymbolMemory.FunctionAddress, 64);
         pxSymbolMemory.LineNumber = pxSymbolMemory.LineNumber;
 
         //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
-#if PXLogEnable 
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingAllocation,
             PXOSName,
             "Heap-Alloc",
             "<%p> %4ix %4i B %s::%s::%s::%i",
-            adress,
+            address,
             pxSymbolMemory.Amount,
             pxSymbolMemory.ObjectSize,
             pxSymbol.NameModule,
@@ -1121,14 +1223,14 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
 #endif
     }
 
-    return adress;
+    return address;
 }
 
-PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adress)
+PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, void PXREF address)
 {
     PXMemoryHeap redirectHeap;
 
-    if(!adress)
+    if(!address)
     {
         return PXFalse;
     }
@@ -1139,31 +1241,31 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adres
         pxMemoryHeap = &redirectHeap;
     }
 
-#if PXLogEnable 
-    const PXSize blockSize = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
+#if PXLogEnable
+    const PXSize blockSize = PXMemoryHeapBlockSize(pxMemoryHeap, address);
 #endif
 
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    free(adress);
+    free(address);
 #elif OSWindows
-    const PXBool freeResult = HeapFree(pxMemoryHeap->HeapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    const PXBool freeResult = HeapFree(pxMemoryHeap->HeapHandle, 0, address); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 
 
     // Special logging behaviour
     {
-#if PXLogEnable 
+#if PXLogEnable
         PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Address = address;
         pxSymbolMemory.Amount = -1;
         pxSymbolMemory.ObjectSize = -1;
 
         PXSymbol pxSymbol;
-        PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
+        PXSymbolCaller(&pxSymbol);
 
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.ModuleAddress = pxSymbol.AddressModule;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAddress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAddress, 64);
         pxSymbolMemory.LineNumber = -1;
 
         //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
@@ -1174,7 +1276,7 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adres
             PXOSName,
             "Heap-Free",
             "<%p> %4i B %s::%s::%s::%i",
-            adress,
+            address,
             blockSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
@@ -1191,10 +1293,10 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adres
 #endif
 }
 
-void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adress, const PXSize memorySize)
+void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, void PXREF address, const PXSize memorySize)
 {
     PXMemoryHeap redirectHeap;
-    void* newAdress = PXNull;
+    void* newAddress = PXNull;
     PXBool updatedLocation = PXFalse;
 
     if(!pxMemoryHeap)
@@ -1203,24 +1305,24 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
         pxMemoryHeap = &redirectHeap;
     }
 
-#if PXLogEnable 
-    const PXSize blockSizeOLD = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
+#if PXLogEnable
+    const PXSize blockSizeOLD = PXMemoryHeapBlockSize(pxMemoryHeap, address);
 #endif
 
 
 #if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
-    // Function allows NULL as an adress
-    newAdress = realloc(adress, memorySize);
+    // Function allows NULL as an address
+    newAddress = realloc(address, memorySize);
 
     // clear new allocated space
     PXSize spaceNewSize = memorySize - blockSizeOLD;
-    char* spaceNewAdress = (char*)newAdress + blockSizeOLD;
+    char* spaceNewAddress = (char*)newAddress + blockSizeOLD;
 
-    PXMemoryClear(spaceNewAdress, spaceNewSize);
+    PXMemoryClear(spaceNewAddress, spaceNewSize);
 
 #elif OSWindows
 
-    if(!adress)
+    if(!address)
     {
         void* memory = PXMemoryHeapCalloc(pxMemoryHeap, 1, memorySize);
 
@@ -1229,18 +1331,18 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
         return memory;
     }
 
-    newAdress = HeapReAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    updatedLocation = newAdress != adress;
+    newAddress = HeapReAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, address, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    updatedLocation = newAddress != address;
 
-    // PXMemorySet(newAdress, '°', memorySize - oldSize);
+    // PXMemorySet(newAddress, '°', memorySize - oldSize);
 #else
 #error Memory reallocate seems not to be supported on this OS
 #endif
 
 
 
-#if PXLogEnable 
-    const PXSize blockSizeNEW = PXMemoryHeapBlockSize(pxMemoryHeap, newAdress);
+#if PXLogEnable
+    const PXSize blockSizeNEW = PXMemoryHeapBlockSize(pxMemoryHeap, newAddress);
     const PXOffset offset = blockSizeNEW - blockSizeOLD;
 #endif
 
@@ -1249,16 +1351,16 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
     // Special logging behaviour
     {
         PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Address = address;
         pxSymbolMemory.Amount = memorySize;
         pxSymbolMemory.ObjectSize = 1;
 
         PXSymbol pxSymbol;
-        PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
+        PXSymbolCaller(&pxSymbol);
 
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.ModuleAddress = pxSymbol.AddressModule;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAddress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAddress, 64);
         pxSymbolMemory.LineNumber = -1;
 
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeUpdate);
@@ -1271,9 +1373,9 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
                 PXOSName,
                 "Heap-ReAlloc",
                 "<%p> %i B -> <%p> %i B, (%i), %s::%s::%s::%i",
-                adress,
+                address,
                 blockSizeOLD,
-                newAdress,
+                newAddress,
                 blockSizeNEW,
                 offset,
                 pxSymbol.NameModule,
@@ -1290,7 +1392,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
                 PXOSName,
                 "Heap-ReAlloc",
                 "<%p> %i B -> <No-Move> %i B, (%i), %s::%s::%s::%i",
-                adress,
+                address,
                 blockSizeOLD,
                 blockSizeNEW,
                 offset,
@@ -1303,15 +1405,12 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adr
     }
 #endif
 
-    return newAdress;
+    return newAddress;
 }
 
 
 
 #if OSWindows
-
-
-
 void PXAPI PXWindowsCheckPermission()
 {
     // A call to VirtualAlloc() with MEM_LARGE_PAGES
@@ -1327,27 +1426,26 @@ void PXAPI PXWindowsCheckPermission()
         return;
     }
 
-
-
     TOKEN_PRIVILEGES privileges;
     HANDLE hToken;
     LUID luid;
 
-
+    BOOL result = 0;
+    PXResult pxResult = PXResultInvalid;
 
     // Open the process token
-    const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
-    const PXResult openTokenResult = PXErrorCurrent(openTokenID);
+    result = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
+    pxResult = PXErrorCurrent(result);
 
 
-    const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege, NOT THREAD SAFE!
-    const PXResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
+    result = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege, NOT THREAD SAFE!
+    pxResult = PXErrorCurrent(result);
 
     privileges.PrivilegeCount = 1;
     privileges.Privileges[0].Luid = luid;
     privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-    const BOOL privilgeResultID = AdjustTokenPrivileges
+    result = AdjustTokenPrivileges
     (
         hToken,
         FALSE,
@@ -1356,34 +1454,33 @@ void PXAPI PXWindowsCheckPermission()
         PXNull,
         PXNull
     );
-    const PXResult privilgeResult = PXErrorCurrent(privilgeResultID);
+    pxResult = PXErrorCurrent(result);
 
-    CloseHandle(hToken);
+    result = CloseHandle(hToken);
 
     isChecked = 1;
 }
 #endif
 
-
-
-
-
-void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode)
+void* PXAPI PXMemoryVirtualAllocate(const PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode)
 {
-    PXMemoryPageInfo pxFilePageFileInfo;
-    PXSize recievedSize = 0;
+    // Some systems actually support zero sized allocation.
+    // We don't.
+    if(0 == size)
+    {
+        return PXNull;
+    }
 
+    PXMemoryPageAllocInfo pxMemoryPageAllocInfo;
+    PXClear(PXMemoryPageAllocInfo, &pxMemoryPageAllocInfo);
 
-    PXMemoryPageInfoFetch(&pxFilePageFileInfo, size);
+    PXMemoryPageInfoFetch(&pxMemoryPageAllocInfo.PageFileInfo, size);
 
     // Calculate if large pages shall be used
-
-
 #if PXLogEnable
-
     const char* text = 0;
 
-    switch(pxFilePageFileInfo.Affinity)
+    switch(pxMemoryPageAllocInfo.PageFileInfo.Affinity)
     {
         case PXMemoryPageNormal:
             text = "Normal";
@@ -1413,10 +1510,10 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
     PXTextConstructNamedBufferA(&pxTextPageSizeLarge, pxTextPageSizeLargeBuffer, 32);
     PXTextConstructNamedBufferA(&pxTextPageSizeHuge, pxTextPageSizeHugeBuffer, 32);
 
-    PXTextFormatSize(&pxTextPageSizeNormal, pxFilePageFileInfo.PageSizeNormal);
-    PXTextFormatSize(&pxTextPageSizePhysical, pxFilePageFileInfo.PageSizePhysical);
-    PXTextFormatSize(&pxTextPageSizeLarge, pxFilePageFileInfo.PageSizeLarge);
-    PXTextFormatSize(&pxTextPageSizeHuge, pxFilePageFileInfo.PageSizeHuge);
+    PXTextFormatSize(&pxTextPageSizeNormal, pxMemoryPageAllocInfo.PageFileInfo.PageSizeNormal);
+    PXTextFormatSize(&pxTextPageSizePhysical, pxMemoryPageAllocInfo.PageFileInfo.PageSizePhysical);
+    PXTextFormatSize(&pxTextPageSizeLarge, pxMemoryPageAllocInfo.PageFileInfo.PageSizeLarge);
+    PXTextFormatSize(&pxTextPageSizeHuge, pxMemoryPageAllocInfo.PageFileInfo.PageSizeHuge);
 
     PXLogPrint
     (
@@ -1430,42 +1527,27 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
         "%20s : %7s -> %3i%% %6ix\n"
         "%20s : %s",
         size,
-        "Normal-PageSize", pxTextPageSizeNormal.A, (int)pxFilePageFileInfo.PageUtilizationNormal, pxFilePageFileInfo.PageAmountNormal,
-        "Physical-PageSize", pxTextPageSizePhysical.A, (int)pxFilePageFileInfo.PageUtilizationPhysical, pxFilePageFileInfo.PageAmountPhysical,
-        "Large-PageSize", pxTextPageSizeLarge.A, (int)pxFilePageFileInfo.PageUtilizationLarge, pxFilePageFileInfo.PageAmountLarge,
-        "Huge-PageSize", pxTextPageSizeHuge.A, (int)pxFilePageFileInfo.PageUtilizationHuge, pxFilePageFileInfo.PageAmountHuge,
+        "Normal-PageSize", pxTextPageSizeNormal.A, (int)pxMemoryPageAllocInfo.PageFileInfo.PageUtilizationNormal, pxMemoryPageAllocInfo.PageFileInfo.PageAmountNormal,
+        "Physical-PageSize", pxTextPageSizePhysical.A, (int)pxMemoryPageAllocInfo.PageFileInfo.PageUtilizationPhysical, pxMemoryPageAllocInfo.PageFileInfo.PageAmountPhysical,
+        "Large-PageSize", pxTextPageSizeLarge.A, (int)pxMemoryPageAllocInfo.PageFileInfo.PageUtilizationLarge, pxMemoryPageAllocInfo.PageFileInfo.PageAmountLarge,
+        "Huge-PageSize", pxTextPageSizeHuge.A, (int)pxMemoryPageAllocInfo.PageFileInfo.PageUtilizationHuge, pxMemoryPageAllocInfo.PageFileInfo.PageAmountHuge,
         "Targeted type", text
     );
 #endif
-
-
-
-    // Special behaviour if the object size is 0.
-    // Ofcourse it would make no sense to create an object with 
-    // a size of zero but lets assume we mean to just create one 
-    // page for general useage
-    if(0 == size)
-    {
-        size = pxFilePageFileInfo.PageSizeNormal;
-    }
-
-
-
-
-
 
 #if OSUnix
     // PROT_READ, PROT_WRITE = read&write permission
     // MAP_PRIVATE           = only for this process
     // MAP_ANONYMOUS         = no attached file, aka. "in memory"
     // MAP_POPULATE          = Preallocate, if not, we could get a SEGVAULT later if memory is suddenly not avalible
-    int permission = PROT_READ | PROT_WRITE;
-    int mode =
+    pxMemoryPageAllocInfo.Permission =
+        PROT_READ |
+        PROT_WRITE;
+
+    pxMemoryPageAllocInfo.Mode =
         MAP_PRIVATE |
         MAP_ANONYMOUS |
         MAP_POPULATE; // Will be ignored if not spesifcally enabled
-
-    PXBool useLargePage = usePagesLarge && !usePagesHuge;
 
 #if 0 // MAP_UNINITIALIZED not public??
     if(0) // Dont clear memory, can improve performance but will be ignored if not directly enabled. Safty reasons.
@@ -1474,240 +1556,58 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
     }
 #endif
 
-    if(useLargePage) // Create large page
-    {
-        mode |= MAP_HUGETLB | MAP_HUGE_2MB;
-    }
-
-    if(usePagesHuge) // Create huge page
-    {
-        mode |= MAP_HUGETLB | MAP_HUGE_1GB;
-    }
-
-    for(;;)
-    {
-        pxFile->Buffer.Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-        const PXResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Buffer.Data);
-
-        if(PXResultOK == allocResult)
-        {
-            break;
-        }
-
-        // Did we do a normal allocation?
-        if(!useLargePage && !usePagesHuge)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "File",
-                "Open-Virtual",
-                "Allocation failed! -> mmap()"
-            );
-#endif
-
-            pxFile->Buffer.Data = PXNull;
-            pxFile->Buffer.SizeAllowedToUse = 0;
-            pxFile->Buffer.DataAllocated = 0;
-
-
-            break;
-        }
-
-
-        // Try to recover to a normal page
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "File",
-            "Open-Virtual",
-            "Allocation failed! We try again..."
-        );
-#endif
-
-
-        if(useLargePage)
-        {
-            mode &= ~(MAP_HUGETLB | MAP_HUGE_2MB);
-            useLargePage = PXFalse;
-        }
-        if(usePagesHuge)
-        {
-            mode &= ~(MAP_HUGETLB | MAP_HUGE_1GB);
-            useLargePage = PXTrue;
-        }
-    }
-
-
-
 #elif OSWindows
 
-    DWORD permissions = PAGE_READWRITE;
-    DWORD mode =
+    pxMemoryPageAllocInfo.Permission =
+        PAGE_READWRITE;
+
+    pxMemoryPageAllocInfo.Mode =
         MEM_RESERVE |
         MEM_COMMIT;
 
+    pxMemoryPageAllocInfo.CurrentProcess = GetCurrentProcess();
+    pxMemoryPageAllocInfo.param.Type = MemExtendedParameterAttributeFlags;
 
-    const HANDLE currentProcess = NULL;//  GetCurrentProcess();
-    MEM_EXTENDED_PARAMETER param;
-    PXClear(MEM_EXTENDED_PARAMETER, &param);
-    param.Type = MemExtendedParameterAttributeFlags;
-
-    void* allocatedData = PXNull;
-    void* baseAdress = PXNull;
-    PXResult allocResult;
-    PXBool done = PXFalse;
-
-    while(!done)
-    {
-#if OSWindows       
-
-        //if(PXThreadIsMain()) // Why a check?
-        {
-            PXWindowsCheckPermission();
-        }
+    PXWindowsCheckPermission();
 #endif
 
-        switch(pxFilePageFileInfo.Affinity)
+    //-----------------------------------------------------
+    // STAGE 2: Try to allocate a page with the best method, try every solution until somehting works.
+    while(!pxMemoryPageAllocInfo.Address)
+    {
+        if(PXMemoryPageNone == pxMemoryPageAllocInfo.PageFileInfo.Affinity)
+        {
+            break;
+        }
+
+        switch(pxMemoryPageAllocInfo.PageFileInfo.Affinity)
         {
             case PXMemoryPageNormal:
             {
-                size = pxFilePageFileInfo.PageSizeNormal * pxFilePageFileInfo.PageAmountNormal;
-
-                allocatedData = VirtualAlloc(baseAdress, size, mode, permissions);
-                allocResult = PXErrorCurrent(NULL != allocatedData);
-
-                done = PXTrue;
-
+                PXMemoryVirtualAllocateNormal(&pxMemoryPageAllocInfo);
                 break;
             }
             case PXMemoryPagePhysical:
             {
-                size = pxFilePageFileInfo.PageSizePhysical * pxFilePageFileInfo.PageAmountPhysical;
-
-                allocatedData = VirtualAlloc2
-                (
-                    currentProcess,
-                    baseAdress,
-                    size,
-                    MEM_64K_PAGES | mode,
-                    permissions,
-                    0,
-                    0
-                );
-
-                allocResult = PXErrorCurrent(NULL != allocatedData);
-
-                if(PXResultOK != allocResult)
-                {
-                    pxFilePageFileInfo.Affinity = PXMemoryPageNormal; // Demote
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingError,
-                        PXOSName,
-                        PXOSVirtualAllocText,
-                        "Failed! Demoting to <%s>",
-                        "Normal"
-                    );
-#endif
-
-                    continue;
-                }
-
-                done = PXTrue;
-
+                PXMemoryVirtualAllocatePhysical(&pxMemoryPageAllocInfo);
                 break;
             }
             case PXMemoryPageLarge:
             {
-                // Adjust allocation size to be EXACTLY a multible of the page size
-                // The documentation states it will be rounded up, this is true.
-                // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
-                size = pxFilePageFileInfo.PageSizeLarge * pxFilePageFileInfo.PageAmountLarge;
-
-                allocatedData = VirtualAlloc
-                (
-                    baseAdress,
-                    size,
-                    MEM_LARGE_PAGES | mode,
-                    permissions
-                );
-
-                allocResult = PXErrorCurrent(NULL != allocatedData);
-
-                if(PXResultOK != allocResult)
-                {
-                    pxFilePageFileInfo.Affinity = PXMemoryPagePhysical; // Demote
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingError,
-                        PXOSName,
-                        PXOSVirtualAllocText,
-                        "Failed! Demoting to <%s>",
-                        "Physical"
-                    );
-#endif
-
-                    continue;
-                }
-
-                done = PXTrue;
-
+                PXMemoryVirtualAllocateLarge(&pxMemoryPageAllocInfo);
                 break;
             }
             case PXMemoryPageHuge:
             {
-                size = pxFilePageFileInfo.PageSizeHuge * pxFilePageFileInfo.PageAmountHuge;
-
-                // NOW: Try allocating huge page..
-                param.ULong64 = MEM_EXTENDED_PARAMETER_NONPAGED_HUGE; // TODO: Fails with "invalid parameter"
-
-                allocatedData = VirtualAlloc2
-                (
-                    currentProcess,
-                    baseAdress,
-                    size,
-                    MEM_LARGE_PAGES| mode,
-                    permissions,
-                    0,
-                    0
-                );
-
-                allocResult = PXErrorCurrent(NULL != allocatedData);
-
-                if(PXResultOK != allocResult)
-                {
-                    pxFilePageFileInfo.Affinity = PXMemoryPageLarge; // Demote
-
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingError,
-                        PXOSName,
-                        PXOSVirtualAllocText,
-                        "Failed! Demoting to <%s>",
-                        "Large"
-                    );
-#endif
-
-                    continue;
-                }
-
-                done = PXTrue;
-
+                PXMemoryVirtualAllocateHuge(&pxMemoryPageAllocInfo);
                 break;
             }
         }
     }
-   
-    if(PXResultOK != allocResult)
+    //-----------------------------------------------------
+
+
+    if(PXResultOK != pxMemoryPageAllocInfo.Result)
     {
 #if PXLogEnable
         PXLogPrint
@@ -1722,15 +1622,22 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
         return PXNull;
     }
 
+    // Alloc successful, lengh is atlest our data
+    pxMemoryPageAllocInfo.SizeCreated = pxMemoryPageAllocInfo.SizeRequested;
 
-    MEMORY_BASIC_INFORMATION memoryInfo;
-    PXClear(MEMORY_BASIC_INFORMATION, &memoryInfo);
+    //-----------------------------------------------------
+    // The OS allocates sometimes more than we request,
+    // we ask for the value it has used.
+    PXMemoryAddressInfo pxMemoryAddressInfo;
 
-    VirtualQuery(allocatedData, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+    PXResult pxResult = PXMemoryAddressInfoGet(&pxMemoryAddressInfo, pxMemoryPageAllocInfo.Address);
 
-    recievedSize = memoryInfo.RegionSize;
+    if(PXResultOK != pxResult)
+    {
+        // ToDo: Handle?
+    }
+    //-----------------------------------------------------
 
-#endif
 
 #if PXLogEnable
     PXLogPrint
@@ -1738,22 +1645,213 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
         PXLoggingAllocation,
         PXOSName,
         PXOSVirtualAllocText,
-        "<%p> Requested:<%lu>, Got:<%lu>",
-        allocatedData,
-        size,
-        recievedSize
+        "OK!\n"
+        "%20s : %p\n"
+        "%20s : %lu\n"
+        "%20s : %lu",
+        "Address", pxMemoryPageAllocInfo.Address,
+        "Requested", pxMemoryPageAllocInfo.SizeRequested,
+        "Got", pxMemoryPageAllocInfo.SizeCreated
     );
 #endif
 
     if(createdSize)
     {
-        *createdSize = recievedSize;
+        *createdSize = pxMemoryPageAllocInfo.SizeCreated;
     }
 
-    return allocatedData;
+    return pxMemoryPageAllocInfo.Address;
 }
 
-void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
+void PXAPI PXMemoryVirtualAllocateNormal(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo)
+{
+    pxMemoryPageAllocInfo->SizeRequested =
+        pxMemoryPageAllocInfo->PageFileInfo.PageSizeNormal *
+        pxMemoryPageAllocInfo->PageFileInfo.PageAmountNormal;
+
+#if OSUnix
+    pxMemoryPageAllocInfo->Address = mmap
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Permission,
+        pxMemoryPageAllocInfo->Mode,
+        -1,
+        0
+    );
+#elif OSWindows
+    pxMemoryPageAllocInfo->Address = VirtualAlloc
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Mode,
+        pxMemoryPageAllocInfo->Permission
+    );
+#endif
+
+    pxMemoryPageAllocInfo->Result = PXErrorCurrent(NULL != pxMemoryPageAllocInfo->Address);
+}
+
+void PXAPI PXMemoryVirtualAllocatePhysical(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo)
+{
+    pxMemoryPageAllocInfo->SizeRequested =
+        pxMemoryPageAllocInfo->PageFileInfo.PageSizePhysical *
+        pxMemoryPageAllocInfo->PageFileInfo.PageAmountPhysical;
+
+#if OSUnix
+    pxMemoryPageAllocInfo->Address = mmap
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Permission,
+        pxMemoryPageAllocInfo->Mode,
+        -1,
+        0
+    );
+#elif OSWindows
+    pxMemoryPageAllocInfo->Address = VirtualAlloc2
+    (
+        pxMemoryPageAllocInfo->CurrentProcess,
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Mode | MEM_64K_PAGES,
+        pxMemoryPageAllocInfo->Permission,
+        0,
+        0
+    );
+#endif
+
+    pxMemoryPageAllocInfo->Result = PXErrorCurrent(NULL != pxMemoryPageAllocInfo->Address);
+
+    if(PXResultOK != pxMemoryPageAllocInfo->Result)
+    {
+        pxMemoryPageAllocInfo->PageFileInfo.Affinity = PXMemoryPageNormal; // Demote
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXOSName,
+            PXOSVirtualAllocText,
+            "Failed! Demoting to <%s>",
+            "Normal"
+        );
+#endif
+    }
+
+    return pxMemoryPageAllocInfo->Result;
+}
+
+void PXAPI PXMemoryVirtualAllocateLarge(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo)
+{
+    // Adjust allocation size to be EXACTLY a multible of the page size
+    // The documentation states it will be rounded up, this is true.
+    // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
+    pxMemoryPageAllocInfo->SizeRequested =
+        pxMemoryPageAllocInfo->PageFileInfo.PageSizeLarge *
+        pxMemoryPageAllocInfo->PageFileInfo.PageAmountLarge;
+
+#if OSUnix
+    int mode = pxMemoryPageAllocInfo->Mode;
+#if (defined(MAP_HUGETLB) && defined(MAP_HUGE_2MB))
+    mode |= MAP_HUGETLB | MAP_HUGE_2MB;
+#endif
+
+    pxMemoryPageAllocInfo->Address = mmap
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Permission,
+        mode,
+        -1,
+        0
+    );
+#elif OSWindows
+    pxMemoryPageAllocInfo->Address = VirtualAlloc
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Mode | MEM_LARGE_PAGES,
+        pxMemoryPageAllocInfo->Permission
+    );
+#endif
+    pxMemoryPageAllocInfo->Result = PXErrorCurrent(NULL != pxMemoryPageAllocInfo->Address);
+
+    if(PXResultOK != pxMemoryPageAllocInfo->Result)
+    {
+        pxMemoryPageAllocInfo->PageFileInfo.Affinity = PXMemoryPagePhysical; // Demote
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXOSName,
+            PXOSVirtualAllocText,
+            "Failed! Demoting to <%s>",
+            "Physical"
+        );
+#endif
+    }
+}
+
+void PXAPI PXMemoryVirtualAllocateHuge(PXMemoryPageAllocInfo PXREF pxMemoryPageAllocInfo)
+{
+    pxMemoryPageAllocInfo->SizeRequested =
+        pxMemoryPageAllocInfo->PageFileInfo.PageSizeHuge *
+        pxMemoryPageAllocInfo->PageFileInfo.PageAmountHuge;
+
+#if OSUnix
+    int mode = pxMemoryPageAllocInfo->Mode;
+#if (defined(MAP_HUGETLB) && defined(MAP_HUGE_2MB))
+    mode |= MAP_HUGETLB | MAP_HUGE_1GB;
+#endif
+
+    pxMemoryPageAllocInfo->Address = mmap
+    (
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Permission,
+        mode,
+        -1,
+        0
+    );
+#elif OSWindows
+    // NOW: Try allocating huge page..
+    pxMemoryPageAllocInfo->param.ULong64 = MEM_EXTENDED_PARAMETER_NONPAGED_HUGE; // TODO: Fails with "invalid parameter"
+
+    pxMemoryPageAllocInfo->Address = VirtualAlloc2
+    (
+        pxMemoryPageAllocInfo->CurrentProcess,
+        pxMemoryPageAllocInfo->AddressBase,
+        pxMemoryPageAllocInfo->SizeRequested,
+        pxMemoryPageAllocInfo->Mode | MEM_LARGE_PAGES,
+        pxMemoryPageAllocInfo->Permission,
+        0,
+        0
+    );
+#endif
+
+    pxMemoryPageAllocInfo->Result = PXErrorCurrent(NULL != pxMemoryPageAllocInfo->Address);
+
+    if(PXResultOK != pxMemoryPageAllocInfo->Result)
+    {
+        pxMemoryPageAllocInfo->PageFileInfo.Affinity = PXMemoryPageLarge; // Demote
+
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXOSName,
+            PXOSVirtualAllocText,
+            "Failed! Demoting to <%s>",
+            "Large"
+        );
+#endif
+    }
+}
+
+void PXAPI PXMemoryVirtualPrefetch(const void* address, const PXSize size)
 {
     PXOS PXREF pxOS = PXSystemGet();
 
@@ -1768,7 +1866,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 
     const PXSize flags = 0; // reserved and needs to be 0
 
-    memoryRangeEntry.VirtualAddress = (void*)adress;
+    memoryRangeEntry.VirtualAddress = (void*)address;
     memoryRangeEntry.NumberOfBytes = size;
 
     const BOOL prefetchResult = 1;// PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
@@ -1784,7 +1882,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
         PXOSName,
         "Prefetch",
         "<%p> %s",
-        adress,
+        address,
         pxTextSize.A
     );
 #endif
@@ -1801,21 +1899,21 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 
     for(PXSize i = 0; i < size; i += pxOS->PageSizeNormal)
     {
-        sink ^= ((PXByte*)adress)[i]; // Touch one byte per page
+        sink ^= ((PXByte*)address)[i]; // Touch one byte per page
     }
 #endif
 
 #else
 
 #if MemoryDebug
-    printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched [NOT SUPPORTED] Skipped...\n", adress, size);
+    printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched [NOT SUPPORTED] Skipped...\n", address, size);
 #endif
 #endif
 }
 
-PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
+PXResult PXAPI PXMemoryVirtualRelease(const void* address, const PXSize size)
 {
-    if(!(adress && size))
+    if(!(address && size))
     {
         return PXResultRefusedParameterNull;
     }
@@ -1827,31 +1925,31 @@ PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
         PXOSName,
         "Virtual-Free",
         "<%p> Size:%i",
-        adress,
+        address,
         size
     );
 #endif
 
 #if OSUnix
-    const int resultID = munmap(adress, size); // sys/mman.h
+    const int resultID = munmap(address, size); // sys/mman.h
     const PXResult unmapResult = PXErrorCurrent(0 == resultID);
 
     return unmapResult;
 
 #elif OSWindows
     DWORD freeType = MEM_RELEASE;
-    const PXBool freeResultID = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
+    const PXBool freeResultID = VirtualFree((void*)address, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
     const PXResult freeResult = PXErrorCurrent(freeResultID);
 
     return freeResult;
 #else
-    return PXActionRefusedNotSupportedByLibrary;
+    return PXResultRefusedNotSupportedByLibrary;
 #endif
 }
 
-void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
+void* PXAPI PXMemoryVirtualReallocate(const void* address, const PXSize size)
 {
-    const PXBool newAllocation = adress == PXNull;
+    const PXBool newAllocation = address == PXNull;
 
     if(newAllocation)
     {
@@ -1865,15 +1963,15 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
     // Create new pages
     void* newSpaceMemory = PXMemoryVirtualAllocate(size, PXNull, PXAccessModeReadAndWrite);
 
-    // Get size of current adress
+    // Get size of current address
     MEMORY_BASIC_INFORMATION memoryInfo;
-    VirtualQuery(adress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+    VirtualQuery(address, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
 
     // Copy data to new pages
-    PXMemoryCopy(adress, newSpaceMemory, memoryInfo.RegionSize);
+    PXMemoryCopy(address, newSpaceMemory, memoryInfo.RegionSize);
 
     // Delete old pages
-    PXMemoryVirtualRelease(adress, memoryInfo.RegionSize);
+    PXMemoryVirtualRelease(address, memoryInfo.RegionSize);
 
     return newSpaceMemory;
 #else
@@ -1882,14 +1980,14 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
 }
 
-PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* adress)
+PXResult PXAPI PXMemoryVirtualInfoViaAddress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* address)
 {
 #if OSUnix
 #elif OSWindows
 
-    // Get size of current adress
+    // Get size of current address
     MEMORY_BASIC_INFORMATION memoryInfo;
-    const SIZE_T size = VirtualQuery(adress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+    const SIZE_T size = VirtualQuery(address, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
 
     pxMemoryVirtualInfo->BaseAddress = memoryInfo.BaseAddress;
     pxMemoryVirtualInfo->AllocationBase = memoryInfo.AllocationBase;
@@ -1924,7 +2022,7 @@ PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVi
         case PAGE_ENCLAVE_UNVALIDATED: { break; }
 
         default:
-            DebugBreak();
+            PXDebugBreak();
             break;
     }
 #endif
@@ -1935,19 +2033,106 @@ PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVi
 }
 
 
+typedef struct PXStackFrame_
+{
+    PXProcessHandle pxProcessHandle;
+    PXProcessID pxProcessID;
+    PXThreadHandle pxThreadHandle;
+    PXThreadID pxThreadID;
+
+    PXSize FrameAmount;
+    PXSymbol SymbolList[PXStackFrameAmountMax];
+
+#if OSUnix
+    void* FrameList[PXStackFrameAmountMax];
+#elif OSWindows
+    STACKFRAME64 frame;
+#endif
+}
+PXStackFrame;
 
 
+void PXAPI PXDebugStackTrace(void)
+{
+    PXStackFrame pxStackFrame;
+    PXClear(PXStackFrame, &pxStackFrame);
+    pxStackFrame.pxProcessHandle = PXProcessCurrentHandle();
+    pxStackFrame.pxProcessID = PXProcessCurrentID();
+    pxStackFrame.pxThreadHandle = PXThreadCurrentHandle();
+    pxStackFrame.pxThreadID = PXThreadCurrentID();
 
+    PXSymbolStackTrace(pxStackFrame.SymbolList, PXStackFrameAmountMax);
 
+    for(PXSize i = 0; i < pxStackFrame.FrameAmount; ++i)
+    {
+        PXSymbol* pxSymbol = &pxStackFrame.SymbolList[i];
 
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "StackTrace",
+            "~~>",
+            "%s:%s()+0x%lx",
+            pxSymbol->NameModule,
+            pxSymbol->NameSymbol,
+            pxSymbol->Offset
+        );
+#endif
+    }
 
+    PXDebugBreak();
+}
 
+void PXAPI PXDebugStackTraceWithSignal(PXSignalInfo PXREF pxSignalInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "StackTrace",
+        "Error-State",
+        "\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %p\n"
+        "%20s : %i",
+        "ID", pxSignalInfo->ID,
+        "PXResult", pxSignalInfo->Result,
+        "ThreadID", pxSignalInfo->ThreadID,
+        "ProcessID", pxSignalInfo->ProcessID,
+        "FaultAddress", pxSignalInfo->FaultAddress,
+        "ParameterAmount", pxSignalInfo->ParameterAmount
+    );
 
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "StackTrace",
+        "CPU-State",
+        "\n"
+        "%20s : %llx (s)\n"
+        "%20s : %llx (s)\n"
+        "%20s : %llx (s)\n"
+        "%20s : %llx (s)\n"
+        "%20s : %llx (s)\n"
+        "%20s : %llx (s)",
+        "RAX", pxSignalInfo->Context.X64.RAX, "Accumulator",
+        "RBX", pxSignalInfo->Context.X64.RBX, "Base register",
+        "RCX", pxSignalInfo->Context.X64.RCX, "Counter register",
+        "RDX", pxSignalInfo->Context.X64.RDX, "Data register ",
+        "RSI", pxSignalInfo->Context.X64.RSI, "Source index register",
+        "RDI", pxSignalInfo->Context.X64.RDI, "Destination index register",
+        "RBP", pxSignalInfo->Context.X64.RBP, "Base pointer register.",
+        "RSP", pxSignalInfo->Context.X64.RSP, "Stack pointer register."
+    );
 
+#endif
 
-
-
-
+    PXDebugStackTrace();
+}
 
 PXResult PXAPI PXSymbolServerInitialize()
 {
@@ -1955,12 +2140,13 @@ PXResult PXAPI PXSymbolServerInitialize()
 
     if(!pxOS->Init)
     {
-        return PXActionRefusedNotInitialized;
+        return PXResultRefusedNotInitialized;
     }
 
-
+#if OSUnix
+#elif OSWindows
     const PXSymInitializeFunction pxSymbolServerInitialize = (PXSymInitializeFunction)_PXOS.SymbolServerInitialize;
-    
+
    // PXThread pxThread;
    // PXThreadCurrent(&pxThread);
    // pxDebug->Process.ThreadHandle = pxThread.Info.Handle.ThreadHandle;
@@ -1984,32 +2170,36 @@ PXResult PXAPI PXSymbolServerInitialize()
 
 
    // const PXBool initRes = SymInitialize(processHandle, PXNull, PXTrue);
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolServerCleanup(void)
 {
+#if OSUnix
+#elif OSWindows
     HANDLE processID = GetCurrentProcess();
     const PXSymCleanupFunction pxSymCleanup = (PXSymCleanupFunction)_PXOS.SymbolServerCleanup;
     const PXBool cleanupSuccess = pxSymCleanup(processID); // DbgHelp.dll 5.1 or later
 
     if(!cleanupSuccess)
     {
-        return PXActionFailedCleanup;
+        return PXResultFailedCleanup;
     }
+#endif
 
-    return PXActionFailedLoad;
+    return PXResultFailedLoad;
 }
 
 PXResult PXAPI PXSymbolServerOptionsSet(void)
 {
    // DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
+PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAddress)
 {
 #if OSUnix
 
@@ -2021,12 +2211,14 @@ PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void*
     pxSymbolEnumerator.Amount = 0;
     pxSymbolEnumerator.Size = 128;
 
+    ULONG64 baseAddressOfDLL = (ULONG64)baseAddress;
+
     // SymEnumSym, SymEnumerateSymbols64 is outdated?
     const PXSymEnumSymbolsFunction pxSymbolEnumerate = (PXSymEnumSymbolsFunction)_PXOS.SymbolEnumerate; // DbgHelp.dll 5.1 or later
     const PXBool enumerateResult = pxSymbolEnumerate
     (
-        processHandle,
-        baseAdress,
+        processHandle.Data,
+        baseAddressOfDLL,
         0,
         PXLibraryNameSymbolEnumerate,
         &pxSymbolEnumerator
@@ -2036,15 +2228,17 @@ PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void*
 
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
+PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAddress)
 {
+#if OSUnix
+#elif OSWindows
     const PXSymLoadModuleFunction pxSymbolModuleLoad = (PXSymLoadModuleFunction)_PXOS.SymbolModuleLoad;
     const DWORD64 baseOfDll = pxSymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
     (
-        processHandle,
+        processHandle.Data,
         PXNull,
         moduleName,
         PXNull,
@@ -2058,12 +2252,15 @@ PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const cha
     {
 
     }
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo)
 {
+#if OSUnix
+#elif OSWindows
      const PXStackWalk64Function pxStackWalk64 = (PXStackWalk64Function)_PXOS.SymbolStackWalk;
 // const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = (PXSymGetSymFromAddr64)pxDebug->SymbolFromAddress;
 
@@ -2080,89 +2277,38 @@ PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkIn
         NULL
     );
     const PXBool sucessfull = result != 0;
+#endif
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
+PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount)
 {
     PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
 
-    //return 0;
+#if OSUnix
+    void *buffer[64];
+    const PXI8U amountOfBuffers = sizeof(buffer) / sizeof(void*);
+    const PXI8U minAmount = PXMathMinimumIU(amountOfBuffers, pxSymbolListAmount);
 
-#if OSUnix 
-    void* array[10];
-    size_t size;
-    char** strings;
+    PXSize frameAmount = backtrace(buffer, minAmount);
 
-    size = backtrace(array, 10);
-    strings = backtrace_symbols(array, size);
-
-    //printf("Obtained %zd stack frames.\n", size);
-
-    // Example "../../PXUltima/Code/[Export]/PXUltimaC/64B-Linux-Debug/PXUltima.so(PXMemoryHeapMalloc+0xb8) [0x7fce66aa763a]"
-
-    PXSize symbolOffset = 0;
-
-
-    for(PXSize i = start; i < start + depth; ++i)
+    for(PXSize i = 0; i < frameAmount; ++i)
     {
-        PXSymbol PXREF pxSymbol = &pxSymbolList[symbolOffset];
-        const char* traceEntry = strings[i];
+        PXSymbol* pxSymbol = &pxSymbolList[i];
+        void* frameAddress = buffer[i];
 
-        // printf("%s\n", traceEntry);
-
-        const PXSize lastSlash = PXTextFindLastCharacterA(traceEntry, PXTextUnkownLength, '/');
-
-        if(lastSlash != -1)
-        {
-            // Get module name
-            char* moduleName = &traceEntry[lastSlash + 1];
-
-            const PXSize moduleNameSize = PXTextFindLastCharacterA(moduleName, PXTextUnkownLength, '(');
-
-
-            char* moduleFunction = &moduleName[moduleNameSize + 1];
-            const PXSize moduleFunctionSize = PXTextFindLastCharacterA(moduleFunction, PXTextUnkownLength, '+');
-
-            PXTextCopyA(moduleName, moduleNameSize, pxSymbol->NameModule, 64);
-            PXTextCopyA(moduleFunction, moduleFunctionSize, pxSymbol->NameSymbol, 64);
-            PXTextCopyA("???", 3, pxSymbol->NameFile, 64);
-            pxSymbol->LineNumber = -1;
-
-            //   printf("    - %s::%s\n", pxSymbol->NameModule, pxSymbol->NameSymbol);
-        }
+        PXSymbolFromAddress(pxSymbol, frameAddress);
     }
 
-
-    free(strings);
-
-#elif PXOSWindowsDestop
+#elif OSWindows // PXOSWindowsDestop
 
     // Prevent failure because not inizilized
-
-#if PXLogEnable && PXDebugStackTracePrint
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXDebugerText,
-        PXDebugerStackTraceText,
-        "----- BEGIN -----"
-    );
-#endif
-
-
-
-     //const HANDLE processHeapHandle = GetProcessHeap();
-    const HANDLE handleThreadCurrent = GetCurrentThread();
-    const HANDLE handleProcessCurrent = GetCurrentProcess();
-    const DWORD processID = GetProcessId(handleProcessCurrent);
-
     const PXResult initializeResult = PXSymbolServerInitialize();
 
     if(PXResultOK != initializeResult)
     {
-        for(size_t i = 0; i < pxSymbolListAmount; i++)
+        for(PXSize i = 0; i < pxSymbolListAmount; i++)
         {
             PXSymbol* pxSymbol = &pxSymbolList[i];
 
@@ -2177,15 +2323,9 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
 
     const DWORD optionsMask = SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
 
-
     // SymLoadModuleEx(,);
 
-
-
-
-
     PXSymbolStackWalkInfo pxSymbolStackWalkInfo;
-
     PXClear(PXSymbolStackWalkInfo, &pxSymbolStackWalkInfo);
 
     pxSymbolStackWalkInfo.MachineType = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
@@ -2205,14 +2345,9 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
     pxSymbolStackWalkInfo.StackFrame.AddrFrame.Offset = pxSymbolStackWalkInfo.ContextRecord.Rbp;
 #endif
 
-
-    PXSize frame;
-    PXSize symbolIndex = 0;
-
-    PXClear(PXSymbol, pxSymbolList);
-
-    for(frame = 0; frame < (start + depth); ++frame)
+    for(PXSize symbolIndex = 0; symbolIndex < pxSymbolListAmount; ++symbolIndex)
     {
+        PXSymbol* pxSymbol = &pxSymbolList[symbolIndex];
         const PXResult result = PXSymbolStackWalk(&pxSymbolStackWalkInfo);
 
         if(PXResultOK != result)
@@ -2220,25 +2355,13 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
             break;
         }
 
-        if(frame < start)
-        {
-            continue;
-        }
+        void* symbolAddress = (ULONG64)pxSymbolStackWalkInfo.StackFrame.AddrPC.Offset; // ULONG64
 
-        void* symbolAdress = (ULONG64)pxSymbolStackWalkInfo.StackFrame.AddrPC.Offset; // ULONG64
-
-        PXSymbol* pxSymbol = &pxSymbolList[symbolIndex];
-        // PXSymbol pxSymbol;
-        // PXClear(PXSymbol, &pxSymbol);
-
-        PXSymbolFromAddress(pxSymbol, symbolAdress);
+        PXSymbolFromAddress(pxSymbol, symbolAddress);
 
         PXText pxText;
-        PXTextFromAdressA(&pxText, pxSymbol->NameModule, 0, 64);
-        PXLibraryNameFromAdress(PXNull, &pxText, pxSymbol->ModuleAdress); // PXDebugModuleNameShort
-
-        ++symbolIndex;
-
+        PXTextFromAddressA(&pxText, pxSymbol->NameModule, 0, 64);
+        PXLibraryNameFromAddress(PXNull, &pxText, pxSymbol->AddressModule); // PXDebugModuleNameShort
 
 #if PXLogEnable  && PXDebugStackTracePrint
         PXLogPrint
@@ -2248,16 +2371,11 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
             PXDebugerStackTraceText,
             "%c 0x%p - %23s - %s",
             (frame == 0 ? '/' : '|'),
-            symbolAdress,
+            symbolAddress,
             pxSymbol->NameModule,
             pxSymbol->NameUndecorated
         );
 #endif
-
-
-
-
-
 
 
         /*
@@ -2298,12 +2416,12 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
         );
 #else
         char functioName[64];
-        char adress[64];
+        char address[64];
 
         sprintf_s(functioName, 64, "%s()", pxMSDebugSymbol.Symbol.Name);
-        sprintf_s(adress, 64, "0x%p", (void*)pxMSDebugSymbol.Symbol.Address);
+        sprintf_s(address, 64, "0x%p", (void*)pxMSDebugSymbol.Symbol.Address);
 
-        printf("| %-34s | %-18s |\n", functioName, adress);
+        printf("| %-34s | %-18s |\n", functioName, address);
 #endif
 #endif
     }
@@ -2337,42 +2455,148 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
     return PXResultOK;
 }
 
+PXResult PXAPI PXSymbolCaller(PXSymbol PXREF pxSymbol)
+{
+    PXSymbol pxSymbolList[4];
+    const PXSize pxSymbolListAmount = sizeof(pxSymbolList) / sizeof(PXSymbol);
+
+#if 0
+    PXSymbolStackTrace(pxSymbolList, pxSymbolListAmount);
+
+    *pxSymbol = pxSymbolList[3];
+#else
+    PXClear(PXSymbol, pxSymbol);
+    PXTextCopyA("???", 3, pxSymbol->NameUndecorated, 64);
+    PXTextCopyA("???", 3, pxSymbol->NameSymbol, 64);
+    PXTextCopyA("???", 3, pxSymbol->NameFile, 64);
+    PXTextCopyA("???", 3, pxSymbol->NameModule, 64);
+#endif
+
+    return PXResultOK;
+}
+
 PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
 {
+    PXResult pxResult = PXResultInvalid;
+
     if(!(inputName && name && nameLengthMax))
     {
         return PXResultRefusedParameterNull;
     }
 
+#if OSUnix
+#elif OSWindows
+
     const PXUnDecorateSymbolNameFunction pxUnDecorateSymbolName = (PXUnDecorateSymbolNameFunction)_PXOS.SymbolUnDecorateName;
 
     if(!pxUnDecorateSymbolName)
     {
-        return PXActionRefusedNoSuchFunction;
+        return PXResultRefusedNoSuchFunction;
     }
 
     const DWORD decResultSize = pxUnDecorateSymbolName(inputName, (PSTR)name, nameLengthMax, UNDNAME_COMPLETE); // UnDecorateSymbolName
-    const PXResult pxResult = PXErrorCurrent(0 != decResultSize);
+    pxResult = PXErrorCurrent(0 != decResultSize);
 
     if(nameLengthWritten)
     {
         nameLengthWritten = 0;
     }
+#endif
 
     return pxResult;
 }
 
-PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress)
+PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF address)
 {
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif OSWindows
+    if(!(pxSymbol && address))
+    {
+        return PXResultRefusedParameterNull;
+    }
 
     PXClear(PXSymbol, pxSymbol);
 
-    const HANDLE processHandle = GetCurrentProcess(); // TODO: what if we want another process?
+    char moduleNameBuffer[260];
+    PXText moduleNameCurrent;
+    PXTextFromAddressA(&moduleNameCurrent, moduleNameBuffer, 0, sizeof(moduleNameBuffer));
+    // The path of our current running executable
+    PXModuleCurrentPath(&moduleNameCurrent);
 
+    PXText moduleNameSymbol;
+
+#if OSUnix
+
+    Dl_info info;
+    PXBool hasResult = dladdr(address, &info); // linux, dlfcn.h
+
+    if(hasResult)
+    {
+        PXSize written = 0;
+
+        pxSymbol->AddressSymbol = info.dli_saddr;
+        pxSymbol->AddressModule = info.dli_fbase;
+        pxSymbol->Offset = PXMemoryAddressStartEndToSize(info.dli_saddr, address);
+
+        PXSize textLength = PXTextLengthA(info.dli_fname, PXTextLengthUnkown);
+        PXTextFromAddressA(&moduleNameSymbol, info.dli_fname, textLength, textLength);
+
+        //-------------------------------------------------
+        // Module
+        PXBool isCurrentModule = PXModuleInSameDirectory(&moduleNameCurrent, &moduleNameSymbol);
+
+        if(isCurrentModule)
+        {
+            written = PXTextCopyA
+            (
+                moduleNameSymbol.A + moduleNameCurrent.SizeUsed, moduleNameSymbol.SizeUsed - moduleNameCurrent.SizeUsed,
+                pxSymbol->NameModule, sizeof(pxSymbol->NameModule)
+            );
+        }
+        else
+        {
+            written = PXTextCopyA
+            (
+                moduleNameSymbol.A, moduleNameSymbol.SizeUsed,
+                pxSymbol->NameModule, sizeof(pxSymbol->NameModule)
+            );
+        }
+
+        if(0 == written)
+        {
+            written = PXTextCopyA
+            (
+                "???", 3,
+                pxSymbol->NameModule, sizeof(pxSymbol->NameModule)
+            );
+        }
+        //-------------------------------------------------
+
+        //-------------------------------------------------
+        // Symbol
+        written = PXTextCopyA
+        (
+            info.dli_sname, PXTextLengthUnkown,
+            pxSymbol->NameSymbol, sizeof(pxSymbol->NameSymbol)
+        );
+
+        if(0 == written)
+        {
+            written = PXTextCopyA
+            (
+                PXUnknownElement, sizeof(PXUnknownElement),
+                pxSymbol->NameModule, sizeof(pxSymbol->NameModule)
+            );
+        }
+        //-------------------------------------------------
+    }
+    else
+    {
+       // dprintf(STDERR_FILENO, "  at ???:??? (%p)\n", addr);
+    }
+
+
+#elif OSWindows
+
+    const HANDLE processHandle = GetCurrentProcess(); // TODO: what if we want another process?
 
     // Extract symbol
     {
@@ -2389,7 +2613,13 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
         symbolInfo.SymbolInfo.SizeOfStruct = sizeof(SYMBOL_INFO);
         symbolInfo.SymbolInfo.MaxNameLen = 200;
 
-        const PXBool symbolFetchSuccess = SymFromAddr(processHandle, adress, &displacement, &symbolInfo.SymbolInfo);
+        const PXBool symbolFetchSuccess = SymFromAddr
+        (
+            processHandle,
+            address,
+            &displacement,
+            &symbolInfo.SymbolInfo
+        );
         const PXResult symbolFetchResult = PXErrorCurrent(symbolFetchSuccess);
 
         /*
@@ -2412,7 +2642,7 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
             lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
             lineInfo.FileName = &symbolInfo;
 
-            const PXBool symbolFetchSuccessW = SymGetLineFromAddr64(processHandle, adress, &displacement, &lineInfo);
+            const PXBool symbolFetchSuccessW = SymGetLineFromAddr64(processHandle, address, &displacement, &lineInfo);
             const PXResult symbolFetchSuccessWRes = PXWindowsErrorCurrent(symbolFetchSuccess);
 
 
@@ -2420,7 +2650,7 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
             imageHelpSYMBOL->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
             imageHelpSYMBOL->MaxNameLength = 2000;
 
-            const PXBool symbolFetchSuccessB = SymGetSymFromAddr64(processHandle, adress, &displacement, imageHelpSYMBOL);
+            const PXBool symbolFetchSuccessB = SymGetSymFromAddr64(processHandle, address, &displacement, imageHelpSYMBOL);
 
             return PXResultInvalid;
         }*/
@@ -2435,25 +2665,25 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
 
         pxSymbol->Amount = 1;
         pxSymbol->ObjectSize = symbolInfo.SymbolInfo.Size;
-        pxSymbol->ModuleAdress = symbolInfo.SymbolInfo.ModBase;
-        pxSymbol->SymbolAdress = symbolInfo.SymbolInfo.Address;
-        
-        PXHandleModule pxHandleModule;
-        
-        PXLibraryFromAdress(&pxHandleModule, pxSymbol->ModuleAdress);
-        PXLibraryName(pxHandleModule, pxSymbol->NameModule);
+        pxSymbol->AddressModule = symbolInfo.SymbolInfo.ModBase;
+        pxSymbol->AddressSymbol = symbolInfo.SymbolInfo.Address;
+
+        PXLibrary pxLibrary;
+
+        PXLibraryFromAddress(&pxLibrary, pxSymbol->AddressModule);
+        PXLibraryName(&pxLibrary, pxSymbol->NameModule);
 
         PXTextCopyA(symbolInfo.SymbolInfo.Name, symbolInfo.SymbolInfo.NameLen, pxSymbol->NameSymbol, 64);
 
 
         // Index
         {
-            ULONG64 adress = (ULONG64)pxSymbol->ModuleAdress;
+            ULONG64 address = (ULONG64)pxSymbol->AddressModule;
 
             const BOOL succca = SymFromIndex
             (
                 processHandle,
-                adress,
+                address,
                 symbolInfo.SymbolInfo.Index,
                 &symbolInfo.SymbolInfo
             );
@@ -2469,8 +2699,8 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
                 imageHelperLine.FileName = bufferB;
 
                 const PXBool lineResult = SymGetLineFromAddr(processHandle, symbolInfo.SymbolInfo.Address, &displacement, &imageHelperLine);
-                char* fileNameAdress = imageHelperLine.FileName;
-                PXSize fileNameAdressSize = 0;
+                char* fileNameAddress = imageHelperLine.FileName;
+                PXSize fileNameAddressSize = 0;
 
                 if(lineResult)
                 {
@@ -2478,48 +2708,145 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
 
                     if(-1 != index)
                     {
-                        fileNameAdress += index + 1;
-                        fileNameAdressSize = PXTextLengthA(fileNameAdress, 64);
+                        fileNameAddress += index + 1;
+                        fileNameAddressSize = PXTextLengthA(fileNameAddress, 64);
                     }
 
                     pxSymbol->LineNumber = imageHelperLine.LineNumber;
                 }
 
-                PXTextCopyA(fileNameAdress, -1, pxSymbol->NameFile, 64);
+                PXTextCopyA(fileNameAddress, -1, pxSymbol->NameFile, 64);
 
             }
         }
     }
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-
-
-
-#define MAXSIZELISTEE 1024*10
-
-PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
-
-PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
+PXResult PXAPI PXModuleCurrentPath(PXText PXREF pxText)
 {
-    if(0 == pxPerformanceInfo->UpdateCounter)
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxText)
     {
-        PXClear(PXPerformanceInfo, pxPerformanceInfo);
-        pxPerformanceInfo->TimeStamp = PXTimeCounterStampGet();
+        return PXResultRefusedParameterNull;
+    }
+
+#if OSUnix
+
+    char path[256];
+
+    PXSize len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+
+    if(len <= 0)
+        return PXEndianInvalid;
+
+    path[len] = '\0';
+
+    char* slash = strrchr(path, '/');
+
+    if(!slash)
+    {
+        PXTextCopyFromA(pxText, ".", 1);
+
+        return PXResultOK;
+    }
+
+    PXSize dlen = slash - path;
+
+    PXTextCopyFromA(pxText, path, dlen+1);
+
+#elif OSWindows
+
+#else
+#endif
+
+    return pxResult;
+}
+
+PXResult PXAPI PXModuleCurrentName(PXText PXREF pxText)
+{
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxText)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+#if OSUnix
+
+    char path[256];
+
+    PXSize len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+
+    if(len <= 0)
+        return PXEndianInvalid;
+
+    path[len] = '\0';
+
+    PXSize slashPosition = PXTextFindLastCharacterA(path, len, '/');
+
+    if(-1 == slashPosition)
+    {
+        PXTextCopyFromA(pxText, path, len);
     }
     else
     {
-        PXI64U timestampPrevious = pxPerformanceInfo->TimeStamp;
+        PXTextCopyFromA(pxText, path + slashPosition, len - slashPosition);
+    }
 
-        pxPerformanceInfo->TimeStamp = PXTimeCounterStampGet(); // override new
+#elif OSWindows
 
-        PXI64U timestampDelta = pxPerformanceInfo->TimeStamp - timestampPrevious;
+#else
+#endif
 
-        pxPerformanceInfo->TimeDelta = PXTimeCounterStampToSecoundsF(timestampDelta);
+    return pxResult;
+}
+
+PXBool PXAPI PXModuleInSameDirectory(PXText PXREF pxTextA, PXText PXREF pxTextB)
+{
+    PXSize indexA = PXTextFindLastCharacter(pxTextA, '/');
+    PXSize indexB = PXTextFindLastCharacter(pxTextB, '/');
+
+    if(-1 == indexA || -1 == indexB)
+    {
+        return PXFalse;
+    }
+
+    PXBool same = PXTextCompareA
+    (
+        pxTextA->A,
+        indexA,
+        pxTextB->A,
+        indexB,
+        PXTextCompareRequireSameLength
+    );
+
+    return same;
+}
+
+
+#if OSUnix
+#elif OSWindows
+#define MAXSIZELISTEE 1024*10
+
+PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
+#endif
+
+PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
+{
+    // Only when its update zero, set our start time
+    if(!pxPerformanceInfo->UpdateCounter)
+    {
+        pxPerformanceInfo->TimeStamp = PXTimeStampNow();
+    }
+    else
+    {
+        pxPerformanceInfo->TimeDelta = PXTimeStampDeltaSF(pxPerformanceInfo->TimeStamp);
     }
 
 #if OSUnix
@@ -2651,7 +2978,7 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
 
                 PXMemoryVirtualInfo pxMemoryVirtualInfo;
 
-                PXMemoryVirtualInfoViaAdress(&pxMemoryVirtualInfo, watchInformation->FaultingVa);
+                PXMemoryVirtualInfoViaAddress(&pxMemoryVirtualInfo, watchInformation->FaultingVa);
 
 
                 PXSymbol pxSymbol;
@@ -2665,7 +2992,7 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
                     "PageFault",
                     "%p %i B -> %s::%s::%s::%i",
                     pxMemoryVirtualInfo.BaseAddress,
-                    pxMemoryVirtualInfo.RegionSize,               
+                    pxMemoryVirtualInfo.RegionSize,
                     pxSymbol.NameModule,
                     pxSymbol.NameFile,
                     pxSymbol.NameSymbol,
@@ -2673,15 +3000,13 @@ PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
                 );
 #endif
 
-            }            
-        }       
+            }
+        }
 #endif
-          
+
     }
 
     ++pxPerformanceInfo->UpdateCounter;
-
-
 
     return pxResult;
 
@@ -2694,9 +3019,9 @@ PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadI
 {
 #if OSUnix
 
-    const long ree = ptrace(PTRACE_CONT, pxDebug->Process.ProcessID, NULL, NULL);
+    const long ree = ptrace(PTRACE_CONT, processID, NULL, NULL);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     const PXContinueDebugEventFunction pxContinueDebugEvent = (PXContinueDebugEventFunction)_PXOS.DebugEventContinue;
@@ -2707,7 +3032,7 @@ PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadI
     return continueResult;
 #else
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #endif
 }
@@ -2719,32 +3044,49 @@ PXResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
 
     // Windows XP, Kernel32.dll, debugapi.h
 
+    PXResult pxResult = PXResultInvalid;
+
+    #if OSUnix
+
+#elif OSWindows
     const PXWaitForDebugEventFunction pxWaitForDebugEvent = (PXWaitForDebugEventFunction)_PXOS.DebugEventWait;
     DEBUG_EVENT* debugEvent = (DEBUG_EVENT*)pxDebugEventInfo;
 
     const BOOL success = pxWaitForDebugEvent(debugEvent, time);
-    const PXResult pxResult = PXErrorCurrent(success);
-
+    pxResult = PXErrorCurrent(success);
+#endif
     return pxResult;
 }
 
 PXResult PXAPI PXDebugProcessActive(void)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugBreak(void)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    raise(SIGTRAP); // Linux, signal.h
+
 #elif OSWindows
     const PXDebugBreakFunction pxDebugBreak = (PXDebugBreakFunction)_PXOS.DebugBreak;
-
-    PXDebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+  
+    if(!pxDebugBreak)
+    {
+        DebugBreak();
+    }
+    else
+    {
+        pxDebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+    }
 
     return PXResultOK; // We dont have any other result
 #else
-    return PXActionRefusedNotImplemented;
+
+    // x86 instruction
+    // __asm__("int3");
+
+    return PXResultRefusedNotImplemented;
 #endif
 }
 
@@ -2757,7 +3099,7 @@ PXResult PXAPI PXDebugOutputDebugStringA(const char* text)
     pxOutputDebugStringA(text); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
@@ -2769,12 +3111,12 @@ PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
     pxOutputDebugStringW(text); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugProcessBreak(void)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent)
@@ -2805,7 +3147,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
     const PXCheckRemoteDebuggerPresentFunction pxCheckRemoteDebuggerPresent = (PXCheckRemoteDebuggerPresentFunction)_PXOS.DebugRemotePresentCheck;
 
     BOOL debuggerPresent = 0;
-    const BOOL result = pxCheckRemoteDebuggerPresent(processHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
+    const BOOL result = pxCheckRemoteDebuggerPresent(processHandle.Data, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
     const PXResult pxResult = PXErrorCurrent(result);
 
     if(PXResultOK != pxResult)
@@ -2815,7 +3157,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
 
     *isPresent = debuggerPresent;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 
     return PXResultOK;
@@ -2824,7 +3166,7 @@ PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBoo
 PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)
 {
 #if OSUnix
-    const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
+    const long result = ptrace(PTRACE_DETACH, processID, 0, 0);
 
 #elif PXOSWindowsDestop
 
@@ -2832,7 +3174,7 @@ PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)
 
     if(!pxDebugActiveProcessStop)
     {
-        return PXActionRefusedNotSupportedByOperatingSystem;
+        return PXResultRefusedNotSupportedByOperatingSystem;
     }
 
     const BOOL successful = pxDebugActiveProcessStop(processID);
@@ -2853,7 +3195,7 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
     pxSymbol->TypeIndex = pSymInfo->TypeIndex;
     pxSymbol->Index = pSymInfo->Index;
     pxSymbol->ObjectSize = pSymInfo->Size;
-    pxSymbol->ModuleAdress = (void*)pSymInfo->ModBase;
+    pxSymbol->AddressModule = (void*)pSymInfo->ModBase;
     pxSymbol->Flags = pSymInfo->Flags;
     pxSymbol->Address = pSymInfo->Address;
     pxSymbol->Register = pSymInfo->Register;
@@ -2897,7 +3239,7 @@ void PXAPI PXConvertAnyToFloat(void* a, const PXI32U aType, float* b)
         }
         default:
         {
-            DebugBreak();
+            PXDebugBreak();
             return;
         }
     }

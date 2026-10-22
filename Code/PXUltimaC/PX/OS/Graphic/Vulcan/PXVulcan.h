@@ -2170,11 +2170,9 @@ typedef struct PXVulcan_
 }
 PXVulcan;
 
-typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
-
 PXPrivate PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
-PXPublic PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo);
 PXPublic PXResult PXAPI PXVulcanRelease(PXVulcan PXREF pxVulcan);
 
 #endif

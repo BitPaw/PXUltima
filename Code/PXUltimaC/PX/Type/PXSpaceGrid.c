@@ -1,6 +1,6 @@
 #include "PXSpaceGrid.h"
 
-#include <gl/GL.h>
+#include <GL/gl.h>
 
 #include <math.h>
 
@@ -8,7 +8,7 @@
 #include <PX/Type/PXTesseract.h>
 #include <PX/Engine/Game/PXGame.h>
 #include <PX/Type/PXCamera.h>
-#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Engine/PXEngineRender.h>
 #include <PX/Math/PXMath.h>
 
 
@@ -35,7 +35,7 @@ void PXAPI PXSpaceGridRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 }
 
 PXResult PXAPI PXSpaceGridCreate(PXSpaceGrid** pxSpaceGridREF, PXSpaceGridCreateInfo PXREF pxSpaceGridCreateInfo)
-{   
+{
     PXSpaceGrid* pxSpaceGrid = PXNull;
 
     pxSpaceGridCreateInfo->Info.Static = &PXSpaceGridRegisterInfoStatic;
@@ -49,35 +49,22 @@ PXResult PXAPI PXSpaceGridCreate(PXSpaceGrid** pxSpaceGridREF, PXSpaceGridCreate
 
     pxSpaceGrid = *pxSpaceGridREF;
 
-    if(pxSpaceGridCreateInfo->WindowTarget)
-    {
-        pxSpaceGrid->WindowBase = pxSpaceGridCreateInfo->WindowTarget;
-    }
-    else
-    {
-        pxSpaceGridCreateInfo->Window.EventList.CallBackOwner = pxSpaceGrid;
-        pxSpaceGridCreateInfo->Window.EventList.CallBackDraw = PXSpaceGridDraw;
-        //pxSpaceGridCreateInfo->Window.Engine = 
-
-        PXWindowCreate(&pxSpaceGrid->WindowBase, &pxSpaceGridCreateInfo->Window);
-    }
-
     return PXResultOK;
 }
 
 
-PXBool doFog = PXFalse; 
+PXBool doFog = PXFalse;
 
-PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    PXWindow PXREF pxWindowBase = pxSpaceGrid->WindowBase;
-    PXCamera PXREF pxCamera = PXRendererCameraCurrent(pxDrawInfo->Rendrer);
+    PXWindow PXREF pxWindowBase = pxDrawInfo->Window;
+    PXCamera PXREF pxCamera = pxDrawInfo->Camera;
 
     const float GRID_SIZE = 200.0f; // half-extent (so 400x400 total)
     const float GRID_STEP = 0.5f;   // minor grid spacing
     const int   MAJOR_EVERY = 10;   // major line every 10 units
 
-    PXColorRGBF ClearColor = { 0.2, 0.2, 0.4 };
+    PXColorRGB_F32 ClearColor = { 0.2, 0.2, 0.4 };
 
    // glClearColor(ClearColor.Red, ClearColor.Green, ClearColor.Blue, 1.0);
    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -130,8 +117,8 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF p
 
     if(pxCamera)
     {
-        cameraPos.X = pxCamera->Position.X;
-        cameraPos.Z = pxCamera->Position.Z;
+        cameraPos.X = pxCamera->Transform.Position.X;
+        cameraPos.Z = pxCamera->Transform.Position.Z;
     }
 
     for(float x = -GRID_SIZE; x <= GRID_SIZE; x += GRID_STEP)
@@ -179,7 +166,7 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF p
     }
 
 
-    PXSceneDraw(pxSpaceGrid->Scene, pxDrawInfo);
+   // PXSceneDraw(pxSpaceGrid->Scene, pxDrawInfo);
 
 
 
@@ -200,7 +187,7 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF p
 
     char buffer[64];
     PXText pxText;
-    PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
+    PXTextFromAddressA(&pxText, buffer, 0, sizeof(buffer));
 
     if(pxCamera)
     {
@@ -208,9 +195,9 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF p
         (
             &pxText,
             "CAM:%4.2f, %4.2f, %4.2f\nTest",
-            pxCamera->Position.X,
-            pxCamera->Position.Y,
-            pxCamera->Position.Z
+            pxCamera->Transform.Position.X,
+            pxCamera->Transform.Position.Y,
+            pxCamera->Transform.Position.Z
         );
     }
     else
@@ -237,16 +224,16 @@ PXResult PXAPI PXSpaceGridDraw(PXSpaceGrid PXREF pxSpaceGrid, PXDrawInfo PXREF p
     pxDrawInfo->Color.Blue = 0.3;
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    PXWindowDrawText(pxWindowBase, pxDrawInfo);
+    PXEngineUIDrawText(pxWindowBase, pxDrawInfo);
 
 
-    
+
     pxDrawInfo->Color.Red = 0.0;
     pxDrawInfo->Color.Green = 0.0;
     pxDrawInfo->Color.Blue = 0.0;
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    PXWindowDrawText(pxWindowBase, pxDrawInfo);
+    PXEngineUIDrawText(pxWindowBase, pxDrawInfo);
 
 
     //PXGameTick(&_pxGameCard);

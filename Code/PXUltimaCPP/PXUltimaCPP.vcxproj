@@ -44,7 +44,7 @@
     <ClInclude Include="OS\Async\PXThread.hpp" />
     <ClInclude Include="OS\ClipBoard\PXClipBoard.hpp" />
     <ClInclude Include="OS\Debug\PXDebug.hpp" />
-    <ClInclude Include="OS\Error\PXActionResult.hpp" />
+    <ClInclude Include="OS\Error\PXResultResult.hpp" />
     <ClInclude Include="OS\File\PXDirectory.hpp" />
     <ClInclude Include="OS\File\PXFile.hpp" />
     <ClInclude Include="OS\Hardware\PXController.hpp" />
@@ -89,7 +89,7 @@
     <ClCompile Include="OS\Async\PXThread.cpp" />
     <ClCompile Include="OS\ClipBoard\PXClipBoard.cpp" />
     <ClCompile Include="OS\Debug\PXDebug.cpp" />
-    <ClCompile Include="OS\Error\PXActionResult.cpp" />
+    <ClCompile Include="OS\Error\PXResultResult.cpp" />
     <ClCompile Include="OS\File\PXDirectory.cpp" />
     <ClCompile Include="OS\File\PXFile.cpp" />
     <ClCompile Include="OS\Hardware\PXController.cpp" />

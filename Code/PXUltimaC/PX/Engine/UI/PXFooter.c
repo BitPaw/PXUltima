@@ -1,9 +1,10 @@
 #include "PXFooter.h"
-#include <PX/Engine/PXGUI.h>
+
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Type/PXProcessor.h>
+#include <PX/Type/PXCPU.h>
 
 #include <GL/gl.h>
+#include <PX/Type/PXBrush.h>
 
 #define PXFooterDebug 0
 
@@ -50,10 +51,10 @@ PXResult PXAPI PXFooterCreate(PXFooter** pxFooterREF, PXFooterCreateInfo PXREF p
     return PXResultOK;
 }
 
-PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxFooter->WindowBase;
-    PXGUITheme* pxGUITheme = PXGUIThemeGet();
+    PXEngineUITheme* pxGUITheme = pxDrawInfo->UITheme;
 
 #if PXLogEnable && PXFooterDebug
     PXLogPrint
@@ -69,7 +70,7 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo
     //pxDrawInfo->RectangleXYWH.Width = 150;
     //pxDrawInfo->RectangleXYWH.Height = 20;
 
-    PXWindowDrawRectangle3D
+    PXEngineUIDrawRectangle3D_GL
     (
         pxWindow,
         pxDrawInfo
@@ -84,7 +85,7 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo
     PXProcessorFetchInfo(&pxProcessor);
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, pxProcessor.BrandName, pxProcessor.BrandNameSize, pxProcessor.BrandNameSize);
+    PXTextFromAddressA(&pxText, pxProcessor.BrandName, pxProcessor.BrandNameSize, pxProcessor.BrandNameSize);
 
     PXWindowBrushSet
     (
@@ -105,7 +106,7 @@ PXResult PXAPI PXFooterDraw(PXFooter PXREF pxFooter, PXDrawInfo PXREF pxDrawInfo
     pxDrawInfo->Size = 20;
     pxDrawInfo->OffsetX = 0.2;
 
-    PXWindowDrawText
+    PXEngineUIDrawText
     (
         pxWindow,
         pxDrawInfo

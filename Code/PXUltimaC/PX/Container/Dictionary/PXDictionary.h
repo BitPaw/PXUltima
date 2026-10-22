@@ -31,7 +31,7 @@ typedef struct PXDictionaryEntry_
 {
     const void* KeyAddress;
     PXSize KeySize;
-    void* ValueAdress;
+    void* ValueAddress;
     PXSize ValueSize;
 }
 PXDictionaryEntry;
@@ -43,6 +43,8 @@ typedef struct PXDictionaryCreateInfo_
     PXSize KeySize;
     PXSize ValueSize;
     PXDictionaryValueLocality ValueLocality;
+
+    PXSize StartAmount;
 }
 PXDictionaryCreateInfo;
 
@@ -52,6 +54,8 @@ PXPublic PXResult PXAPI PXDictionaryRelease(PXDictionary PXREF pxDictionary);
 
 PXPublic PXSize PXAPI PXDictionaryValueSize(const PXDictionary PXREF dictionary);
 PXPublic PXSize PXAPI PXDictionaryEntryAmount(const PXDictionary PXREF dictionary);
+
+PXPublic PXSize PXAPI PXDictionaryRowSize(const PXDictionary PXREF dictionary);
 
 PXPublic void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSize entrys);
 

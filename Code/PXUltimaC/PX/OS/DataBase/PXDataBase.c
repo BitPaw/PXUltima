@@ -154,24 +154,32 @@ const PXI8U PXODBCLibtraryLength = sizeof(PXODBCLibtrary);
 
 PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 {
+    SQLRETURN result = S_OK;
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxDataBase)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
     PXClear(PXDataBase, pxDataBase);
 
     // Load library, ODBC
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXODBCLibtrary, PXODBCLibtraryLength, PXODBCLibtraryLength);
+        PXTextFromAddressA(&pxText, PXODBCLibtrary, PXODBCLibtraryLength, PXODBCLibtraryLength);
 
         const PXResult pxResult = PXLibraryOpen(&pxDataBase->ODBCLibrary, &pxText);
 
         if(PXResultOK != pxResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch functions
     {
-        PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntry[] =
         {
             { &pxDataBase->AllocConnect,"SQLAllocConnect"},
             { &pxDataBase->AllocEnv,"SQLAllocEnv"},
@@ -309,15 +317,10 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
             {&pxDataBase->DriversA,"SQLDriversA"},
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntry) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&pxDataBase->ODBCLibrary, pxLibraryFuntionEntry, amount);
+        PXLibraryGetSymbolListA(&pxDataBase->ODBCLibrary, PXLibraryFunctionEntry, amount);
     }
-
-
-
-
-
 
 #if OSWindows
 
@@ -334,7 +337,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 
         if(!successful)
         {
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
     }
 
@@ -345,7 +348,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 
         if(!successful)
         {
-            return PXActionFailedSettingsInvalid;;
+            return PXResultFailedSettingsInvalid;;
         }
     }
 
@@ -356,7 +359,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 
         if(!successful)
         {
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
     }
 
@@ -367,7 +370,7 @@ PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 
         if(!successful)
         {
-            return PXActionFailedSettingsInvalid;
+            return PXResultFailedSettingsInvalid;
         }
     }
 #endif
@@ -459,10 +462,10 @@ PXResult PXAPI PXDataBaseConnectA
     PXText pxTextUser;
     PXText pxTextPassword;
 
-    PXTextFromAdressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextFromAdressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAddressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAddressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAddressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAddressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
 
     const PXResult pxResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
 
@@ -480,7 +483,7 @@ PXResult PXAPI PXDataBaseConnect
 )
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
@@ -571,14 +574,14 @@ PXResult PXAPI PXDataBaseConnect
             }
 
             default:
-                return PXActionRefuedTextFormatUnsupported;
+                return PXResultRefuedTextFormatUnsupported;
         }
 
         const PXBool successfulConnected = resultDriverConnect == SQL_SUCCESS || resultDriverConnect == SQL_SUCCESS_WITH_INFO;
 
         if(!successfulConnected)
         {
-            return PXActionFailedConnectionFailure;
+            return PXResultFailedConnectionFailure;
         }
     }
 
@@ -786,7 +789,7 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase PXREF pxDataBase)
 PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXText PXREF pxTextSQLStatement)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
     SQLHSTMT handleStatement = 0;
@@ -799,7 +802,7 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
 
         if(!connected)
         {
-            return PXActionRefusedNotConnected;
+            return PXResultRefusedNotConnected;
         }
     }
 
@@ -811,7 +814,7 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
 
         if(!sucessfulAlloc)
         {
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
     }
 
@@ -838,14 +841,14 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
             }
 
             default:
-                return PXActionRefuedTextFormatUnsupported;
+                return PXResultRefuedTextFormatUnsupported;
         }
 
         const PXBool successful = resultExecute == SQL_SUCCESS || resultExecute == SQL_SUCCESS_WITH_INFO;
 
         if(!successful)
         {
-            return PXActionFailedCommandExecute;
+            return PXResultFailedCommandExecute;
         }
     }
 
@@ -1016,7 +1019,7 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
 
         if(successful)
         {
-            return PXActionFailedMemoryRelease;
+            return PXResultFailedMemoryRelease;
         }
     }
 
@@ -1026,5 +1029,5 @@ PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXTex
 
 PXResult PXAPI PXDataBaseCommandCancel(PXDataBase PXREF dataBaseConnection)
 {
-    return PXActionRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
+    return PXResultRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
 }

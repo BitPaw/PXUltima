@@ -2,14 +2,15 @@
 
 #ifndef PXEffectEchoIncluded
 #define PXEffectEchoIncluded
-#include <PX/Engine/PXAudioSystem.h>
+
+#include <PX/OS/Error/PXResult.h>
 
 typedef struct PXFilterEcho_
 {
-    PXFAudio WetDryMix;
-    PXFAudio Feedback;
-    PXFAudio LeftDelay;
-    PXFAudio RightDelay;
+    PXF32 WetDryMix;
+    PXF32 Feedback;
+    PXF32 LeftDelay;
+    PXF32 RightDelay;
     PXBool PanDelay;
 }
 PXFilterEcho;

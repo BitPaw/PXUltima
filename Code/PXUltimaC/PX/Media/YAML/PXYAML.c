@@ -3,6 +3,7 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/OS/PXOS.h>
 
 PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
@@ -21,7 +22,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxRes
         PXCompilerKeepWhiteSpace |
         PXCompilerKeepComments;
     //pxCompiler.DOM = pxDOM;
-    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
+    PXTextFromAddressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
     // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
@@ -125,7 +126,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxRes
                     {
                         // This means indentation is invalid (YAML requires matching sibling indent)
                         // You can error or normalize depending on your design
-                        DebugBreak();
+                        PXDebugBreak();
                     }
                 }              
 
@@ -295,7 +296,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxRes
             char textB[256];
 
             PXText pxTextBuffer;
-            PXTextConstructFromAdressA(&pxTextBuffer, textB, 0, 256);
+            PXTextConstructFromAddressA(&pxTextBuffer, textB, 0, 256);
 
             char emotySpace[25];
 
@@ -383,5 +384,5 @@ PXResult PXAPI PXYAMLLoadFromFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxRes
 
 PXResult PXAPI PXYAMLSaveToFile(PXDOM PXREF pxDOM, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -17,10 +17,13 @@
 #pragma comment(lib, "shlwapi.lib")
 #endif
 
-PXI16U _windowHandleAmount = 0;
-HWND _windowHandleList[16];
 
+PXI16U _windowHandleAmount = 0;
 PXI16U _monitorHandleAmount = 0;
+
+#if OSWindows
+
+HWND _windowHandleList[16];
 PXMonitor _monitorHandleList[16];
 
 BOOL IsAltTabWindow(HWND hwnd)
@@ -33,7 +36,7 @@ BOOL IsAltTabWindow(HWND hwnd)
 
     while((hwndWalk = GetLastActivePopup(hwndTry)) != hwndWalk)
     {
-        if(IsWindowVisible(hwndWalk)) 
+        if(IsWindowVisible(hwndWalk))
             break;
 
         hwndTry = hwndWalk;
@@ -44,7 +47,7 @@ BOOL IsAltTabWindow(HWND hwnd)
 
 
 
-BOOL CALLBACK PXWindowsEnumWindowsProc(HWND hwnd, LPARAM lParam) 
+BOOL CALLBACK PXWindowsEnumWindowsProc(HWND hwnd, LPARAM lParam)
 {
     BOOL isOK;
 
@@ -108,32 +111,17 @@ BOOL CALLBACK PXWindowsEnumWindowsProc(HWND hwnd, LPARAM lParam)
 
     return TRUE;
 }
-
-BOOL CALLBACK PXWindowsMonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) 
-{
-    PXMonitor* monitor = &_monitorHandleList[_monitorHandleAmount++];     
-    monitor->ID = hMonitor;
-    monitor->DeciveContect = hdcMonitor;
-    monitor->Left = lprcMonitor->left;
-    monitor->Top = lprcMonitor->top;
-    monitor->Right = lprcMonitor->right;
-    monitor->Bottom = lprcMonitor->bottom;
-
-    return TRUE; // continue enumeration
-}
+#endif
 
 PXResult PXAPI PXWindowListUpdate()
 {
     _windowHandleAmount = 0;
 
+#if OSUnix
+
+#elif OSWindows
     const BOOL res = EnumWindows(PXWindowsEnumWindowsProc, 0);
-}
-
-PXResult PXAPI PXMonitorListUpdate()
-{
-    _monitorHandleAmount = 0;
-
-    const BOOL res = EnumDisplayMonitors(NULL, NULL, PXWindowsMonitorEnumProc, 0);
+#endif // OSWindows
 }
 
 
@@ -156,30 +144,33 @@ PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PX
 
     GetClientRect(pxStreamWindow->WindowHandle, &pxStreamWindow->Rectangle);
 
-    
+
 
     HDC hdc = GetWindowDC(pxStreamWindow);
     pxStreamWindow->MemoryDC = CreateCompatibleDC(hdc);
 
     pxStreamWindow->BitmapHandle = CreateCompatibleBitmap
     (
-        pxStreamWindow->WindowDC, 
+        pxStreamWindow->WindowDC,
         pxStreamWindow->Rectangle.right - pxStreamWindow->Rectangle.left,
         pxStreamWindow->Rectangle.bottom - pxStreamWindow->Rectangle.top
     );
     */
+#if OSUnix
+
+#elif OSWindows
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
+#endif // OSUnix
 }
 
 PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
 
-    PXMonitorListUpdate();
-
-    PXMonitor* monitor = &_monitorHandleList[pxStreamOpenInfo->DeviceIndex];
-    
     /*
+    PXMonitor* monitor = &_monitorHandleList[pxStreamOpenInfo->DeviceIndex];
+
+
 
     pxStreamWindow->WindowDC = monitor->DeciveContect;
 
@@ -206,19 +197,6 @@ PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo P
     */
     return PXResultOK;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 typedef enum PXVideoFormat_
@@ -298,12 +276,15 @@ PXVideoFormat;
 
 typedef struct PXVideoFormatEntry_
 {
-    GUID* ID;
+#if OSUnix
+#elif OSWindows
+        GUID* ID;
+#endif // OSUnix
     PXVideoFormat Format;
 }
 PXVideoFormatEntry;
 
-
+#if OSWindows
 const PXVideoFormatEntry PXVideoFormatList[] =
 {
     {&MFVideoFormat_Base,           PXVideoFormatBase},
@@ -386,21 +367,23 @@ const PXVideoFormatEntry PXVideoFormatList[] =
 
 #if (NTDDI_VERSION >= NTDDI_WIN10_FE)
         {&MFVideoFormat_Theora,           PXVideoFormatTheora}
-#endif 
+#endif
 };
 const PXSize PXVideoFormatAmount = sizeof(PXVideoFormatList) / sizeof(PXVideoFormat);
+#endif
 
 
 PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     const PXI16U deviceIndex = pxStreamOpenInfo->DeviceIndex;
     PXStreamCamera PXREF pxStreamCamera = &pxStream->Camera;
-  
 
+#if OSUnix
+#elif OSWindows
     HRESULT resultID = 0;
     PXResult pxResult = PXResultInvalid;
 
-   // IMFMediaSource* pSource = NULL; 
+   // IMFMediaSource* pSource = NULL;
    // IMFMediaBuffer* pBuffer = NULL;
 
     BYTE* pData = NULL;
@@ -417,7 +400,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
     MFCreateAttributes(&pAttributes, 1);
     resultID = pAttributes->lpVtbl->SetGUID
     (
-        pAttributes, 
+        pAttributes,
         &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
         &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
     );
@@ -427,14 +410,14 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
     UINT32 count = 0;
     MFEnumDeviceSources(pAttributes, &ppDevices, &count);
 
-    if(count == 0) 
+    if(count == 0)
         return -2;
 
     IMFActivate* device = ppDevices[deviceIndex];
 
     resultID = device->lpVtbl->ActivateObject
     (
-        device, 
+        device,
         &IID_IMFMediaSource,
         (void**)&pxStreamCamera->MediaSource
     );
@@ -473,7 +456,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
         resultID = pType->lpVtbl->GetGUID(pType, &MF_MT_SUBTYPE, &videoFormat);
         pxResult = PXErrorFromHRESULT(resultID);
 
-        for(size_t i = 0; i < PXVideoFormatAmount; i++)
+        for(PXSize i = 0; i < PXVideoFormatAmount; i++)
         {
             const PXBool isEqual = PXMemoryCompare
             (
@@ -490,13 +473,6 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
                 break;
             }
         }
-
-
-
-
-
-
-
 
 #if 0
         resultID = pType->lpVtbl->SetGUID(pType, &MF_MT_MAJOR_TYPE, &MFMediaType_Video);
@@ -536,7 +512,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
 
         UINT64 size;
         resultID = pType->lpVtbl->GetUINT64(pType, &MF_MT_FRAME_SIZE, &size);
-      
+
         if(SUCCEEDED(resultID))
         {
             pxStreamCamera->Width = (UINT32)(size >> 32);
@@ -548,16 +524,17 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
    // IMFSourceReader::SetStreamSelection();
 
 
-
-    
     // Maybe there is a way to add a callback..?
     // IMFSourceReaderCallback
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
+#if OSUnix
+#elif OSWindows
     HRESULT resultHandle = S_OK;
     PXResult pxResult = PXResultInvalid;
 
@@ -566,7 +543,7 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
 
     printf("Initializing COM...\n");
     resultHandle = CoInitializeEx(NULL, COINIT_MULTITHREADED);
- 
+
 
     printf("Initializing Media Foundation...\n");
     resultHandle = MFStartup(MF_VERSION, 0);
@@ -585,7 +562,7 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
 
     printf("Found %u video capture devices.\n", count);
 
-    for(UINT32 i = 0; i < count; i++) 
+    for(UINT32 i = 0; i < count; i++)
     {
         WCHAR* szFriendlyName = NULL;
         WCHAR* szSymbolicLink = NULL;
@@ -606,7 +583,7 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
     // Assuming the first device is the TV tuner
     IMFMediaSource* pSource = NULL;
     printf("Activating device 0...\n");
-    resultHandle = ppDevices[0]->lpVtbl->ActivateObject(ppDevices[0], &IID_IMFMediaSource, (void**)&pSource); 
+    resultHandle = ppDevices[0]->lpVtbl->ActivateObject(ppDevices[0], &IID_IMFMediaSource, (void**)&pSource);
     pxResult = PXErrorFromHRESULT(resultHandle);
 
     if(resultHandle != S_OK)
@@ -620,22 +597,22 @@ PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF 
     resultHandle = MFCreateSourceReaderFromMediaSource(pSource, NULL, &pReader);
   //  LogHR(hr, "MFCreateSourceReaderFromMediaSource");
 
-   
+
 
     pxStream->Camera.MediaSource = pSource;
     pxStream->Camera.SourceReader = pReader;
-
+#endif
 
 
     return PXResultOK;
 }
 
-PXColorRGBAI8 buffer[3840 *1080];
+PXColorRGBA_U8 buffer[3840 *1080];
 
 PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
 {
     PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
-    
+
     /*
 
     PXBool validCall = pxStreamWindow->MemoryDC > 0 && pxStreamWindow->WindowDC > 0;
@@ -653,7 +630,7 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
         pxStreamWindow->Rectangle.right - pxStreamWindow->Rectangle.left,
         pxStreamWindow->Rectangle.bottom - pxStreamWindow->Rectangle.top,
         pxStreamWindow->WindowDC,
-        0, 
+        0,
         0,
         SRCCOPY
     );
@@ -668,7 +645,7 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
    // BitmapInfo info = { 0 };
 
     if(GetObject(pxStreamWindow->BitmapHandle, sizeof(BITMAP), &bmp) > 0) {
-  
+
     }
     else {
         printf("Failed to get bitmap info\n");
@@ -686,16 +663,16 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
     GetDIBits
     (
         pxStreamWindow->WindowDC,
-        pxStreamWindow->BitmapHandle, 
+        pxStreamWindow->BitmapHandle,
         0,
         pxStreamWindow->Rectangle.bottom - pxStreamWindow->Rectangle.top,
         buffer,
-        (BITMAPINFO*)&infoHeader, 
+        (BITMAPINFO*)&infoHeader,
         DIB_RGB_COLORS
     );
 
     PXStreamOnFrameInfo pxStreamOnFrameInfo;
-    pxStreamOnFrameInfo.DataAdress = buffer;
+    pxStreamOnFrameInfo.DataAddress = buffer;
     pxStreamOnFrameInfo.Width = pxStreamWindow->Rectangle.right - pxStreamWindow->Rectangle.left;
     pxStreamOnFrameInfo.Height = pxStreamWindow->Rectangle.bottom - pxStreamWindow->Rectangle.top;
     pxStreamOnFrameInfo.DataSize = (infoHeader.biBitCount /8) * pxStreamOnFrameInfo.Width * pxStreamOnFrameInfo.Height;
@@ -715,7 +692,7 @@ void ConvertYUY2ToRGB
     const PXI8U* yuy2Buffer,
     int width,
     int height,
-    PXColorRGBI8* rgbBuffer
+    PXColorRGB_U8* rgbBuffer
 )
 {
     int frameSize = width * height;
@@ -733,23 +710,25 @@ void ConvertYUY2ToRGB
         PXI8U V = yuy2Buffer[i + 3];
 
 
-        PXColorRGBI8* pxColorRGBI8_1 = &rgbBuffer[indexRGB++];
-        PXColorRGBI8* pxColorRGBI8_2 = &rgbBuffer[indexRGB++];
+        PXColorRGB_U8* PXColorRGB_U8_1 = &rgbBuffer[indexRGB++];
+        PXColorRGB_U8* PXColorRGB_U8_2 = &rgbBuffer[indexRGB++];
 
         PXColorYUV pxColorYUV;
         pxColorYUV.U = U;
         pxColorYUV.V = V;
 
         pxColorYUV.Y = Y0;
-        PXColorYUYToRGB(&pxColorYUV, pxColorRGBI8_1);
+        PXColorYUYToRGB(&pxColorYUV, PXColorRGB_U8_1);
 
         pxColorYUV.Y = Y1;
-        PXColorYUYToRGB(&pxColorYUV, pxColorRGBI8_2);
+        PXColorYUYToRGB(&pxColorYUV, PXColorRGB_U8_2);
     }
 }
 
 PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 {
+#if OSUnix
+#elif OSWindows
     PXStreamCamera PXREF pxStreamCamera = &pxStream->Camera;
     IMFSourceReader PXREF sourceReader = pxStreamCamera->SourceReader;
     IMFMediaBuffer* mediaBuffer = pxStreamCamera->MediaBuffer;
@@ -799,25 +778,27 @@ PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 
     DWORD dataSize = 0;
 
-    resultID = mediaBuffer->lpVtbl->Lock(mediaBuffer, &pxStreamOnFrameInfo.DataAdress, NULL, &dataSize);
+    resultID = mediaBuffer->lpVtbl->Lock(mediaBuffer, &pxStreamOnFrameInfo.DataAddress, NULL, &dataSize);
 
     pxStreamOnFrameInfo.DataSize = dataSize;
 
 
     ConvertYUY2ToRGB
     (
-        pxStreamOnFrameInfo.DataAdress,
+        pxStreamOnFrameInfo.DataAddress,
         pxStreamOnFrameInfo.Width,
         pxStreamOnFrameInfo.Height,
         buffer
     );
 
-    pxStreamOnFrameInfo.DataAdress = buffer;
+    pxStreamOnFrameInfo.DataAddress = buffer;
     pxStreamOnFrameInfo.BitPerPixel = 24;
 
     pxStream->OnFrame(pxStream, &pxStreamOnFrameInfo);
 
     resultID = mediaBuffer->lpVtbl->Unlock(mediaBuffer);
+
+#endif
 
     return PXResultOK;
 }
@@ -835,11 +816,11 @@ PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream)
 
         hr = pReader->lpVtbl->ReadSample
         (
-            pReader, 
-            MF_SOURCE_READER_FIRST_VIDEO_STREAM, 
+            pReader,
+            MF_SOURCE_READER_FIRST_VIDEO_STREAM,
             0,
-            &dwStreamIndex, 
-            &dwFlags, 
+            &dwStreamIndex,
+            &dwFlags,
             &llTimestamp,
             &pSample
         );
@@ -853,7 +834,7 @@ PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream)
             printf("No sample received at iteration %d\n", i);
         }
 
-        Sleep(100); // simulate processing delay
+        PXThreadSleep(PXNull,100); // simulate processing delay
     }*/
 
 
@@ -875,8 +856,11 @@ PXResult PXAPI PXStreamReleaseMonitor(PXStream PXREF pxStream)
 
 PXResult PXAPI PXStreamReleaseCamera(PXStream PXREF pxStream)
 {
+#if OSUnix
+#elif OSWindows
     IMFMediaBuffer PXREF mediaBuffer = pxStream->Camera.MediaBuffer;
     mediaBuffer->lpVtbl->Release(mediaBuffer);
+#endif
 
     return PXResultOK;
 }
@@ -887,29 +871,29 @@ PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxSt
 
     pxStream->OnFrame = pxStreamOpenInfo->OnFrameCallBack;
 
-	switch(pxStreamOpenInfo->Mode)
-	{
-		case PXStreamModeWindow:
-		{
+    switch(pxStreamOpenInfo->Mode)
+    {
+        case PXStreamModeWindow:
+        {
             pxStream->Create = PXStreamCreateWindow;
             pxStream->Update = PXStreamUpdateWindow;
             pxStream->Release = PXStreamReleaseWindow;
-			break;
-		}
-		case PXStreamModeMonitor:
-		{
+            break;
+        }
+        case PXStreamModeMonitor:
+        {
             pxStream->Create = PXStreamCreateMonitor;
             pxStream->Update = PXStreamUpdateWindow;
             pxStream->Release = PXStreamReleaseMonitor;
-			break;
-		}
-		case PXStreamModeCamera:
-		{
+            break;
+        }
+        case PXStreamModeCamera:
+        {
             pxStream->Create = PXStreamCreateCamera;
             pxStream->Update = PXStreamUpdateCamera;
             pxStream->Release = PXStreamReleaseCamera;
-			break;
-		}
+            break;
+        }
         case PXStreamModeTV:
         {
             pxStream->Create = PXStreamCreateTV;
@@ -917,11 +901,11 @@ PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxSt
             pxStream->Release = 0;
             break;
         }
-		default:
-		{
+        default:
+        {
             return PXResultRefusedParameterInvalid;
-		}
-	}
+        }
+    }
 
     // Create
     const PXResult pxResult = pxStream->Create(pxStream, pxStreamOpenInfo);

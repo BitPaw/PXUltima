@@ -13,7 +13,7 @@ const PXECSRegisterInfoStatic PXSpriteRegisterInfoStatic =
     PXECSTypeEntity,
     PXModelCreate,
     PXModelRelease,
-    PXModelDraw
+    PXNull
 };
 PXECSRegisterInfoDynamic PXSpriteRegisterInfoDynamic;
 
@@ -43,148 +43,29 @@ PXResult PXAPI PXSpriteCreate(PXSprite** pxSpriteREF, PXSpriteCreateInfo PXREF p
     }
 
     pxSprite = *pxSpriteREF;
-    PXECSInfoFlagStateAdd(&pxSprite->Info, PXECSFlagBehaviourCanRender);
 
-    // Create hitbox if requested
-    if(pxSpriteCreateInfo->HitboxBehaviour > 0)
+    PXQuadCreate(&pxSprite->Quad);
+
+
+    PXMaterial* pxMaterial;
+
     {
-        PXFieldEffectCreateInfo pxFieldEffectCreateInfo;
-        PXClear(PXECSCreateInfo, &pxFieldEffectCreateInfo);
+        PXMaterialCreateInfo pxMaterialCreateInfo;
+        PXClear(PXMaterialCreateInfo, &pxMaterialCreateInfo);
+        pxMaterialCreateInfo.Data.ShaderProgram = pxSpriteCreateInfo->ShaderProgramCurrent;
+        pxMaterialCreateInfo.Data.TextureBase = pxSpriteCreateInfo->TextureCurrent;
 
-        // Skybox CubeTexture
-        pxFieldEffectCreateInfo.Info.Type = PXResourceTypeHitBox;
-        pxFieldEffectCreateInfo.Info.Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
-        pxFieldEffectCreateInfo.Info.ObjectReference = (PXECSInfo**)&pxSprite->HitBox;
-        // pxHitboxCreateInfo.Model = pxSprite->Model;
-        pxFieldEffectCreateInfo.Behaviour = 0;
-
-        PXFieldEffectCreate(&pxSprite->HitBox, &pxFieldEffectCreateInfo);
-    }
-
-    // Scaling?
-
-    // pxSprite->Model = pxResourceManager->ModelFailback;
-
-#if 0
-            // Clear sprite //     PXGraphicSpriteConstruct(&pxEngine->Graphic, pxSprite);
-    {
-        PXModelConstruct(&pxSprite->Model);
-
-        //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
-        //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
-
-        PXVector2F32SetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
-        PXVector2F32SetXY(&pxSprite->TextureScalePointOffset, 1, 1);
-
-        //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
-    }
-
-    // PXTextCopyA(pxEngineResourceCreateInfo->FilePath, 20, pxSprite->Name, 50);
-
-    pxSprite->TextureScalePositionOffset.X = pxSpriteCreateEventData->TextureScalingPoints[0].X;
-    pxSprite->TextureScalePositionOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[0].Y;
-    pxSprite->TextureScalePointOffset.X = pxSpriteCreateEventData->TextureScalingPoints[1].X;
-    pxSprite->TextureScalePointOffset.Y = pxSpriteCreateEventData->TextureScalingPoints[1].Y;
-
-
-    pxSprite->Model.ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
-    pxSprite->Model.IgnoreViewRotation = pxSpriteCreateEventData->ViewRotationIgnore;
-    pxSprite->Model.IgnoreViewPosition = pxSpriteCreateEventData->ViewPositionIgnore;
-    //pxSprite->Model.
-    pxSprite->Model.RenderBothSides = PXTrue;
-
-
-
-    pxSprite->Model.MaterialContaierList = PXNew(PXMaterialContainer);
-    pxSprite->Model.MaterialContaierListSize = 1u;
-
-    pxSprite->Model.MaterialContaierList->MaterialList = PXNew(PXMaterial);
-    pxSprite->Model.MaterialContaierList->MaterialListSize = 1u;
-
-    PXMaterial* materiial = &pxSprite->Model.MaterialContaierList->MaterialList[0];
-
-    PXClear(PXMaterial, materiial);
-
-    materiial->DiffuseTexture = pxSprite->Texture;
-#endif
-
-
-#if 0
-
-
-
-    const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
-
-    if(hasScaling)
-    {
-        if(pxEngine->SpriteScaled.ResourceID.OpenGLID == 0)
-        {
-            PXOpenGLSpriteRegister(&pxEngine->Graphic.OpenGLInstance, pxSprite);
-        }
-        else
-        {
-            pxSprite->Model.StructureOverride = &pxEngine->SpriteScaled;
-        }
-    }
-    else
-    {
-        if(pxEngine->SpriteUnScaled.ResourceID.OpenGLID == 0)
-        {
-            PXOpenGLSpriteRegister(&pxEngine->Graphic.OpenGLInstance, pxSprite);
-        }
-        else
-        {
-            pxSprite->Model.StructureOverride = &pxEngine->SpriteUnScaled;
-        }
-    }
-
-    if(pxSpriteCreateEventData->Scaling.X == 0)
-    {
-        pxSpriteCreateEventData->Scaling.X = 1;
-    }
-
-    if(pxSpriteCreateEventData->Scaling.Y == 0)
-    {
-        pxSpriteCreateEventData->Scaling.Y = 1;
+        PXMaterialCreate(&pxMaterial, &pxMaterialCreateInfo);
     }
 
 
 
-    PXF32 aspectRationX = 1;
-
-    if(pxSprite->Texture)
-    {
-        if(pxSprite->Texture->Image->Width && pxSprite->Texture->Image->Height)
-        {
-            aspectRationX = (PXF32)pxSprite->Texture->Image->Width / (PXF32)pxSprite->Texture->Image->Height;
-        }
-    }
-
-
-
-    PXMatrix4x4FScaleSetXY(&pxSprite->Model.ModelMatrix, aspectRationX, 1);
-
-    PXMatrix4x4FScaleByXY
-    (
-        &pxSprite->Model.ModelMatrix,
-        pxSpriteCreateEventData->Scaling.X,
-        pxSpriteCreateEventData->Scaling.Y
-    );
-
-
-    PXMatrix4x4FPositionSet(&pxSprite->Model.ModelMatrix, &pxSpriteCreateEventData->Position);
-
-#endif
+    PXModelMaterialSet(pxSprite->Quad->Model, pxMaterial, 0, 0);
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXSpriteRelease(PXSprite PXREF pxSprite)
 {
-    return PXActionRefusedNotImplemented;
-}
-
-PXResult PXAPI PXSpriteDraw(PXSprite PXREF pxSprite, PXDrawInfo PXREF pxDrawInfo)
-{
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

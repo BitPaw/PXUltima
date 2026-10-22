@@ -12,40 +12,18 @@
 #include <PX/Type/PXCursor.h>
 #include <PX/Type/PXColor.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
+#include <PX/Type/PXColor.h>
+#include <PX/Engine/PXEngineUI.h>
 
 #if OSUnix
 #include <X11/Xlib.h> // Display*
 #endif
 
-
-typedef struct PXOpenGLContext_
-{
-#if OSUnix
-    GLXContext Data; // <GL/glx.h>
-#elif OSWindows
-    HGLRC Data; // <windef.h>
-#endif
-}
-PXOpenGLContext;
-
-
-
 // Atomic UI-Element
 // Only Text can be text
 // Only image can be image
 typedef struct PXWindow_ PXWindow;
-typedef struct PXWindowEvent_ PXWindowEvent;
-
-
-
-
-
-
-
-
-
-
-
+typedef struct PXOpenGLContext_ PXOpenGLContext;
 
 
 //-----------------------------------------------------
@@ -99,305 +77,6 @@ typedef struct PXWindowEvent_ PXWindowEvent;
 #define PXWindowBehaviourDefaultInputNormal  PXWindowBehaviourSelectable | PXWindowBehaviourHoverable
 #define PXWindowBehaviourDefaultText         PXWindowKeepHeight | PXWindowAllignCenter
 #define PXWindowBehaviourDefaultBuffer       PXWindowBehaviourDefaultKeepAspect
-
-#endif
-
-
-typedef enum PXUIHoverState_
-{
-    PXUIHoverStateInvalid,
-    PXUIHoverStateNotBeeingHovered, // Not beeing hovered
-    PXUIHoverStateHovered, // IS beeing hovered
-    PXUIHoverStateHoveredButOverlapped // User hovers over this object but its been blocked by other object
-}
-PXUIHoverState;
-
-typedef enum PXWindowResizeCause_
-{
-    PXWindowResizeCauseUnkown,
-    PXWindowResizeCauseMAXHIDE, // Message is sent to all pop - up windows when some other window is maximized.
-    PXWindowResizeCauseMAXIMIZED, // The window has been maximized.
-    PXWindowResizeCauseMAXSHOW, // Message is sent to all pop - up windows when some other window has been restored to its former size.
-    PXWindowResizeCauseMINIMIZED, // The window has been minimized.
-    PXWindowResizeCauseRESTORED // The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
-}
-PXWindowResizeCause;
-
-typedef enum PXWindowEventType_
-{
-    PXWindowEventTypeInvalid,
-
-    PXWindowEventTypeElementMove,
-    PXWindowEventTypeElementResize,
-    PXWindowEventTypeElementDestroy,
-    PXWindowEventTypeElementClose,
-    PXWindowEventTypeElementCreate,
-    PXWindowEventTypeElementSelect,
-    PXWindowEventTypeElementClick,
-    PXWindowEventTypeElementFocusEnter,
-    PXWindowEventTypeElementFocusLeave,
-
-    PXWindowEventTypeInputMouseButton,
-    PXWindowEventTypeInputMouseMove,
-    PXWindowEventTypeInputKeyboard,
-
-
-    WindowEventActivate,
-    WindowEventRedrawSet,
-    WindowEventFocusSet,
-    WindowEventFocusKill,
-    WindowEventEnable,
-    WindowEventTextSet,
-    WindowEventTextGet,
-    WindowEventTextGetLength,
-    WindowEventPaint,
-    WindowEventClose,
-    WindowEventSessionQuerryEnd,
-    WindowEventSessionEnd,
-    WindowEventQuerryOpen,
-    WindowEventQuit,
-    WindowEventBackgroundErase,
-    WindowEventSystemColorChange,
-    WindowEventShowWindow,
-    WindowEventIconChange,
-    WindowEventSettingChange,
-    WindowEventDeviceModeChange,
-    WindowEventActivateApp,
-    WindowEventFontChange,
-    WindowEventTimeChange,
-    WindowEventCancelMode,
-    WindowEventCursorSet,
-    WindowEventMouseActivate,
-    WindowEventChildActivate,
-    WindowEventQueueSync,
-    WindowEventSizeChange,
-    WindowEventIconPaint,
-    WindowEventIconBackgroundErase,
-    WindowEventDialogControlNext,
-    WindowEventSPOOLERSTATUS,
-    WindowEventItemDraw,
-    WindowEventItemMeasure,
-    WindowEventItemDelete,
-    WindowEventVKEYTOITEM,
-    WindowEventCHARTOITEM,
-    WindowEventFontSet,
-    WindowEventFontGet,
-    WindowEventSETHOTKEY,
-    WindowEventGETHOTKEY,
-    WindowEventQUERYDRAGICON,
-    WindowEventCOMPAREITEM,
-    WindowEventGETOBJECT,
-    WindowEventCOMPACTING,
-    WindowEventCOMMNOTIFY,
-    WindowEventWINDOWPOSCHANGING,
-    WindowEventWINDOWPOSCHANGED,
-    WindowEventPOWER,
-    WindowEventCOPYDATA,
-    WindowEventCANCELJOURNAL,
-    WindowEventNOTIFY,
-    WindowEventINPUTLANGCHANGEREQUEST,
-    WindowEventINPUTLANGCHANGE,
-    WindowEventTCARD,
-    WindowEventHELP,
-    WindowEventUSERCHANGED,
-    WindowEventNOTIFYFORMAT,
-    WindowEventCONTEXTMENU,
-    WindowEventSTYLECHANGING,
-    WindowEventSTYLECHANGED,
-    WindowEventDISPLAYCHANGE,
-    WindowEventGETICON,
-    WindowEventSETICON,
-    WindowEventNCCREATE,
-    WindowEventNCDESTROY,
-    WindowEventNCCALCSIZE,
-    WindowEventNCHITTEST,
-    WindowEventNCPAINT,
-    WindowEventNCACTIVATE,
-    WindowEventGETDLGCODE,
-    WindowEventSYNCPAINT,
-    WindowEventNCMOUSEMOVE,
-    WindowEventNCLBUTTONDOWN,
-    WindowEventNCLBUTTONUP,
-    WindowEventNCLBUTTONDBLCLK,
-    WindowEventNCRBUTTONDOWN,
-    WindowEventNCRBUTTONUP,
-    WindowEventNCRBUTTONDBLCLK,
-    WindowEventNCMBUTTONDOWN,
-    WindowEventNCMBUTTONUP,
-    WindowEventNCMBUTTONDBLCLK,
-    WindowEventNCXBUTTONDOWN,
-    WindowEventNCXBUTTONUP,
-    WindowEventNCXBUTTONDBLCLK,
-    WindowEventINPUT_DEVICE_CHANGE,
-    WindowEventINPUT,
-    WindowEventKEYFIRST,
-    WindowEventKEYDOWN,
-    WindowEventKEYUP,
-    WindowEventCHAR,
-    WindowEventDEADCHAR,
-    WindowEventSYSKEYDOWN,
-    WindowEventSYSKEYUP,
-    WindowEventSYSCHAR,
-    WindowEventSYSDEADCHAR,
-    WindowEventUNICHAR,
-    WindowEventKEYLAST,
-    //UNICODE_NOCHAR,
-    WindowEventIME_STARTCOMPOSITION,
-    WindowEventIME_ENDCOMPOSITION,
-    WindowEventIME_COMPOSITION,
-    WindowEventIME_KEYLAST,
-    WindowEventINITDIALOG,
-    WindowEventCOMMAND,
-    WindowEventSYSCOMMAND,
-    WindowEventTIMER,
-    WindowEventHSCROLL,
-    WindowEventVSCROLL,
-    WindowEventINITMENU,
-    WindowEventINITMENUPOPUP,
-    WindowEventGESTURE,
-    WindowEventGESTURENOTIFY,
-    WindowEventMENUSELECT,
-    WindowEventMENUCHAR,
-    WindowEventENTERIDLE,
-    WindowEventMENURBUTTONUP,
-    WindowEventMENUDRAG,
-    WindowEventMENUGETOBJECT,
-    WindowEventUNINITMENUPOPUP,
-    WindowEventMENUCOMMAND,
-    WindowEventCHANGEUISTATE,
-    WindowEventUPDATEUISTATE,
-    WindowEventQUERYUISTATE,
-    WindowEventCTLCOLORMSGBOX,
-    WindowEventCTLCOLOREDIT,
-    WindowEventCTLCOLORLISTBOX,
-    WindowEventCTLCOLORBTN,
-    WindowEventCTLCOLORDLG,
-    WindowEventCTLCOLORSCROLLBAR,
-    WindowEventCTLCOLORSTATIC,
-    WindowEventGETHMENU,
-    WindowEventMOUSEFIRST,
-    WindowEventMOUSEMOVE,
-    WindowEventLBUTTONDOWN,
-    WindowEventLBUTTONUP,
-    WindowEventLBUTTONDBLCLK,
-    WindowEventRBUTTONDOWN,
-    WindowEventRBUTTONUP,
-    WindowEventRBUTTONDBLCLK,
-    WindowEventMBUTTONDOWN,
-    WindowEventMBUTTONUP,
-    WindowEventMBUTTONDBLCLK,
-    WindowEventMOUSEWHEEL,
-    WindowEventXBUTTONDOWN,
-    WindowEventXBUTTONUP,
-    WindowEventXBUTTONDBLCLK,
-    WindowEventMOUSEHWHEEL,
-    WindowEventMOUSELAST,
-    WindowEventPARENTNOTIFY,
-    WindowEventENTERMENULOOP,
-    WindowEventEXITMENULOOP,
-    WindowEventNEXTMENU,
-    WindowEventSIZING,
-    WindowEventCAPTURECHANGED,
-    WindowEventMOVING,
-    WindowEventPOWERBROADCAST,
-    WindowEventDEVICECHANGE,
-    WindowEventMDICREATE,
-    WindowEventMDIDESTROY,
-    WindowEventMDIACTIVATE,
-    WindowEventMDIRESTORE,
-    WindowEventMDINEXT,
-    WindowEventMDIMAXIMIZE,
-    WindowEventMDITILE,
-    WindowEventMDICASCADE,
-    WindowEventMDIICONARRANGE,
-    WindowEventMDIGETACTIVE,
-    WindowEventMDISETMENU,
-    WindowEventENTERSIZEMOVE,
-    WindowEventEXITSIZEMOVE,
-    WindowEventDROPFILES,
-    WindowEventMDIREFRESHMENU,
-    WindowEventPOINTERDEVICECHANGE,
-    WindowEventPOINTERDEVICEINRANGE,
-    WindowEventPOINTERDEVICEOUTOFRANGE,
-    WindowEventTOUCH,
-    WindowEventNCPOINTERUPDATE,
-    WindowEventNCPOINTERDOWN,
-    WindowEventNCPOINTERUP,
-    WindowEventPOINTERUPDATE,
-    WindowEventPOINTERDOWN,
-    WindowEventPOINTERUP,
-    WindowEventPOINTERENTER,
-    WindowEventPOINTERLEAVE,
-    WindowEventPOINTERACTIVATE,
-    WindowEventPOINTERCAPTURECHANGED,
-    WindowEventTOUCHHITTESTING,
-    WindowEventPOINTERWHEEL,
-    WindowEventPOINTERHWHEEL,
-    WindowEventPOINTERROUTEDTO,
-    WindowEventPOINTERROUTEDAWAY,
-    WindowEventPOINTERROUTEDRELEASED,
-    WindowEventIME_SETCONTEXT,
-    WindowEventIME_NOTIFY,
-    WindowEventIME_CONTROL,
-    WindowEventIME_COMPOSITIONFULL,
-    WindowEventIME_SELECT,
-    WindowEventIME_CHAR,
-    WindowEventIME_REQUEST,
-    WindowEventIME_KEYDOWN,
-    WindowEventIME_KEYUP,
-    WindowEventMOUSEHOVER,
-    WindowEventMOUSELEAVE,
-    WindowEventNCMOUSEHOVER,
-    WindowEventNCMOUSELEAVE,
-    WindowEventWTSSESSION_CHANGE,
-    WindowEventTABLET_FIRST,
-    WindowEventTABLET_LAST,
-    WindowEventDPICHANGED,
-    WindowEventDPICHANGED_BEFOREPARENT,
-    WindowEventDPICHANGED_AFTERPARENT,
-    WindowEventGETDPISCALEDSIZE,
-    WindowEventCUT,
-    WindowEventCOPY,
-    WindowEventPASTE,
-    WindowEventCLEAR,
-    WindowEventUNDO,
-    WindowEventRENDERFORMAT,
-    WindowEventRENDERALLFORMATS,
-    WindowEventDESTROYCLIPBOARD,
-    WindowEventDRAWCLIPBOARD,
-    WindowEventPAINTCLIPBOARD,
-    WindowEventVSCROLLCLIPBOARD,
-    WindowEventSIZECLIPBOARD,
-    WindowEventASKCBFORMATNAME,
-    WindowEventCHANGECBCHAIN,
-    WindowEventHSCROLLCLIPBOARD,
-    WindowEventQUERYNEWPALETTE,
-    WindowEventPALETTEISCHANGING,
-    WindowEventPALETTECHANGED,
-    WindowEventHOTKEY,
-    WindowEventPRINT,
-    WindowEventPRINTCLIENT,
-    WindowEventAPPCOMMAND,
-    WindowEventTHEMECHANGED,
-    WindowEventCLIPBOARDUPDATE,
-    WindowEventDWMCOMPOSITIONCHANGED,
-    WindowEventDWMNCRENDERINGCHANGED,
-    WindowEventDWMCOLORIZATIONCOLORCHANGED,
-    WindowEventDWMWINDOWMAXIMIZEDCHANGE,
-    WindowEventDWMSENDICONICTHUMBNAIL,
-    WindowEventDWMSENDICONICLIVEPREVIEWBITMAP,
-    WindowEventGETTITLEBARINFOEX,
-    WindowEventHANDHELDFIRST,
-    WindowEventHANDHELDLAST,
-    WindowEventAFXFIRST,
-    WindowEventAFXLAST,
-    WindowEventPENWINFIRST,
-    WindowEventPENWINLAST,
-    WindowEventAPP
-}
-PXWindowEventType;
-
-
 
 
 typedef enum PXWindowPropertyType_
@@ -501,124 +180,81 @@ typedef enum PXWindowPropertyType_
 }
 PXWindowPropertyType;
 
-typedef enum PXUIElementTreeViewItemInsertMode_
+typedef enum PXEngineUIElementTreeViewItemInsertMode_
 {
-    PXUIElementTreeViewItemInsertModeROOT,
-    PXUIElementTreeViewItemInsertModeFIRST,
-    PXUIElementTreeViewItemInsertModeLAST,
-    PXUIElementTreeViewItemInsertModeSORT
+    PXEngineUIElementTreeViewItemInsertModeROOT,
+    PXEngineUIElementTreeViewItemInsertModeFIRST,
+    PXEngineUIElementTreeViewItemInsertModeLAST,
+    PXEngineUIElementTreeViewItemInsertModeSORT
 }
-PXUIElementTreeViewItemInsertMode;
+PXEngineUIElementTreeViewItemInsertMode;
 
-typedef enum PXUIElementType_
+typedef enum PXEngineUIElementType_
 {
-    PXUIElementTypeInvalid,
-    PXUIElementTypeCustom,
-    PXUIElementTypeWindow, // General window to draw into
-    PXUIElementTypePanel, // static generic element
-    PXUIElementTypeText, // text, letters
-    PXUIElementTypeButton, // Button to click
-    PXUIElementTypeImage,
-    PXUIElementTypeDropDown,
-    PXUIElementTypeListBox,
-    PXUIElementTypeTextEdit,
-    PXUIElementTypeRichEdit,
-    PXUIElementTypeScrollBar,
-    PXUIElementTypeTrackBar,
-    PXUIElementTypeStatusBar,
-    PXUIElementTypeUpDown,
-    PXUIElementTypeProgressBar,
-    PXUIElementTypeHotKey,
-    PXUIElementTypeCalender,
-    PXUIElementTypeToolTip,
-    PXUIElementTypeAnimate,
-    PXUIElementTypeDatePicker,
-    PXUIElementTypeGroupBox,
-    PXUIElementTypeRadioButton,
-    PXUIElementTypeGroupRadioButton,
-    PXUIElementTypeTreeView,
-    PXUIElementTypeTreeViewItem,
-    PXUIElementTypeFileDirectyView,
-    PXUIElementTypeFileDirectyViewEntry,
-    PXUIElementTypeIPInput,
-    PXUIElementTypeLink,
-    PXUIElementTypeHeader, // Object insode another for header info
-    PXUIElementTypeFontSelector,
-    PXUIElementTypePageScroll,
-    PXUIElementTypeTabControll,
-    PXUIElementTypeTabPage,
-    PXUIElementTypeToggle,
-    PXUIElementTypeCheckBox,
-    PXUIElementTypeComboBox,
-    PXUIElementTypeColorPicker,
-    PXUIElementTypeSlider,
-    PXUIElementTypeImageList,
-    PXUIElementTypeRenderFrame,
+    PXEngineUIElementTypeInvalid,
+    PXEngineUIElementTypeCustom,
+    PXEngineUIElementTypeWindow, // General window to draw into
+    PXEngineUIElementTypePanel, // static generic element
+    PXEngineUIElementTypeText, // text, letters
+    PXEngineUIElementTypeButton, // Button to click
+    PXEngineUIElementTypeImage,
+    PXEngineUIElementTypeDropDown,
+    PXEngineUIElementTypeListBox,
+    PXEngineUIElementTypeTextEdit,
+    PXEngineUIElementTypeRichEdit,
+    PXEngineUIElementTypeScrollBar,
+    PXEngineUIElementTypeTrackBar,
+    PXEngineUIElementTypeStatusBar,
+    PXEngineUIElementTypeUpDown,
+    PXEngineUIElementTypeProgressBar,
+    PXEngineUIElementTypeHotKey,
+    PXEngineUIElementTypeCalender,
+    PXEngineUIElementTypeToolTip,
+    PXEngineUIElementTypeAnimate,
+    PXEngineUIElementTypeDatePicker,
+    PXEngineUIElementTypeGroupBox,
+    PXEngineUIElementTypeRadioButton,
+    PXEngineUIElementTypeGroupRadioButton,
+    PXEngineUIElementTypeTreeView,
+    PXEngineUIElementTypeTreeViewItem,
+    PXEngineUIElementTypeFileDirectyView,
+    PXEngineUIElementTypeFileDirectyViewEntry,
+    PXEngineUIElementTypeIPInput,
+    PXEngineUIElementTypeLink,
+    PXEngineUIElementTypeHeader, // Object insode another for header info
+    PXEngineUIElementTypeFontSelector,
+    PXEngineUIElementTypePageScroll,
+    PXEngineUIElementTypeTabControll,
+    PXEngineUIElementTypeTabPage,
+    PXEngineUIElementTypeToggle,
+    PXEngineUIElementTypeCheckBox,
+    PXEngineUIElementTypeComboBox,
+    PXEngineUIElementTypeColorPicker,
+    PXEngineUIElementTypeSlider,
+    PXEngineUIElementTypeImageList,
+    PXEngineUIElementTypeRenderFrame,
 
-    PXUIElementTypeMenuStrip, // Topline of a window that contains a selectable list of things
+    PXEngineUIElementTypeMenuStrip, // Topline of a window that contains a selectable list of things
 
-    PXUIElementTypeScene,
-    PXUIElementTypeCode,
-    PXUIElementTypeHexEditor,
-    PXUIElementTypeGraphBehaviour,
-    PXUIElementTypeGraphTime,
-    PXUIElementTypeSoundPlayerMixer,
-    PXUIElementTypeVideoCutter,
-    PXUIElementTypeDataBaseManager,
-    PXUIElementTypeNetworkTester,
-    PXUIElementTypeInputView,
-    PXUIElementTypeHardwareInfo,
+    PXEngineUIElementTypeScene,
+    PXEngineUIElementTypeCode,
+    PXEngineUIElementTypeHexEditor,
+    PXEngineUIElementTypeGraphBehaviour,
+    PXEngineUIElementTypeGraphTime,
+    PXEngineUIElementTypeSoundPlayerMixer,
+    PXEngineUIElementTypeVideoCutter,
+    PXEngineUIElementTypeDataBaseManager,
+    PXEngineUIElementTypeNetworkTester,
+    PXEngineUIElementTypeInputView,
+    PXEngineUIElementTypeHardwareInfo,
 
-    PXUIElementTypeFileManager,    // TreeView of filesystem with utility
-    PXUIElementTypeResourceManger, // TreeView of a list of resource entrys
-    PXUIElementTypeResourceEntry,  // Panel with name and icons of type and propertys
-    PXUIElementTypeResourceInfo    // Resource info
+    PXEngineUIElementTypeFileManager,    // TreeView of filesystem with utility
+    PXEngineUIElementTypeResourceManger, // TreeView of a list of resource entrys
+    PXEngineUIElementTypeResourceEntry,  // Panel with name and icons of type and propertys
+    PXEngineUIElementTypeResourceInfo    // Resource info
 }
-PXUIElementType;
+PXEngineUIElementType;
 
-typedef enum PXUIElementAllign_
-{
-    PXUIElementAllignInvalid,
-    PXUIElementAllignLeft,
-    PXUIElementAllignRight,
-    PXUIElementAllignCenter
-}
-PXUIElementAllign;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-typedef enum PXWindowDockSide_
-{
-    PXWindowDockSideNone = 0,
-    PXWindowDockSideCenter,
-    PXWindowDockSideLeft,
-    PXWindowDockSideTop,
-    PXWindowDockSideRight,
-    PXWindowDockSideBottom
-}
-PXWindowDockSide;
-
-
-typedef enum PXLayoutMode_
-{
-    PXLayoutNone,
-    PXLayoutVertical,
-    PXLayoutHorizontal,
-    PXLayoutGrid
-}
-PXLayoutMode;
 
 typedef struct PXWindowLayout_
 {
@@ -639,7 +275,7 @@ typedef struct PXWindowLayout_
     PXBool AutoWidth;
     PXBool AutoHeight;
 
-    PXLayoutMode LayoutMode;
+    PXEngineUILayoutMode LayoutMode;
     int SpacingX;
     int SpacingY;
     int GridColumns;
@@ -657,13 +293,13 @@ typedef struct PXWindowState_
     PXBool Dirty;              // needs redraw
     PXBool IsInFocus;
 
-    PXWindowDockSide  DockSide;     // Docking behaviour
+    PXEngineUIDockSide  DockSide;     // Docking behaviour
     PXBool Floating;   // if TRUE, excluded from docking layout
 }
 PXWindowState;
 
 
-typedef void (PXAPI* PXWindowEventFunction)(PXWindowEvent PXREF pxWindowEvent);
+
 
 typedef struct PXWindowEventList_
 {
@@ -674,252 +310,136 @@ typedef struct PXWindowEventList_
 PXWindowEventList;
 
 
-typedef struct PXDrawInfo_
+
+//---------------------------------------------------------
+// Window stuff
+//---------------------------------------------------------
+typedef struct PXWindowHandle_
 {
-    //-------------------------
-    // Set by engine
-    PXWindow* Window;
-
-    PXEngine* Engine;
-    PXRenderSystem* Rendrer;
-    PXScene* Scene;
-    PXCamera* Camera;
-    PXUITheme* UITheme;
-    //-------------------------
-
-    void* Owner; // User defined payload
-    PXECSDrawFunction DrawCall;
-
 #if OSUnix
-    int ScreenIDHandle;
-    Display* DisplayHandle;
-    Drawable WindowIDHandle;
-    GC GraphicContntainerHandle;
+    Window Data; // X11
 #elif OSWindows
+    union
+    {
+        HWND Data;
+        HMENU DataM;
+    };
 #endif
+}
+PXWindowHandle;
 
-    //PXText Content;
+typedef struct PXWindowPixelBuffer_
+{
+#if OSUnix
+    GC Data;
+#elif OSWindows
+    HDC Data; // Used by windows for direct context for rendering
+#endif
+}
+PXWindowPixelBuffer;
+//---------------------------------------------------------
 
+
+
+//---------------------------------------------------------
+// Window create
+//---------------------------------------------------------
+typedef struct PXWindowCreateInfo_ PXWindowCreateInfo;
+
+typedef PXResult(PXAPI* PXWindowCreateHelper)(PXWindowCreateInfo PXREF pxWindowCreateInfo);
+typedef PXResult(PXAPI* PXWindowCreateFunction)(PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo);
+
+typedef struct PXWindowCreateInfo_
+{
+    PXECSCreateInfo Info;
+     
+    PXText WindowParentName; // Set by config, needs to be translated into actual handle!
+
+    PXDisplay* DisplayCurrent;
+    PXWindow* WindowParent;
+
+    //_____________________________________________________
+    // Positions
+    PXWindowLayout Layout;
+    PXWindowState State;
+    //_____________________________________________________
+
+    // Style
+
+
+    PXColorRGB_U8 BackGroundColor;
+
+
+    // BOOL isChild;
+
+
+    PXBool DoOpenGL;
+
+
+
+
+    // Setings
+
+    // Don't create a HANDLE for the window. 
+    // Nested rendering without OS overhead.
+    PXBool SkipHandleCreation; 
+
+    // Windows: Will attach the WM_CHILD flag.
+    PXBool DoSpawnInParent;
+
+
+    PXBool UseFrameBuffer; // Dont render into a frame but into a framebuffer
+    PXBool Invisible; // Hide the window, we still want to create it.
+
+
+    PXBool Simple;
+    PXBool MaximizeOnStart;
+
+
+    PXWindow* UIElementReference;
+
+    PXWindowEventList EventList;
+
+    //PXI32U FlagList;
+
+    PXEngineUIElementType Type;
     PXI32U Behaviour;
-
-    // Input
-    PXVector2I32S CursorPosition;
-
-
-    // Color
-    PXBrush* Brush;
-    PXColorRGBI8 Color;
-
-    // Rectangle
-    PXBool Rounded;
-
-    // Scene
-    PXF32 AspectRatio;
-
-    // Text
-    PXText* Text;
-    PXF32 Size;
-    PXF32 OffsetX;
-}
-PXDrawInfo;
+    PXI32U Setting;
+    PXColorRGBA_F32* ColorTintReference;
 
 
-
-
-
-
-#if OSWindows
-typedef struct BoxInsets
-{
-    int l, t, r, b;
-}
-BoxInsets;
-
-
-typedef struct DockLayoutConfig {
-    int defaultBandW;     // default LEFT/RIGHT thickness
-    int defaultBandH;     // default TOP/BOTTOM thickness
-    int defaultSpacing;   // default spacing between siblings
-    BoxInsets padLeft;    // padding inside LEFT band area
-    BoxInsets padRight;   // padding inside RIGHT band area
-    BoxInsets padTop;     // padding inside TOP band area
-    BoxInsets padBottom;  // padding inside BOTTOM band area
-    BoxInsets padCenter;  // padding inside CENTER area
-    PXBool centerVertical;  // TRUE => center stacks vertically; FALSE => horizontally
-} DockLayoutConfig;
-
-
-
-
-
-void SubSegment(RECT* m, RECT* r, PXWindowDockSide side);
-
-// For allocation convenience
-typedef struct Paneref
-{
-    HWND h;
-    PXWindow* p;
-}
-Paneref;
-
-typedef struct DockOverlay
-{
-    BOOL     active;
-    PXWindowDockSide side;
-    RECT     rect;        // rectangle of preview area
-}
-DockOverlay;
-
-static DockOverlay gOverlay = { 0 };
-
-
-
-
-
-
-
-void LayoutDockedAA(PXWindow PXREF pxWindow);
-void LayoutDockedGOOD(PXWindow PXREF pxWindow);
-DockLayoutConfig DockDefaultConfig(void);
-void InitDockContainerStyles(PXWindow PXREF pxWindow);
-void InitDockChildStyles(PXWindow PXREF pxWindow);
-int clamp_nonneg(int v);
-int CountVisiblePanes(HWND hParent);
-int CollectSide(HWND hParent, PXWindowDockSide side, Paneref* buf, int cap);
-void DistributeAxisWithBox(Paneref* arr, int n, int availableAxis, int spacing, BOOL vertical, int* outSlotSizes /* n */);
-void ApplyStackWithBox(HWND hParent, HDWP* phdwp, RECT area, BOOL vertical, Paneref* arr, int n, int spacing);
-RECT InsetRectBy(RECT r, BoxInsets in);
-void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg);
-
-
-BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
-PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
-RECT PXAPI OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side);
-void PXAPI PXWindowShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side);
-void PXAPI PXWindowHideDockOverlay(PXWindow PXREF pxWindow);
-void PXAPI PXWindowTearOffToFloating(PXWindow* p, POINT startScreen);
-void PXAPI PXWindowDockBackToChild(PXWindow* p, PXWindowDockSide side);
-void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha);
-void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov);
-void PXAPI PXWindowDrawScene(void);
-
-void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGBI8 PXREF color);
-void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
-
-
-#endif
-
-
-
-
-#if 1
-
-
-
-
-
-
-typedef struct PXWindowEventCloseData_
-{
-    PXBool CommitToClose;
-}
-PXWindowEventCloseData;
-
-typedef struct PXWindowEventResizeData_
-{
-    PXI16S Width;
-    PXI16S Height;
-    PXWindowResizeCause Cause;
-}
-PXWindowEventResizeData;
-
-typedef struct PXWindowEventMouseButtonData_
-{
-    PXKeyPressState PressState;
-    PXMouseButton Button;
-
-    PXVector2I32S Position;
-}
-PXWindowEventMouseButtonData;
-
-typedef struct PXWindowEventSelectData_
-{
-    PXWindow* UIElementSelected;
-}
-PXWindowEventSelectData;
-
-typedef struct PXWindowEventMouseMoveData_
-{
-    PXVector2F32 Axis;
-    PXVector2I32S Delta;
-    PXVector2I32S Position;
-}
-PXWindowEventMouseMoveData;
-
-typedef struct PXWindowEventInputKeyboard_
-{
-    PXKeyPressState PressState;
-    PXVirtualKey VirtualKey;
-
-    union
-    {
-        char CharacterA;
-        wchar_t CharacterW;
-    };
-
-    PXI16U CharacterID;
-}
-PXWindowEventKeyboardData;
-
-
-
-
-typedef struct PXWindowEvent_
-{
-    // Calls are generated in the OS-API layer.
-    // Wrappers are required, this is an internal callback for translation.
-    PXWindowEventFunction CallBack;
-
-    union
-    {
-        PXWindowEventCloseData Close;
-        PXWindowEventResizeData Resize;
-        PXWindowEventMouseButtonData MouseButton;
-        PXWindowEventMouseMoveData MouseMove;
-        PXWindowEventKeyboardData Keyboard;
-        PXWindowEventSelectData Select;
-        PXDrawInfo Draw;
-    };
-
-    //-----------------------------
-    // Original data
-    //-----------------------------
 #if OSUnix
-    XEvent* EventData;
-    Display* XDisplayHandle;
+    Display* DisplayHandle;
+    int ScreenHandleNumber;
 #elif OSWindows
-    HWND WindowHandle;
-    UINT EventID;
-    WPARAM ParamW;
-    LPARAM ParamL;
+    HDC DeviceContextHandle;
+    HINSTANCE InstanceHandle;
 
-    PXBool DoReturnValue;
-    LRESULT ReturnValue;
+    DWORD StyleFlagsExtended;
+    DWORD StyleFlags;
 #endif
 
-    void* Owner; // Custom type, user defined payload.
+    PXText WindowClassName;
+    PXText WindowText;
 
-    //-----------------------------
-    // Translated Data
-    //-----------------------------
-    PXWindowEventType Type;
 
-    PXWindow* WindowSender; // Source of the event
+    PXWindowCreateFunction CreatePre; // Function is called before the physical creation
+    PXWindowCreateFunction CreatePost; // Function is called after physical creation
 
-    PXMouse* DeviceMouse;
-    PXKeyBoard* DeviceKeyboard;
+
+    //PXI8U FLags;
+
+    // PXWindowMenuItemList MenuItem;
+     //PXEngineUIElementSceneRenderInfo SceneRender;
+
+    // Reference to hold so OS level events can get the 
+    // required handle for the UI system.
+    PXEngineUI* EngineUI;
 }
-PXWindowEvent;
+PXWindowCreateInfo;
+//---------------------------------------------------------
+
+
 
 
 typedef struct PXWindowPixelSystemInfo_
@@ -945,40 +465,17 @@ typedef struct PXScollbar_
 PXScollbar;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-typedef struct PXWindowCreateInfo_ PXWindowCreateInfo;
-
-typedef PXResult(PXAPI* PXWindowCreateHelper)(PXWindowCreateInfo PXREF pxWindowCreateInfo);
-
-typedef PXResult(PXAPI* PXWindowCreateFunction)(PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo);
-
-
-
-
-
-typedef enum PXUIElementInteractType_
+typedef enum PXEngineUIElementInteractType_
 {
-    PXUIElementInteractTypeInvalid,
-    PXUIElementInteractTypeSelect,
-    PXUIElementInteractTypeClick,
-    PXUIElementInteractTypeMouseEnter,
-    PXUIElementInteractTypeMouseLeave
+    PXEngineUIElementInteractTypeInvalid,
+    PXEngineUIElementInteractTypeSelect,
+    PXEngineUIElementInteractTypeClick,
+    PXEngineUIElementInteractTypeMouseEnter,
+    PXEngineUIElementInteractTypeMouseLeave
 }
-PXUIElementInteractType;
+PXEngineUIElementInteractType;
 
-
-typedef struct PXUIElementFrameBufferInfo_
+typedef struct PXEngineUIElementFrameBufferInfo_
 {
     struct PXTexture_* TextureReference;
 
@@ -987,42 +484,38 @@ typedef struct PXUIElementFrameBufferInfo_
     PXI32U BufferID;
     PXI32U RenderID;
 }
-PXUIElementFrameBufferInfo;
+PXEngineUIElementFrameBufferInfo;
 
-typedef struct PXUIElementImageInfo_
+typedef struct PXEngineUIElementImageInfo_
 {
     struct PXTexture_* TextureReference;
 }
-PXUIElementImageInfo;
+PXEngineUIElementImageInfo;
 
-
-
-typedef struct PXUIElementItemInfo_
+typedef struct PXEngineUIElementItemInfo_
 {
     char* TextData;
     PXSize TextSize;
 }
-PXUIElementItemInfo;
+PXEngineUIElementItemInfo;
 
-typedef struct PXUIElementSceneRenderInfo_
+typedef struct PXEngineUIElementSceneRenderInfo_
 {
     struct PXEngine_* Engine;
     struct PXEngineStartInfo_* StartInfo;
 }
-PXUIElementSceneRenderInfo;
+PXEngineUIElementSceneRenderInfo;
 
-
-
-typedef struct PXUIElementProgressBarInfo_
+typedef struct PXEngineUIElementProgressBarInfo_
 {
     PXF32 Percentage;
-    PXColorRGBI8 BarColor;
+    PXColorRGB_U8 BarColor;
 }
-PXUIElementProgressBarInfo;
+PXEngineUIElementProgressBarInfo;
 
 
 #if 0
-typedef struct PXUIElementPosition_
+typedef struct PXEngineUIElementPosition_
 {
     PXRectangleLTRBF32 Margin;
     PXRectangleLTRBF32 Padding;
@@ -1037,118 +530,8 @@ typedef struct PXUIElementPosition_
  //   PXI8U FlagListAncer;
      // PXI8U FlagListKeep;
 }
-PXUIElementPosition;
+PXEngineUIElementPosition;
 #endif
-
-
-
-
-
-
-typedef struct PXWindowHandle_
-{
-#if OSUnix
-    Window Data; // X11
-#elif OSWindows
-    union
-    {
-        HWND Data;
-        HMENU DataM;
-    };
-#endif
-}
-PXWindowHandle;
-
-typedef struct PXWindowPixelBuffer_
-{
-#if OSUnix
-    GC Data;
-#elif OSWindows
-    HDC Data; // Used by windows for direct context for rendering
-#endif
-}
-PXWindowPixelBuffer;
-
-
-typedef struct PXWindowCreateInfo_
-{
-    PXECSCreateInfo Info;
-
-    PXWindow* WindowParent;
-    PXText WindowParentName; // Set by config, needs to be translated into actual handle!
-
-    PXDisplay* DisplayCurrent;
-
-    // Positions
-    PXWindowLayout Layout;
-    PXWindowState State;
-
-    // Style
-
-
-    PXColorRGBI8 BackGroundColor;
-
-
-   // BOOL isChild;
-
-
-    PXBool DoOpenGL;
-
-
-
-
-    // Setings
-    PXBool UsePhysical; // Dont create a HANDLE for the window. Nested rendering
-    PXBool UseFrameBuffer; // Dont render into a frame but into a framebuffer
-    PXBool Invisible; // Hide the window, we still want to create it.
-
-
-    PXBool Simple;
-    PXBool MaximizeOnStart;
-
-
-    PXWindow* UIElementReference;
-
-    PXWindowEventList EventList;
-
-    //PXI32U FlagList;
-
-    PXUIElementType Type;
-    PXI32U Behaviour;
-    PXI32U Setting;
-    PXColorRGBAF* ColorTintReference;
-
-
-#if OSUnix
-    Display* DisplayHandle;
-    int ScreenHandleNumber;
-#elif OSWindows
-    HDC DeviceContextHandle;
-    HINSTANCE InstanceHandle;
-
-    DWORD StyleFlagsExtended;
-    DWORD StyleFlags;
-#endif
-
-    PXText WindowClassName;
-    PXText WindowText;
-
-
-    PXWindowCreateFunction CreatePre; // Function is called before the physical creation
-    PXWindowCreateFunction CreatePost; // Function is called after physical creation
-
-
-    //PXI8U FLags;
-
-    // PXWindowMenuItemList MenuItem;
-     //PXUIElementSceneRenderInfo SceneRender;
-
-        // REMOVE??
-    struct PXEngine_* Engine;
-    struct PXRenderSystem_* Renderer;
-}
-PXWindowCreateInfo;
-
 
 #if 0
 typedef struct PXWindowPositionCalulcateInfo_
@@ -1177,10 +560,12 @@ PXWindowPositionCalulcateInfo;
 //PXPublic PXResult PXAPI PXWindowPositionCalculcate(PXWindow PXREF pxWindow, PXWindowPositionCalulcateInfo PXREF pxUIElementPositionCalulcateInfo);
 
 
-PXPublic const char* PXAPI PXWindowTypeToString(const PXUIElementType pxUIElementType);
+PXPublic const char* PXAPI PXWindowTypeToString(const PXEngineUIElementType pxUIElementType);
 
 PXPublic void PXAPI PXWindowRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
+
+//---------------------------------------------------------
 #if OSUnix
 
 #elif OSWindows
@@ -1188,16 +573,28 @@ PXPublic HDC PXAPI PXWindowDCGet(PXWindow PXREF pxWindow);
 PXPublic PXWindow* PXAPI PXWindowFromHandle(const HWND windowHandle);
 PXPrivate void PXAPI PXWindowStoreSelf(PXWindow PXREF pxWindow, const HWND windowHandle);
 #endif
+//---------------------------------------------------------
 
 
+//---------------------------------------------------------
+// OpenGL
 PXPublic PXOpenGLContext PXAPI PXWindowGLContextGet(const PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowGLContextSet(PXWindow PXREF pxWindow, const PXOpenGLContext pxOpenGLContext);
+PXPublic PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow);
+//---------------------------------------------------------
+
+
 
 PXPublic PXWindowHandle PXAPI PXWindowHandleGet(const PXWindow PXREF pxWindow);
 
+// [WARNING] This function can return a window handle that is 
+// owned by another thread or even process. 
+PXPublic PXWindowHandle PXAPI PXWindowHandleGetAtCursorPosition();
+PXPublic PXWindowHandle PXAPI PXWindowHandleGetAtPosition(const int x, const int y);
 
-
-
+PXPublic PXBool PXAPI PXWindowOwnedByThisProcess(PXWindow PXREF pxWindow);
+PXPublic PXBool PXAPI PXWindowHandleOwnedByThisProcess(const PXWindowHandle pxWindowHandle);
+PXPublic PXF32 PXAPI PXWindowDPIScaleFactorGet(const PXWindowHandle pxWindowHandle);
 
 // Use for a seperate window that needs to be merged into a main one.
 // Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
@@ -1208,40 +605,39 @@ PXPublic PXWindowHandle PXAPI PXWindowHandleGet(const PXWindow PXREF pxWindow);
 //PXPublic PXResult PXAPI PXWindowEmit(PXGUIManager PXREF pxGUIManager, PXWindow PXREF pxWindow);
 
 
+
+
 //---------------------------------------------------------
-// WINDOW-EVENT
-
-// This function consumes events first before any other
-// listener revices this. Because of this, this event handler
-// shall only handle low-level events and not be too much in the way
-PXPublic PXResult PXAPI PXWindowEventConsumer(PXWindowEvent PXREF pxWindowEvent);
-
-
-PXPublic void PXAPI PXWindowEventMouseEnter(PXWindowEvent PXREF pxWindowEvent);
-PXPublic void PXAPI PXWindowEventMouseLeave(PXWindowEvent PXREF pxWindowEvent);
-PXPublic void PXAPI PXWindowEventMouseClick(PXWindowEvent PXREF pxWindowEvent);
-PXPublic void PXAPI PXWindowEventMouseMove(PXWindowEvent PXREF pxWindowEvent);
-
-PXPublic void PXAPI PXWindowEventRender(PXWindowEvent PXREF pxWindowEvent);
-
-PXPublic void PXAPI PXWindowEventKeyboardInput(PXWindowEvent PXREF pxWindowEvent);
-
-PXPublic void PXAPI PXWindowEventResize(PXWindowEvent PXREF pxWindowEvent);
-PXPublic void PXAPI PXWindowEventMoved(PXWindowEvent PXREF pxWindowEvent);
-//---------------------------------------------------------
-
-
+// Hirachy
 PXPublic PXWindow* PXAPI PXWindowRootGet(const PXWindow PXREF pxWindow);
 PXPublic PXBool PXAPI PXWindowIsRoot(const PXWindow PXREF pxWindow);
 
-PXPublic PXResult PXAPI PXWindowOpenGLEnable(PXWindow PXREF pxWindow);
+PXPublic PXSize PXAPI PXWindowSiblingAmount(const PXWindow PXREF pxWindow);
+PXPublic PXWindow* PXAPI PXWindowSiblingGet(PXWindow PXREF pxWindow, const PXSize index);
 
-PXPublic const char* PXWindowDockSideToString(const PXWindowDockSide pxWindowDockSide);
+PXPublic PXSize PXAPI PXWindowChildAmount(const PXWindow PXREF pxWindow);
+PXPublic PXWindow* PXAPI PXWindowChildGet(PXWindow PXREF pxWindow, const PXSize index);
+
+PXPublic PXResult PXAPI PXWindowChildAdd(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowChild);
+PXPublic PXResult PXAPI PXWindowChildRemove(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowChild);
+
+PXPublic PXResult PXAPI PXWindowParentSet(PXWindow PXREF pxWindow, const PXWindow PXREF pxWindowParent);
+PXPublic PXWindow* PXAPI PXWindowParentGet(const PXWindow PXREF pxWindow);
+//---------------------------------------------------------
+
+//---------------------------------------------------------
+// Docking
+PXPublic const char* PXWindowDockSideToString(const PXEngineUIDockSide pxWindowDockSide);
+//---------------------------------------------------------
+
+//---------------------------------------------------------
+// Drag'n'Drop
+
+//---------------------------------------------------------
 
 
-PXPublic PXResult PXAPI PXWindowEventPendingAmount(PXSize PXREF amount);
-PXPublic PXResult PXAPI PXWindowEventPoll(const PXWindow PXREF pxWindow);
 
+//---------------------------------------------------------
 PXPublic PXResult PXAPI PXWindowBufferSwap(PXWindow PXREF pxWindow);
 
 PXPublic PXResult PXAPI PXWindowCreate(PXWindow** pxWindowREF, PXWindowCreateInfo PXREF pxWindowCreateInfo);
@@ -1255,26 +651,13 @@ PXPrivate PXResult PXAPI PXWindowCreatePhysicalSpawn(PXWindow PXREF pxWindow, PX
 PXPublic PXResult PXAPI PXWindowCreateFrameBuffer(PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo);
 
 PXPublic PXResult PXAPI PXWindowDestroy(PXWindow PXREF pxWindow);
-PXPublic PXResult PXAPI PXWindowDraw(PXWindow PXREF pxWindow);
+//---------------------------------------------------------
 
 
 
 //---------------------------------------------------------
 // Hirachy
 //---------------------------------------------------------
-PXPublic PXSize PXAPI PXWindowSiblingAmount(const PXWindow PXREF pxWindow);
-PXPublic PXWindow* PXAPI PXWindowSiblingGet(PXWindow PXREF pxWindow, const PXSize index);
-
-
-PXPublic PXSize PXAPI PXWindowChildAmount(const PXWindow PXREF pxWindow);
-PXPublic PXWindow* PXAPI PXWindowChildGet(PXWindow PXREF pxWindow, const PXSize index);
-
-
-PXPublic PXResult PXAPI PXWindowChildAdd(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowChild);
-PXPublic PXResult PXAPI PXWindowChildRemove(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowChild);
-
-PXPublic PXResult PXAPI PXWindowParentSet(PXWindow PXREF pxWindow, const PXWindow PXREF pxWindowParent);
-PXPublic PXWindow* PXAPI PXWindowParentGet(const PXWindow PXREF pxWindow);
 
 // Same function as PXWindowParentGet with added default screen if we dont have any.
 // if parrent NULL, get default window (desktop).
@@ -1305,6 +688,14 @@ PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindow PXREF pxWindow);
 // If a window owns an actual physical handle.
 PXPublic PXBool PXAPI PXWindowIsPhysical(const PXWindow PXREF pxWindow);
 
+PXPublic PXBool PXAPI PXWindowIsMinimized(const PXWindow PXREF pxWindow);
+
+PXPublic PXBool PXAPI PXWindowIsSurfaceValid(const PXWindow PXREF pxWindow);
+
+
+
+PXPublic PXBool PXAPI PXWindowClientRectangleGet(const PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle);
+
 PXPublic PXResult PXAPI PXWindowVisibilitySet
 (
     PXWindow PXREF pxWindow,
@@ -1316,8 +707,10 @@ PXPublic PXResult PXAPI PXWindowShow(const PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowHide(const PXWindow PXREF pxWindow);
 
 // aka mark as dirty
+#if 0
 PXPublic PXResult PXAPI PXWindowRedraw(PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowRedrawEnable(PXWindow PXREF pxWindow, const PXBool enable);
+#endif
 
 PXPublic PXResult PXAPI PXWindowDragAndDropBegin(PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowDragAndDropEnd(PXWindow PXREF pxWindow);
@@ -1328,8 +721,8 @@ PXPublic PXResult PXAPI PXWindowDrawEnd(PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowScrollbarUpdate(PXWindow PXREF pxWindow, PXScollbar PXREF pxScollbar);
 
 PXPublic PXResult PXAPI PXWindowTitleBarColor(PXWindow PXREF pxWindow);
-PXPublic PXResult PXAPI PXWindowForegroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF pxColorRGBI8);
-PXPublic PXResult PXAPI PXWindowBackgroundSet(PXWindow PXREF pxWindow, PXColorRGBI8 PXREF pxColorRGBI8);
+PXPublic PXResult PXAPI PXWindowForegroundSet(PXWindow PXREF pxWindow, PXColorRGB_U8 PXREF PXColorRGB_U8);
+PXPublic PXResult PXAPI PXWindowBackgroundSet(PXWindow PXREF pxWindow, PXColorRGB_U8 PXREF PXColorRGB_U8);
 PXPublic PXResult PXAPI PXWindowFontSet(PXWindow PXREF pxWindow, PXFont PXREF pxFont);
 PXPublic PXResult PXAPI PXWindowBrushSet(PXWindow PXREF pxWindow, PXBrush PXREF pxBrush, const PXI8U mode);
 PXPublic PXResult PXAPI PXWindowTextGet(PXWindow PXREF pxWindow, PXText PXREF pxText);
@@ -1341,6 +734,12 @@ PXPublic PXResult PXAPI PXWindowStyleUpdate(PXWindow PXREF pxWindow);
 //---------------------------------------------------------
 // Properties
 //---------------------------------------------------------
+PXPublic UIWindow* PXAPI PXWindowUIDataGet(const PXWindow PXREF pxWindow);
+PXPublic UIState* PXAPI PXWindowUIStateGet(const PXWindow PXREF pxWindow);
+
+PXPublic PXResult PXAPI PXWindowClientArea(const PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle);
+PXPublic PXResult PXAPI PXWindowCursorPosition(const PXWindow PXREF pxWindow, PXVector2I32S PXREF positionGlobal, PXVector2I32S PXREF positionLocal);
+
 PXPublic PXResult PXAPI PXWindowSpaceDrawGet(const PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle);
 PXPublic PXResult PXAPI PXWindowSpaceBoxGet(const PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle);
 PXPublic PXResult PXAPI PXWindowSpaceContentGet(const PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle);
@@ -1351,6 +750,9 @@ PXPublic PXResult PXAPI PXWindowDrawFunctionSet(PXWindow PXREF pxWindow, const P
 PXPublic PXF32 PXAPI PXWindowAspectRatio(const PXWindow PXREF pxWindow);
 PXPublic PXBool PXAPI PXWindowIsValid(const PXWindow PXREF pxWindow);
 PXPublic PXBool PXAPI PXWindowIsEnabled(const PXWindow PXREF pxWindow);
+
+PXPublic PXResult PXAPI PXWindowResize(PXWindow PXREF pxWindow, const int width, const int height);
+PXPublic PXResult PXAPI PXWindowMoveAndResize(PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
 //---------------------------------------------------------
 
 
@@ -1361,53 +763,11 @@ PXPublic PXBool PXAPI PXWindowIsEnabled(const PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowViewPortSet(PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangle, const PXBool normalized);
 
 
-PXPublic PXResult PXAPI PXWindowDrawRectangle2D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
-PXPublic PXResult PXAPI PXWindowDrawRectangle3D(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
-PXPublic PXResult PXAPI PXWindowDrawClear(PXWindow PXREF pxWindow);
-
-
-PXPublic PXResult PXAPI PXTextDrawInfoRowNext(PXDrawInfo PXREF pxTextDrawInfo);
-
-
-PXPublic PXResult PXAPI PXWindowDrawText
-(
-    PXWindow PXREF pxWindow,
-    PXDrawInfo PXREF pxTextDrawInfo
-);
-PXPrivate PXResult PXAPI PXWindowDrawTextNative
-(
-    PXWindow PXREF pxWindow,
-    PXDrawInfo PXREF pxTextDrawInfo
-);
-PXPrivate PXResult PXAPI PXWindowDrawTextGLFF
-(
-    PXWindow PXREF pxWindow,
-    PXDrawInfo PXREF pxTextDrawInfo
-);
-
-PXPublic PXResult PXAPI PXWindowDrawPoint(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y);
-PXPublic PXResult PXAPI PXWindowDrawPoints(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
-PXPublic PXResult PXAPI PXWindowDrawLine(PXWindow PXREF pxWindow, const PXI32S x1, const PXI32S y1, const PXI32S x2, const PXI32S y2);
-PXPublic PXResult PXAPI PXWindowDrawLines(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
-
-PXPublic PXResult PXAPI PXWindowDrawHelloWorldTriangle(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
-
-PXPublic PXResult PXAPI PXWindowDrawRect(PXWindow PXREF pxWindow, const PXI32S x, const PXI32S y, const PXI32S width, const PXI32S height);
-PXPublic PXResult PXAPI PXWindowDrawRect2(PXWindow PXREF pxWindow, const PXRectangleXYWHI32 PXREF pxRectangle);
-
-
-PXPublic PXResult PXAPI PXWindowDrawRectangle(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxWindowDrawRectangleInfo);
-PXPublic PXResult PXAPI PXWindowDrawIcon(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo, PXIcon PXREF pxIcon);
-
 PXPublic PXResult PXAPI PXWindowMouseTrack(PXWindow PXREF window);
 PXPublic PXResult PXAPI PXWindowMouseMovementEnable(PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXWindowCursorCaptureMode(PXWindow PXREF pxWindow, const PXWindowCursorMode cursorMode);
 PXPublic PXResult PXAPI PXWindowCursorPositionGet(PXWindow PXREF pxWindow, PXVector2I32S PXREF position);
 //---------------------------------------------------------
-
-
-
-
 
 
 // Event functions
@@ -1449,76 +809,59 @@ PXPrivate void PXAPI PXWindowEvent_X_MappingNotify(void PXREF invalidObject, PXW
 PXPrivate void PXAPI PXWindowEvent_X_GenericEvent(void PXREF invalidObject, PXWindowEvent PXREF pxWindowEvent);
 #elif OSWindows
 
-typedef LRESULT(PXAPI* PXWindowEventHandlerFunction)(PXWindowEvent PXREF pxWindowEvent);
+typedef LRESULT(PXAPI* PXWindowEventHandlerFunction)(PXEngineUIEvent PXREF pxWindowEvent);
 
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_EMPTY(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_NCCREATE(PXWindow PXREF invalidObject, PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_DESTROY(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOVE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_SIZE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_CLOSE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_SETCURSOR(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_NOTIFY(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_ERASEBKGND(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_PAINT(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUT_DEVICE_CHANGE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSEMOVE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSELEAVE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_NCHITTEST(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_DISPLAYCHANGE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUT(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_CTLCOLOR(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOVING(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_ENTERSIZEMOVE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_EXITSIZEMOVE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_POWERBROADCAST(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_DEVICECHANGE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUTLANGCHANGE(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_COMMAND(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_KEY(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONDOWN(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONUP(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONDBLCLK(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONDOWN(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONUP(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONDBLCLK(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONDOWN(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONUP(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONDBLCLK(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSEWHEEL(PXWindowEvent PXREF pxWindowEvent);
-PXPrivate LRESULT PXAPI PXWindowEvent_WM_XBUTTON( PXWindowEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_EMPTY(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_NCCREATE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_DESTROY(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOVE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_SIZE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_CLOSE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_SETCURSOR(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_NOTIFY(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_ERASEBKGND(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_PAINT(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_GETMINMAXINFO(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_DEVMODECHANGE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUT_DEVICE_CHANGE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSEMOVE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSELEAVE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_NCHITTEST(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_DISPLAYCHANGE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUT(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_CTLCOLOR(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOVING(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_ENTERSIZEMOVE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_EXITSIZEMOVE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_POWERBROADCAST(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_DEVICECHANGE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_INPUTLANGCHANGE(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_COMMAND(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_GETICON(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_DPICHANGED(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_KEY(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONDOWN(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONUP(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_LBUTTONDBLCLK(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONDOWN(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONUP(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_RBUTTONDBLCLK(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONDOWN(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONUP(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MBUTTONDBLCLK(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_MOUSEWHEEL(PXEngineUIEvent PXREF pxWindowEvent);
+PXPrivate LRESULT PXAPI PXWindowEvent_WM_XBUTTON(PXEngineUIEvent PXREF pxWindowEvent);
 
 #endif
 
 
-
-
-
-
-
-
-
-
-
-
-
 PXPublic PXResult PXAPI PXWindowDisplayListFetch();
-
-//---------------------------------------------------------
-// Property
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXWindowXYWH(PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXBool doWrite);
-PXPublic PXResult PXAPI PXWindowResize(PXWindow PXREF pxWindow, const int width, const int height);
-PXPublic PXResult PXAPI PXWindowMoveAndResize(PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
-//---------------------------------------------------------
 
 
 // Collsison
 PXPublic PXResult PXAPI PXWindowCursorCollisionCheck();
 
-
 /*
-
 PXPublic PXResult PXAPI PXAllPlanes(PXNativDrawText PXREF pxNativDraw);
 PXPublic PXResult PXAPI PXBlackPixel(PXNativDrawText PXREF pxNativDraw);
 PXPublic PXResult PXAPI PXWhitePixel(PXNativDrawText PXREF pxNativDraw);
@@ -1900,7 +1243,121 @@ PXPublic PXResult PXAPI PXDrawFilled(PXNativDrawText PXREF pxNativDraw);
 PXPublic PXResult PXAPI PXCreateAssocTable(PXNativDrawText PXREF pxNativDraw);
 PXPublic PXResult PXAPI PXLookUpAssoc(PXNativDrawText PXREF pxNativDraw);
 
-
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
+
+
+//---------------------------------------------------------
+// DO BE REMOVED!!
+//---------------------------------------------------------
+typedef struct BoxInsets
+{
+    int l, t, r, b;
+}
+BoxInsets;
+
+typedef struct DockLayoutConfig {
+    int defaultBandW;     // default LEFT/RIGHT thickness
+    int defaultBandH;     // default TOP/BOTTOM thickness
+    int defaultSpacing;   // default spacing between siblings
+    BoxInsets padLeft;    // padding inside LEFT band area
+    BoxInsets padRight;   // padding inside RIGHT band area
+    BoxInsets padTop;     // padding inside TOP band area
+    BoxInsets padBottom;  // padding inside BOTTOM band area
+    BoxInsets padCenter;  // padding inside CENTER area
+    PXBool centerVertical;  // TRUE => center stacks vertically; FALSE => horizontally
+} DockLayoutConfig;
+
+
+
+
+// For allocation convenience
+typedef struct Paneref
+{
+    HWND h;
+    PXWindow* p;
+}
+Paneref;
+
+typedef struct DockOverlay
+{
+    BOOL     active;
+    PXWindowDockSide side;
+    RECT     rect;        // rectangle of preview area
+}
+DockOverlay;
+
+static DockOverlay gOverlay = { 0 };
+
+void SubSegment(RECT* m, RECT* r, PXWindowDockSide side);
+void LayoutDockedAA(PXWindow PXREF pxWindow);
+void LayoutDockedGOOD(PXWindow PXREF pxWindow);
+DockLayoutConfig DockDefaultConfig(void);
+void InitDockContainerStyles(PXWindow PXREF pxWindow);
+void InitDockChildStyles(PXWindow PXREF pxWindow);
+int clamp_nonneg(int v);
+int CountVisiblePanes(HWND hParent);
+int CollectSide(HWND hParent, PXWindowDockSide side, Paneref* buf, int cap);
+void DistributeAxisWithBox(Paneref* arr, int n, int availableAxis, int spacing, BOOL vertical, int* outSlotSizes /* n */);
+void ApplyStackWithBox(HWND hParent, HDWP* phdwp, RECT area, BOOL vertical, Paneref* arr, int n, int spacing);
+RECT InsetRectBy(RECT r, BoxInsets in);
+void LayoutDockedEx(PXWindow PXREF hMain, const DockLayoutConfig* pCfg);
+
+BOOL PXAPI PXWindowScreenPtInMainClient(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
+PXWindowDockSide PXAPI ChooseDockSide(PXWindow PXREF pxWindow, PXVector2I32S PXREF pxVector2I32S);
+RECT PXAPI OverlayRectForSide(PXWindow PXREF pxWindow, PXWindowDockSide side);
+void PXAPI PXWindowShowDockOverlay(PXWindow PXREF pxWindow, PXWindowDockSide side);
+void PXAPI PXWindowHideDockOverlay(PXWindow PXREF pxWindow);
+void PXAPI PXWindowTearOffToFloating(PXWindow* p, POINT startScreen);
+void PXAPI PXWindowDockBackToChild(PXWindow* p, PXWindowDockSide side);
+void PXAPI PXWindowDrawAlphaRect(HDC hdc, RECT rc, COLORREF color, BYTE alpha);
+void PXAPI PXWindowDrawOverlay(HDC hdc, const DockOverlay* ov);
+
+void PXAPI PXWindowPaintPattern(HWND hwnd, HDC hdc, RECT* rect, PXColorRGB_U8 PXREF color);
+void PXAPI PXWindowPaintMain(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
+
+#endif
+
+
+
+
+
+
+
+
+
+
 
 #endif

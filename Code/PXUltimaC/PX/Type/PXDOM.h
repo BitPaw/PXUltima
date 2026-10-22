@@ -183,7 +183,7 @@ typedef struct PXDOMCursor_
 PXDOMCursor;
 
 PXPublic void PXAPI PXDOMCursorStart(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor);
-PXPublic void PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor);
+PXPublic PXBool PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor);
 PXPublic PXBool PXAPI PXDOMCursorUpdate(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor);
 
 PXPublic PXSize PXAPI PXDOMCursorKeyCompare

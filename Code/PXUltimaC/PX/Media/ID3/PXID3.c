@@ -179,7 +179,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
 
         if(!isValidHeader)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -209,8 +209,8 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
 
         default: // Version is probably 1.x
         {
-            const PXByte* trackIDAdress = (PXByte*)PXFileDataAtCursor(pxFile) + PXID3CommentSize - 2;
-            const unsigned short trackIDSymbol = (((unsigned short)trackIDAdress[0]) << 8u) + trackIDAdress[1];
+            const PXByte* trackIDAddress = (PXByte*)PXFileDataAtCursor(pxFile) + PXID3CommentSize - 2;
+            const unsigned short trackIDSymbol = (((unsigned short)trackIDAddress[0]) << 8u) + trackIDAddress[1];
             const PXBool isVersion1x0 = trackIDSymbol == 0x0000;
 
             if(isVersion1x0)
@@ -234,7 +234,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
 
             if(!isValidVersion)
             {
-                return PXActionRefusedVersionInvalid;
+                return PXResultRefusedVersionInvalid;
             }
         }
     }
@@ -287,7 +287,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
             {
                 PXI32UCluster sizeCluster;
 
-                PXFileReadB(pxFile, sizeCluster.Data4, 4u);
+                PXFileReadB(pxFile, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -327,7 +327,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
                     PXI32U frameSize = 0;
                     PXI16U frameFlags = 0;
 
-                    PXFileReadB(pxFile, indentifier.Data4, 4u);
+                    PXFileReadB(pxFile, indentifier.Data, 4u);
                     PXFileReadI32UE(pxFile, &frameSize, PXEndianBig);
                     PXFileReadI16UE(pxFile, &frameFlags, PXEndianBig);
 
@@ -613,5 +613,5 @@ PXResult PXAPI PXID3SaveToFile(const PXID3 PXREF id3, PXFile PXREF pxFile)
         PXFileWriteB(pxFile, PXID3HeaderSignature, sizeof(PXID3HeaderSignature));
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

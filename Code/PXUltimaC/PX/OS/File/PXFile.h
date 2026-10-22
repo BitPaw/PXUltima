@@ -210,7 +210,7 @@ PXPublic PXBool PXAPI PXFileCanDirectAccess(const PXFile PXREF pxFile);
 //---<Binding>---------------------------------------------------------
 // Searches and tryes to read a binding eqiviland to the key. 
 // Expected format is "Key=Value".
-// Given type will be parsed, converted and written into given adress.
+// Given type will be parsed, converted and written into given address.
 PXPublic PXBool PXAPI PXFileKeyValueFetch(PXFile PXREF pxFile, PXTypeBinding PXREF pxTypeBinding);
 //---------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ PXPublic PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile);
 //---<Parsing Utility>-----------------------------------------------------
 PXPublic PXSize PXAPI PXFileAllocatedSize(const PXFile PXREF pxFile);
 PXPublic PXSize PXAPI PXFileRemainingSize(const PXFile PXREF pxFile);
-PXPublic PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile PXREF pxFile, const void PXREF adress);
+PXPublic PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile PXREF pxFile, const void PXREF address);
 PXPublic PXBool PXAPI PXFileIsAtEnd(const PXFile PXREF pxFile);
 
 // Check if we have enough size, if not allocate space
@@ -288,9 +288,9 @@ PXPublic PXSize PXAPI PXFileDataCopy(PXFile PXREF pxInputStream, PXFile PXREF px
 PXPublic PXSize PXAPI PXFileReadTextIU8(PXFile PXREF pxFile, PXI8U PXREF number);
 PXPublic PXSize PXAPI PXFileReadTextI(PXFile PXREF pxFile, int PXREF number);
 
-PXPublic PXSize PXAPI PXFileReadType(PXFile PXREF pxFile, void PXREF valueAdress, const PXI32U type);
+PXPublic PXSize PXAPI PXFileReadType(PXFile PXREF pxFile, void PXREF valueAddress, const PXI32U type);
 
-PXPublic PXSize PXAPI PXFileReadIXXE(PXFile PXREF pxFile, void PXREF valueAdress, const PXSize valueSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadIXXE(PXFile PXREF pxFile, void PXREF valueAddress, const PXSize valueSize, const PXEndian pxEndian);
 PXPublic PXSize PXAPI PXFileReadIXXVE(PXFile PXREF pxFile, void* PXREF valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
 
 PXPublic PXSize PXAPI PXFileReadI8S(PXFile PXREF pxFile, PXI8S PXREF value);

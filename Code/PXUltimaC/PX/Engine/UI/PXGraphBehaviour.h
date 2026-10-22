@@ -11,6 +11,6 @@ typedef struct PXGraphBehaviour_
 }
 PXGraphBehaviour;
 
-PXPublic PXResult PXAPI PXGraphBehaviourDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXGraphBehaviourDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

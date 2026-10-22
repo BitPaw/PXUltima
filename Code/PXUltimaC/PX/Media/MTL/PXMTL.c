@@ -89,7 +89,7 @@ PXResult PXAPI PXMTLPeekFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    PXMaterialContainer PXREF pxMaterialList = 0;// (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
+   // PXMaterialContainer PXREF pxMaterialList = 0;// (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     PXI32U materialAmount = 0;
     PXMaterial* pxMaterialCurrent = PXNull;
@@ -109,7 +109,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
-    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
+    PXTextFromAddressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
 
 #if PXLogEnable
@@ -176,6 +176,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 #endif
 
     // Allcoate
+#if 0
     {
         PXECSCreateInfo pxResourceCreateInfo;
         PXClear(PXECSCreateInfo, &pxResourceCreateInfo);
@@ -188,6 +189,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         pxMaterialList->MaterialListAmount = materialAmount;
         materialAmount = 0;
     }
+#endif
 
 #if PXLogEnable
     PXLogPrint
@@ -216,7 +218,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         {
             case MTLLineName:
             {
-                pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
+                pxMaterialCurrent = 0;// &pxMaterialList->MaterialList[materialAmount];
                 ++materialAmount;
 
                 char cache[64];         
@@ -224,7 +226,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                 PXECSProperty pxResourceProperty;
                 PXClear(PXECSProperty, &pxResourceProperty);
 
-                PXTextFromAdressA(&pxResourceProperty.Text, cache, 0, 64);
+                PXTextFromAddressA(&pxResourceProperty.Text, cache, 0, 64);
 
                 const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxResourceProperty.Text);
 
@@ -264,10 +266,10 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
                 PXECSCreateInfo pxResourceCreateInfo;
                 PXClear(PXECSCreateInfo, &pxResourceCreateInfo);
-                pxResourceCreateInfo.Parent = pxMaterialList;
+                pxResourceCreateInfo.Parent = 0;// pxMaterialList;
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                pxResourceCreateInfo.ObjectReference = (PXECSInfo**)&pxMaterialCurrent->DiffuseTexture;
-                pxResourceCreateInfo.ObjectAmount = 1;
+                //pxResourceCreateInfo.ObjectReference = (PXECSInfo**)&pxMaterialCurrent->DiffuseTexture;
+                //pxResourceCreateInfo.ObjectAmount = 1;
                 pxResourceCreateInfo.FilePath = fullTexturePath;
                 pxResourceCreateInfo.Flags = PXResourceCreateBehaviourLoadASYNC;
 
@@ -304,15 +306,15 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                 switch(mtlLineType)
                 {
                     case MTLLineWeight:
-                        pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
+                        pxMaterialCurrent->Data.Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
 
                     case MTLLineDissolved:
-                        pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
+                        pxMaterialCurrent->Data.Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
 
                     case MTLLineDensity:
-                        pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
+                        pxMaterialCurrent->Data.Density = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
                 }
 
@@ -325,21 +327,21 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             {
                 PXSize valuesDetected = 0;
                 const PXSize colorVectorSize = 3u;
-                PXColorRGBAF* colorVector;
+                PXColorRGBA_F32* colorVector;
 
                 switch(mtlLineType)
                 {
                     case MTLLineColorAmbient:
-                        colorVector = pxMaterialCurrent->AmbientColor;
+                        colorVector = pxMaterialCurrent->Data.AmbientColor;
                         break;
                     case MTLLineColorDiffuse:
-                        colorVector = pxMaterialCurrent->DiffuseColor;
+                        colorVector = pxMaterialCurrent->Data.ColorBase;
                         break;
                     case MTLLineColorSpecular:
-                        colorVector = pxMaterialCurrent->SpecularColor;
+                        colorVector = pxMaterialCurrent->Data.SpecularColor;
                         break;
                     case MTLLineColorEmission:
-                        colorVector = pxMaterialCurrent->EmissionColor;
+                        colorVector = pxMaterialCurrent->Data.EmissionColor;
                         break;
                     default:
                         colorVector = PXNull;
@@ -368,7 +370,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
                     break;
                 }
 
-                pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.I32U);
+                pxMaterialCurrent->Data.IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.I32U);
 
                 break;
             }
@@ -392,7 +394,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXMTLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 
@@ -662,8 +664,8 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
     PXFile* mtlPXFile;
     PXFile* mtlHeaderStream;
 
-    // PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-    // PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+    // PXFileBufferExternal(&mtlPXFile, (PXAddress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+    // PXFileBufferExternal(&mtlHeaderStream, (PXAddress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
     for(PXSize i = 0; i <= materialID; ++i)
     {
@@ -766,7 +768,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
         }
         else         // else, do nothing -> skip
         {
-            //mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
+            //mtlPXFile.Data = ((PXAddress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
         }
     }
 

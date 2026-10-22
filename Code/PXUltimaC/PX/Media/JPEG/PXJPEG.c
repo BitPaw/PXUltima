@@ -350,7 +350,7 @@ void PXAPI PXJPEGDestruct(PXJPEG PXREF jpeg)
 
 }
 
-PXResult PXAPI PXJPEGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXJPEGLoadFromFile(PXTexture2D PXREF PXTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -367,7 +367,7 @@ PXResult PXAPI PXJPEGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXR
 
         if(!validStart)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -645,7 +645,7 @@ void PXAPI generateHuffmanTable(const PXI8U numCodes[16], const PXI8U* values, B
     }
 }
 
-PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXJPEGSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
@@ -739,8 +739,8 @@ PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
     PXFileWriteI8U(pxFile, 8u); // 8 bits per channel
 
     // image dimensions (big-endian)
-    PXFileWriteI16UE(pxFile, pxTexture->Height, PXEndianBig);
-    PXFileWriteI16UE(pxFile, pxTexture->Width, PXEndianBig);
+    PXFileWriteI16UE(pxFile, pxTexture2D->Height, PXEndianBig);
+    PXFileWriteI16UE(pxFile, pxTexture2D->Width, PXEndianBig);
 
     // sampling and quantization tables for each component
     // 1 component (grayscale, Y only) or 3 components (Y,Cb,Cr)
@@ -857,7 +857,7 @@ PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
     buffer.numBits = 0; // number of valid bits (the right-most bits)
 
     // just convert image data from void*
-    const PXByte* pixels = pxTexture->PixelData.Data4;
+    const PXByte* pixels = pxTexture2D->Data.Data;
 
     // break down the image into 8x8 blocks and convert from RGB or grayscale to YCbCr color space
     PXF32 Y[8][8], Cb[8][8], Cr[8][8];
@@ -877,8 +877,8 @@ PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
     PXMemoryClear(blue, sizeof(PXF32) * 8 * 8);
 
     // process MCUs (minimum codes units)
-    for(PXSize mcuY = 0; mcuY < pxTexture->Height; mcuY += 8u * sampling)
-        for(PXSize mcuX = 0; mcuX < pxTexture->Width; mcuX += 8u * sampling)
+    for(PXSize mcuY = 0; mcuY < pxTexture2D->Height; mcuY += 8u * sampling)
+        for(PXSize mcuX = 0; mcuX < pxTexture2D->Width; mcuX += 8u * sampling)
         {
             // YCbCr 4:4:4 format: each MCU is a 8x8 block - the same applies to grayscale images, too
             // YCbCr 4:2:0 format: each MCU represents a 16x16 block, stored as 4x 8x8 Y-blocks plus 1x 8x8 Cb and 1x 8x8 Cr blocks)
@@ -893,9 +893,9 @@ PXResult PXAPI PXJPEGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF
                     for(PXSize deltaX = 0; deltaX < 8; ++deltaX)
                     {
                         // find actual pixel position within the current image
-                        const PXSize column = PXMathMinimumIU(mcuX + blockX + deltaX, pxTexture->Width - 1); // must not exceed image borders, replicate last row/column if needed
-                        const PXSize row = PXMathMinimumIU(mcuY + blockY + deltaY, pxTexture->Height - 1);
-                        PXSize pixelPos = row * pxTexture->Width + column; // the cast ensures that we don't run into multiplication overflows
+                        const PXSize column = PXMathMinimumIU(mcuX + blockX + deltaX, pxTexture2D->Width - 1); // must not exceed image borders, replicate last row/column if needed
+                        const PXSize row = PXMathMinimumIU(mcuY + blockY + deltaY, pxTexture2D->Height - 1);
+                        PXSize pixelPos = row * pxTexture2D->Width + column; // the cast ensures that we don't run into multiplication overflows
 
                         // grayscale images have solely a Y channel which can be easily derived from the input pixel by shifting it by 128
                         if(!isRGB)
@@ -1302,9 +1302,9 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG PXREF jpeg, PXF
             matixID = (cluster & 0b00001111);
         }
 
-        PXI8U PXREF matrixAdress = (PXI8U*)&jpeg->QuantizationTable[matixID];
+        PXI8U PXREF matrixAddress = (PXI8U*)&jpeg->QuantizationTable[matixID];
 
-        remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXI8U) * 64u);
+        remainingBytes -= PXFileReadB(pxFile, matrixAddress, sizeof(PXI8U) * 64u);
 
 #if JPGDebug
         printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
@@ -1317,7 +1317,7 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG PXREF jpeg, PXF
 
             for(PXSize x = 0; x < 8u; ++x)
             {
-                printf("%3i |", matrixAdress[y * 8u + x]);
+                printf("%3i |", matrixAddress[y * 8u + x]);
             }
 
             printf("\n");

@@ -20,6 +20,6 @@ PXIconSunCreateInfo;
 PXPublic void PXAPI PXIconSunRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXIconSunCreate(PXIconSun** pxIconSunREF, PXIconSunCreateInfo PXREF pxIconSunCreateInfo);
 PXPublic PXResult PXAPI PXIconSunRelease(PXIconSun PXREF pxIconSun);
-PXPublic PXResult PXAPI PXIconSunDraw(PXIconSun PXREF pxIconSun, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXIconSunDraw(PXIconSun PXREF pxIconSun, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

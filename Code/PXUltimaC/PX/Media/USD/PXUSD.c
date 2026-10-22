@@ -259,7 +259,7 @@ PXResult PXAPI PXUSDLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             // PXUSDZLoadFromFile
 
         default:
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
     }
 
     const PXResult result = pxUSDLoadFunction(pxResourceLoadInfo);
@@ -293,7 +293,7 @@ PXResult PXAPI PXUSDCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
     if(!isSignatureValid)
     {
-        return PXActionRefusedInvalidHeaderSignature;
+        return PXResultRefusedInvalidHeaderSignature;
     }
 
 #if PXLogEnable
@@ -374,7 +374,7 @@ PXResult PXAPI PXUSDCLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             PXFileReadI64U(pxFile, &pxTOCSection->Tokens.NumberOfTokens);
 
-            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data4);    
+            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);    
 
             const PXBool isAlligned = PXFileCursorIsAt(pxFile, pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
         }
@@ -529,7 +529,7 @@ PXResult PXAPI PXUSDCSectionStringsLoad(PXFile PXREF pxFile, PXTOCSectionStrings
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDCSectionFields(PXFile PXREF pxFile, PXTOCSectionFields PXREF pxTOCSectionFields)
@@ -548,7 +548,7 @@ PXResult PXAPI PXUSDCSectionFields(PXFile PXREF pxFile, PXTOCSectionFields PXREF
 
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDCSectionFieldSets(PXFile PXREF pxFile, PXTOCSectionFieldSets PXREF pxTOCSectionFieldSets)
@@ -563,7 +563,7 @@ PXResult PXAPI PXUSDCSectionFieldSets(PXFile PXREF pxFile, PXTOCSectionFieldSets
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDCSectionSpecs(PXFile PXREF pxFile, PXTOCSectionSpecs PXREF pxTOCSectionSpecs)
@@ -578,7 +578,7 @@ PXResult PXAPI PXUSDCSectionSpecs(PXFile PXREF pxFile, PXTOCSectionSpecs PXREF p
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDCSectionPaths(PXFile PXREF pxFile, PXTOCSectionPaths PXREF pxTOCSectionPaths)
@@ -593,12 +593,12 @@ PXResult PXAPI PXUSDCSectionPaths(PXFile PXREF pxFile, PXTOCSectionPaths PXREF p
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDZLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
@@ -659,7 +659,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
 
         if(!isHash)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -667,7 +667,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
 
         if(!isusda)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
@@ -675,7 +675,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
 
         if(!isFloatNumber)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         pxUSD->Text.Version = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
@@ -756,7 +756,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
         PXText resultPath;
 
         PXTextConstructBufferA(&resultPath, 260);
-        PXTextFromAdressA(&subFile, pxUSDEntry->Included, pxUSDEntry->IncludedSize, pxUSDEntry->IncludedSize);
+        PXTextFromAddressA(&subFile, pxUSDEntry->Included, pxUSDEntry->IncludedSize, pxUSDEntry->IncludedSize);
 
         PXFilePathRelativeFromFile(pxECSCreateInfo->FileCurrent, &subFile, &resultPath);
 
@@ -1417,5 +1417,5 @@ void PXAPI PXUSDAParseEntryName(PXUSDA PXREF pxUSDA, PXUSDEntry PXREF pxUSDEntry
 
 PXResult PXAPI PXUSDSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

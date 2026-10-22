@@ -14,7 +14,9 @@ const PXECSRegisterInfoStatic PXSceneViewRegisterInfoStatic =
     sizeof(PXSceneView),
     __alignof(PXSceneView),
     PXECSTypeEntity,
-    PXFontCreate
+    PXSceneViewCreate,
+    PXNull,
+    PXNull
 };
 PXECSRegisterInfoDynamic PXSceneViewRegisterInfoDynamic;
 
@@ -165,7 +167,7 @@ PXResult PXAPI PXSceneViewCreate(PXSceneView** pxSceneViewREF, PXSceneViewCreate
     return PXResultOK;
 }
 
-PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXSceneViewDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     const float topBarHeight = 40.0f;
     const float bottomBarHeight = 30.0f;

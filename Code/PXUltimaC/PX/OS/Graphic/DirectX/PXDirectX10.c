@@ -4,20 +4,24 @@
 
 #if PXDX10Enable
 #include <d3d10.h>
-#endif
-
-#if PXDX10Enable
-//#include <d3d10shader.h>
+#include <d3d10shader.h>
 #pragma comment(lib, "D3d10.lib")
 #endif
 
+const char PXDirectX10Name[] = "DirectX-10";
+
 PXResult PXAPI PXDirectX10Initialize(PXDirectX10 PXREF pxDirectX)
 {
+    if(!pxDirectX)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "DirectX10",
+        PXDirectX10Name,
         "Initialize",
         "Start..."
     );
@@ -42,7 +46,7 @@ PXResult PXAPI PXDirectX10Initialize(PXDirectX10 PXREF pxDirectX)
         break;
 
     default:
-        return PXActionRefuedInputInvalid;
+        return PXResultRefuedInputInvalid;
     }
 
     const HRESULT result = D3D10CreateDevice
@@ -59,10 +63,10 @@ PXResult PXAPI PXDirectX10Initialize(PXDirectX10 PXREF pxDirectX)
 
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDirectX10Release(PXDirectX10 PXREF pxDirectX)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

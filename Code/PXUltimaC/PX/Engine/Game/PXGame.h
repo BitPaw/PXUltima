@@ -18,7 +18,7 @@ typedef void (PXAPI* PXGameActionApplyFunction)(PXGame PXREF pxGame, PXPlayerAct
 typedef int  (PXAPI* PXGameIsRoundOverFunction)(PXGame PXREF pxGame);
 typedef PXBool(PXAPI* PXGameIsGameOverFunction)(PXGame PXREF pxGame);
 
-typedef PXResult(PXAPI* PXGameSceneDrawFunction)(PXGame PXREF pxGame, PXDrawInfo PXREF pxDrawInfo);
+typedef PXResult(PXAPI* PXGameSceneDrawFunction)(PXGame PXREF pxGame, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 
 

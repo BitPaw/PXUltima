@@ -4,17 +4,16 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/Type/PXSound.h>
 
 const static char WAVSignatureLIST[4] = "LIST";
 const static char WAVSignatureData[4] = "data";
 
-
-PXResult PXAPI PXWaveLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWaveLoadFromFile(PXSound PXREF pxSound, PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    /*
-    PXSound PXREF pxSound = (PXSound*)pxResourceLoadInfo->Target;
+    PXResult pxResult = PXResultInvalid;
 
-    PXWave wav;;
+    PXWave wav;
     PXClear(PXWave, &wav);
 
     //pxSound->BaseObject = &wav;
@@ -22,39 +21,44 @@ PXResult PXAPI PXWaveLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     PXRIFF riff;
 
     // PXRIFF
+    pxResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileCurrent);
+
+    if(PXResultOK != pxResult)
     {
-       const PXResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileCurrent);
+        return pxResult;
+    }
 
-       PXActionReturnOnError(actionResult);
+    // Valid PXRIFF
+    {
+        const PXBool isAVI = riff.Format == PXRIFFWaveformAudio;
 
-       // Valid PXRIFF
-       {
-           const PXBool isAVI = riff.Format == PXRIFFWaveformAudio;
-
-           if (!isAVI)
-           {
-               return PXActionRefusedInvalidHeaderSignature;
-           }
-       }
+        if(!isAVI)
+        {
+            return PXResultRefusedInvalidHeaderSignature;
+        }
     }
     //-------------------------------------------------------------------------
 
     //---<FMT Chunk>-----------------------------------------------------------
+    pxResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileCurrent, riff.EndianFormat);
+
+    if(PXResultOK != pxResult)
     {
-       const PXResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileCurrent, riff.EndianFormat);
-
-       PXActionReturnOnError(actionResult);
-
-       pxSound->ChunkSize = wav.Format.ChunkSize;
-       pxSound->AudioFormat = wav.Format.AudioFormat;
-       pxSound->NumerOfChannels = wav.Format.NumerOfChannels;
-       pxSound->SampleRate = wav.Format.SampleRate;
-       pxSound->ByteRate = wav.Format.ByteRate;
-       pxSound->BlockAllign = wav.Format.BlockAllign;
-       pxSound->BitsPerSample = wav.Format.BitsPerSample;
-
-       //pxSound->BlockAllign = (wav->Format.NumerOfChannels * wav->Format.BitsPerSample) / 8u;
+        return pxResult;
     }
+
+    pxSound->ChunkSize = wav.Format.ChunkSize;
+    pxSound->AudioFormat = wav.Format.AudioFormat;
+    pxSound->NumerOfChannels = wav.Format.NumerOfChannels;
+    pxSound->SampleRate = wav.Format.SampleRate;
+    pxSound->BitsPerSample = wav.Format.BitsPerSample;
+
+    PXSize blockAllign = PXSoundBlockAllign(pxSound);
+    PXBool isBlockAllignValid = blockAllign == wav.Format.BlockAllign;
+
+    PXSize bytesPerSecound = PXSoundBytesPerSecound(pxSound);
+    PXBool isByteRateOK = bytesPerSecound == wav.Format.ByteRate;
+
     //---------------------------------------
 
     //---------------------------------------
@@ -72,22 +76,26 @@ PXResult PXAPI PXWaveLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
        if (!validDataChunk)
        {
-           return PXActionFailedFormatNotAsExpected;
+           return PXResultFailedFormatNotAsExpected;
        }
     }
 
     PXFileReadI32UE(pxResourceLoadInfo->FileCurrent, &wav.SoundDataSize, riff.EndianFormat);
 
-    PXNewList(PXByte, wav.SoundDataSize, &pxSound->Data, &pxSound->DataSize);
+    pxResult = PXBufferEnsureTotal(&pxSound->Data, wav.SoundDataSize);
 
-    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxSound->Data, pxSound->DataSize);
-    */
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
 
-    return PXResultOK;
+    PXFileReadB(pxResourceLoadInfo->FileCurrent, pxSound->Data.Data, wav.SoundDataSize);
+
+    return pxResult;
 }
 
 
-PXResult PXAPI PXWaveSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWaveSaveToFile(PXSound PXREF pxSound, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
 #if 0
     unsigned int bitdepth = 16, bpm = 120;

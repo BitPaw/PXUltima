@@ -57,7 +57,7 @@ typedef struct PXTOCSection_
 
     union
     {
-        char Data4[1];
+        char Data[1];
         PXTOCSectionTokens Tokens;
         PXTOCSectionStrings Strings;
         PXTOCSectionFields Fields;

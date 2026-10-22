@@ -104,7 +104,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             );
 #endif
 
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -248,5 +248,5 @@ PXResult PXAPI PXFastFileLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXFastFileSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

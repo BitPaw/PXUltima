@@ -68,7 +68,7 @@ typedef struct PXPlayer_
 
     // Profile picture
 
-  //  PXColorRGBI8 Color;
+  //  PXColorRGB_U8 Color;
     
     // PXTimeStamp TimeSeenOnlineFirst;
     // PXTimeStamp TimeSeenOnlineLast;

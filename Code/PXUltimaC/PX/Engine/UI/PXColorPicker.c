@@ -2,12 +2,13 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Math/PXTriangle.h>
-#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Engine/PXEngineRender.h>
 #include <GL/gl.h>
+#include <math.h>
 
 #define PXColorPickerDebug 0
 
-int colorTemp;
+int colorTempX = 0;
 
 const char PXColorPickerName[] = "ColorPicker";
 const PXI8U PXColorPickerNameLength = sizeof(PXColorPickerName);
@@ -31,11 +32,11 @@ void PXAPI PXColorPickerRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 
 
 PXColorHSV currentHSV;
-PXColorRGBAF currentRGBA;
+PXColorRGBA_F32 currentRGBA;
 float currentAlpha;
 
 static void DrawFilledRect(float x0, float y0, float x1, float y1,
-                           PXColorRGBF PXREF pxColorRGBF, float alpha)
+                           PXColorRGB_F32 PXREF pxColorRGBF, float alpha)
 {
     glColor4f(pxColorRGBF->Red, pxColorRGBF->Green, pxColorRGBF->Blue, alpha);
     glBegin(GL_QUADS);
@@ -61,9 +62,9 @@ static void RotatePoint(float cx, float cy, float angleRad, float* x, float* y)
     *y = cy + ry;
 }
 
-static void HSVToRGBA_Alpha(const PXColorHSV* hsv, float alpha, PXColorRGBAF* out)
+static void HSVToRGBA_Alpha(const PXColorHSV* hsv, float alpha, PXColorRGBA_F32* out)
 {
-    PXColorRGBAF tmp;
+    PXColorRGBA_F32 tmp;
     PXColorHSVToRGBF(hsv, &tmp);
     out->Red = tmp.Red;
     out->Green = tmp.Green;
@@ -78,8 +79,8 @@ static void DrawGradientRectH
     float y0,
     float x1,
     float y1,
-    PXColorRGBAF* left,
-    PXColorRGBAF* right
+    PXColorRGBA_F32* left,
+    PXColorRGBA_F32* right
 )
 {
     glBegin(GL_QUADS);
@@ -96,7 +97,7 @@ static void DrawGradientRectH
 }
 
 static void DrawGradientRectV(float x0, float y0, float x1, float y1,
-                              PXColorRGBAF* bottom, PXColorRGBAF* top)
+                              PXColorRGBA_F32* bottom, PXColorRGBA_F32* top)
 {
     glBegin(GL_QUADS);
 
@@ -283,9 +284,9 @@ void drawFilledCircle(float cx, float cy, float r, int segments)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    //PXCamera PXREF pxCamera = PXRendererCameraCurrent(pxDrawInfo->Rendrer);
+    //PXCamera PXREF pxCamera = PXEngineRenderCameraCurrent(pxDrawInfo->Rendrer);
     PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
 
     float x = 0;//pxDrawInfo->RectangleXYWH.X;
@@ -352,7 +353,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
 
         // HSV ? RGB
         PXColorHSV hsv = { angle, 1.0f, 1.0f };
-        PXColorRGBAF rgb;
+        PXColorRGBA_F32 rgb;
         PXColorHSVToRGBF(&hsv, &rgb);
 
         // Inner vertex
@@ -492,7 +493,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     PXColorHSV hsvWhite = { currentHSV.Hue, 0.0f, 1.0f };
     PXColorHSV hsvBlack = { currentHSV.Hue, 0.0f, 0.0f };
 
-    PXColorRGBAF colHue, colWhite, colBlack;
+    PXColorRGBA_F32 colHue, colWhite, colBlack;
     PXColorHSVToRGBF(&hsvHue, &colHue);
     PXColorHSVToRGBF(&hsvWhite, &colWhite);
     PXColorHSVToRGBF(&hsvBlack, &colBlack);
@@ -648,7 +649,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     // -----------------------
     // Here we assume currentHSV.Saturation/Value correspond to a point inside the triangle.
     // For now, just show the color box at the hue-corner direction (for visibility).
-    PXColorRGBAF selectedFromHSV;
+    PXColorRGBA_F32 selectedFromHSV;
     HSVToRGBA_Alpha(&currentHSV, currentAlpha, &selectedFromHSV);
 
     float tipBoxSize = 18.0f;
@@ -700,7 +701,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
 
             PXColorHSV hsv0 = { h0, 1.0f, 1.0f };
             PXColorHSV hsv1 = { h1, 1.0f, 1.0f };
-            PXColorRGBAF c0, c1;
+            PXColorRGBA_F32 c0, c1;
             PXColorHSVToRGBAF(&hsv0, &c0);
             PXColorHSVToRGBAF(&hsv1, &c1);
             c0.Alpha = 1.0f;
@@ -725,7 +726,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     {
         PXColorHSV hsv0 = { currentHSV.Hue, 0.0f, currentHSV.Value };
         PXColorHSV hsv1 = { currentHSV.Hue, 1.0f, currentHSV.Value };
-        PXColorRGBAF c0, c1;
+        PXColorRGBA_F32 c0, c1;
         PXColorHSVToRGBAF(&hsv0, &c0);
         PXColorHSVToRGBAF(&hsv1, &c1);
         c0.Alpha = 1.0f;
@@ -746,7 +747,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     {
         PXColorHSV hsv0 = { currentHSV.Hue, currentHSV.Saturation, 0.0f };
         PXColorHSV hsv1 = { currentHSV.Hue, currentHSV.Saturation, 1.0f };
-        PXColorRGBAF c0, c1;
+        PXColorRGBA_F32 c0, c1;
         PXColorHSVToRGBF(&hsv0, &c0);
         PXColorHSVToRGBF(&hsv1, &c1);
         c0.Alpha = 1.0f;
@@ -755,14 +756,14 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
         DrawGradientRectH(
             slidersX0, sliderY,
             slidersX0 + sliderWidth, sliderY + sliderHeight,
-            (PXColorRGBF*)&c0, (PXColorRGBF*)&c1
+            (PXColorRGB_F32*)&c0, (PXColorRGB_F32*)&c1
         );
         sliderY -= (sliderHeight + sliderGap);
     }
 
     // R, G, B sliders (using currentRGBA)
     {
-        PXColorRGBAF c0, c1;
+        PXColorRGBA_F32 c0, c1;
 
         // R
         c0.Red = 0.0f; c0.Green = currentRGBA.Green; c0.Blue = currentRGBA.Blue;
@@ -805,15 +806,15 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
                 int iy = (int)((yy - ay0) / checkerSize);
                 float c = ((ix + iy) & 1) ? 0.7f : 0.9f;
 
-                PXColorRGBF col = { c, c, c };
+                PXColorRGB_F32 col = { c, c, c };
                 DrawFilledRect(xx, yy,
                                xx + checkerSize, yy + checkerSize,
                                &col, 1.0f);
             }
         }
 
-        PXColorRGBAF opaque = { currentRGBA.Red, currentRGBA.Green, currentRGBA.Blue };
-        PXColorRGBAF transparent = { currentRGBA.Red * 0.0f,
+        PXColorRGBA_F32 opaque = { currentRGBA.Red, currentRGBA.Green, currentRGBA.Blue };
+        PXColorRGBA_F32 transparent = { currentRGBA.Red * 0.0f,
                                     currentRGBA.Green * 0.0f,
                                     currentRGBA.Blue * 0.0f };
 
@@ -832,7 +833,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
         float previewY = y + padding;
 
         // Current RGBA
-        PXColorRGBF previewRGB = { currentRGBA.Red, currentRGBA.Green, currentRGBA.Blue };
+        PXColorRGB_F32 previewRGB = { currentRGBA.Red, currentRGBA.Green, currentRGBA.Blue };
         DrawFilledRect(
             slidersX0,
             previewY,
@@ -842,8 +843,8 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
         );
 
         // HSV-based selected color (same here)
-        PXColorRGBAF sel = selectedFromHSV;
-        PXColorRGBF selRGB = { sel.Red, sel.Green, sel.Blue };
+        PXColorRGBA_F32 sel = selectedFromHSV;
+        PXColorRGB_F32 selRGB = { sel.Red, sel.Green, sel.Blue };
         DrawFilledRect(
             slidersX0 + previewSize + padding,
             previewY,
@@ -856,7 +857,7 @@ PXResult PXAPI PXColorPickerDrawGL(PXColorPicker PXREF pxColorPicker, PXDrawInfo
     return PXResultOK;
 }
 
-PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     PXWindow PXREF pxWindow = pxColorPicker->WindowBase;
 
@@ -869,7 +870,7 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo P
         "--- ColorPicker --- START"
     );
 #endif
-    PXWindowDrawRectangle2D
+    PXEngineUIDrawRectangle2D
     (
         pxWindow,
         pxDrawInfo
@@ -935,14 +936,14 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo P
         pxColorCircle.VertexList = pxColorCircleVertexList;
         pxColorCircle.StartX = width;
         pxColorCircle.StartY = height;
-        pxColorCircle.ColorSelected.Hue = colorTemp;
+        pxColorCircle.ColorSelected.Hue = colorTempX;
         pxColorCircle.ColorSelected.Saturation = 1;
         pxColorCircle.ColorSelected.Value = 1;
 
         //PXMathCircle(&pxColorCircle);
 
-        colorTemp += 15;
-        colorTemp = (int)colorTemp % 360;
+        colorTempX += 15;
+        colorTempX = (int)colorTempX % 360;
 
         for(PXSize i = 0; i < pxColorCircle.Precision; ++i)
         {
@@ -974,9 +975,9 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo P
         );
 
 
-        PXColorRGBAI8 pxColorRGBAI8;
+        PXColorRGBA_U8 PXColorRGBA_U8;
 
-        PXColorHSVToRGBAI8(&pxColorCircle.ColorSelected, &pxColorRGBAI8);
+        PXColorHSVToRGBAI8(&pxColorCircle.ColorSelected, &PXColorRGBA_U8);
 
         TRIVERTEX vertices[3];
 
@@ -990,9 +991,9 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo P
 
         vertices[1].x = pxColorCircle.VertexListTriangle[0].X;
         vertices[1].y = pxColorCircle.VertexListTriangle[0].Y;
-        vertices[1].Red = (pxColorRGBAI8.Red / (PXF32)0xFF) * 0xFFFF;
-        vertices[1].Green = (pxColorRGBAI8.Green / (PXF32)0xFF) * 0xFFFF;
-        vertices[1].Blue = (pxColorRGBAI8.Blue / (PXF32)0xFF) * 0xFFFF;
+        vertices[1].Red = (PXColorRGBA_U8.Red / (PXF32)0xFF) * 0xFFFF;
+        vertices[1].Green = (PXColorRGBA_U8.Green / (PXF32)0xFF) * 0xFFFF;
+        vertices[1].Blue = (PXColorRGBA_U8.Blue / (PXF32)0xFF) * 0xFFFF;
         vertices[1].Alpha = 0xFFFF;
 
         vertices[2].x = pxColorCircle.VertexListTriangle[2].X;
@@ -1060,7 +1061,7 @@ PXResult PXAPI PXColorPickerDraw(PXColorPicker PXREF pxColorPicker, PXDrawInfo P
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXColorPickerCreate(PXColorPicker** pxColorPickerREF, PXColorPickerCreateInfo PXREF pxColorPickerCreateInfo)

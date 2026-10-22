@@ -1,5 +1,7 @@
 #include "PXAudioEmitter.h"
 
+#include <PX/OS/PXOS.h>
+
 const char PXAudioEmitterName[] = "AudioEmitter";
 const PXI8U PXAudioEmitterNameLength = sizeof(PXAudioEmitterName);
 const PXECSRegisterInfoStatic PXAudioEmitterRegisterInfoStatic =
@@ -14,7 +16,7 @@ const PXECSRegisterInfoStatic PXAudioEmitterRegisterInfoStatic =
 };
 PXECSRegisterInfoDynamic PXAudioEmitterRegisterInfoDynamic;
 
-PXResult PXAPI PXAudioEmitteRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
+void PXAPI PXAudioEmitterRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
     pxECSRegisterInfo->InfoStatic = &PXAudioEmitterRegisterInfoStatic;
     pxECSRegisterInfo->InfoDynamic = &PXAudioEmitterRegisterInfoDynamic;
@@ -34,16 +36,23 @@ PXResult PXAPI PXAudioEmitterCreate(PXAudioEmitter** pxAudioEmitterREF, PXAudioE
     }
 
     pxAudioEmitter = *pxAudioEmitterREF;
+    pxAudioEmitter->Mode = pxAudioEmitterCreateInfo->Mode;
+
+    if(PXAudioEmitterModeInvalid == pxAudioEmitterCreateInfo->Mode)
+    {
+        PXDebugBreak();
+        return PXResultInvalid;
+    }
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXAudioEmitterRelease(const PXAudioEmitter PXREF pxAudioEmitter)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXAudioEmitterDraw(const PXAudioEmitter PXREF pxAudioEmitter, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXAudioEmitterDraw(const PXAudioEmitter PXREF pxAudioEmitter, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

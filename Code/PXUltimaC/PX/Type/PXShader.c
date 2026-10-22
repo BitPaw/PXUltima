@@ -1,138 +1,70 @@
 #include "PXShader.h"
+#include <PX/OS/File/PXFile.h>
 
-#include <PX/OS/Console/PXConsole.h>
-#include <PX/Engine/PXResource.h>
-
-const char PXShaderProgramText[] = "ShaderProgram";
 const char PXShaderText[] = "Shader";
-
-const char* PXAPI PXShaderTypeToString(const PXShaderType pxShaderType)
+const PXI8U PXShaderTextLength = sizeof(PXShaderText);
+const PXECSRegisterInfoStatic PXShaderRegisterInfoStatic =
 {
-    switch(pxShaderType)
-    {
-        case PXShaderTypeVertex:     // .vert - a vertex shader
-            return "VertexShader";
+    {sizeof(PXShaderText), sizeof(PXShaderText), PXShaderText, TextFormatASCII},
+    sizeof(PXShader),
+    __alignof(PXShader),
+    PXECSTypeSystem,
+    PXShaderCreate,
+    PXShaderRelease,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXShaderRegisterInfoDynamic;
 
-        case PXShaderTypePixel:   // .frag - a fragment shader
-            return "PixelShader";
 
-        case PXShaderTypeTessellationControl:    // .tesc - a tessellation control shader
-            return "TessellationControlShader";
-
-        case PXShaderTypeTessellationEvaluation:     // .tese - a tessellation evaluation shader
-            return "TessellationEvaluationShader";
-
-        case PXShaderTypeGeometry:      // .geom - a geometry shader
-            return "GeometryShader";
-
-        case PXShaderTypeCompute:   // .comp - a compute shader
-            return "ComputeShader";
-
-        case PXShaderTypeInvalid:
-        default:
-            return PXNull;
-    }
+void PXAPI PXShaderRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
+{
+   
 }
 
-PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXShaderProgramCreateInfo PXREF pxShaderProgramCreateInfo)
+PXResult PXAPI PXShaderCreate(PXShader PXREF pxShader, PXShaderCreateInfo PXREF pxShaderCreateInfo)
 {
-    PXShaderProgram PXREF pxShaderProgram = 0;
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXShaderProgramText,
-        "Create",
-        "ShaderProgram [PXID:%i]",
-        pxShaderProgram->Info.ID
-    );
-#endif
-
     // is the data already present?
-    const PXBool isDataPrensent = pxShaderProgramCreateInfo->ShaderVertex.A && pxShaderProgramCreateInfo->ShaderPixel.A;
+    const PXBool isDataEmbeddedDataPresent = PXTextHasData(&pxShaderCreateInfo->Embedded);
 
-    if(isDataPrensent)
+    if(isDataEmbeddedDataPresent)
     {
-        PXFileCreateInfo pxFileOpenInfo;
-        PXClear(PXFileCreateInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
-        pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-
-        PXBufferSet
+        PXBufferStore
         (
-            &pxFileOpenInfo.Data,
-            pxShaderProgramCreateInfo->ShaderVertex.A,
-            pxShaderProgramCreateInfo->ShaderVertex.SizeUsed
+            &pxShader->Data,
+            pxShaderCreateInfo->Embedded.Data,
+            pxShaderCreateInfo->Embedded.SizeUsed,
+            PXFalse
         );
 
-        PXFileCreate(&pxShaderProgramCreateInfo->ShaderVertexFile, &pxFileOpenInfo);
-
-        PXBufferSet
-        (
-            &pxFileOpenInfo.Data,
-            pxShaderProgramCreateInfo->ShaderPixel.A,
-            pxShaderProgramCreateInfo->ShaderPixel.SizeUsed
-        );
-
-        PXFileCreate(&pxShaderProgramCreateInfo->ShaderPixelFile, &pxFileOpenInfo);
-
-        PXECSInfoFlagStateAdd(&pxShaderProgram->Info, PXECSFlagStorageMemory);
-
-        //PXResourceStorePath(&pxShaderProgram->Info, "<Internal>", -1);
-    }
-    else // load file
-    {
-        PXFileCreateInfo pxFileOpenFromPathInfo;
-        PXClear(PXFileCreateInfo, &pxFileOpenFromPathInfo);
-        pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
-        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
-
-        // TODO: we can make it a loop?
-
-        pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateInfo->ShaderVertexFilePath;
-
-        const PXResult vertexLoadResult = PXFileCreate
-        (
-            &pxShaderProgramCreateInfo->ShaderVertexFile,
-            &pxFileOpenFromPathInfo
-        );
-
-        if(PXResultOK != vertexLoadResult)
-            return vertexLoadResult;
-
-        pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateInfo->ShaderPixelFilePath;
-
-        const PXResult fragmentLoadResult = PXFileCreate
-        (
-            &pxShaderProgramCreateInfo->ShaderPixelFile,
-            &pxFileOpenFromPathInfo
-        );
-
-        if(PXResultOK != fragmentLoadResult)
-            return fragmentLoadResult;
-
-        PXECSInfoFlagStateAdd(&pxShaderProgram->Info, PXECSFlagStorageMemory);
+        return PXResultOK;
     }
 
-#if 0
-    // Create job to register shader, register might need to be sync. 
+
+    const PXBool hasFilePath = PXTextHasData(&pxShaderCreateInfo->FilePath);
+
+    if(hasFilePath)
     {
-        PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryHeapCallocT(PXResourceCreateInfo, 1);
-        PXCopy(PXResourceCreateInfo, pxResourceCreateInfo, pxResourceCreateInfoASYNC);
-        pxResourceCreateInfoASYNC->Flags |= PXResourceCreateBehaviourIsASYNCCall;
+        PXFileCreateInfo pxFileCreateInfo;
+        PXClear(PXFileCreateInfo, &pxFileCreateInfo);
+        pxFileCreateInfo.FilePath = pxShaderCreateInfo->FilePath;
+        pxFileCreateInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileCreateInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileCreateInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
-        PXThreadPoolQueueWork
-        (
-            PXNull,
-            //PXResourceManagerAdd,
-            pxResourceCreateInfoASYNC,
-            PXNull,
-            PXTaskParameterRelease | PXTaskExecuteASYNC
-        );
+        PXFileCreate(&pxShaderCreateInfo->File, &pxFileCreateInfo);
     }
-#endif
 
+    if(!pxShaderCreateInfo->File)
+    {
+        return PXResultInvalid;
+    }
+
+    pxShader->Data = *PXFileBufferGET(pxShaderCreateInfo->File);
+
+    return PXResultOK;
+}
+
+PXResult PXAPI PXShaderRelease(PXShader PXREF pxShader)
+{
     return PXResultOK;
 }

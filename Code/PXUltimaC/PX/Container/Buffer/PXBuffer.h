@@ -28,7 +28,7 @@ typedef struct PXBuffer_
         PXF32* F32;
         PXF64* F64;
 
-        PXColorRGBI8* ColorRGBI8;
+        PXColorRGB_U8* ColorRGBI8;
 
         //PXVector2F16* F16V2;
         PXVector2F32* F32V2;
@@ -37,6 +37,16 @@ typedef struct PXBuffer_
         PXVector3F16* F16V3;
         PXVector3F32* F32V3;
         PXVector3F64* F64V3;
+
+
+        // Vertex buffer data
+        struct PXVertexP3N3T2F32_* VertexP3N3T2F32;
+
+        // For index buffer data
+        struct PXIndexTriangle8_* IndexTriangle8;
+        struct PXIndexTriangle16_* IndexTriangle16;
+        struct PXIndexTriangle32_* IndexTriangle32;
+        struct PXIndexTriangle64_* IndexTriangle64;
     };
    
     PXSize CursorOffsetByte;
@@ -63,10 +73,13 @@ PXPublic PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize s
 PXPublic PXResult PXAPI PXBufferEnsureTotal(PXBuffer PXREF pxBuffer, const PXSize sizeTotal);
 PXPublic PXResult PXAPI PXBufferEnsureAdditional(PXBuffer PXREF pxBuffer, const PXSize sizeAdditionalData);
 PXPublic PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size);
-PXPublic PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer);
+PXPublic PXResult PXAPI PXBufferRelease(PXBuffer PXREF pxBuffer);
 PXPublic PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
 PXPublic PXResult PXAPI PXBufferCopy(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
-PXPublic PXResult PXAPI PXBufferAppend(PXBuffer PXREF pxBuffer, void* data, const PXSize size, void** out);
+PXPublic PXResult PXAPI PXBufferAppend(PXBuffer PXREF pxBuffer, const void* data, const PXSize size, void** out);
+
+PXPublic PXResult PXAPI PXBufferCursorMove(PXBuffer PXREF pxBuffer, const PXI64S move);
+
 
 PXPublic PXResult PXAPI PXBufferStore
 (

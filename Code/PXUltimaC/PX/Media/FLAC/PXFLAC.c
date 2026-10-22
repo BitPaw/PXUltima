@@ -42,7 +42,7 @@ PXResult PXAPI PXFLACLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if (!isValidSignature)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -65,7 +65,7 @@ PXResult PXAPI PXFLACLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if (!expectedSize)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         PXLogPrint
@@ -103,7 +103,7 @@ PXResult PXAPI PXFLACLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     }
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXFLACSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
@@ -131,11 +131,11 @@ PXResult PXAPI PXFLACSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
         if (!expectedSize)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
     }
 
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

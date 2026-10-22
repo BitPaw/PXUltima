@@ -13,7 +13,7 @@ PXComboBox;
 
 typedef struct PXComboBoxCreateInfo_
 {
-    PXDrawInfo Info;
+    PXEngineUIDrawInfo Info;
 }
 PXComboBoxCreateInfo;
 

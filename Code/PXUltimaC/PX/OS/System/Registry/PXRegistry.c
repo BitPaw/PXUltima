@@ -16,75 +16,78 @@ typedef HKEY PXRegistryID;
 
 //#pragma comment(lib, "Advapi32.lib")
 
-
-
-typedef    LSTATUS(APIENTRY* PXRegConnectRegistryA)(_In_opt_ LPCSTR lpMachineName, _In_ HKEY hKey, _Out_ PHKEY phkResult);
-typedef    LSTATUS(APIENTRY* PXRegConnectRegistryW)(_In_opt_ LPCWSTR lpMachineName, _In_ HKEY hKey, _Out_ PHKEY phkResult);
-typedef    LSTATUS(APIENTRY* PXRegCloseKey)(_In_ HKEY hKey);
-typedef    LSTATUS(APIENTRY* PXRegDeleteKeyA)(_In_ HKEY hKey, _In_ LPCSTR lpSubKey);
-typedef    LSTATUS(APIENTRY* PXRegDeleteKeyW)(_In_ HKEY hKey, _In_ LPCWSTR lpSubKey);
-typedef    LSTATUS(APIENTRY* PXRegSaveKeyA)(_In_ HKEY hKey, _In_ LPCSTR lpFile, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes);
-typedef    LSTATUS(APIENTRY* PXRegSaveKeyW)(_In_ HKEY hKey, _In_ LPCWSTR lpFile, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes);
-typedef    LSTATUS(APIENTRY* PXRegLoadKeyA)(_In_ HKEY hKey, _In_opt_ LPCSTR lpSubKey, _In_ LPCSTR lpFile);
-typedef    LSTATUS(APIENTRY* PXRegLoadKeyW)(_In_ HKEY hKey, _In_opt_ LPCWSTR lpSubKey, _In_ LPCWSTR lpFile);
-typedef    LSTATUS(APIENTRY* PXRegCreateKeyExA)(_In_ HKEY hKey, _In_ LPCSTR lpSubKey, _Reserved_ DWORD Reserved, _In_opt_ LPSTR lpClass, _In_ DWORD dwOptions, _In_ REGSAM samDesired, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes, _Out_ PHKEY phkResult, _Out_opt_ LPDWORD lpdwDisposition);
-typedef    LSTATUS(APIENTRY* PXRegCreateKeyExW)(_In_ HKEY hKey, _In_ LPCWSTR lpSubKey, _Reserved_ DWORD Reserved, _In_opt_ LPWSTR lpClass, _In_ DWORD dwOptions, _In_ REGSAM samDesired, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes, _Out_ PHKEY phkResult, _Out_opt_ LPDWORD lpdwDisposition);
-typedef    LSTATUS(APIENTRY* PXRegEnumKeyExA)(_In_ HKEY hKey, _In_ DWORD dwIndex, _Out_writes_to_opt_(*lpcchName, *lpcchName + 1) LPSTR lpName, _Inout_ LPDWORD lpcchName, _Reserved_ LPDWORD lpReserved, _Out_writes_to_opt_(*lpcchClass, *lpcchClass + 1) LPSTR lpClass, _Inout_opt_ LPDWORD lpcchClass, _Out_opt_ PFILETIME lpftLastWriteTime);
-typedef    LSTATUS(APIENTRY* PXRegEnumKeyExW)(_In_ HKEY hKey, _In_ DWORD dwIndex, _Out_writes_to_opt_(*lpcchName, *lpcchName + 1) LPWSTR lpName, _Inout_ LPDWORD lpcchName, _Reserved_ LPDWORD lpReserved, _Out_writes_to_opt_(*lpcchClass, *lpcchClass + 1) LPWSTR lpClass, _Inout_opt_ LPDWORD lpcchClass, _Out_opt_ PFILETIME lpftLastWriteTime);
+typedef LSTATUS(APIENTRY* PXRegConnectRegistryA)(_In_opt_ LPCSTR lpMachineName, _In_ HKEY hKey, _Out_ PHKEY phkResult);
+typedef LSTATUS(APIENTRY* PXRegConnectRegistryW)(_In_opt_ LPCWSTR lpMachineName, _In_ HKEY hKey, _Out_ PHKEY phkResult);
+typedef LSTATUS(APIENTRY* PXRegCloseKey)(_In_ HKEY hKey);
+typedef LSTATUS(APIENTRY* PXRegDeleteKeyA)(_In_ HKEY hKey, _In_ LPCSTR lpSubKey);
+typedef LSTATUS(APIENTRY* PXRegDeleteKeyW)(_In_ HKEY hKey, _In_ LPCWSTR lpSubKey);
+typedef LSTATUS(APIENTRY* PXRegSaveKeyA)(_In_ HKEY hKey, _In_ LPCSTR lpFile, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes);
+typedef LSTATUS(APIENTRY* PXRegSaveKeyW)(_In_ HKEY hKey, _In_ LPCWSTR lpFile, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes);
+typedef LSTATUS(APIENTRY* PXRegLoadKeyA)(_In_ HKEY hKey, _In_opt_ LPCSTR lpSubKey, _In_ LPCSTR lpFile);
+typedef LSTATUS(APIENTRY* PXRegLoadKeyW)(_In_ HKEY hKey, _In_opt_ LPCWSTR lpSubKey, _In_ LPCWSTR lpFile);
+typedef LSTATUS(APIENTRY* PXRegCreateKeyExA)(_In_ HKEY hKey, _In_ LPCSTR lpSubKey, _Reserved_ DWORD Reserved, _In_opt_ LPSTR lpClass, _In_ DWORD dwOptions, _In_ REGSAM samDesired, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes, _Out_ PHKEY phkResult, _Out_opt_ LPDWORD lpdwDisposition);
+typedef LSTATUS(APIENTRY* PXRegCreateKeyExW)(_In_ HKEY hKey, _In_ LPCWSTR lpSubKey, _Reserved_ DWORD Reserved, _In_opt_ LPWSTR lpClass, _In_ DWORD dwOptions, _In_ REGSAM samDesired, _In_opt_ CONST LPSECURITY_ATTRIBUTES lpSecurityAttributes, _Out_ PHKEY phkResult, _Out_opt_ LPDWORD lpdwDisposition);
+typedef LSTATUS(APIENTRY* PXRegEnumKeyExA)(_In_ HKEY hKey, _In_ DWORD dwIndex, _Out_writes_to_opt_(*lpcchName, *lpcchName + 1) LPSTR lpName, _Inout_ LPDWORD lpcchName, _Reserved_ LPDWORD lpReserved, _Out_writes_to_opt_(*lpcchClass, *lpcchClass + 1) LPSTR lpClass, _Inout_opt_ LPDWORD lpcchClass, _Out_opt_ PFILETIME lpftLastWriteTime);
+typedef LSTATUS(APIENTRY* PXRegEnumKeyExW)(_In_ HKEY hKey, _In_ DWORD dwIndex, _Out_writes_to_opt_(*lpcchName, *lpcchName + 1) LPWSTR lpName, _Inout_ LPDWORD lpcchName, _Reserved_ LPDWORD lpReserved, _Out_writes_to_opt_(*lpcchClass, *lpcchClass + 1) LPWSTR lpClass, _Inout_opt_ LPDWORD lpcchClass, _Out_opt_ PFILETIME lpftLastWriteTime);
 
 #endif
 
-PXResult PXAPI PXRegistryInitialize(PXRegistry PXREF registry)
+PXResult PXAPI PXRegistryInitialize(PXRegistry PXREF pxRegistry)
 {
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxRegistry)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    pxResult = PXResultRefusedNotSupportedByOperatingSystem;
 #elif OSWindows
 
     // open Librarfy
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXRegistryLibrary, PXRegistryLibraryLength, PXRegistryLibraryLength);
-        const PXResult result = PXLibraryOpen(&registry->Library, &pxText);
+        PXTextFromAddressA(&pxText, PXRegistryLibrary, PXRegistryLibraryLength, PXRegistryLibraryLength);
+        pxResult = PXLibraryOpen(&pxRegistry->Library, &pxText);
 
-        if(!result)
+        if(!pxResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
-    // Load all functions
+    // Load all functions    
+    PXLibraryFunctionEntry PXLibraryFunctionEntry[] =
     {
-        PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
-        {
-            { &registry->RegistryConnectRegistryA, "RegConnectRegistryA"},
-            { &registry->RegistryConnectRegistryW, "RegConnectRegistryW"},
-            { &registry->RegistryCloseKey, "RegCloseKey"},
-            { &registry->RegistryKeyDeleteA, "RegDeleteKeyA"},
-            { &registry->RegistryKeyDeleteW, "RegDeleteKeyW"},
-            { &registry->RegistryKeySaveA, "RegSaveKeyA"},
-            { &registry->RegistryKeySaveW, "RegSaveKeyW"},
-            { &registry->RegistryKeyLoadA, "RegLoadKeyA"},
-            { &registry->RegistryKeyLoadW, "RegLoadKeyW"},
-            { &registry->RegistryCreateKeyExA, "RegCreateKeyExA"},
-            { &registry->RegistryCreateKeyExW, "RegCreateKeyExW"},
-            { &registry->RegistryKeyEnumExA, "RegEnumKeyExA" },
-            { &registry->RegistryKeyEnumExW, "RegEnumKeyExW"}
-        };
-        const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+        { &pxRegistry->RegistryConnectRegistryA, "RegConnectRegistryA"},
+        { &pxRegistry->RegistryConnectRegistryW, "RegConnectRegistryW"},
+        { &pxRegistry->RegistryCloseKey, "RegCloseKey"},
+        { &pxRegistry->RegistryKeyDeleteA, "RegDeleteKeyA"},
+        { &pxRegistry->RegistryKeyDeleteW, "RegDeleteKeyW"},
+        { &pxRegistry->RegistryKeySaveA, "RegSaveKeyA"},
+        { &pxRegistry->RegistryKeySaveW, "RegSaveKeyW"},
+        { &pxRegistry->RegistryKeyLoadA, "RegLoadKeyA"},
+        { &pxRegistry->RegistryKeyLoadW, "RegLoadKeyW"},
+        { &pxRegistry->RegistryCreateKeyExA, "RegCreateKeyExA"},
+        { &pxRegistry->RegistryCreateKeyExW, "RegCreateKeyExW"},
+        { &pxRegistry->RegistryKeyEnumExA, "RegEnumKeyExA" },
+        { &pxRegistry->RegistryKeyEnumExW, "RegEnumKeyExW"}
+    };
+    const PXSize amount = sizeof(PXLibraryFunctionEntry) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&registry->Library, pxLibraryFuntionEntry, amount);
-    }
-
-    return PXResultOK;
+    pxResult = PXLibraryGetSymbolListA(&pxRegistry->Library, PXLibraryFunctionEntry, amount);    
 
 #else
-    return PXActionRefusedNotSupported;
+    pxResult = PXResultRefusedNotSupported;
 #endif
+
+    return pxResult;
 }
 
 PXResult PXAPI PXRegistryRelease(PXRegistry PXREF registry)
 {
-    PXLibraryClose(&registry->Library);
+    return PXLibraryClose(&registry->Library);
 }
 
 PXResult PXAPI PXRegistryConnectSpace(PXRegistry PXREF registry, const PXRegistrySpace registrySpace)
@@ -95,7 +98,7 @@ PXResult PXAPI PXRegistryConnectSpace(PXRegistry PXREF registry, const PXRegistr
 PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText PXREF computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
     HKEY hKey = 0;
 
@@ -114,7 +117,7 @@ PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText P
             break;
 
         default:
-            return PXActionRefuedInputInvalid;
+            return PXResultRefuedInputInvalid;
     }
 
     PHKEY registryKeyResult = (PHKEY)&registry->ID;
@@ -150,19 +153,19 @@ PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText P
         }
 
         default:
-            return PXActionRefuedTextFormatUnsupported;
+            return PXResultRefuedTextFormatUnsupported;
     }
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXRegistryClose(PXRegistry PXREF registry)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
     const HKEY registryKey = (HKEY)registry->ID;
     const PXRegCloseKey pxRegCloseKey = (PXRegCloseKey)registry->RegistryCloseKey;
@@ -179,14 +182,14 @@ PXResult PXAPI PXRegistryClose(PXRegistry PXREF registry)
     return PXResultOK;
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXRegistryKeyListAll(PXRegistry PXREF registry)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
     PXBool repeat = 0;
 
@@ -223,14 +226,14 @@ PXResult PXAPI PXRegistryKeyListAll(PXRegistry PXREF registry)
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
     DWORD Reserved = 0;
     LPWSTR lpClass = 0;
@@ -296,12 +299,12 @@ PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF
             break;
         }
         default:
-            return PXActionRefuedTextFormatUnsupported;
+            return PXResultRefuedTextFormatUnsupported;
     }
 
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 
     return PXResultOK;
@@ -310,7 +313,7 @@ PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF
 PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName, const PXText PXREF pxTextFile)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
     SECURITY_ATTRIBUTES securityAttributes;
     DWORD Flags = 0;
@@ -348,11 +351,11 @@ PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF p
         }
 
         default:
-            return PXActionRefuedTextFormatUnsupported;
+            return PXResultRefuedTextFormatUnsupported;
     }
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 
     return PXResultOK;
@@ -361,7 +364,7 @@ PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF p
 PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 
     SECURITY_ATTRIBUTES securityAttributes;
@@ -401,20 +404,20 @@ PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF p
         }
 
         default:
-            return PXActionRefuedTextFormatUnsupported;
+            return PXResultRefuedTextFormatUnsupported;
     }
 
     return PXResultOK;
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName)
 {
 #if OSUnix
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 
     const HKEY registryKey = (HKEY)registry->ID;
@@ -450,12 +453,12 @@ PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF
         }
 
         default:
-            return PXActionRefuedTextFormatUnsupported;
+            return PXResultRefuedTextFormatUnsupported;
     }
 
     return PXResultOK;
 
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }

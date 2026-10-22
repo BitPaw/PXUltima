@@ -14,7 +14,7 @@ PXResult PXAPI PXLAMELoadFromFile(PXLAME PXREF lame, PXFile PXREF pxFile)
 
         if(!isValid)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -104,5 +104,5 @@ PXResult PXAPI PXLAMESaveToFile(const PXLAME PXREF lame, PXFile PXREF pxFile)
 {
     PXFileWriteB(pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

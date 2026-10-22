@@ -54,15 +54,15 @@ PXIPVersion PXAPI PXIPAnalyseVersion(const char* ip)
     return IPVersionInvalid;
 }
 
-PXByte PXAPI PXIPIsValid(const char* ipAdress)
+PXByte PXAPI PXIPIsValid(const char* ipAddress)
 {
-    PXIPVersion ipVersion = PXIPAnalyseVersion(ipAdress);
+    PXIPVersion ipVersion = PXIPAnalyseVersion(ipAddress);
 
     switch (ipVersion)
     {
     case IPVersion4:
     {
-        return PXIPv4CheckIfValid(ipAdress) == 0;
+        return PXIPv4CheckIfValid(ipAddress) == 0;
     }
     case IPVersionUnknownDomain:
     {
@@ -70,7 +70,7 @@ PXByte PXAPI PXIPIsValid(const char* ipAdress)
     }
     case IPVersion6:
     {
-        return PXIPv6CheckIfValid(ipAdress) == 0;
+        return PXIPv6CheckIfValid(ipAddress) == 0;
     }
 
     default:
@@ -81,7 +81,7 @@ PXByte PXAPI PXIPIsValid(const char* ipAdress)
     }
 }
 
-PXByte PXAPI PXIPv4CheckIfValid(const char* ipAdress)
+PXByte PXAPI PXIPv4CheckIfValid(const char* ipAddress)
 {
     const unsigned char resultIPv4OK = 0;
     const unsigned char resultIPv4NullPointer = 1;
@@ -102,14 +102,14 @@ PXByte PXAPI PXIPv4CheckIfValid(const char* ipAdress)
 
     unsigned short octetValue = 0;
 
-    if (ipAdress == 0)
+    if (ipAddress == 0)
     {
         return resultIPv4NullPointer;
     }
 
-    for (; ipAdress[index] != '\0' && index < maximalSize; index++)
+    for (; ipAddress[index] != '\0' && index < maximalSize; index++)
     {
-        char character = ipAdress[index];
+        char character = ipAddress[index];
         char isDot = character == '.';
         char isValidCharacter = (character >= '0' && character <= '9') || character;
 
@@ -153,9 +153,9 @@ PXByte PXAPI PXIPv4CheckIfValid(const char* ipAdress)
     return resultIPv4OK;
 }
 
-unsigned char PXAPI PXIPv6CheckIfValid(const char* ipAdress)
+unsigned char PXAPI PXIPv6CheckIfValid(const char* ipAddress)
 {
-    const char validIPv6Adress = 0;
+    const char validIPv6Address = 0;
     const char invalidAmountOfSeperators = 1;
 
     const char seperator = ':';
@@ -166,9 +166,9 @@ unsigned char PXAPI PXIPv6CheckIfValid(const char* ipAdress)
     unsigned int minLength = 2;
 
 
-    for (; ipAdress[lengh] != '\0' && lengh <= maxLength; lengh++)
+    for (; ipAddress[lengh] != '\0' && lengh <= maxLength; lengh++)
     {
-        char character = ipAdress[lengh];
+        char character = ipAddress[lengh];
         char isSeperator = character == seperator;
 
         if (isSeperator)
@@ -180,5 +180,5 @@ unsigned char PXAPI PXIPv6CheckIfValid(const char* ipAdress)
         }
     }
 
-    return validIPv6Adress;
+    return validIPv6Address;
 }

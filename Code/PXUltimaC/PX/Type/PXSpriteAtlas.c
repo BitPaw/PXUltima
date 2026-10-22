@@ -12,7 +12,7 @@ PXResult PXAPI PXSpriteMapCreate(PXSpriteMap PXREF pxSpriteMap, PXSpriteMapInfo 
 
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeTexture2D;
-        pxResourceCreateInfoList[0].ObjectReference = (PXECSInfo**)&pxSpriteMap->Texture;
+       // pxResourceCreateInfoList[0].ObjectReference = (PXECSInfo**)&pxSpriteMap->Texture;
 
       //  //PXResourceManagerAdd(pxResourceCreateInfoList);
     }
@@ -24,7 +24,7 @@ PXResult PXAPI PXSpriteMapCreate(PXSpriteMap PXREF pxSpriteMap, PXSpriteMapInfo 
 
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeModel;
-        pxResourceCreateInfoList[0].ObjectReference = (PXECSInfo**)&pxSpriteMap->Model;
+       // pxResourceCreateInfoList[0].ObjectReference = (PXECSInfo**)&pxSpriteMap->Model;
        // pxResourceCreateInfoList[0].Model.Form = PXModelFormRectangleTX;
 
        // //PXResourceManagerAdd(pxResourceCreateInfoList);
@@ -47,17 +47,18 @@ PXResult PXAPI PXSpriteMapCreate(PXSpriteMap PXREF pxSpriteMap, PXSpriteMapInfo 
         PXModel PXREF pxModel = pxSpriteMap->Model;
 
         PXBufferLayoutEntry pxVertexBufferLayout[3];
-        pxVertexBufferLayout[0].Format = PXTypeF32;
+        pxVertexBufferLayout[0].TypeData = PXTypeF32;
         pxVertexBufferLayout[0].AmountOfElements = 2;
-        pxVertexBufferLayout[0].UpdatePerPrimitive = 1;
+        pxVertexBufferLayout[0].UpdatesPerPrimitive = 1;
 
-        pxVertexBufferLayout[1].Format = PXTypeF32;
+        pxVertexBufferLayout[1].TypeData = PXTypeF32;
+        //pxVertexBufferLayout[1].TypeUse
         pxVertexBufferLayout[1].AmountOfElements = 2;
-        pxVertexBufferLayout[1].UpdatePerPrimitive = 1;
+        pxVertexBufferLayout[1].UpdatesPerPrimitive = 1;
 
-        pxVertexBufferLayout[2].Format = PXTypeF32;
+        pxVertexBufferLayout[2].TypeData = PXTypeF32;
         pxVertexBufferLayout[2].AmountOfElements = 2;
-        pxVertexBufferLayout[2].UpdatePerPrimitive = 1;
+        pxVertexBufferLayout[2].UpdatesPerPrimitive = 1;
 
         /*
         PXMeshVertexArrayAdd

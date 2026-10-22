@@ -62,7 +62,7 @@ PXResult PXAPI PXGameCardLoop(PXGameCard PXREF pxGameCard)
     return PXResultOK;
 }
 
-PXResult PXAPI PXGameCardDraw(PXGameCard PXREF pxGameCard, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXGameCardDraw(PXGameCard PXREF pxGameCard, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     // Draw stacks?
 
@@ -96,7 +96,7 @@ PXCardHand* PXAPI PXGameCardPlayerGetHand(const PXGameCard PXREF pxGameCard, PXP
     return PXNull;
 }
 
-PXResult PXAPI PXCardDraw(PXCard PXREF pxCard, PXDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32)
+PXResult PXAPI PXCardDraw(PXCard PXREF pxCard, PXEngineUIDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32)
 {
     if(!(pxCard && pxDrawInfo && pxVector3F32))
     {
@@ -117,7 +117,7 @@ PXResult PXAPI PXCardDraw(PXCard PXREF pxCard, PXDrawInfo PXREF pxDrawInfo, PXVe
     return PXResultOK;
 }
 
-PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF positionRoot)
+PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXEngineUIDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF positionRoot)
 {
     if(!(pxCardHand && pxDrawInfo && positionRoot))
     {
@@ -146,7 +146,7 @@ PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXDrawInfo PXREF pxDr
     return PXResultOK;
 }
 
-PXResult PXAPI PXPlayerHandsDraw(PXCardHand PXREF pxCardHand, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXPlayerHandsDraw(PXCardHand PXREF pxCardHand, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
 
 

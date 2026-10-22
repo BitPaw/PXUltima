@@ -4,20 +4,23 @@
 #define PXTimerIncluded
 
 #include <PX/Engine/PXResource.h>
+#include <PX/Type/PXTime.h>
+
+typedef struct PXTimer_ PXTimer;
 
 typedef struct PXTimerEventInfo_
 {
-    struct PXTimer_* TimerReference;
+    void* CallBackOwner;
+
+    PXTimer* TimerReference;
 
     PXI32U Acuracy;
-
     PXBool WasHandled;
-
     //PXI32S DelayShift;
 }
 PXTimerEventInfo;
 
-typedef PXResult(PXAPI* PXTimerCallBack)(void PXREF owner, PXTimerEventInfo PXREF pxEngineTimerEventInfo);
+typedef PXResult(PXAPI* PXTimerCallBack)(PXTimerEventInfo PXREF pxEngineTimerEventInfo);
 
 typedef struct PXTimer_
 {
@@ -26,14 +29,14 @@ typedef struct PXTimer_
     void* Owner;
     PXTimerCallBack CallBack;
 
-    PXI32U TimeStampStart;
+    PXBool Enabled;
+
+    PXTimeStamp TimeStampStart;
 
     PXI32U TimeDeltaTarget;
     PXI32S TimeDelayShift;
 }
 PXTimer;
-
-
 
 typedef struct PXTimerCreateInfo_
 {
@@ -45,7 +48,12 @@ typedef struct PXTimerCreateInfo_
 }
 PXTimerCreateInfo;
 
+PXInternal void PXAPI PXTimerRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
-PXPublic PXResult PXAPI PXTimerCreate(PXTimer PXREF pxTimer, PXTimerCreateInfo PXREF pxTimerCreateInfo);
+PXPublic PXResult PXAPI PXTimerCreate(PXTimer** pxTimerREF, PXTimerCreateInfo PXREF pxTimerCreateInfo);
+PXPublic PXResult PXAPI PXTimerRelease(PXTimer PXREF pxTimer);
+
+PXPublic PXResult PXAPI PXTimerRun(PXTimer PXREF pxTimer);
+PXPublic PXResult PXAPI PXTimerStop(PXTimer PXREF pxTimer);
 
 #endif

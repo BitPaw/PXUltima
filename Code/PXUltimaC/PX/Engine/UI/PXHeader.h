@@ -11,6 +11,6 @@ typedef struct PXHeader_
 }
 PXHeader;
 
-PXPublic PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXHeaderDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

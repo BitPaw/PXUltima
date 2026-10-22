@@ -4,6 +4,7 @@
 #define PXStreamIncluded
 
 #include <PX/Engine/PXResource.h>
+#include <PX/Type/PXWindow.h>
 
 
 typedef struct PXStream_ PXStream;
@@ -12,37 +13,37 @@ typedef struct PXStreamOpenInfo_ PXStreamOpenInfo;
 
 typedef struct PXStreamOnFrameInfo_
 {
-	void* DataAdress;
-	PXSize DataSize;
-	PXSize Width;
-	PXSize Height;
-	PXI8U BitPerPixel;
+    void* DataAddress;
+    PXSize DataSize;
+    PXSize Width;
+    PXSize Height;
+    PXI8U BitPerPixel;
 }
 PXStreamOnFrameInfo;
 
 
 typedef PXResult(PXAPI* PXStreamCreateFunction)(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
 typedef PXResult(PXAPI* PXStreamUpdateFunction)(PXStream PXREF pxStream);
-typedef PXResult(PXAPI* PXStreamOnFrameFunction)(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF dataAdress);
+typedef PXResult(PXAPI* PXStreamOnFrameFunction)(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF dataAddress);
 
 
 
-#define PXStreamModeWindow		1
-#define PXStreamModeMonitor		2
-#define PXStreamModeCamera		3
-#define PXStreamModeTV			4
+#define PXStreamModeWindow        1
+#define PXStreamModeMonitor        2
+#define PXStreamModeCamera        3
+#define PXStreamModeTV            4
 
 
 typedef struct PXStreamWindow_
 {
 #if OSUnix
 #elif OSWindows
-	RECT Rectangle;
+    RECT Rectangle;
 
-	PXWindow* WindowRef;
+    PXWindow* WindowRef;
 
-	HDC MemoryDC;
-	HBITMAP BitmapHandle;
+    HDC MemoryDC;
+    HBITMAP BitmapHandle;
 #endif
 }
 PXStreamWindow;
@@ -51,47 +52,47 @@ typedef struct PXStreamCamera_
 {
 #if OSUnix
 #elif OSWindows
-	struct IMFSample* Sample;
-	struct IMFSourceReader* SourceReader;
-	struct IMFMediaBuffer* MediaBuffer;
-	struct IMFMediaSource* MediaSource;
+    struct IMFSample* Sample;
+    struct IMFSourceReader* SourceReader;
+    struct IMFMediaBuffer* MediaBuffer;
+    struct IMFMediaSource* MediaSource;
 #endif
 
-	PXSize Width;
-	PXSize Height;
+    PXSize Width;
+    PXSize Height;
 }
 PXStreamCamera;
 
 
 typedef struct PXStream_
 {
-	PXStreamCreateFunction Create;
-	PXStreamUpdateFunction Update;
-	PXStreamUpdateFunction Release;
-	PXStreamOnFrameFunction OnFrame;
+    PXStreamCreateFunction Create;
+    PXStreamUpdateFunction Update;
+    PXStreamUpdateFunction Release;
+    PXStreamOnFrameFunction OnFrame;
 
-	PXI16U Mode;
+    PXI16U Mode;
 
-	union
-	{
-		PXStreamWindow Window;
-		PXStreamCamera Camera;
-	};
+    union
+    {
+        PXStreamWindow Window;
+        PXStreamCamera Camera;
+    };
 }
 PXStream;
 
 typedef struct PXStreamOpenInfo_
 {
-	union
-	{
-		PXWindowHandle WindowHandle;
-		PXMonitorHandle MonitorHandle;
-	};
+    union
+    {
+        PXWindowHandle WindowHandle;
+        PXMonitorHandle MonitorHandle;
+    };
 
-	PXStreamOnFrameFunction OnFrameCallBack;
+    PXStreamOnFrameFunction OnFrameCallBack;
 
-	PXI16U DeviceIndex;
-	PXI16U Mode;
+    PXI16U DeviceIndex;
+    PXI16U Mode;
 }
 PXStreamOpenInfo;
 

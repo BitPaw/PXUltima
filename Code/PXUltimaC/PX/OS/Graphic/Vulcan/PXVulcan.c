@@ -1,11 +1,11 @@
 #include "PXVulcan.h"
 
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/PXEngineRender.h>
 
 #include <stdio.h>
-#include <PX/OS/Graphic/PXGraphic.h>
+#include <PX/Type/PXWindow.h>
 
 #define PXVulcanDebug 1
 
@@ -18,7 +18,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     case VK_SUCCESS:
         return PXResultOK;
     case VK_NOT_READY:
-        return PXActionFailedResourceUnavailableTryAgain;
+        return PXResultFailedResourceUnavailableTryAgain;
 
 #if 0
     case VK_TIMEOUT:
@@ -28,7 +28,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     case VK_EVENT_RESET:
         return 000000000;
     case VK_INCOMPLETE:
-        return PXActionRefuedInputBufferTooSmal;
+        return PXResultRefuedInputBufferTooSmal;
     case VK_ERROR_OUT_OF_HOST_MEMORY:
         return 000000000;
     case VK_ERROR_OUT_OF_DEVICE_MEMORY:
@@ -54,7 +54,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     case VK_ERROR_FRAGMENTED_POOL:
         return 000000000;
     case VK_ERROR_UNKNOWN:
-        return PXActionFailedUnkownError;
+        return PXResultFailedUnkownError;
     case VK_ERROR_OUT_OF_POOL_MEMORY:
         return 000000000;
     case VK_ERROR_INVALID_EXTERNAL_HANDLE:
@@ -127,7 +127,7 @@ PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     };
 }
 
-PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
+PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo)
 {
     PXClear(PXVulcan, pxVulcan);
 
@@ -135,7 +135,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
     PXLogPrint
     (
         PXLoggingInfo,
-        "Vulcan",
+        PXVulcanName,
         "Initialize",
         "Starting library..."
     );
@@ -152,7 +152,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
 #elif OSWindows
         PXTextMakeFixedA(&vulcanLibraryName, "vulkan-1.dll");
 #else
-        return PXActionRefusedNotImplemented;
+        return PXResultRefusedNotImplemented;
 #endif
 
         const PXBool libraryLoadResult = PXLibraryOpen(&pxVulcan->LibraryID, &vulcanLibraryName);
@@ -164,9 +164,9 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
 #elif OSApple
             PXTextMakeFixedA(&vulcanLibraryName, "libvulkan.1.dylib");
 #elif OSWindows
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 #else
-            return PXActionNotSupportedByOperatingSystem;
+            return PXResultNotSupportedByOperatingSystem;
 #endif
 
             const PXBool libraryReloadResult = PXLibraryOpen(&pxVulcan->LibraryID, &vulcanLibraryName);
@@ -183,7 +183,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
                 );
 #endif
 
-                return PXActionRefusedNotSupportedByOperatingSystem;
+                return PXResultRefusedNotSupportedByOperatingSystem;
             }
         }
     }
@@ -195,16 +195,16 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         PXVulcanName,
         "Initialize",
         "Library detected 0x%p",
-        pxVulcan->LibraryID.ModuleHandle
+        pxVulcan->LibraryID.Handle.Data
     );
 #endif
 
 
     // Link functions
     {
-        PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
+        //PXGraphic* pxGraphic = pxEngineRenderCreateInfo->Graphic;
 
-        pxGraphic->Release = (PXGraphicReleaseFunction)PXVulcanRelease;
+        //pxGraphic->Release = (PXGraphicReleaseFunction)PXVulcanRelease;
     }
 
 
@@ -262,11 +262,11 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
             pxVulkanInstanceCreateInfo.ppEnabledExtensionNames = buffer;
 
             const VkResult createResult = pxVulcan->InstanceCreate
-                                          (
-                                              &pxVulkanInstanceCreateInfo,
-                                              PXNull,
-                                              &pxVulcan->Instance
-                                          );
+            (
+                &pxVulkanInstanceCreateInfo,
+                PXNull,
+                &pxVulcan->Instance
+            );
 
 
 #if PXVulcanDebug
@@ -344,6 +344,8 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
 
     }
 
+    PXWindowHandle pxWindowHandle = PXWindowHandleGet(pxEngineRenderCreateInfo->WindowReference);
+
 #if OSWindows
     // Create rendering surface
     {
@@ -352,7 +354,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
         vkWin32SurfaceCreateInfoKHR.flags = 0;
         vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
-        vkWin32SurfaceCreateInfoKHR.hwnd = PXWindowHandleGet(pxGraphicInitializeInfo->WindowReference);
+        vkWin32SurfaceCreateInfoKHR.hwnd = pxWindowHandle.Data;
 
         const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
     }
@@ -512,5 +514,5 @@ PXResult PXAPI PXVulcanRelease(PXVulcan PXREF pxVulcan)
 
     PXLibraryClose(&pxVulcan->LibraryID);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

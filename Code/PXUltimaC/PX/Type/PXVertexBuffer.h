@@ -17,11 +17,11 @@ typedef struct PXVertexBuffer_
     {
         PXI32U VBO; // OpenGL VertexBufferObject
 
-        struct IDirect3DVertexBuffer9* Buffer_9;
-        struct ID3D11Buffer* Buffer_11;
+        struct IDirect3DVertexBuffer9* DX_9;
+        struct ID3D11Buffer* DX_11;
     };
 
-    PXBuffer VertexData;
+    PXBuffer Data;
 
     PXBufferLayout Layout;
 }
@@ -30,6 +30,19 @@ PXVertexBuffer;
 typedef struct PXVertexBufferCreateInfo_
 {
     PXECSCreateInfo Info;
+
+    PXSize VertexDataSize;
+
+    union
+    {
+        void* VertexDataAddress;
+        const void* VertexDataAddressConst;
+    };
+
+    PXBool IsConstData;
+
+    PXSize BufferLayoutEntryAmount;
+    PXBufferLayoutEntry* BufferLayoutEntryList;
 }
 PXVertexBufferCreateInfo;
 
@@ -65,5 +78,8 @@ PXPublic PXResult PXAPI PXVertexBufferCreate(PXVertexBuffer** pxVertexBufferREF,
 PXPublic PXResult PXAPI PXVertexBufferRelease(PXVertexBuffer PXREF pxVertexBuffer);
 
 PXPublic PXResult PXAPI PXVertexBufferLayoutPrint(const PXVertexBuffer PXREF pxVertexBuffer);
+
+
+
 
 #endif

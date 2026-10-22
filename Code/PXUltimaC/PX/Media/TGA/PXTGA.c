@@ -274,7 +274,7 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo 
 
         if(!isExtensionSizeAsExpected)
         {
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
         }
 
         const PXTypeEntry pxDataStreamElementList[] =
@@ -321,5 +321,5 @@ PXResult PXAPI PXTGALoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo 
 
 PXResult PXAPI PXTGASaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

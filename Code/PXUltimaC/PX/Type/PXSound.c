@@ -1,7 +1,11 @@
 #include "PXSound.h"
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/PXEngineMath.h>
 #include <PX/Math/PXMath.h>
+#include <math.h>
+
+#define SAMPLE_RATE 44100
 
 const char PXSoundText[] = "Sound";
 const PXI8U PXSoundTextLength = sizeof(PXSoundText);
@@ -23,9 +27,11 @@ void PXAPI PXSoundRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
     pxECSRegisterInfo->InfoDynamic = &PXSoundRegisterInfoDynamic;
 }
 
-PXResult PXAPI PXSoundCreate(PXSound** pxSound, PXSoundCreateInfo PXREF pxSoundCreateInfo)
+PXResult PXAPI PXSoundCreate(PXSound** pxSoundREF, PXSoundCreateInfo PXREF pxSoundCreateInfo)
 {
-    if(!(pxSound && pxSoundCreateInfo))
+    PXSound* pxSound = PXNull;
+
+    if(!(pxSoundREF && pxSoundCreateInfo))
     {
         return PXResultRefusedParameterNull;
     }
@@ -33,28 +39,139 @@ PXResult PXAPI PXSoundCreate(PXSound** pxSound, PXSoundCreateInfo PXREF pxSoundC
     pxSoundCreateInfo->Info.Static = &PXSoundRegisterInfoStatic;
     pxSoundCreateInfo->Info.Dynamic = &PXSoundRegisterInfoDynamic;
 
-    const PXResult loadResult = PXECSLoad(pxSound, pxSoundCreateInfo);
+    const PXResult loadResult = PXECSCreate(pxSoundREF, pxSoundCreateInfo);
 
     if(PXResultOK != loadResult)
     {
         return loadResult;
     }
 
+    pxSound = *pxSoundREF;
+
+
+    PXBool hasFilePath = PXTextHasData(&pxSoundCreateInfo->Info.FilePath);
+
+    if(hasFilePath)
+    {
+        const PXResult loadResult = PXECSLoad(pxSound, pxSoundCreateInfo);
+
+        if(PXResultOK != loadResult)
+        {
 #if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXSoundText,
-        "Load",
-        "successful <%s>.",
-        pxSoundCreateInfo->Info.FilePath.A
-    );
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXSoundText,
+                "Create",
+                "Failed <%s>!",
+                pxSoundCreateInfo->Info.FilePath.A
+            );
 #endif
+
+            return loadResult;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXSoundText,
+            "Create",
+            "Successful <%s>.",
+            pxSoundCreateInfo->Info.FilePath.A
+        );
+#endif
+    }
 
     return PXResultOK;
 }
 
-#define SAMPLE_RATE 44100
+PXResult PXAPI PXSoundStereoToMono(PXSound PXREF pxSound)
+{
+    if(!pxSound)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    // Check if we already mono, if yes, qiot.
+    const PXBool isMono = 1u == pxSound->NumerOfChannels;
+
+    if(isMono)
+    {
+        return PXResultOK;
+    }
+
+    PXSize framesAmount = PXSoundFramesAmount(pxSound);
+    PXEngineMath PXREF pxEngineMath = PXEngineMathInstanceGet();
+
+    pxEngineMath->StereoToMonoI16U(pxSound->Data.I16U, framesAmount);
+
+    pxSound->Data.SizeAllowedToUse = framesAmount * sizeof(PXI16U);
+    pxSound->NumerOfChannels = 1; // Set our channel now to MONO
+
+    return PXResultOK;
+}
+
+PXSize PXAPI PXSoundSamplesAmount(const PXSound PXREF pxSound)
+{
+    if(!pxSound)
+    {
+        return 0;
+    }
+
+    PXSize bytePerSample = PXSoundBytePerSample(pxSound);
+
+    if(!pxSound->BitsPerSample)
+    {
+        return 0;
+    }
+
+    return pxSound->Data.SizeAllowedToUse / bytePerSample;
+}
+
+PXSize PXAPI PXSoundFramesAmount(const PXSound PXREF pxSound)
+{
+    if(!pxSound)
+    {
+        return 0;
+    }
+
+    PXSize blockAllign = PXSoundBlockAllign(pxSound);
+
+    if(!blockAllign)
+    {
+        return 0;
+    }
+
+    return pxSound->Data.SizeAllowedToUse / blockAllign;
+}
+
+PXSize PXAPI PXSoundBytePerSample(const PXSound PXREF pxSound)
+{
+    if(!pxSound)
+    {
+        return 0;
+    }
+
+    return pxSound->BitsPerSample / 8U;
+}
+
+PXSize PXAPI PXSoundBlockAllign(const PXSound PXREF pxSound)
+{
+    if(!pxSound)
+    {
+        return 0;
+    }
+
+    return (pxSound->NumerOfChannels * pxSound->BitsPerSample) / 8u;
+}
+
+PXSize PXAPI PXSoundBytesPerSecound(const PXSound PXREF pxSound)
+{
+    PXSize blockAllign = PXSoundBlockAllign(pxSound);
+
+    return pxSound->SampleRate * blockAllign;
+}
 
 void PXAPI FillBufferWithElectricHum(const int sampleRate, short* samples, int sampleCount, float frequency)
 {

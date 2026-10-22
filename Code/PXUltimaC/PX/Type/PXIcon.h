@@ -3,7 +3,12 @@
 #ifndef PXIconIncluded
 #define PXIconIncluded
 
-#include <PX/Type/PXTexture.h>
+#include <PX/Type/PXTexture2D.h>
+
+#if OSUnix
+#elif OSWindows
+#include <Windows.h>
+#endif
 
 typedef enum PXIconID_
 {
@@ -26,7 +31,7 @@ typedef struct PXIcon_
     HBITMAP BitMapHandle;
 #endif
 
-    PXTexture* Texture;
+    PXTexture2D* Texture;
 }
 PXIcon;
 
@@ -34,7 +39,7 @@ typedef struct PXIconCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXTexture* IconImage; // if set, generate a system icon from this
+    PXTexture2D* IconImage; // if set, generate a system icon from this
     PXSize OffsetX;
     PXSize OffsetY;
     PXSize Width;
@@ -49,7 +54,7 @@ PXPublic void PXAPI PXIconRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInf
 PXPublic PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID);
 PXPublic PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon);
 PXPublic PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF filePath);
-PXPublic PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture);
+PXPublic PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture2D PXREF pxTexture2D);
 
 PXPublic PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreateInfo);
 

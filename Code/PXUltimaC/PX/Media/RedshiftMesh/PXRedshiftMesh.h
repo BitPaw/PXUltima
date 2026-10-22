@@ -13,7 +13,7 @@ typedef struct R3D2MeshStaticFace_
     PXI32U VertexID[3];
     char Material[64];
     PXVector2F32 UV[3]; // (new(uvs[0], uvs[3]), new(uvs[1], uvs[4]), new(uvs[2], uvs[5])));
-    PXColorRGBAI8 Color[3];
+    PXColorRGBA_U8 Color[3];
 }
 R3D2MeshStaticFace;
 
@@ -36,7 +36,7 @@ typedef struct PXR3D2_
     PXR3D2Header Header;
 
     PXVector3F32* VertexData;
-    PXColorRGBAI8* VertexColors;
+    PXColorRGBA_U8* VertexColors;
     PXVector3F32 CentralPoint;
 
     // Text only

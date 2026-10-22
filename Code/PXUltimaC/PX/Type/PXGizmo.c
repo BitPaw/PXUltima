@@ -41,7 +41,7 @@ PXResult PXAPI PXGizmoCreate(PXGizmo** pxGizmoREF, PXGizmoCreateInfo PXREF pxGiz
 
 PXResult PXAPI PXGizmoRelease(PXGizmo PXREF pxGizmo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 
@@ -619,7 +619,7 @@ void Gizmo_Render(const float origin[3], int enable4D)
 
 float poss[3] = { 00,5,00 };
 
-PXResult PXAPI PXGizmoDraw(PXGizmo PXREF pxGizmo, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXGizmoDraw(PXGizmo PXREF pxGizmo, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
 
     glScalef(5,5,5);

@@ -29,7 +29,7 @@ typedef struct PXThreadPool_
     PTP_WORK Work;
 #endif
 
-    PXI32U MainThreadID;
+    PXThreadID MainThreadID;
 
     PXSize StackReserve;
     PXSize StackCommit;
@@ -80,12 +80,12 @@ PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread 
 
     PXCopy(PXThread, &threadCurrent, pxThread);
     */
-    return PXActionRefusedNotFound;
+    return PXResultRefusedNotFound;
 }
 
 PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PXREF pxTask)
 {
-    if(!pxTask->FunctionX1Adress)
+    if(!pxTask->FunctionX1Address)
     {
 #if PXLogEnable
         PXLogPrint
@@ -100,7 +100,7 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
 
         PXTaskStateChangeRemote(pxThreadPool, pxTask, PXECSFlagStateFAILED);
 
-        return PXActionRefusedMissingCallBack;
+        return PXResultRefusedMissingCallBack;
     }
 
 #if PXLogEnable
@@ -116,11 +116,11 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
 
     if(pxTask->ArgumentObject2)
     {
-        pxTask->FunctionReturnCode = pxTask->FunctionX2Adress(pxTask->ArgumentObject1, pxTask->ArgumentObject2);
+        pxTask->FunctionReturnCode = pxTask->FunctionX2Address(pxTask->ArgumentObject1, pxTask->ArgumentObject2);
     }
     else
     {
-        pxTask->FunctionReturnCode = pxTask->FunctionX1Adress(pxTask->ArgumentObject1);
+        pxTask->FunctionReturnCode = pxTask->FunctionX1Address(pxTask->ArgumentObject1);
     }
 
 
@@ -164,6 +164,8 @@ PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PX
 
 PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
 {
+    PXThreadResult pxThreadResult;
+
 #if 0
     PXResult pxResult = PXECSRefCheck(PXNull, pxThreadPool);
 
@@ -195,7 +197,9 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
 
             if(isMainThread)
             {
-                return 0;
+                pxThreadResult.Data = 0;
+
+                return pxThreadResult;
             }
 
             /*
@@ -219,14 +223,16 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
         PXThreadPoolTaskInvoke(pxThreadPool, &pxTask);
     }
 
-    return 0;
+    pxThreadResult.Data = 0;
+
+    return pxThreadResult;
 }
 
 PXBool PXAPI PXThreadPoolIsMainThread()
 {
-    PXI32U currentThreadID = PXThreadCurrentID();
+    PXThreadID currentThreadID = PXThreadCurrentID();
 
-    return _GLOBALThreadPool.MainThreadID == currentThreadID;
+    return _GLOBALThreadPool.MainThreadID.Data == currentThreadID.Data;
 }
 
 PXResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool)
@@ -315,7 +321,7 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
     pxThreadCreateInfo.Parameter = pxThreadPool;
     pxThreadCreateInfo.CreateSuspended = PXTrue;
 
-    PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, nameBuffer, 0, sizeof(pxThreadCreateInfo.Info.Name));
+    PXTextFromAddressA(&pxThreadCreateInfo.Info.Name, nameBuffer, 0, sizeof(pxThreadCreateInfo.Info.Name));
     
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
     {
@@ -452,7 +458,7 @@ PXResult PXAPI PXThreadPoolWaitForSpesific(PXThreadPool* pxThreadPool, PXI32U* l
                 break;
             }
 
-            Sleep(100);
+            PXThreadSleep(PXNull,100);
 
             ++w;
         }
@@ -588,10 +594,13 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
             }
         }
 
+#if OSUnix
+#elif OSWindows
         if(!pxTaskTarget)
         {
-            DebugBreak();
+            PXDebugBreak();
         }
+#endif
     }
     else
     {
@@ -636,10 +645,10 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
     }    
 
     // Add data
-    pxTaskTarget->FunctionAdress = function;
+    pxTaskTarget->FunctionAddress = function;
     pxTaskTarget->ArgumentObject1 = parameter1;
     pxTaskTarget->ArgumentObject2 = parameter2;
-    pxTaskTarget->FunctionReturnCode = PXActionWaitOnResult;
+    pxTaskTarget->FunctionReturnCode = PXResultWaitOnResult;
 
     PXECSInfoFlagStateAdd(&pxTaskTarget->Info, behaviour);
 
@@ -739,10 +748,10 @@ PXResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI32U ta
     {
         PXTask pxTask;
         PXClear(PXTask, &pxTask);
-        pxTask.FunctionX1Adress = function;
+        pxTask.FunctionX1Address = function;
         pxTask.ArgumentObject1 = parameter1;
         pxTask.ArgumentObject2 = parameter2;
-        pxTask.FunctionReturnCode = PXActionWaitOnResult;
+        pxTask.FunctionReturnCode = PXResultWaitOnResult;
 
         PXECSInfoFlagStateAdd(&pxTask.Info, behaviour);
 

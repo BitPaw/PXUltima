@@ -27,25 +27,6 @@ PXDisplayScreen;
 
 typedef struct PXDisplay_
 {
-#if OSUnix
-    Display* DisplayHandle;
-    Window WindowRootHandle;
-    GC GraphicContent;
-#elif OSWindows
-    int WindowRootHandle;
-    void* DisplayHandle;
-    int GraphicContent;
-#endif
-
-    char* Data;
-    char* Name;
-
-    int ProtocolVersion;
-    int ProtocolRevision;
-
-    char* ServerVendor;
-    int VendorRelease;
-
     int ScreenDefaultID;
     int ScreenListAmount;
 

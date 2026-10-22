@@ -51,7 +51,7 @@ PXResult PXAPI PXECSEntityListCreate(PXECSEntityList** pxECSEntityListREF, PXECS
     return PXResultOK;
 }
 
-PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     if(!(pxECSEntityList && pxDrawInfo))
     {
@@ -60,14 +60,14 @@ PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDraw
 
     PXText pxText;
     char buffer[128];
-    PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
+    PXTextFromAddressA(&pxText, buffer, 0, sizeof(buffer));
 
     pxDrawInfo->Text = &pxText;
     //pxDrawInfo->RectangleXYWH.Width = 150;
     //pxDrawInfo->RectangleXYWH.Height = 20;
 
     PXTextPrint(&pxText, "Scene");
-    PXWindowDrawText(pxECSEntityList->WindowBase, pxDrawInfo);
+    PXEngineUIDrawText(pxECSEntityList->WindowBase, pxDrawInfo);
 
     PXTextDrawInfoRowNext(pxDrawInfo);
 
@@ -99,7 +99,7 @@ PXResult PXAPI PXECSEntityListDraw(PXECSEntityList PXREF pxECSEntityList, PXDraw
             PXTextPrint(&pxText, "TEXT:%i", -1);
         }
 
-        PXWindowDrawText
+        PXEngineUIDrawText
         (
             pxECSEntityList->WindowBase,
             pxDrawInfo

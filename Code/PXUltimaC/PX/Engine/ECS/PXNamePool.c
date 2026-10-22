@@ -65,7 +65,7 @@ PXResult PXAPI PXNamePoolStore(const PXID pxID, const PXText* pxText, PXText* px
     PXBufferAppend(&_pxNamePool.NameList, pxText->Data, pxText->SizeUsed, &pxNamePoolEntry.Data);
     //void* address = PXListAppend(&_pxNamePool.NameList, pxText->Data, pxText->SizeUsed);
 
-    // Store ID to Adress
+    // Store ID to Address
     PXResult pxResult = PXDictionaryEntryAdd
     (
         _pxNamePool.IDToPositionLookup,
@@ -106,7 +106,7 @@ PXResult PXAPI PXNamePoolGet(const PXID pxID, PXText PXREF pxText)
 
     if(PXResultOK != pxResult)
     {
-#if PXLogEnable
+#if PXLogEnable && 0
         PXLogPrint
         (
             PXLoggingWarning,
@@ -123,7 +123,7 @@ PXResult PXAPI PXNamePoolGet(const PXID pxID, PXText PXREF pxText)
 
     PXNamePoolEntry pxNamePoolEntry = *(PXNamePoolEntry*)pxDictionaryEntry.ValueAddress;
 
-    PXTextFromAdressA(pxText, pxNamePoolEntry.A, pxNamePoolEntry.Length, pxNamePoolEntry.Length);   
+    PXTextFromAddressA(pxText, pxNamePoolEntry.A, pxNamePoolEntry.Length, pxNamePoolEntry.Length);   
 
 
 #if PXLogEnable
@@ -146,7 +146,7 @@ PXID PXAPI PXNamePoolFindIDViaName(const PXText PXREF pxText)
 {
     if(!_pxNamePool.IDToPositionLookup)
     {
-        return PXActionRefusedHandleNull;
+        return PXResultRefusedHandleNull;
     }
 
     const PXSize amount = PXNamePoolEntryAmount();
@@ -198,7 +198,7 @@ PXResult PXAPI PXNamePoolEntryGet(PXNamePoolEntryRow PXREF pxNamePoolEntryRow, c
 
     pxNamePoolEntryRow->ID = *(PXID*)pxDictionaryEntry.KeyAddress;
 
-    PXTextFromAdressA(&pxNamePoolEntryRow->Name, pxNamePoolEntry->Data, pxNamePoolEntry->Length, pxNamePoolEntry->Length);
+    PXTextFromAddressA(&pxNamePoolEntryRow->Name, pxNamePoolEntry->Data, pxNamePoolEntry->Length, pxNamePoolEntry->Length);
 
     return pxResult;
 }
@@ -207,7 +207,7 @@ PXResult PXAPI PXNamePoolPrintAll()
 {
     if(!_pxNamePool.IDToPositionLookup)
     {
-        return PXActionRefusedHandleNull;
+        return PXResultRefusedHandleNull;
     }
 
     const PXSize amount = PXNamePoolEntryAmount();

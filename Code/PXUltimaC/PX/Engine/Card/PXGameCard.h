@@ -61,14 +61,14 @@ PXPublic PXResult PXAPI PXGameCardRelease(PXGameCard PXREF pxGameCard);
 
 PXPublic PXResult PXAPI PXGameCardLoop(PXGameCard PXREF pxGameCard);
 
-PXPublic PXResult PXAPI PXGameCardDraw(PXGameCard PXREF pxGameCard, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXGameCardDraw(PXGameCard PXREF pxGameCard, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 // Player
 
 PXPublic PXCardHand* PXAPI PXGameCardPlayerGetHand(const PXGameCard PXREF pxGameCard, PXPlayer PXREF pxPlayer);
 
 
-PXPublic PXResult PXAPI PXCardDraw(PXCard PXREF pxCard, PXDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32);
-PXPublic PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32);
+PXPublic PXResult PXAPI PXCardDraw(PXCard PXREF pxCard, PXEngineUIDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32);
+PXPublic PXResult PXAPI PXCardHandDraw(PXCardHand PXREF pxCardHand, PXEngineUIDrawInfo PXREF pxDrawInfo, PXVector3F32 PXREF pxVector3F32);
 
 #endif

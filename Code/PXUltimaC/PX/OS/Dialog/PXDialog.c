@@ -45,19 +45,19 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
     // Load library
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsCommonDialog, PXWindowsCommonDialogLength, PXWindowsCommonDialogLength);
+        PXTextFromAddressA(&pxText, PXWindowsCommonDialog, PXWindowsCommonDialogLength, PXWindowsCommonDialogLength);
 
         const PXResult pxResult = PXLibraryOpen(&pxDialogSystem->CommonDialogLibrary, &pxText);
 
         if(PXResultOK != pxResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch functions
     {
-        PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntry[] =
         {
             { &pxDialogSystem->DialogColorChooseA, "ChooseColorA"},
             { &pxDialogSystem->DialogColorChooseW, "ChooseColorW"},
@@ -71,9 +71,9 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
             { &pxDialogSystem->DialogPrintW, "PrintDlgW"}
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntry) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&pxDialogSystem->CommonDialogLibrary, pxLibraryFuntionEntry, amount);
+        PXLibraryGetSymbolListA(&pxDialogSystem->CommonDialogLibrary, PXLibraryFunctionEntry, amount);
     }
 
 #endif
@@ -94,7 +94,7 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 {
 #if OSUnix
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
@@ -201,7 +201,7 @@ PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
     return PXResultInvalid;
 
 #else
-    return PXActionRefusedNotSupported;
+    return PXResultRefusedNotSupported;
 #endif
 #endif
 }
@@ -277,7 +277,7 @@ PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXRE
 #endif
 }
 
-PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGBI8 PXREF color)
+PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGB_U8 PXREF color)
 {
 #if OSUnix
     return PXFalse;

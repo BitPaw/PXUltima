@@ -6,31 +6,24 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Type/PXMaterial.h>
 #include <PX/Container/Buffer/PXBuffer.h>
-#include "PXBufferLayout.h"
+#include <PX/Type/PXBufferLayout.h>
 
-
-typedef struct PXIndexSegmentEntry_
-{
-    PXMaterial* Material;
-    PXSize DataRange;
-}
-PXIndexSegmentEntry;
-
+// Range of index data that is one and the same material.
+// Or just different things.
 typedef struct PXIndexSegment_
 {
-    PXSize SegmentListAmount; // 0=Not allowed. 1=Mesh is single, n=Segmented
+    // We cant put material here, because this will block mesh data from being reused.
+    // When we reuse a cube mesh, we can't put different materials on it.
+    // It needs to be stored in the model.
+    //     PXMaterial* Material; 
 
-    union
-    {
-        PXIndexSegmentEntry SegmentPrime; // Only used if Segment is only one
-        PXIndexSegmentEntry* SegmentList;
-    };
+    PXSize MaterialID;
+    PXSize Range;
+    //void* Data;
+
+    // DrawMode?
 }
 PXIndexSegment;
-
-PXPublic void PXAPI PXIndexSegmentSET(PXIndexSegment PXREF pxIndexSegment, const PXSize amount);
-PXPublic PXIndexSegmentEntry* PXAPI PXIndexSegmentGET(PXIndexSegment PXREF pxIndexSegment);
-
 
 
 // Index buffer, used to store the vertex render order.
@@ -43,16 +36,25 @@ typedef struct PXIndexBuffer_
     {
         PXI32U IBO; // OpenGL
 
-        struct IDirect3DIndexBuffer9* Buffer_9;
+        struct IDirect3DIndexBuffer9* DX_9;
     };
 
-    PXBuffer Data;
+    PXBuffer Data; // Actual data
 
-    PXI32U DataType; // Data type for buffer
+    PXI8U BitPerIndex;
+
+    //PXI32U DataType; // Data type for buffer
 
     PXI32U DrawModeID; // How to draw, modes like triangle or lines
 
-    PXIndexSegment Segment;
+
+    PXSize SegmentAmount; // 0=Not allowed. 1=Mesh is single, n=Segmented
+    union
+    {
+        PXIndexSegment SegmentPrime; // Only used if Segment is only one
+        PXIndexSegment* SegmentList;
+    };
+
     PXBufferLayout Layout;
 }
 PXIndexBuffer;
@@ -62,7 +64,20 @@ typedef struct PXIndexBufferCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXSize AmountVertex;
+    PXBool IsConstData;
+
+    union
+    {
+        // Byte data for indexs 
+        void* IndexDataAddress;
+        const void* IndexDataAddressConst;
+    };
+
+    PXSize IndexAmount; // Not the size of this data but only the amount!
+
+    PXI8U Dimensions; // 3=Triangle, 4=Quads
+    PXI8U BitPerIndex; // 8,16,32,64
+    
     PXSize AmountSegments; // aka amount of materials
 }
 PXIndexBufferCreateInfo;
@@ -71,6 +86,17 @@ PXPublic void PXAPI PXIndexBufferRegisterToECS(PXECSRegisterInfo PXREF pxECSRegi
 PXPublic PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBuffer, PXIndexBufferCreateInfo PXREF pxIndexBufferCreateInfo);
 PXPublic PXResult PXAPI PXIndexBufferRelease(PXIndexBuffer PXREF pxIndexBuffer);
 PXPublic PXSize PXAPI PXIndexBufferAmount(const PXIndexBuffer PXREF pxIndexBuffer);
+
+PXPublic PXResult PXAPI PXIndexSegmentPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amount);
+PXPublic PXIndexSegment* PXAPI PXIndexSegmentGetViaIndex(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize index);
+PXPublic PXResult PXAPI PXIndexSegmentSetViaIndex(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize range);
+PXPublic PXSize PXAPI PXIndexSegmentAmount(const PXIndexBuffer PXREF pxIndexBuffer);
+
+
+PXPublic PXIndexSegment* PXAPI PXIndexSegmentGetViaMaterial(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize materialID);
+
+PXPublic void* PXAPI PXIndexSegmentDataGetViaMaterial(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize materialID);
+PXPublic void* PXAPI PXIndexSegmentDataGet(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize segmentID);
 
 
 // Allocate an indexbuffer in a way to minimize size for given amount of vertex points

@@ -2,15 +2,15 @@
 
 PXResult PXAPI PXTimelineInitialize(PXTimeline PXREF pxTimeline)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXTimelineEventAdd(PXTimeline PXREF pxTimeline, PXTimelineEvent PXREF pxTimelineEvent)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXTimelineTimelineAdd(PXTimeline PXREF pxTimeline, PXTimelinePath PXREF pxTimelinePath)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

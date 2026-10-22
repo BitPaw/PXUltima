@@ -29,6 +29,6 @@ PXPublic void PXAPI PXLightSpotRegisterToECS(PXECSRegisterInfo PXREF pxECSRegist
 
 PXPublic PXResult PXAPI PXLightSpotCreate(PXLightSpot** pxLightSpotREF, PXLightSpotCreateInfo PXREF pxLightSpotCreateInfo);
 PXPublic PXResult PXAPI PXLightSpotRelease(const PXLightSpot PXREF pxLightSpot);
-PXPublic PXResult PXAPI PXLightSpotDraw(const PXLightSpot PXREF pxLightSpot, struct PXWindowDrawInfo_ PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXLightSpotDraw(const PXLightSpot PXREF pxLightSpot, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

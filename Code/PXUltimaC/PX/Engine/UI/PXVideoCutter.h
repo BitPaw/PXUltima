@@ -11,6 +11,6 @@ typedef struct PXVideoCutter_
 }
 PXVideoCutter;
 
-PXPublic PXResult PXAPI PXVideoCutterDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXVideoCutterDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

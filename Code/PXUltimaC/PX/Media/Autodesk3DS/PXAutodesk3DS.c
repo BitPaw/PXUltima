@@ -4,10 +4,10 @@
 
 PXResult PXAPI PXAutodesk3DSLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXAutodesk3DSSafeFromFile(PXECSCreateInfo PXREF pxResourceSafeInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

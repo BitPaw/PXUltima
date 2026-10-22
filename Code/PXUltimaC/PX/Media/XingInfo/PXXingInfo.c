@@ -20,7 +20,7 @@ PXResult PXAPI PXXingInfoParse(PXXingInfo PXREF xingInfo, PXFile PXREF PXFile)
 
         if(!validHeader)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
 
         if(isInfo)

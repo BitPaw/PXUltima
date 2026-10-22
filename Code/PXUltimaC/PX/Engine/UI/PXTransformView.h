@@ -28,6 +28,6 @@ PXPublic void PXAPI PXTransformViewRegisterToECS(PXECSRegisterInfo PXREF pxECSRe
 
 PXPublic PXResult PXAPI PXTransformViewCreate(PXTransformView** pxTransformViewREF, PXTransformViewCrerateInfo PXREF pxTransformViewCrerateInfo);
 PXPublic PXResult PXAPI PXTransformViewRelease(PXTransformView PXREF pxTransformView);
-PXPublic PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXTransformViewDraw(PXTransformView PXREF pxTransformView, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

@@ -124,7 +124,7 @@ PXResult PXAPI PXFontListFetch()
     FcObjectSet* os = FcObjectSetBuild(FC_FAMILY, FC_STYLE, FC_FILE, NULL);
     FcFontSet* fs = FcFontList(NULL, pat, os);
 
-    for(PXSize i = 0; i < fs->nfont; i++) 
+    for(PXSize i = 0; i < fs->nfont; i++)
     {
         FcPattern* font = fs->fonts[i];
 
@@ -158,7 +158,7 @@ PXResult PXAPI PXFontListFetch()
     //-----------------------------------------------------
     // Legacy X-System pathway
     //-----------------------------------------------------
-    Display* display = 0;
+    Display* display = PXEngineUIDisplayInstance();
     char* searchPattern = PXNull;
     int fontNameListSizeMax = 0;
     int fontNameListSizeCurrnet = 0;
@@ -175,7 +175,7 @@ PXResult PXAPI PXFontListFetch()
 
     for(PXSize i = 0; i < fontNameListSizeCurrnet; ++i)
     {
-        const char* fontName = names[i];
+        const char* fontName = fontNameList[i];
         XFontStruct* f = &info[i];
     }
 
@@ -207,7 +207,7 @@ PXResult PXAPI PXFontListFetch()
 
     int resultRelease = ReleaseDC(PXNull, defaultDeviceContext);
 #else
-    return PXActionRefusedNotSupportedByLibrary;
+    return PXResultRefusedNotSupportedByLibrary;
 #endif
 }
 
@@ -224,7 +224,7 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
     pxFontCreateInfo->Info.Static = &PXFontRegisterInfoStatic;
     pxFontCreateInfo->Info.Dynamic = &PXFontRegisterInfoDynamic;
     PXResult pxResult = PXECSCreate(pxFontREF, pxFontCreateInfo);
-    
+
     if(PXResultOK != pxResult)
     {
         return pxResult;
@@ -233,15 +233,25 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
     pxFont = *pxFontREF;
 
     // if this is a system font, we dont load it from disk but from the system, duh.
-    if(fontName->Data4)
+    if(fontName->Data)
     {
 #if OSUnix
+        pxFont->UI = pxFontCreateInfo->UI;
+        Display* display = PXEngineUIDisplayGet(pxFontCreateInfo->UI);
         // "9x15" <--- linux font? Sometimes not found
-        pxFont->Info.Handle.FontHandle = XLoadQueryFont //  XFontStruct*
-        (
-            pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
-            name
-        );
+        //  XFontStruct*
+
+        if(!display)
+        {
+            return PXResultRefusedHandleNull;
+        }
+
+        if(!fontName->Data)
+        {
+            return PXResultRefusedTextNull;
+        }
+
+        pxFont->FontHandle = XLoadQueryFont(display, fontName->A);
 
 #elif OSWindows
 
@@ -308,7 +318,7 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
             {
                 // ToDO: ??
                 return PXResultRefusedParameterInvalid;
-            }             
+            }
         }
 
         PXResult pxResult = PXErrorCurrent(PXNull != pxFont->FontHandle);
@@ -340,7 +350,7 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
             "PXID:<%4i>, <%s>, Path:<%s>, from file",
             pxFont->Info.ID,
             fontName->A,
-            PXNull // FilePath            
+            PXNull // FilePath
         );
 #endif
 
@@ -358,11 +368,33 @@ PXResult PXAPI PXFontCreate(PXFont** pxFontREF, PXFontCreateInfo PXREF pxFontCre
 
 PXResult PXAPI PXFontRelease(PXFont PXREF pxFont)
 {
+    if(!pxFont)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
-    const int resultID = XFreeFont(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, 0);
+    Display* display = PXEngineUIDisplayGet(pxFont->UI);
+
+    if(!display)
+    {
+        return PXResultRefusedHandleNull;
+    }
+
+    const int resultID = XFreeFont(display, 0);
 #elif OSWindows
+    const BOOL result = DeleteObject(pxFont->FontHandle);
+
+    if(result)
+    {
+        pxFont->FontHandle = PXNull;
+    }
+    else
+    {
+        return PXResultRefusedHandleInvalid;
+    }
 
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

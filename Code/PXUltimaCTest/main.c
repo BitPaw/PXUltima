@@ -172,7 +172,6 @@ PXF32 calcNumbersOUT[VXSize];
 
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Network/PXNetwork.h>
-#include <PX/Media/PXSound.h>
 #include <PX/OS/Audio/Windows/PXDirectSound.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Stream/PXStream.h>
@@ -189,6 +188,7 @@ PXF32 calcNumbersOUT[VXSize];
 #pragma comment(lib, "winmm.lib")
 
 #include <PX/Media/Bitmap/PXBitmap.h>
+#include <gl/GL.h>
 
 
 
@@ -268,7 +268,7 @@ int SaveBMP(const char* filename, BYTE* pData, int width, int height, int bbp)
 
 
 
-int i = 0;
+int _pxECSEntityList = 0;
 
 PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF pxStreamOnFrameInfo)
 {
@@ -286,7 +286,7 @@ PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInf
         fileBuffer, 
         64,
         "P:\\_IN\\%2.2i___%4.4ix%4.4i___X%i.bmp",
-        i,
+        _pxECSEntityList,
         pxStreamOnFrameInfo->Width,
         pxStreamOnFrameInfo->Height,
         pxStreamOnFrameInfo->BitPerPixel
@@ -294,8 +294,8 @@ PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInf
 
 
     PXTexture PXTexture;
-    PXTexture.PixelData = pxStreamOnFrameInfo->DataAdress;
-    PXTexture.PixelDataSize = pxStreamOnFrameInfo->DataSize;
+    //PXTexture.PixelData = pxStreamOnFrameInfo->DataAdress;
+    //PXTexture.PixelDataSize = pxStreamOnFrameInfo->DataSize;
     PXTexture.Width = pxStreamOnFrameInfo->Width;
     PXTexture.Height = pxStreamOnFrameInfo->Height;
     PXTexture.Depth = 1;
@@ -309,13 +309,13 @@ PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInf
         PXTexture.Format = PXColorFormatRGBAI8;
     }
 
-    PXResourceTransphereInfo pxResourceTransphereInfo;
-    PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-    pxResourceTransphereInfo.ResourceType =PXResourceTypeTexture;
-    pxResourceTransphereInfo.ResourceTarget = &PXTexture;
+   // PXResourceTransphereInfo pxResourceTransphereInfo;
+   // PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+   // pxResourceTransphereInfo.ResourceType =PXResourceTypeTexture;
+   // pxResourceTransphereInfo.ResourceTarget = &PXTexture;
 
 #if 1
-    PXResourceSaveA(&pxResourceTransphereInfo, fileBuffer);
+   // PXResourceSaveA(&pxResourceTransphereInfo, fileBuffer);
 #else
     SaveBMP
     (
@@ -328,62 +328,6 @@ PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInf
 #endif
     return PXResultOK;
 }
-
-
-
-
-
-
-
-
-
-
-#define NUM_VERTICES 16
-const PXVector4F32 PXTesseractVertices[] =
-{
-    {-1,-1,-1,-1},
-    {1,-1,-1,-1},
-    {-1,1,-1,-1},
-    {1,1,-1,-1},
-    {-1,-1,1,-1},
-    {1,-1,1,-1},
-    {-1,1,1,-1},
-    {1,1,1,-1},
-    {-1,-1,-1,1},
-    {1,-1,-1,1},
-    {-1,1,-1,1},
-    {1,1,-1,1},
-    {-1,-1,1,1},
-    {1,-1,1,1},
-    {-1,1,1,1},
-    {1,1,1,1}
-};
-
-#define NUM_TRIANGLES 48
-int triangleFaces[NUM_TRIANGLES][3] =
-{
-    // Cube 1 faces (indices 0–7)
-    {0,1,2},{1,3,2}, {4,5,6},{5,7,6},
-    {0,1,4},{1,5,4}, {2,3,6},{3,7,6},
-    {0,2,4},{2,6,4}, {1,3,5},{3,7,5},
-
-    // Cube 2 faces (indices 8–15)
-    {8,9,10},{9,11,10}, {12,13,14},{13,15,14},
-    {8,9,12},{9,13,12}, {10,11,14},{11,15,14},
-    {8,10,12},{10,14,12}, {9,11,13},{11,15,13},
-
-    // Connections between cubes
-    {0,8,1},{1,9,8}, {2,10,3},{3,11,10},
-    {4,12,5},{5,13,12}, {6,14,7},{7,15,14},
-    {0,8,2},{2,10,8}, {1,9,3},{3,11,9},
-    {4,12,6},{6,14,12}, {5,13,7},{7,15,13}
-};
-
-
-
-
-
-
 
 
 // D20 (Icosahedron)
@@ -862,16 +806,16 @@ int main()
 
 
 
-    PXGPUList(0, 0);
+   // PXGPUList(0, 0);
 
 
     PXStream pxStream;
 
-    for(i = 0; i < 27; i++)
+    for(_pxECSEntityList = 0; _pxECSEntityList < 27; _pxECSEntityList++)
     {
         PXStreamOpenInfo pxStreamOpenInfo;
         pxStreamOpenInfo.Mode = PXStreamModeWindow;
-        pxStreamOpenInfo.DeviceIndex = i;
+        pxStreamOpenInfo.DeviceIndex = _pxECSEntityList;
         pxStreamOpenInfo.OnFrameCallBack = PXStreamOnFrame;
 
         PXStreamOpen(&pxStream, &pxStreamOpenInfo);
@@ -1104,7 +1048,7 @@ int main()
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
-
+#if 0
     {
         PXModel pxModel;
         PXClear(PXBinaryWindows, &pxModel);
@@ -1126,6 +1070,7 @@ int main()
 
         PXConsoleWrite(0, "EE");
     }
+#endif
 
     return 0;
     
@@ -1165,6 +1110,7 @@ int main()
 
  
 
+#if 0
     {
         PXModel pxModel;
         PXClear(PXBinaryWindows, &pxModel);
@@ -1175,11 +1121,12 @@ int main()
 
         PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\Kitchen_set\\Kitchen_set.usd");
     }
+#endif
 
 
 
 
-
+#if 0
     {
         PXModel pxModel;
         PXClear(PXBinaryWindows, &pxModel);
@@ -1190,6 +1137,7 @@ int main()
 
         PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\test.fbx");
     }
+#endif
 
 
 
@@ -1311,7 +1259,7 @@ int main()
 
     PXDotNetCompile(&pxDotNet);
 
-    PXActionResult pxActionResult = PXDotNetInitialize(&pxDotNet, 0);
+    PXActionResult pxResult = PXDotNetInitialize(&pxDotNet, 0);
 
     PXDelegate pxDelegate;
     pxDelegate.NameLibrary = "PXTestDLLRelay.dll";
@@ -1344,6 +1292,8 @@ int main()
 #endif
 
 
+
+#if 0
     {
         PXBinaryWindows pxBinaryWindows;
         PXClear(PXBinaryWindows, &pxBinaryWindows);
@@ -1357,6 +1307,7 @@ int main()
 
 
     }
+#endif
 
 
 

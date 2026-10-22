@@ -6,14 +6,13 @@
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 #include <PX/Type/PXVertexBuffer.h>
 #include <PX/Type/PXTexture.h>
-#include <PX/Type/PXGraphicsCard.h>
+#include <PX/Type/PXGPU.h>
 
-PXPublic PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo);
 PXPublic PXResult PXAPI PXDirectX11Release(PXDirectX11 PXREF pxDirectX11);
 
-PXPublic PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTextureInfo PXREF pxGraphicTexturInfo);
 
-PXPublic PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBAF PXREF pxColorRGBAF);
+PXPublic PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBA_F32 PXREF PXColorRGBA_F32);
 PXPublic PXResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11 PXREF pxDirectX11, PXVertexBuffer PXREF pxVertexBuffer);
 
 PXPublic PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount);
@@ -21,6 +20,14 @@ PXPublic PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirec
 PXPublic PXResult PXAPI PXDirectX11TextureMemoryAvailable(PXDirectX11 PXREF pxDirectX11, PXI32U PXREF value);
 
 PXPublic PXResult PXAPI PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11 PXREF pxDirectX11, PXI32U PXREF amountOfAdapters);
-PXPublic PXResult PXAPI PXDirectX11DevicePhysicalListFetchFunction(PXDirectX11 PXREF pxDirectX11, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicsCard PXREF pxGraphicsCardList);
+PXPublic PXResult PXAPI PXDirectX11DevicePhysicalListFetchFunction(PXDirectX11 PXREF pxDirectX11, const PXI32U pxGraphicDevicePhysicalListSize, PXGPU PXREF pxGPU);
+
+
+PXPublic PXResult PXAPI PXDirectX11Texture1DRegister(PXDirectX11 PXREF pxDirectX11, PXTexture1D PXREF pxTexture1D);
+PXPublic PXResult PXAPI PXDirectX11Texture2DRegister(PXDirectX11 PXREF pxDirectX11, PXTexture2D PXREF pxTexture2D);
+PXPublic PXResult PXAPI PXDirectX11Texture3DRegister(PXDirectX11 PXREF pxDirectX11, PXTexture3D PXREF pxTexture3D);
+PXPublic PXResult PXAPI PXDirectX11TextureCubeRegister(PXDirectX11 PXREF pxDirectX11, PXTextureCube PXREF pxTextureCube);
+
+
 
 #endif

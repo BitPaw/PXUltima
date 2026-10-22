@@ -241,7 +241,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 {
                     const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&pxCOFF->OptionalHeader.WindowsNT.ImageBase, PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.ImageBase, PXTypeAddressFlex},
                         {&pxCOFF->OptionalHeader.WindowsNT.SectionAlignment,PXTypeI32ULE},
                         {&pxCOFF->OptionalHeader.WindowsNT.FileAlignment,PXTypeI32ULE},
                         {&pxCOFF->OptionalHeader.WindowsNT.MajorOperatingSystemVersion,PXTypeI16ULE},
@@ -256,10 +256,10 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                         {&pxCOFF->OptionalHeader.WindowsNT.CheckSum,PXTypeI32ULE},
                         {&pxCOFF->OptionalHeader.WindowsNT.Subsystem,PXTypeI16ULE},
                         {&pxCOFF->OptionalHeader.WindowsNT.DLLCharacteristics,PXTypeI16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackReserve,PXTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackCommit,PXTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapReserve,PXTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapCommit,PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackReserve,PXTypeAddressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackCommit,PXTypeAddressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapReserve,PXTypeAddressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapCommit,PXTypeAddressFlex},
                         {&pxCOFF->OptionalHeader.WindowsNT.LoaderFlags,PXTypeI32ULE},
                         {&pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes,PXTypeI32ULE}
                     };
@@ -456,7 +456,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 {&pxSectionTableCurrent->VirtualSize,PXTypeI32ULE},
                 {&pxSectionTableCurrent->VirtualAddress,PXTypeI32ULE},
                 {&pxSectionTableCurrent->SectionRawDataSize,PXTypeI32ULE},
-                {&pxSectionTableCurrent->SectionRawDataAdress,PXTypeI32ULE},
+                {&pxSectionTableCurrent->SectionRawDataAddress,PXTypeI32ULE},
                 {&pxSectionTableCurrent->PointerToRelocations,PXTypeI32ULE},
                 {&pxSectionTableCurrent->PointerToLinenumbers,PXTypeI32ULE},
                 {&pxSectionTableCurrent->NumberOfRelocations,PXTypeI16ULE},
@@ -504,7 +504,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 "VirtualSize", pxSectionTableCurrent->VirtualSize,
                 "VirtualAddress", pxSectionTableCurrent->VirtualAddress,
                 "SectionRawDataSize", pxSectionTableCurrent->SectionRawDataSize,
-                "SectionRawDataAdress", pxSectionTableCurrent->SectionRawDataAdress,
+                "SectionRawDataAddress", pxSectionTableCurrent->SectionRawDataAddress,
                 "PointerToRelocations", pxSectionTableCurrent->PointerToRelocations,
                 "PointerToLinenumbers", pxSectionTableCurrent->PointerToLinenumbers,
                 "NumberOfRelocations", pxSectionTableCurrent->NumberOfRelocations,
@@ -518,7 +518,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 
         if(pxSectionTableCurrent->SectionRawDataSize > 0)
         {
-            PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
+            PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAddress);
 
             switch(pxSectionTableCurrent->Type)
             {
@@ -526,7 +526,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 {
                     // Move to actual data
                   //  PXSize oldPosition;
-                  //  PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
+                  //  PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAddress);
 
 
                     PXX86InstructionWalk(pxFile, pxSectionTableCurrent);
@@ -577,7 +577,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                             break;
                         }
 
-                        PXSize namePosition = ((PXI32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXI32S)pxSectionTableCurrent->SectionRawDataAdress);
+                        PXSize namePosition = ((PXI32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXI32S)pxSectionTableCurrent->SectionRawDataAddress);
 
                         //PXFileCursorRewind(pxFile, namePosition);
 
@@ -882,5 +882,5 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 
 PXResult PXAPI PXCOFFSaveToFile(const PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

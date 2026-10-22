@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef PXVersionIncluded
+#define PXVersionIncluded
+
 #include "PXType.h"
 #include <PX/OS/Error/PXResult.h>
 
@@ -15,5 +19,4 @@ PXVersion;
 PXPublic PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, const char* versioNString);
 PXPublic PXResult PXAPI PXVersionToString(PXVersion PXREF pxVersion, char* versioNString);
 
-
-
+#endif

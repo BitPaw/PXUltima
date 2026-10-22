@@ -4,7 +4,8 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Type/PXCamera.h>
 #include <PX/Type/PXWindow.h>
-#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Engine/PXEngineRender.h>
+#include <PX/Engine/PXEngineScene.h>
 
 #include <GL/gl.h>
 #include <math.h>
@@ -101,15 +102,16 @@ PXResult PXAPI PXTesseractCreate(PXTesseract** pxTesseractREF, PXTesseractCreate
 
 PXResult PXAPI PXTesseractRelease(PXTesseract PXREF pxTesseract)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 float angle = 0;
 float dmax = 0.5;
 
-PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    PXCamera PXREF pxCamera = PXRendererCameraCurrent(pxDrawInfo->Rendrer);
+    // PXScene PXREF pxScene = PXEngineSceneSceneCurrent(pxDrawInfo->Engine->SceneSystem);
+   // PXCamera PXREF pxCamera = PXSceneCameraCurrent(pxScene);
 
     glEnable(GL_DEPTH_TEST);
     // glEnable(GL_LIGHTING);

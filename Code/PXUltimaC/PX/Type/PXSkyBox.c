@@ -3,6 +3,7 @@
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Reflection/PXReflection.h>
+#include <PX/Type/PXCube.h>
 
 
 const char PXSkyBoxName[] = "SkyBox";
@@ -14,7 +15,7 @@ const PXECSRegisterInfoStatic PXSkyBoxRegisterInfoStatic =
     __alignof(PXSkyBox),
     PXECSTypeEntity,
     PXSkyboxCreate,
-    PXNull,
+    PXSkyboxRelease,
     PXNull
 };
 PXECSRegisterInfoDynamic PXSkyBoxRegisterInfoDynamic;
@@ -45,7 +46,12 @@ PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBoxREF, PXSkyBoxCreateInfo PXREF p
 
     pxSkyBox = *pxSkyBoxREF;
 
-#if PXLogEnable
+    PXCubeCreate(&pxSkyBox->Model);
+
+    pxSkyBox->TextureCube = pxSkyBoxCreateInfo->TextureCube;
+    pxSkyBox->ShaderProgramReference = pxSkyBoxCreateInfo->ShaderProgram;
+
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -72,16 +78,10 @@ PXResult PXAPI PXSkyboxCreate(PXSkyBox** pxSkyBoxREF, PXSkyBoxCreateInfo PXREF p
     );
 #endif
 
-    PXTextureCreate(&pxSkyBox->TextureCube, &pxSkyBoxCreateInfo->TextureCube);
-  
-    PXShaderProgramCreate(&pxSkyBox->ShaderProgramReference, &pxSkyBoxCreateInfo->ShaderProgram);
-
-    PXModelCreate(&pxSkyBox->Model, &pxSkyBoxCreateInfo->Model);
-
     return PXResultOK;
 }
 
-PXResult PXAPI PXSkyboxDraw(PXSkyBox PXREF pxSkyBox, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXSkyboxRelease(PXSkyBox PXREF pxSkyBox)
 {
     return PXResultOK;
 }

@@ -51,8 +51,8 @@ PXPublic PXBool PXAPI PXListReserve(PXList PXREF pxList, const PXSize sizeToRese
 
 PXPublic PXSize PXAPI PXListSizeUsed(const PXList PXREF pxList);
 
-// Check if the given adress exist or is owned by this list
-PXPublic PXBool PXAPI PXListIsAddresValid(const PXList PXREF pxList, const void PXREF adress);
+// Check if the given address exist or is owned by this list
+PXPublic PXBool PXAPI PXListIsAddresValid(const PXList PXREF pxList, const void PXREF address);
 PXPublic PXBool PXAPI PXListIsIndexValid(const PXList PXREF pxList, const PXSize index);
 
 

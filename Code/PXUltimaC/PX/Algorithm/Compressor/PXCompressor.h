@@ -3,16 +3,16 @@
 #ifndef PXFilterCompressorIncluded
 #define PXFilterCompressorIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
 
 typedef struct PXFilterCompressor_
 {
-    PXFAudio Gain;
-    PXFAudio Attack;
-    PXFAudio Release;
-    PXFAudio Threshold;
-    PXFAudio Ratio;
-    PXFAudio Predelay;
+    PXF32 Gain;
+    PXF32 Attack;
+    PXF32 Release;
+    PXF32 Threshold;
+    PXF32 Ratio;
+    PXF32 Predelay;
 }
 PXFilterCompressor;
 

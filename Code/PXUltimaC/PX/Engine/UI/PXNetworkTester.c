@@ -1,6 +1,6 @@
 #include "PXNetworkTester.h"
 
-PXResult PXAPI PXNetworkTesterDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXNetworkTesterDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

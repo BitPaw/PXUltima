@@ -3,6 +3,6 @@
 #ifndef PXBubbleSortIncluded
 #define PXBubbleSortIncluded
 
-#include <PX/Engine/PXResource.h>
+#include <PX/OS/Error/PXResult.h>
 
 #endif

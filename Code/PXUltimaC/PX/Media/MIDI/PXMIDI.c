@@ -19,7 +19,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!isValid)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
         }
 
@@ -53,7 +53,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!isValid)
             {
-                return PXActionFailedFormatNotAsExpected;
+                return PXResultFailedFormatNotAsExpected;
             }
         }
 

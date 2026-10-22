@@ -6,7 +6,7 @@
 
 PXResult PXAPI PXSalsa20Encrypt(PXSalsa20 PXREF pxSalsa20, PXFile PXREF input, PXFile PXREF output)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXSalsa20Decrypt(PXSalsa20 PXREF pxSalsa20, PXFile PXREF input, PXFile PXREF output)
@@ -31,5 +31,5 @@ PXResult PXAPI PXSalsa20Decrypt(PXSalsa20 PXREF pxSalsa20, PXFile PXREF input, P
 
     PXFileCursorAdvance(input, pxSalsa20->DataSize);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

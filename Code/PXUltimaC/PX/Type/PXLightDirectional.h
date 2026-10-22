@@ -21,6 +21,6 @@ PXPublic void PXAPI PXLightDirectionalRegisterToECS(PXECSRegisterInfo PXREF pxEC
 
 PXPublic PXResult PXAPI PXLightDirectionalCreate(PXLightDirectional** pxLightDirectionalREF, PXLightDirectionalCreateInfo PXREF pxLightDirectionalCreateInfo);
 PXPublic PXResult PXAPI PXLightDirectionalRelease(const PXLightDirectional PXREF pxLightDirectional);
-PXPublic PXResult PXAPI PXLightDirectionalDraw(const PXLightDirectional PXREF pxLightDirectional, struct PXDrawInfo_ PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXLightDirectionalDraw(const PXLightDirectional PXREF pxLightDirectional, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

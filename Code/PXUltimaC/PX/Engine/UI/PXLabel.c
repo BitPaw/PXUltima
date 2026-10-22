@@ -116,22 +116,22 @@ PXResult PXAPI PXLabelDraw(PXLabel PXREF pxLabel, PXLabelCreateInfo PXREF pxLabe
 
 
 /*
-            PXUIElementTextInfo PXREF pxUIElementTextInfo = &pxWindowCreateInfo->Data.Text;
+            PXEngineUIElementTextInfo PXREF pxUIElementTextInfo = &pxWindowCreateInfo->Data.Text;
 
             pxWindowCreateInfo->WindowsTextContent = pxUIElementTextInfo->Content;
 
             switch(pxUIElementTextInfo->Allign)
             {
-                case PXUIElementAllignLeft:
+                case PXEngineUIElementAllignLeft:
                     pxWindowCreateInfo->WindowsStyleFlags |= SS_LEFT;
                     break;
 
-                case PXUIElementAllignRight:
+                case PXEngineUIElementAllignRight:
                     pxWindowCreateInfo->WindowsStyleFlags |= SS_RIGHT;
                     break;
 
                 default:
-                case PXUIElementAllignCenter:
+                case PXEngineUIElementAllignCenter:
                     pxWindowCreateInfo->WindowsStyleFlags |= SS_CENTER;
                     break;
             }
@@ -142,11 +142,11 @@ PXResult PXAPI PXLabelDraw(PXLabel PXREF pxLabel, PXLabelCreateInfo PXREF pxLabe
     /*
     if(hasParenet)
     {
-        pxWindowCreateInfo->AvoidCreation = PXUIElementTypeButton == pxWindow->Parent->Type;
+        pxWindowCreateInfo->AvoidCreation = PXEngineUIElementTypeButton == pxWindow->Parent->Type;
 
         if(pxWindowCreateInfo->AvoidCreation)
         {
-            pxWindow->Type = PXUIElementTypeButtonText;
+            pxWindow->Type = PXEngineUIElementTypeButtonText;
             pxWindow->Info.Handle.WindowHandle = PXNull;
             //return;
         }

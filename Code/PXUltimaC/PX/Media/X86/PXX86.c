@@ -133,13 +133,13 @@ void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator PXREF pxX86Iterator)
 
 void PXAPI PXX86InstructionRET(PXX86Iterator PXREF pxX86Iterator)
 {
-    PXSize returnAdress = 0;
+    PXSize returnAddress = 0;
 
     // Reduce stack by amount and discard 
     PXListExtractAndReduce(&pxX86Iterator->Stack, PXNull, pxX86Iterator->Immediate.I32S);
 
-    // Fetch the adress of the stack
-    PXListExtractAndReduce(&pxX86Iterator->Stack, &returnAdress, sizeof(PXSize));
+    // Fetch the address of the stack
+    PXListExtractAndReduce(&pxX86Iterator->Stack, &returnAddress, sizeof(PXSize));
 
 
 #if PXLogEnable
@@ -150,11 +150,11 @@ void PXAPI PXX86InstructionRET(PXX86Iterator PXREF pxX86Iterator)
         PXX86Iitile,
         "Reduce stack by <%i> Bytes and return to <%p>",
         pxX86Iterator->Immediate.I32S,
-        returnAdress
+        returnAddress
     );
 #endif
 
-    PXFileCursorMoveTo(pxX86Iterator->Data, returnAdress);
+    PXFileCursorMoveTo(pxX86Iterator->Data, returnAddress);
 }
 
 void PXAPI PXX86InstructionCall(PXX86Iterator PXREF pxX86Iterator)
@@ -325,7 +325,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "SEG-FS", PXNull, 0}, // 0x64
 {PXNull, "SEG-GS", PXNull, 0}, // 0x65
 {PXNull, "Prefix-OperadSize", PXNull, 0}, // 0x66
-{PXNull, "Prefix-AdressSize", PXNull, 0}, // 0x67
+{PXNull, "Prefix-AddressSize", PXNull, 0}, // 0x67
 {PXNull, "PUSH", PXNull, 0}, // 0x68
 {PXNull, "IMUL", PXNull, 0}, // 0x69
 {PXNull, "PUSH", PXNull, 0}, // 0x6A
@@ -586,7 +586,7 @@ PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator PXREF pxX86Iterator)
         "X86",
         "Disassemble",
         "%p - %-20s - %-10s - %s",
-        pxX86Iterator->VirtualAdress,
+        pxX86Iterator->VirtualAddress,
         buffer,
         pxX86Iterator->InstructionCurrent->Name,
         pxX86Iterator->InstructionCurrent->Description
@@ -670,7 +670,7 @@ PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF px
     for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
     { 
         PXSize pos = PXFileDataPosition(pxFile);
-        pxX86Iterator.VirtualAdress = pxSectionTable->VirtualAddress + (pos - old);
+        pxX86Iterator.VirtualAddress = pxSectionTable->VirtualAddress + (pos - old);
 
         PXX86InstructionDisassemble(&pxX86Iterator);
 

@@ -3,10 +3,9 @@
 #ifndef PXIAudioIncluded
 #define PXIAudioIncluded
 
-#include <PX/Engine/PXAudioSystem.h>
+#include <PX/OS/Error/PXResult.h>
 
-typedef struct PXCoreAudio_ PXCoreAudio;
 
-PXPublic PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio);
+PXPublic PXResult PXAPI PXCoreAudioInitialize(PXEngineAudio PXREF pxAudio);
 
 #endif

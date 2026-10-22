@@ -20,7 +20,7 @@ PXResult PXAPI PXZIPLoadFromFile(PXECSCreateInfo PXREF pxECSCreateInfo)
 
     if(!isSignatureValid)
     {
-        return PXActionRefusedInvalidHeaderSignature;
+        return PXResultRefusedInvalidHeaderSignature;
     }
 
     const PXTypeEntry pxDataStreamElementList[] =

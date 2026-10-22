@@ -5,8 +5,7 @@
 
 #include <PX/Type/PXType.h>
 #include <PX/Engine/ECS/PXECS.h>
-#include <PX/Type/PXTexturePool.h>
-
+#include <PX/Type/PXModel.h>
 
 typedef struct PXD8TextureTableEntry_
 {
@@ -51,6 +50,6 @@ typedef struct PXD8TextureTable_
 }
 PXD8TextureTable;
 
-PXPublic PXResult PXAPI PXD8WLoadFromFile(PXTexturePool PXREF pxTexturePool, PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePoolFile);
+PXPublic PXResult PXAPI PXD8WLoadFromFile(PXModel PXREF pxModel, PXECSCreateInfo PXREF pxResourceLoadInfo, PXFile* pxTexturePoolFile);
 
 #endif

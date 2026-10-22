@@ -36,27 +36,24 @@ typedef enum PXBlendingMode_
 }
 PXBlendingMode;
 
-// Material for a surface to render on
-typedef struct PXMaterial_
+
+typedef struct PXMaterialData_
 {
-    PXECSInfo Info;
-
     PXShaderProgram* ShaderProgram;
-
     //Texture* normalMap;
-    //Texture* roughnessMap;
-    //Texture* metalnessMap;
+   //Texture* roughnessMap;
+   //Texture* metalnessMap;
 
     PXF32 opacity;
     PXF32 roughness;
     PXF32 metalness;
     PXF32 emissionStrength;
 
-   // Shader* shader;
-   // Vector2 uvTiling;
-   // Vector2 uvOffset;
-   // BlendMode blendMode;
-  //  bool doubleSided;
+    // Shader* shader;
+    // Vector2 uvTiling;
+    // Vector2 uvOffset;
+    // BlendMode blendMode;
+   //  bool doubleSided;
 
     PXTextureCube* TextureCube;
 
@@ -64,16 +61,16 @@ typedef struct PXMaterial_
     // Name would be too wasteful here, we shall store it in another container
     // TexturePath can not be put here, but we might store it differently.
 
-    PXColorRGBAF* ColorBase;
+    PXColorRGBA_F32* ColorBase;
     PXTexture2D* TextureBase; //Diffuse, Albedo, 
 
-    PXColorRGBAF* AmbientColor;
+    PXColorRGBA_F32* AmbientColor;
     PXTexture2D* AmbientTexture;
 
-    PXColorRGBAF* SpecularColor;    // shininess
+    PXColorRGBA_F32* SpecularColor;    // shininess
     PXTexture2D* SpecularTexture;
 
-    PXColorRGBAF* EmissionColor;
+    PXColorRGBA_F32* EmissionColor;
     PXTexture2D* EmissionTexture;
 
     PXF32 Power;        // Sharpness if specular highlight
@@ -84,15 +81,22 @@ typedef struct PXMaterial_
 
     PXIlluminationMode IlluminationMode;
 }
+PXMaterialData;
+
+// Material for a surface to render on
+typedef struct PXMaterial_
+{
+    PXECSInfo Info;
+
+    PXMaterialData Data;
+}
 PXMaterial;
 
 typedef struct PXMaterialCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXShaderProgram* ShaderProgram;
-    PXColorRGBAF* ColorBase;
-    PXTexture2D* TextureBase;
+    PXMaterialData Data;
 }
 PXMaterialCreateInfo;
 

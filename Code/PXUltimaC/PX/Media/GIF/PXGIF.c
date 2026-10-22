@@ -29,7 +29,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!validHeader)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
         }
 
@@ -41,7 +41,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
             if (!validVersion)
             {
-                return PXActionRefusedVersionInvalid;
+                return PXResultRefusedVersionInvalid;
             }
         }
     }
@@ -123,5 +123,5 @@ PXResult PXAPI PXGIFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXFileWriteB(pxFile, PXGIFHeader, sizeof(PXGIFHeader));
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

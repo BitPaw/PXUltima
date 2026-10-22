@@ -7,7 +7,7 @@
 #include <PX/Media/CRC32/PXCRC32.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/OS/Time/PXTime.h>
+#include <PX/Type/PXTime.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
 
@@ -67,52 +67,48 @@ const PXI8U PXPNGLastModificationTimeListSize = sizeof(PXPNGLastModificationTime
 
 const char PXPNGChunkList[18][4] =
 {
-    "IHDR",
-    "PLTE",
-    "IDAT",
-    "IEND",
-    "iTXt",
-    "gAMA",
-    "cHRM",
-    "sRGB",
-    "iCCP",
-    "tEXt",
-    "zTXt",
-    "iTXt",
-    "bKGD",
-    "pHYs",
-    "sBIT",
-    "sPLT",
-    "hIST",
-    "tIME"
+    'I','H','D','R',
+    'P','L','T','E',
+    'I','D','A','T',
+    'I','E','N','D',
+    'i','T','X','t',
+    'g','A','M','A',
+    'c','H','R','M',
+    's','R','G','B',
+    'i','C','C','P',
+    't','E','X','t',
+    'z','T','X','t',
+    'i','T','X','t',
+    'b','K','G','D',
+    'p','H','Y','s',
+    's','B','I','T',
+    's','P','L','T',
+    'h','I','S','T',
+    't','I','M','E'
 };
 
-
-
-
-
-PXPrivate void PXAPI PXPNGChunkReadImageHeader(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadImageHeader(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
 PXPrivate PXResult PXAPI PXPNGChunkReadPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadImageEnd(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadImageGamma(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadBackgroundColor(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadSignificantBits(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadLastModificationTime(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadImageEnd(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadImageGamma(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadCompressedTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadInternationalTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadBackgroundColor(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadSignificantBits(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadSuggestedPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadPaletteHistogram(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+PXPrivate PXResult PXAPI PXPNGChunkReadLastModificationTime(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
 
 
 
-typedef void (PXAPI* PXPNGChunkFunction)(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
+typedef PXResult (PXAPI* PXPNGChunkFunction)(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize);
 
 const PXPNGChunkFunction PXPNGChunkListFunction[] =
 {
@@ -264,10 +260,10 @@ PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG PXREF png)
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
 
-PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSize)
+PXSize PXAPI PXPNGFilePredictSize(PXTexture2D PXREF pxTexture2D, PXSize PXREF fileSize)
 {
-    const PXSize width = PXTextureWidth(pxTexture);
-    const PXSize height = PXTextureHeight(pxTexture);
+    const PXSize width = pxTexture2D->Width;
+    const PXSize height = pxTexture2D->Height;
 
     const PXSize signature = 8;
     const PXSize header = 25;
@@ -280,7 +276,7 @@ PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSi
     return sum;
 }
 
-PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXPNGPeekFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXPNG* png = PXNull;
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
@@ -304,13 +300,13 @@ PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
             if(!isValidHeader)
             {
-                return PXActionRefusedInvalidHeaderSignature;
+                return PXResultRefusedInvalidHeaderSignature;
             }
         }
 
         // Allocate resource
         png = PXMemoryHeapCallocT(PXPNG, 1);
-        //pxECSCreateInfo->ResourceSource = png;
+        pxECSCreateInfo->ResourceSource = png;
         //---------------------------------------------------------------------
 
 #if PNGDebugInfo
@@ -339,7 +335,7 @@ PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
             // Check
             {
-                //chunk.ChunkType = PXI32FromAdress(chunk.Header.ID);
+                //chunk.ChunkType = PXI32FromAddress(chunk.Header.ID);
 
                 // Ancillary bit : bit 5 of first byte
                 // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
@@ -402,9 +398,9 @@ PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     return (PXResult)PXResultOK;
 }
 
-PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXPNGLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
-    PXPNG PXREF png = 0;// (PXPNG*)pxResourceLoadInfo->ResourceSource;
+    PXPNG PXREF png = (PXPNG*)pxECSCreateInfo->ResourceSource;
 
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
@@ -437,18 +433,17 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
                 break;
         }
 
-        const PXBool allocateResult = PXTextureResize
+        const PXBool allocateResult = PXTexture2DResize
         (
-            pxTexture, 
-            imageDataFormat, 
+            pxTexture2D,     
             png->ImageHeader.Width,
             png->ImageHeader.Height,
-            PXTextureNoMinmaps
+            imageDataFormat
         );
 
         if(!allocateResult)
         {
-            return PXActionFailedMemoryAllocation;
+            return PXResultFailedMemoryAllocation;
         }
     }
     //-------------------------------------------------------------------------
@@ -461,14 +456,16 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
     pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
     pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
 
-    if(png->DataBlockListAmount == 1) // Special behaviour if we only have one chunk
+    if(png->DataBlockListAmount == 1) // Special behavior if we only have one chunk
     {
-        const PXPNGDataBlock PXREF pxPNGDataBlock = &png->DataBlockList[0];
+        const PXPNGDataBlock PXREF pxPNGDataBlock = png->DataBlockList;
+
+        void* address = PXFileDataFromStartWithOffset(pxFile, pxPNGDataBlock->FileOffset);
 
         PXBufferSet
         (
             &pxFileOpenInfo.Data,
-            (PXByte*)PXFileDataAtCursor(pxFile) + pxPNGDataBlock->FileOffset,
+            address,
             pxPNGDataBlock->DataSize
         );
 
@@ -488,10 +485,10 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
             const PXPNGDataBlock PXREF pxPNGDataBlock = &png->DataBlockList[i];
 
             PXFileCursorMoveTo(pxFile, pxPNGDataBlock->FileOffset);
-            PXFileDataCopy(pxFile, &pxZLIBStream, pxPNGDataBlock->DataSize);
+            PXFileDataCopy(pxFile, pxZLIBStream, pxPNGDataBlock->DataSize);
         }
 
-        PXFileCursorToBeginning(&pxZLIBStream);
+        PXFileCursorToBeginning(pxZLIBStream);
     }
 
     //---<Unpack compressed data>----------------------------------------------
@@ -507,7 +504,13 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         PXFile* pxZLIBResultStream = PXNull;
 
         {
-            const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
+            const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize
+            (
+                png->ImageHeader.Width,
+                png->ImageHeader.Height, 
+                bitsPerPixel,
+                png->ImageHeader.InterlaceMethod
+            );
 
             PXFileCreateInfo pxFileOpenInfo;
             PXClear(PXFileCreateInfo, &pxFileOpenInfo);
@@ -518,7 +521,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
             const PXResult pxOpenResult = PXFileCreate(&pxZLIBResultStream, &pxFileOpenInfo);
         }
 
-        const PXResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
+        const PXResult actionResult = PXZLIBDecompress(pxZLIBStream, pxZLIBResultStream);
         const PXBool success = PXResultOK == actionResult;
 
         if(!success)
@@ -532,15 +535,10 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         //---------------------------------------------------------------------
         // ADAM7
         //---------------------------------------------------------------------
-        PXFile* pxADAM7CacheOutput = PXNull;
-        PXBuffer* pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
+        PXFile* pxFileADAM7CacheOutput = PXNull;
 
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
-        pxADAM7.DataInput = pxBuffer->Data4;
-        //pxADAM7.DataOutput = PXTexture->PixelData;
-        //pxADAM7.OutputSize = PXTexture->PixelDataSize;
-        pxADAM7.InputSize = pxBuffer->SizeAllowedToUse;
         pxADAM7.Width = png->ImageHeader.Width;
         pxADAM7.Height = png->ImageHeader.Height;
         pxADAM7.BitsPerPixel = bitsPerPixel;
@@ -556,13 +554,16 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
             pxFileOpenInfo.FileSizeRequest = expectedadam7CacheSize;
             pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
 
-            PXFileCreate(&pxADAM7CacheOutput, &pxFileOpenInfo);
+            PXFileCreate(&pxFileADAM7CacheOutput, &pxFileOpenInfo);
         }
 
-        pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
+        PXBuffer PXREF pxBufferInput = PXFileBufferGET(pxZLIBResultStream);
+        PXBuffer PXREF pxBufferOutput = PXFileBufferGET(pxFileADAM7CacheOutput);
 
-        pxADAM7.DataOutput = pxBuffer->Data4;
-        pxADAM7.OutputSize = pxBuffer->SizeAllocated;
+        pxADAM7.DataInput = pxBufferInput->Data;
+        pxADAM7.InputSize = pxBufferInput->SizeAllocated;
+        pxADAM7.DataOutput = pxBufferOutput->Data;
+        pxADAM7.OutputSize = pxBufferOutput->SizeAllocated;
 
         const PXResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
 
@@ -575,7 +576,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
         (
             png,
             pxADAM7.DataOutput,
-            pxTexture->PixelData.Adress,
+            pxTexture2D->Data.Address,
             png->ImageHeader.BitDepth,
             png->ImageHeader.ColorType
         );
@@ -584,7 +585,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXRE
 
         PXFileClose(pxZLIBStream);
         PXFileClose(pxZLIBResultStream);
-        PXFileClose(pxADAM7CacheOutput);
+        PXFileClose(pxFileADAM7CacheOutput);
     }
 
     //-------------------------------------------------------------------------
@@ -807,9 +808,9 @@ typedef struct LodePNGEncoderSettings
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 } LodePNGEncoderSettings;
 
-static unsigned filter
+static unsigned PXPNGFilter
 (
-    unsigned char* out,
+    PXFile PXREF pxFile,
     const unsigned char* in,
     PXSize width,
     PXSize height,
@@ -854,11 +855,10 @@ static unsigned filter
     // if(settings->filter_palette_zero &&
     //    (color->colortype == LCT_PALETTE || color->bitdepth < 8)) strategy = LFS_ZERO;
 
+    PXByte* out = (PXByte*)PXFileDataAtCursor(pxFile);
 
-
-
-
-    if(bpp == 0) return 31; /*error: invalid color type*/
+    if(bpp == 0) 
+        return 31; /*error: invalid color type*/
 
     if(strategy >= LFS_ZERO && strategy <= LFS_FOUR)
     {
@@ -1123,17 +1123,17 @@ void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebit
 // out must be buffer big enough to contain uncompressed IDAT chunk data, and in must contain the full image. return value is error
 PXSize PXAPI preProcessScanlines
 (
-    PXTexture PXREF pxTexture,
+    PXTexture2D PXREF pxTexture2D,
     PXPNGInterlaceMethod interlaceMethod,
     PXPNGColorType colorType,
     PXSize bitDepth,
     PXFile PXREF pxScanlineStream
 )
 {
-    PXSize width = PXTextureWidth(pxTexture);
-    PXSize height = PXTextureHeight(pxTexture);
-    PXSize bpp = PXColorFormatBitsPerPixel(pxTexture->Format);
-    const PXByte* in = pxTexture->PixelData.Data4;
+    PXSize width = pxTexture2D->Width;
+    PXSize height = pxTexture2D->Height;
+    PXSize bpp = PXColorFormatBitsPerPixel(pxTexture2D->Format);
+    const PXByte* in = pxTexture2D->Data.Data;
 
 
     /*
@@ -1169,7 +1169,7 @@ PXSize PXAPI preProcessScanlines
                 if(!error)
                 {
                     addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
-                    error = filter(PXFileDataAtCursor(pxScanlineStream), padded, width, height, bpp, LFS_MINSUM);
+                    error = PXPNGFilter(pxScanlineStream, padded, width, height, bpp, LFS_MINSUM);
                 }                
 
                 PXMemoryHeapFree(PXNull, padded);
@@ -1177,7 +1177,7 @@ PXSize PXAPI preProcessScanlines
             else
             {
                 // we can immediately filter into the out buffer, no other steps needed
-                error = filter(PXFileDataAtCursor(pxScanlineStream), in, width, height, bpp, LFS_MINSUM);
+                error = PXPNGFilter(pxScanlineStream, in, width, height, bpp, LFS_MINSUM);
             }
 
             break;
@@ -1226,7 +1226,7 @@ PXSize PXAPI preProcessScanlines
                 }
             }
 
-            PXMemoryHeapFree(PXNull, passstart[7]);
+            //PXMemoryHeapFree(PXNull, passstart[7]);
 
             break;
         }
@@ -1240,30 +1240,26 @@ PXSize PXAPI preProcessScanlines
     return error;
 }
 
-PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXPNGSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 
-    //---<Signature>--- 8 Bytes
-    {
-        const PXI64U pngFileHeader = PXPNGHeaderSequenz;
-
-        PXFileWriteI64U(pxFile, pngFileHeader);
-    }
+    //---<Signature>--- 8 Bytes    
+    PXFileWriteB(pxFile, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));    
 
     //---<IHDR> (Image Header)--- 21 Bytes
     {
         PXI8U colorType = 0;
         const PXI8U interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
-        const PXByte* chunkStart = PXFileDataAtCursor(pxFile);
+        const PXByte* chunkStart = (PXByte*)PXFileDataAtCursor(pxFile);
 
         const PXI8U compressionMethod = 0;
         const PXI8U filterMethod = 0;
 
-        switch(pxTexture->Format)
+        switch(pxTexture2D->Format)
         {
             case PXColorFormatInvalid:
-                return PXActionRefuedFormatIllegal;
+                return PXResultRefuedFormatIllegal;
 
             case PXColorFormatA8:
                 colorType = PXPNGColorGrayscaleAlpha;
@@ -1284,11 +1280,11 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
         PXFileWriteI32UE(pxFile, chunkLength, PXEndianBig);
         PXFileWriteB(pxFile, "IHDR", 4u);
 
-        PXFileWriteI32UE(pxFile, pxTexture->Width, PXEndianBig);
-        PXFileWriteI32UE(pxFile, pxTexture->Height, PXEndianBig);
+        PXFileWriteI32UE(pxFile, pxTexture2D->Width, PXEndianBig);
+        PXFileWriteI32UE(pxFile, pxTexture2D->Height, PXEndianBig);
 
         {
-            const PXI8U bitDepth = PXColorFormatBitsPerPixel(pxTexture->Format);
+            const PXI8U bitDepth = PXColorFormatBitsPerPixel(pxTexture2D->Format);
 
             PXFileWriteI8U(pxFile, bitDepth);
         }
@@ -1303,8 +1299,6 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
 
             PXFileWriteI32UE(pxFile, crc, PXEndianBig);
         }
-
-
 
         // Header End
 
@@ -1416,7 +1410,7 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = PXFileDataAtCursor(pxFile);
+        const PXByte* chunkStart = (PXByte*)PXFileDataAtCursor(pxFile);
         const PXSize chunkLength = 7u;
 
         const PXTypeEntry pxFileDataElementType[] =
@@ -1465,7 +1459,7 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
             {
                 preProcessScanlines
                 (
-                    pxTexture,
+                    pxTexture2D,
                     PXPNGInterlaceNone,
                     PXPNGColorRGB,
                     8,
@@ -1478,14 +1472,14 @@ PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF 
         {
             PXSize cursorBefore = PXFileDataPosition(pxFile);
 
-            const PXResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, pxFile);
+            const PXResult PXZLIBResult = PXZLIBCompress(pxScanlineStream, pxFile);
 
             chunkLength = PXFileDataPosition(pxFile) - cursorBefore;
 
             PXFileWriteAtI32UE(pxFile, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
         }
 
-        PXFileClose(&pxScanlineStream);
+        PXFileClose(pxScanlineStream);
 
         {
             const PXI32U crc = PXCRC32Generate(&((PXByte*)chunkStart)[4], chunkLength + 4);
@@ -1693,7 +1687,8 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
         {
             const unsigned char* p = &palette[i * 4];
             error = color_tree_add(&tree, p[0], p[1], p[2], p[3], i);
-            if(error) break;
+            if(error) 
+                break;
         }
     }
 
@@ -1703,9 +1698,10 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
         {
             for(PXSize i = 0; i != numpixels; ++i)
             {
-                unsigned short r = 0, g = 0, b = 0, a = 0;
-                getPixelColorRGBA16(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
-                rgba16ToPixel(pixelDataOut, i, &colorModeOut, r, g, b, a);
+                PXColorRGBA_U16 pxColor;
+
+                PXPNGPixelColorRGBA16Get(pixelDataIn, i, &colorModeIn, &pxColor);
+                PXPNGPixelColorRGBA16Set(pixelDataOut, i, &colorModeOut, &pxColor);
             }
         }
         else if(colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGBA)
@@ -1718,7 +1714,7 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
         }
         else
         {
-            PXColorRGBAI8 color;
+            PXColorRGBA_U8 color;
 
             for(PXSize i = 0; i != numpixels; ++i)
             {
@@ -1727,7 +1723,7 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
                 const PXResult result = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, &color);
 
                 if(PXResultOK != result)
-                    return result;;
+                    return result;
             }
         }
     }
@@ -1738,10 +1734,10 @@ PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixel
        // color_tree_cleanup(&tree);
     }*/
 
-    return error;
+    return PXResultInvalid;
 }
 
-unsigned getNumColorChannels(LodePNGColorType colortype)
+PXI8U PXAPI getNumColorChannels(const LodePNGColorType colortype)
 {
     switch(colortype)
     {
@@ -1780,82 +1776,112 @@ int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* 
         if(a->key_g != b->key_g) return 0;
         if(a->key_b != b->key_b) return 0;
     }
-    if(a->palettesize != b->palettesize) return 0;
+    if(a->palettesize != b->palettesize) 
+        return 0;
+
     for(i = 0; i != a->palettesize * 4; ++i)
     {
-        if(a->palette[i] != b->palette[i]) return 0;
+        if(a->palette[i] != b->palette[i]) 
+            return 0;
     }
     return 1;
 }
 
-void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
+void PXAPI PXPNGPixelColorRGBA16Get(const unsigned char* in, PXSize i, const LodePNGColorMode* mode, PXColorRGBA_U16 PXREF pxColor)
 {
+    pxColor->Red = 0;
+    pxColor->Green = 0;
+    pxColor->Blue = 0;
+    pxColor->Alpha = 0;
+
     if(mode->colortype == LCT_GREY)
     {
-        *r = *g = *b = 256 * in[i * 2 + 0] + in[i * 2 + 1];
-        if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
-        else *a = 65535;
+        PXI16U val = 256 * in[i * 2 + 0] + in[i * 2 + 1];
+
+        pxColor->Red = val;
+        pxColor->Green = val;
+        pxColor->Blue = val;
+
+        if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r)
+        {
+            pxColor->Alpha = 0;
+        }
+        else
+        {
+            pxColor->Alpha = 65535;
+        }
     }
     else if(mode->colortype == LCT_RGB)
     {
-        *r = 256u * in[i * 6 + 0] + in[i * 6 + 1];
-        *g = 256u * in[i * 6 + 2] + in[i * 6 + 3];
-        *b = 256u * in[i * 6 + 4] + in[i * 6 + 5];
+        pxColor->Red = 256u * in[i * 6 + 0] + in[i * 6 + 1];
+        pxColor->Green = 256u * in[i * 6 + 2] + in[i * 6 + 3];
+        pxColor->Blue = 256u * in[i * 6 + 4] + in[i * 6 + 5];
+
         if(mode->key_defined
            && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
            && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-           && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
-        else *a = 65535;
+           && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) 
+        {
+            pxColor->Alpha = 0;
+        }
+        else
+        {
+            pxColor->Alpha = 65535;
+        }
     }
     else if(mode->colortype == LCT_GREY_ALPHA)
     {
-        *r = *g = *b = 256u * in[i * 4 + 0] + in[i * 4 + 1];
-        *a = 256u * in[i * 4 + 2] + in[i * 4 + 3];
+        PXI16U val = 256u * in[i * 4 + 0] + in[i * 4 + 1];
+
+        pxColor->Red = val;
+        pxColor->Green = val;
+        pxColor->Blue = val;
+        pxColor->Alpha = 256u * in[i * 4 + 2] + in[i * 4 + 3];
     }
     else if(mode->colortype == LCT_RGBA)
     {
-        *r = 256u * in[i * 8 + 0] + in[i * 8 + 1];
-        *g = 256u * in[i * 8 + 2] + in[i * 8 + 3];
-        *b = 256u * in[i * 8 + 4] + in[i * 8 + 5];
-        *a = 256u * in[i * 8 + 6] + in[i * 8 + 7];
+        pxColor->Red = 256u * in[i * 8 + 0] + in[i * 8 + 1];
+        pxColor->Green = 256u * in[i * 8 + 2] + in[i * 8 + 3];
+        pxColor->Blue = 256u * in[i * 8 + 4] + in[i * 8 + 5];
+        pxColor->Alpha = 256u * in[i * 8 + 6] + in[i * 8 + 7];
     }
 }
 
-void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
+void PXAPI PXPNGPixelColorRGBA16Set(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PXColorRGBA_U16 PXREF pxColor)
 {
     if(mode->colortype == LCT_GREY)
     {
-        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
+        PXI16U gray = pxColor->Red; /*((unsigned)r + g + b) / 3u;*/
         out[i * 2 + 0] = (gray >> 8) & 255;
         out[i * 2 + 1] = gray & 255;
     }
     else if(mode->colortype == LCT_RGB)
     {
-        out[i * 6 + 0] = (r >> 8) & 255;
-        out[i * 6 + 1] = r & 255;
-        out[i * 6 + 2] = (g >> 8) & 255;
-        out[i * 6 + 3] = g & 255;
-        out[i * 6 + 4] = (b >> 8) & 255;
-        out[i * 6 + 5] = b & 255;
+        out[i * 6 + 0] = (pxColor->Red >> 8) & 255;
+        out[i * 6 + 1] = pxColor->Red & 255;
+        out[i * 6 + 2] = (pxColor->Green >> 8) & 255;
+        out[i * 6 + 3] = pxColor->Green & 255;
+        out[i * 6 + 4] = (pxColor->Blue >> 8) & 255;
+        out[i * 6 + 5] = pxColor->Blue & 255;
     }
     else if(mode->colortype == LCT_GREY_ALPHA)
     {
-        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
+        PXI16U gray = pxColor->Red; /*((unsigned)r + g + b) / 3u;*/
         out[i * 4 + 0] = (gray >> 8) & 255;
         out[i * 4 + 1] = gray & 255;
-        out[i * 4 + 2] = (a >> 8) & 255;
-        out[i * 4 + 3] = a & 255;
+        out[i * 4 + 2] = (pxColor->Alpha >> 8) & 255;
+        out[i * 4 + 3] = pxColor->Alpha & 255;
     }
     else if(mode->colortype == LCT_RGBA)
     {
-        out[i * 8 + 0] = (r >> 8) & 255;
-        out[i * 8 + 1] = r & 255;
-        out[i * 8 + 2] = (g >> 8) & 255;
-        out[i * 8 + 3] = g & 255;
-        out[i * 8 + 4] = (b >> 8) & 255;
-        out[i * 8 + 5] = b & 255;
-        out[i * 8 + 6] = (a >> 8) & 255;
-        out[i * 8 + 7] = a & 255;
+        out[i * 8 + 0] = (pxColor->Red >> 8) & 255;
+        out[i * 8 + 1] = pxColor->Red & 255;
+        out[i * 8 + 2] = (pxColor->Green >> 8) & 255;
+        out[i * 8 + 3] = pxColor->Green & 255;
+        out[i * 8 + 4] = (pxColor->Blue >> 8) & 255;
+        out[i * 8 + 5] = pxColor->Blue & 255;
+        out[i * 8 + 6] = (pxColor->Alpha >> 8) & 255;
+        out[i * 8 + 7] = pxColor->Alpha & 255;
     }
 }
 
@@ -2110,7 +2136,7 @@ void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned 
     }
 }
 
-void getPixelColorRGBA8(PXColorRGBAI8 PXREF color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
+void getPixelColorRGBA8(PXColorRGBA_U8 PXREF color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
 {
     if(mode->colortype == LCT_GREY)
     {
@@ -2241,7 +2267,7 @@ PXResult PXAPI rgba8ToPixel
     PXSize i,
     const LodePNGColorMode* mode,
     PNGColorTree* tree,
-    const PXColorRGBAI8 PXREF color
+    const PXColorRGBA_U8 PXREF color
 )
 {
     switch(mode->colortype)
@@ -2343,7 +2369,7 @@ PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color)
     return lodepng_get_raw_size_lct(w, h, color->colortype, color->bitdepth);
 }
 
-int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8 PXREF color)
+int color_tree_get(PNGColorTree* tree, const PXColorRGBA_U8 PXREF color)
 {
     for(PXI8U bit = 0; bit < 8u; ++bit)
     {
@@ -2402,7 +2428,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
     return result;
 }
 
-void PXAPI PXPNGChunkReadImageHeader(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadImageHeader(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     PXFileBinding
     (
@@ -2442,6 +2468,8 @@ void PXAPI PXPNGChunkReadImageHeader(PXPNG PXREF pxPNG, PXFile PXREF pxFile, con
         "InterlaceMethod", pxPNG->ImageHeader.InterlaceMethod
     );
 #endif
+
+    return PXResultOK;
 }
 
 PXResult PXAPI PXPNGChunkReadPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
@@ -2450,7 +2478,7 @@ PXResult PXAPI PXPNGChunkReadPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, con
     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
     if(!validSize)
-        return PXActionFailedFormatNotAsExpected; // palette too small or big
+        return PXResultFailedFormatNotAsExpected; // palette too small or big
 
     pxPNG->PaletteSize = palettSize;
 
@@ -2466,7 +2494,7 @@ PXResult PXAPI PXPNGChunkReadPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, con
     return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     ++pxPNG->DataBlockListAmount;
 
@@ -2476,14 +2504,16 @@ void PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const
     PXPNGDataBlock* pxPNGDataBlock = &pxPNG->DataBlockList[pxPNG->DataBlockListAmount - 1];
     pxPNGDataBlock->FileOffset = PXFileDataPosition(pxFile);
     pxPNGDataBlock->DataSize = chunkSize;
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadImageEnd(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadImageEnd(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     switch(pxPNG->ImageHeader.ColorType)
     {
@@ -2546,16 +2576,20 @@ void PXAPI PXPNGChunkReadTransparency(PXPNG PXREF pxPNG, PXFile PXREF pxFile, co
         case PXPNGColorRGBA:
         case PXPNGColorInvalid:
         default:
-            return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
+            return PXResultFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
     }
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadImageGamma(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadImageGamma(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     PXFileReadI32UE(pxFile, &pxPNG->Gamma, PXEndianBig);
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     PXFileBinding
     (
@@ -2565,39 +2599,41 @@ void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG PXREF pxPNG, PXFile PXREF p
         PXPNGPrimaryChromaticsListSize,
         PXFileBindingRead
     );
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-    
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-    
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadCompressedTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadInternationalTextualData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadBackgroundColor(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadBackgroundColor(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     unsigned char unitSpecifier = 0;
 
@@ -2619,19 +2655,21 @@ void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG PXREF pxPNG, PXFile PXREF
             pxPNG->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
             break;
     }
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadSignificantBits(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadSignificantBits(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-  
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadSuggestedPalette(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
-   
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadPaletteHistogram(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     const PXI32U listSize = chunkSize / 2;
 
@@ -2639,9 +2677,11 @@ void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG PXREF pxPNG, PXFile PXREF pxFile
     pxPNG->PaletteHistogram.ColorFrequencyList = PXMemoryHeapCallocT(PXI16U, listSize);
 
     PXFileReadI16UVE(pxFile, &pxPNG->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
+
+    return PXResultOK;
 }
 
-void PXAPI PXPNGChunkReadLastModificationTime(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
+PXResult PXAPI PXPNGChunkReadLastModificationTime(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const PXI32U chunkSize)
 {
     PXFileBinding
     (
@@ -2651,4 +2691,6 @@ void PXAPI PXPNGChunkReadLastModificationTime(PXPNG PXREF pxPNG, PXFile PXREF px
         PXPNGLastModificationTimeListSize,
         PXFileBindingRead
     );
+
+    return PXResultOK;
 }

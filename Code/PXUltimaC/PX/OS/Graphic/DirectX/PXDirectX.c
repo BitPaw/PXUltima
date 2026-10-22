@@ -1,26 +1,39 @@
 #include "PXDirectX.h"
 
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Type/PXText.h>
+#include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/Graphic/DirectX/PXDirectX9.h>
+#include <PX/OS/Graphic/DirectX/PXDirectX10.h>
+#include <PX/OS/Graphic/DirectX/PXDirectX10x1.h>
+#include <PX/OS/Graphic/DirectX/PXDirectX11.h>
+#include <PX/OS/Graphic/DirectX/PXDirectX12.h>
+
+
 #if OSUnix
 #elif OSWindows
 #include <windows.h>
+#include <ddraw.h>
+#include <dxgi.h>
+#pragma comment(lib, "Ddraw.lib")
 #endif
 
-#include <PX/OS/Memory/PXMemory.h>
-#include <PX/Type/PXText.h>
-#include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/Engine/PXGUI.h>
-#include <PX/OS/Console/PXConsole.h>
-
-#include "PXDirectX9.h"
-#include "PXDirectX10.h"
-#include "PXDirectX10x1.h"
-#include "PXDirectX11.h"
-#include "PXDirectX12.h"
 
 const char PXDirectXText[] = "DirectX";
 
+const char PXDXGILibraryName[] = "dxgi.dll";
+typedef HRESULT(WINAPI* CREATE_DXGI_FACTORY1)(REFIID, void**);
 
-const PXGraphicInitializeFunction _directXSolutions[5] =
+typedef struct PXDXGI_
+{
+    PXLibrary Library;
+
+    CREATE_DXGI_FACTORY1 pCreateDXGIFactory1;
+}
+PXDXGI;
+
+
+const PXGPUInitializeFunction _directXSolutions[5] =
 {
     PXDirectX12Initialize,
     PXDirectX11Initialize,
@@ -28,11 +41,85 @@ const PXGraphicInitializeFunction _directXSolutions[5] =
     PXDirectX10Initialize,
     PXDirectX9Initialize
 };
-const PXSize _directXSolutionsAmount = sizeof(_directXSolutions) / sizeof(PXGraphicInitializeFunction);
+const PXSize _directXSolutionsAmount = sizeof(_directXSolutions) / sizeof(PXGPUInitializeFunction);
+
+
+BOOL WINAPI PXDDEnumCallBackExW
+(
+    const GUID* directDrawID,
+    const LPWSTR driverName,
+    const LPWSTR driverDesciption,
+    PXEngineRender PXREF pxEngineRender,
+    const HMONITOR monitorHandle
+)
+{
+    PXGPU pxGPU;
+    PXClear(PXGPU, &pxGPU);
+
+    if(monitorHandle) 
+    {
+        MONITORINFOEXW mi;
+        mi.cbSize = sizeof(MONITORINFOEXW);
+        PXBool isOK = GetMonitorInfoW(monitorHandle, &mi);
+
+        if(isOK) 
+        {
+            PXTextCopyWU(mi.szDevice, CCHDEVICENAME, pxGPU.DeviceDisplayName, sizeof(pxGPU.DeviceDisplayName));
+        }
+    }
+
+    pxGPU.MonitorHandle = monitorHandle;
+
+    PXTextCopyWU(driverName, PXTextLengthUnkown, pxGPU.DriverName, sizeof(pxGPU.DriverName));
+    PXTextCopyWU(driverDesciption, PXTextLengthUnkown, pxGPU.DeviceDisplayName, sizeof(pxGPU.DeviceDisplayName));
+
+    PXEngineRenderGPUMerge(pxEngineRender, &pxGPU);
+
+    return PXTrue; // for next value
+}
+BOOL WINAPI PXDDEnumCallBackExA
+(
+    const GUID* directDrawID,
+    const LPSTR driverName,
+    const LPSTR driverDesciption,
+    PXEngineRender PXREF pxEngineRender,
+    const HMONITOR monitorHandle
+)
+{
+    PXGPU pxGPU;
+    PXClear(PXGPU, &pxGPU);
+
+    if(monitorHandle)
+    {
+        MONITORINFOEXW mi;
+        mi.cbSize = sizeof(MONITORINFOEXW);
+        PXBool isOK = GetMonitorInfoW(monitorHandle, &mi);
+
+        if(isOK)
+        {
+            PXTextCopyWU(mi.szDevice, CCHDEVICENAME, pxGPU.DeviceDisplayName, sizeof(pxGPU.DeviceDisplayName));
+        }
+    }
+
+    pxGPU.MonitorHandle = monitorHandle;
+
+    PXTextCopyA(driverName, PXTextLengthUnkown, pxGPU.Name, sizeof(pxGPU.Name));
+    PXTextCopyA(driverDesciption, PXTextLengthUnkown, pxGPU.DeviceDisplayName, sizeof(pxGPU.DeviceDisplayName));
+
+    PXEngineRenderGPUMerge(pxEngineRender, &pxGPU);
+
+    return PXTrue; // for next value
+}
 
 
 
-PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
+
+
+
+
+PXDXGI pxDXGI;
+
+PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -44,15 +131,17 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
     );
 #endif
 
-    PXGraphic PXREF pxGraphic = pxGraphicInitializeInfo->Graphic;
-
     PXClear(PXDirectX, pxDirectX);
 
 #if PXOSWindowsDestop
+
+
+    PXDirectXGPUListRefresh(pxEngineRenderCreateInfo->RenderSystem);
+
     //HMODULE           dxSoftware = GetModuleHandle(PXNull); // Reserved
     //UINT              Flags = 0;
 
-    pxDirectX->DirectXVersion = pxGraphicInitializeInfo->DirectXVersion;
+    pxDirectX->DirectXVersion = pxEngineRenderCreateInfo->DirectXVersion;
 
     PXBool directXCreated = PXFalse;
 
@@ -68,7 +157,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         );
 #endif
 
-        const void* directXSolutionsObject[5] =
+        void PXREF directXSolutionsObject[5] =
         {
             &pxDirectX->X12,
             &pxDirectX->X11,
@@ -81,7 +170,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         {
             PXClear(PXDirectX, pxDirectX);
 
-            pxGraphic->Initialize = _directXSolutions[i];
+            pxEngineRenderCreateInfo->RenderSystem->Initialize = _directXSolutions[i];
             pxDirectX->DXTargetAPI = directXSolutionsObject[i];
 
 #if PXLogEnable
@@ -96,7 +185,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             );
 #endif
 
-            const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
+            const PXResult initializeResult = pxEngineRenderCreateInfo->RenderSystem->Initialize(pxDirectX->DXTargetAPI, pxEngineRenderCreateInfo);
 
             if(PXResultOK == initializeResult)
             {
@@ -128,7 +217,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             );
         }
 
-        pxGraphic->Initialize = PXNull;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXNull;
         pxDirectX->DXTargetAPI = PXNull;
     }
 
@@ -142,7 +231,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Failed all attempts! DirectX API is not reachable. A supported device or drivers might be missing."
         );
 
-        return PXActionFailedInitialization;
+        return PXResultFailedInitialization;
     }
 
     switch(pxDirectX->DirectXVersion)
@@ -168,7 +257,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Select DirectX 12"
         );
 
-        pxGraphic->Initialize = PXDirectX12Initialize;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXDirectX12Initialize;
         pxDirectX->DXTargetAPI = &pxDirectX->X12;
         break;
     }
@@ -189,7 +278,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Select DirectX 11"
         );
 
-        pxGraphic->Initialize = PXDirectX11Initialize;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXDirectX11Initialize;
         pxDirectX->DXTargetAPI = &pxDirectX->X11;
         break;
     }
@@ -207,7 +296,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Select DirectX 10.1"
         );
 
-        pxGraphic->Initialize = PXDirectX10x1Initialize;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXDirectX10x1Initialize;
         pxDirectX->DXTargetAPI = &pxDirectX->X10x1;
         break;
     }
@@ -221,7 +310,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Select DirectX 10"
         );
 
-        pxGraphic->Initialize = PXDirectX10Initialize;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXDirectX10Initialize;
         pxDirectX->DXTargetAPI = &pxDirectX->X10;
         break;
     }
@@ -235,12 +324,12 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Select DirectX 9"
         );
 
-        pxGraphic->Initialize = PXDirectX9Initialize;
+        pxEngineRenderCreateInfo->RenderSystem->Initialize = PXDirectX9Initialize;
         pxDirectX->DXTargetAPI = &pxDirectX->X9;
         break;
     }
     default:
-        return PXActionRefusedFormatNotSupported;
+        return PXResultRefusedFormatNotSupported;
     }
 
     PXLogPrint
@@ -251,11 +340,11 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         "Calling spesific API"
     );
 
-    const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
+    const PXResult initializeResult = pxEngineRenderCreateInfo->RenderSystem->Initialize(pxDirectX->DXTargetAPI, pxEngineRenderCreateInfo);
 
     return initializeResult;
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -264,4 +353,103 @@ PXResult PXAPI PXDirectXRelease(PXDirectX PXREF pxDirectX)
     return PXResultInvalid;
 
     // return  pxDirectX->Release(pxDirectX->DXTargetAPI);
+}
+
+PXResult PXAPI PXDirectXGPUListRefresh(PXEngineRender PXREF pxEngineRender)
+{
+    HRESULT resultID = 0;
+    PXResult pxResult = PXResultOK;
+
+
+    // Legacy pathway for older DirectDraw devices.
+    // DirectX6
+    DWORD flags = DDENUM_ATTACHEDSECONDARYDEVICES | DDENUM_DETACHEDSECONDARYDEVICES;
+
+    resultID = DirectDrawEnumerateExW(PXDDEnumCallBackExW, pxEngineRender, flags); // Windows xxx, ddraw.dll, ddraw.h
+
+    if(E_NOTIMPL == resultID)
+    {
+        resultID = DirectDrawEnumerateExA(PXDDEnumCallBackExA, pxEngineRender, flags);
+    }
+
+
+    // Modern pathway for new
+
+   // CreateDXGIFactory1(); // Windows, dxgi.dll, dxgi.h
+
+    PXText pxText;
+    PXTextFromAddressA(&pxText, PXDXGILibraryName, sizeof(PXDXGILibraryName), sizeof(PXDXGILibraryName));
+    pxResult = PXLibraryOpen(&pxDXGI.Library, &pxText);
+
+    pxResult = PXLibraryGetSymbolA(&pxDXGI.Library, &pxDXGI.pCreateDXGIFactory1, "CreateDXGIFactory1", PXFalse);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    IDXGIFactory1* pFactory = PXNull;
+
+    resultID = pxDXGI.pCreateDXGIFactory1(&IID_IDXGIFactory1, &pFactory);
+    pxResult = PXErrorFromHRESULT(resultID);
+    
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    UINT i = 0;
+    IDXGIAdapter1* pAdapter = 0;
+
+    while(pFactory->lpVtbl->EnumAdapters1(pFactory, i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC1 desc;
+        pAdapter->lpVtbl->GetDesc1(pAdapter, &desc);
+
+        PXGPU pxGPU;
+        PXClear(PXGPU, &pxGPU);
+        PXTextCopyWU(desc.Description, sizeof(desc.Description), pxGPU.Name, sizeof(pxGPU.Name));
+        pxGPU.VendorID = desc.VendorId;
+        pxGPU.DeviceID = desc.DeviceId;
+        pxGPU.SubSysID = desc.SubSysId;
+        pxGPU.Revision = desc.Revision;
+        pxGPU.VideoMemoryDedicated = desc.DedicatedVideoMemory;
+        pxGPU.VideoMemoryAllocatedOnCPUExlusive = desc.DedicatedSystemMemory;
+        pxGPU.VideoMemoryAllocatedOnCPUShared = desc.SharedSystemMemory;
+        pxGPU.AdapterLUID = desc.AdapterLuid;
+
+
+        for(UINT oIdx = 0; ; ++oIdx)
+        {
+            IDXGIOutput* pOutput = 0;
+
+            resultID = pAdapter->lpVtbl->EnumOutputs(pAdapter, oIdx, &pOutput);
+
+            if(S_OK != resultID)
+            {
+                break;
+            }
+
+            DXGI_OUTPUT_DESC outputDesc = {0};
+            pOutput->lpVtbl->GetDesc(pOutput, &outputDesc);
+
+            pxGPU.MonitorHandle = outputDesc.Monitor;
+            //= outputDesc.DesktopCoordinates;
+            //= outputDesc.AttachedToDesktop;
+            //= outputDesc.Rotation;
+
+            PXTextCopyWU(outputDesc.DeviceName, sizeof(outputDesc.DeviceName), pxGPU.DeviceDisplayName, sizeof(pxGPU.DeviceDisplayName));
+
+            pOutput->lpVtbl->Release(pOutput);
+
+            // This can trigger nultible times?
+            PXEngineRenderGPUMerge(pxEngineRender, &pxGPU);
+        }  
+
+        pAdapter->lpVtbl->Release(pAdapter);
+        i++;
+    }
+    pFactory->lpVtbl->Release(pFactory);
+
+    return pxResult;
 }

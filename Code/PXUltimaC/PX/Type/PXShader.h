@@ -3,27 +3,9 @@
 #ifndef PXShaderIncluded
 #define PXShaderIncluded
 
-#include <PX/OS/File/PXFile.h>
 #include <PX/Engine/ECS/PXECS.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
-typedef struct PXShaderProgramCreateInfo_
-{
-    PXFile* ShaderVertexFile;
-    PXFile* ShaderPixelFile;
-
-    PXText ShaderVertex;
-    PXText ShaderPixel;
-
-    PXText ShaderVertexFilePath;
-    PXText ShaderPixelFilePath;
-}
-PXShaderProgramCreateInfo;
-
-
-
-//---------------------------------------------------------
-// Shader
-//---------------------------------------------------------
 typedef enum PXShaderVariableType_
 {
     PXShaderVariableTypeInvalid,
@@ -43,11 +25,16 @@ typedef enum PXShaderVariableType_
     PXShaderVariableTypeInt32UVector3,
     PXShaderVariableTypeInt32UVector4,
 
-    PXShaderVariableTypePXF32Single,
-    PXShaderVariableTypePXF32Vector2,
-    PXShaderVariableTypePXF32Vector3,
-    PXShaderVariableTypePXF32Vector4,
-    PXShaderVariableTypeDouble,
+    PXShaderVariableTypeF32S,
+    PXShaderVariableTypeF32D,
+    PXShaderVariableTypeF32T,
+    PXShaderVariableTypeF32Q,
+
+    PXShaderVariableTypeF64S,
+    PXShaderVariableTypeF64D,
+    PXShaderVariableTypeF64T,
+    PXShaderVariableTypeF64Q,
+
 
     // Matrix
     PXShaderVariableTypeMatrix2x2,
@@ -105,6 +92,7 @@ typedef enum PXShaderType_
 PXShaderType;
 
 
+
 #define PXShaderVariableNameSize 32
 
 typedef struct PXShaderVariable_
@@ -124,12 +112,19 @@ typedef struct PXShaderVariable_
     PXI32U Elements;
     PXI32U StructMembers;
 
-
     // Used for moving data only
-    void* Data; // Raw data data that is defined by the type
+
+    union
+    {
+        void* Data; // Raw data data that is defined by the type
+        float* F32;
+        int* S32;
+        #if OSWindows
+        BOOL* Bool;
+        #endif
+    };
+
     PXSize Amount;
-    PXShaderType ShaderType;
-    PXShaderVariableLocallity Locallity;
 }
 PXShaderVariable;
 
@@ -137,24 +132,10 @@ typedef struct PXShader_
 {
     PXECSInfo Info;
 
-    union
-    {
-        PXI32U OpenGLID;
-        void* DirectXHandle;
-
-        struct ID3D11VertexShader* VertexShader_11; // ID3D11VertexShader
-        struct ID3D11PixelShader* PixelShader_11;
-
-        struct IDirect3DVertexShader9* VertexShader_9;
-        struct IDirect3DPixelShader9* PixelShader_9;
-    };
-
-    PXShaderType Type;
+    PXBuffer Data;
 
     PXI8U VersionMajor;
     PXI8U VersionMinor;
-
-    struct PXFile_* ShaderFile;
 
     PXSize VariableListAmount;
     PXShaderVariable* VariableListData;
@@ -162,25 +143,22 @@ typedef struct PXShader_
 PXShader;
 
 
-
-typedef struct PXShaderProgram_
+typedef struct PXShaderCreateInfo_
 {
     PXECSInfo Info;
 
-    union
-    {
-        PXI32U OpenGLID;// ProgramID;
-    };
-
-    PXSize VariableListAmount;
-    PXShaderVariable* VariableListData;
+    PXText Embedded; // DirectText
+    PXText FilePath; // Filepath to a external file
+    PXFile* File; // File we already loaded and provide
 }
-PXShaderProgram;
-
+PXShaderCreateInfo;
 
 
 PXPublic const char* PXAPI PXShaderTypeToString(const PXShaderType pxShaderType);
 
-PXPublic PXResult PXAPI PXShaderProgramCreate(PXShaderProgram** pxShaderProgramREF, PXShaderProgramCreateInfo PXREF pxShaderProgramCreateInfo);
+PXInternal void PXAPI PXShaderRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
+
+PXPublic PXResult PXAPI PXShaderCreate(PXShader PXREF pxShader, PXShaderCreateInfo PXREF pxShaderCreateInfo);
+PXPublic PXResult PXAPI PXShaderRelease(PXShader PXREF pxShader);
 
 #endif

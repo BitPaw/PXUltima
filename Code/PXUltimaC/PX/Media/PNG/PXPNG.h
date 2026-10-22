@@ -320,19 +320,18 @@ static unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned
 
 
 
-static unsigned getNumColorChannels(LodePNGColorType colortype);
+static PXI8U PXAPI getNumColorChannels(const LodePNGColorType colortype);
 
 static PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth);
 
 static int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b);
 
-/*Get RGBA16 color of pixel with index i (y * width + x) from the raw image with
-given color type, but the given color type must be 16-bit itself.*/
-static void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a,                                const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
+// Get RGBA16 color of pixel with index i (y * width + x) from the raw image with
+// given color type, but the given color type must be 16-bit itself.
+static void PXAPI PXPNGPixelColorRGBA16Get(const unsigned char* in, PXSize i, const LodePNGColorMode* mode, PXColorRGBA_U16 PXREF pxColor);
 
-
-/*put a pixel, given its RGBA16 color, into image of any color 16-bitdepth type*/
-static void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a);
+// put a pixel, given its RGBA16 color, into image of any color 16-bitdepth type
+static void PXAPI PXPNGPixelColorRGBA16Set(unsigned char* out, PXSize i, const LodePNGColorMode* mode, PXColorRGBA_U16 PXREF pxColor);
 
 
 /*Similar to getPixelColorRGBA8, but with all the for loops inside of the color
@@ -346,7 +345,7 @@ static void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const u
 static void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 /*Get RGBA8 color of pixel with index i (y * width + x) from the raw image with given color type.*/
-static void getPixelColorRGBA8(PXColorRGBAI8 PXREF color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
+static void getPixelColorRGBA8(PXColorRGBA_U8 PXREF color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
 
 
 /*put a pixel, given its RGBA color, into image of any color type*/
@@ -356,7 +355,7 @@ PXPrivate PXResult PXAPI rgba8ToPixel
     PXSize i,
     const LodePNGColorMode* mode,
     PNGColorTree* tree /*for palette*/,
-    const PXColorRGBAI8 PXREF color
+    const PXColorRGBA_U8 PXREF color
 );
 
 
@@ -364,7 +363,7 @@ PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType co
 PXPublic PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color);
 
 // returns -1 if color not present, its index otherwise
-PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8 PXREF color);
+PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBA_U8 PXREF color);
 
 // index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to
 PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);
@@ -387,9 +386,9 @@ PXPublic void PXAPI PXPNGDestruct(PXPNG PXREF png);
 
 PXPublic PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG PXREF png);
 
-PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSize);
-PXPublic PXResult PXAPI PXPNGPeekFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
-PXPublic PXResult PXAPI PXPNGLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
-PXPublic PXResult PXAPI PXPNGSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo);
+PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture2D PXREF pxTexture2D, PXSize PXREF fileSize);
+PXPublic PXResult PXAPI PXPNGPeekFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo);
+PXPublic PXResult PXAPI PXPNGLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo);
+PXPublic PXResult PXAPI PXPNGSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxECSCreateInfo);
 
 #endif

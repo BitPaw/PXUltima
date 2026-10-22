@@ -18,18 +18,18 @@ const PXI8U PXExecuteNameLengh = sizeof(PXExecuteName);
 
 PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 {
+    PXThreadResult pxThreadResult;
     PXProgram* program = (PXProgram*)data;
 
 #if OSUnix
     char** envirument = 0;
-    int creationResult = posix_spawn(&program->Handle, program->FilePath, NULL, NULL, program->ParameterList, envirument);
+    int creationResult = posix_spawn(&program->Handle.Data, program->FilePath, NULL, NULL, program->ParameterList, envirument);
     const unsigned char creationSucessful = creationResult == 0;
-
 
     if(creationSucessful)
     {
-        program->Handle = waitpid(program->Handle, &program->ReturnValue, 0);
-        const unsigned char deploySuessful = program->Handle != -1;
+        program->Handle.Data = waitpid(program->Handle.Data, &program->ReturnValue, 0);
+        const unsigned char deploySuessful = program->Handle.Data != -1;
 
         program->ExecutionSuccessfull = deploySuessful;// && programReturnresult == 0;
     }
@@ -81,8 +81,9 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
     }
 
     // Free?
+    pxThreadResult.Data = PXResultOK;
 
-    return PXResultOK;
+    return pxThreadResult;
 }
 
 PXResult PXAPI PXProgramExecute(PXProgram PXREF program)
@@ -91,7 +92,7 @@ PXResult PXAPI PXProgramExecute(PXProgram PXREF program)
     {
         PXThreadCreateInfo pxThreadCreateInfo;
         PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
-        PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXExecuteName, 0, PXExecuteNameLengh);
+        PXTextFromAddressA(&pxThreadCreateInfo.Info.Name, PXExecuteName, 0, PXExecuteNameLengh);
         pxThreadCreateInfo.ThreadFunction = PXProgramExecuteThreadFunction;
         pxThreadCreateInfo.Parameter = program;
 
@@ -138,7 +139,7 @@ PXResult PXAPI PXProgramExecuteAS(PXProgram PXREF program, const char* programPa
     return actionResult;
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXProgramExecuteAL(PXProgram PXREF program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback)
@@ -182,7 +183,7 @@ PXResult PXAPI PXProgramExecuteAL(PXProgram PXREF program, const char* programPa
     return actionResult;
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXProgramExecuteWS(PXProgram PXREF program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)
@@ -195,14 +196,19 @@ PXResult PXAPI PXProgramExecuteWS(PXProgram PXREF program, const wchar_t* progra
 
     //  return PXProgram::Execute(programPathA, parameterListA, callback);
 
-    return PXActionRefusedFormatNotSupported;
+    return PXResultRefusedFormatNotSupported;
 }
 
 PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF returnCode)
 {
+    if(!program)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
 
-    const pid_t processID = waitpid(program->Handle, &program->ReturnValue, 0); // Linux, sys/wait.h
+    const pid_t processID = waitpid(program->Handle.Data, &program->ReturnValue, 0); // Linux, sys/wait.h
     const PXResult waitResult = PXErrorCurrent(-1 != processID);
 
     return waitResult;
@@ -210,29 +216,31 @@ PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF retu
 #elif OSWindows
 
     DWORD result = -1;
+    HANDLE handle = program->Handle.Data;
 
-    const DWORD waitEventTrigger = WaitForSingleObject(program->Handle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
+    const DWORD waitEventTrigger = WaitForSingleObject(handle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 
-    switch (waitEventTrigger)
+    switch(waitEventTrigger)
     {
-    case WAIT_TIMEOUT:
-    {
-        return PXActionFailedConnectionTimedOut;
-    }
-    case WAIT_FAILED:
-    {
-        const PXResult pxResult = PXErrorCurrent(PXFalse);
+        case WAIT_TIMEOUT:
+        {
+            return PXResultFailedConnectionTimedOut;
+        }
+        case WAIT_FAILED:
+        {
+            const PXResult pxResult = PXErrorCurrent(PXFalse);
 
-        return pxResult;
-    }
-    case WAIT_ABANDONED:
-    case WAIT_OBJECT_0:
-    default:
-        // Success, do nothing.
-        break;
+            return pxResult;
+        }
+        case WAIT_ABANDONED:
+        case WAIT_OBJECT_0:
+        default:
+        {  // Success, do nothing.
+            break;
+        }
     }
 
-    const BOOL exitCodeGetSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    const BOOL exitCodeGetSuccess = GetExitCodeProcess(handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXResult pxResult = PXErrorCurrent(exitCodeGetSuccess);
 
     if(PXResultOK != pxResult)
@@ -247,97 +255,90 @@ PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF retu
     return PXResultOK;
 }
 
-ProcessHandle PXAPI PXProgramCurrentProcess()
-{
-#if OSUnix
-    return getpid(); // get process identification
-#elif OSWindows
-    return GetCurrentProcess();
-#endif
-}
-
-ProcessID PXAPI PXProgramCurrentProcessID()
-{
-#if OSUnix
-    return 0;
-#elif OSWindows
-    return GetCurrentProcessId();
-#endif
-}
-
 PXResult PXAPI PXProgramAttach(PXProgram PXREF pxProgram)
 {
+    PXResult pxResult = PXEndianInvalid;
+
+    if(!pxProgram)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
     char processFileName[64];
 
-    sprintf(processFileName, "/proc/%d/mem", pxProgram->Handle);
+    sprintf(processFileName, "/proc/%d/mem", pxProgram->ID.Data);
 
-    pxProgram->MemoryFileHandle = open(processFileName, O_RDWR); // Linux, fcntl.h
-    const PXBool openSuccess = pxProgram->MemoryFileHandle != -1;
-
-    PXActionReturnOnError(!openSuccess);
-
-    return PXResultOK;
+    pxProgram->Handle.Data = open(processFileName, O_RDWR); // Linux, fcntl.h
+    pxResult = PXErrorCurrent(pxProgram->Handle.Data != -1);
 
 #elif OSWindows
     DWORD dwDesiredAccess = 0;
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
-    pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
-    const PXResult pxResult = PXErrorCurrent(pxProgram->Handle != PXNull);
+    pxProgram->Handle.Data = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
+    pxResult = PXErrorCurrent(pxProgram->Handle.Data != PXNull);
 
-    if(PXResultOK != pxResult)
-    {
-        return pxResult;
-    }
-
-    return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    pxResult = PXResultNotSupportedByOperatingSystem;
 #endif
+
+    return pxResult;
 }
 
 PXResult PXAPI PXProgramDetach(PXProgram PXREF pxProgram)
 {
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxProgram)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
 
-    const int result = close(pxProgram->MemoryFileHandle);
-
-    return PXResultOK;
+    const int resultID = close(pxProgram->Handle.Data);
+    pxResult = PXErrorCurrent(0 == resultID);
 
 #elif OSWindows
-    HANDLE handleID = 0;
-
-    const PXBool closeResult = CloseHandle(pxProgram->Handle);
-    const PXResult pxResult = PXErrorCurrent(closeResult);
+    const PXBool resultID = CloseHandle(pxProgram->Handle.Data);
+    pxResult = PXErrorCurrent(resultID);
 
     if(PXResultOK != pxResult)
     {
         return pxResult;
     }
 
-    pxProgram->Handle = PXNull;
+    pxProgram->Handle.Data = PXNull;
 
-    return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    pxResult = PXResultNotSupportedByOperatingSystem;
 #endif
+
+    return pxResult;
 }
 
-PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF adress, void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten)
+PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF address, void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten)
 {
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxProgram)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
 
-    lseek(pxProgram->MemoryFileHandle, adress, SEEK_SET);
-    *bufferSizeWritten = read(pxProgram->MemoryFileHandle, buffer, bufferSize);
+    lseek(pxProgram->Handle.Data, address, SEEK_SET);
+    *bufferSizeWritten = read(pxProgram->Handle.Data, buffer, bufferSize);
 
-    return PXResultOK;
+    pxResult = PXResultOK;
 
 #elif PXOSWindowsDestop
     SIZE_T readSize = 0;
 
-    const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, &readSize); // Windows XP, Kernel32.dll, memoryapi.h
-    const PXResult pxResult = PXErrorCurrent(readResult);
+    const PXBool readResult = ReadProcessMemory(pxProgram->Handle.Data, address, buffer, bufferSize, &readSize); // Windows XP, Kernel32.dll, memoryapi.h
+    pxResult = PXErrorCurrent(readResult);
 
     if(PXResultOK != pxResult)
     {
@@ -345,27 +346,34 @@ PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF a
     }
 
     *bufferSizeWritten = readSize;
-
-    return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    pxResult = PXResultNotSupportedByOperatingSystem;
 #endif
+
+    return pxResult;
 }
 
-PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF adress, const void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten)
+PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF address, const void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten)
 {
+    PXResult pxResult = PXResultInvalid;
+
+    if(!pxProgram)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if OSUnix
 
-    lseek(pxProgram->MemoryFileHandle, adress, SEEK_SET);
-    *bufferSizeWritten = write(pxProgram->MemoryFileHandle, buffer, bufferSize);
+    lseek(pxProgram->Handle.Data, address, SEEK_SET);
+    *bufferSizeWritten = write(pxProgram->Handle.Data, buffer, bufferSize);
 
-    return PXResultOK;
+    pxResult = PXResultOK;
 
 #elif PXOSWindowsDestop
     SIZE_T writtenSize = 0;
 
-    const PXBool readResult = WriteProcessMemory(pxProgram->Handle, (LPVOID)adress, buffer, bufferSize, &writtenSize); // Windows XP, Kernel32.dll, memoryapi.h
-    const PXResult pxResult = PXErrorCurrent(readResult);
+    const PXBool readResult = WriteProcessMemory(pxProgram->Handle.Data, (LPVOID)address, buffer, bufferSize, &writtenSize); // Windows XP, Kernel32.dll, memoryapi.h
+    pxResult = PXErrorCurrent(readResult);
 
     if(PXResultOK != pxResult)
     {
@@ -374,8 +382,9 @@ PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF 
 
     *bufferSizeWritten = writtenSize;
 
-    return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    pxResult = PXResultNotSupportedByOperatingSystem;
 #endif
+
+    return pxResult;
 }

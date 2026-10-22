@@ -16,7 +16,7 @@ PXResult PXAPI PXPDFLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
         if (!validSignature)
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }
     }
 
@@ -37,5 +37,5 @@ PXResult PXAPI PXPDFSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXFileWriteB(pxFile, PXPDFSignature, sizeof(PXPDFSignature));
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

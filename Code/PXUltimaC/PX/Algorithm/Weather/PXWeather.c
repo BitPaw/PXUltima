@@ -6,30 +6,30 @@
 
 void PXAPI PXFilterWeatherProcess(PXFilterWeather PXREF pxFilterWeather, PXAudioFilterBuffer PXREF pxAudioFilterBuffer)
 {
-    PXFAudio wind_prev = 0.0f;
-    PXFAudio thunder_timer = 0.0f;
-    PXFAudio thunder_interval = 60.0f / fmaxf(pxFilterWeather->thunder_freq, 0.01f);
+    PXF32 wind_prev = 0.0f;
+    PXF32 thunder_timer = 0.0f;
+    PXF32 thunder_interval = 60.0f / fmaxf(pxFilterWeather->thunder_freq, 0.01f);
 
     for(PXSize i = 0; i < pxAudioFilterBuffer->Samples; i++)
     {
-        PXFAudio t = (PXFAudio)i / (PXFAudio)pxAudioFilterBuffer->SampleRate;
+        PXF32 t = (PXF32)i / (PXF32)pxAudioFilterBuffer->SampleRate;
 
         // Wind: filtered white noise with slow modulation
-        PXFAudio gust = sinf(2.0f * PXMathPI * 0.1f * t) * pxFilterWeather->wind_variation;
+        PXF32 gust = sinf(2.0f * PXMathPI * 0.1f * t) * pxFilterWeather->wind_variation;
 
         PXAudioWaveGenerateInfo pxAudioWaveGenerateInfo;
         pxAudioWaveGenerateInfo.WaveType = PXAudioWaveTypeNoiseWhite;
 
-        PXFAudio noise = PXAudioWaveGenerate(&pxAudioWaveGenerateInfo);
-        PXFAudio wind = lowpass_filter(noise, &wind_prev, 0.01f);
-        PXFAudio wind_sample = wind * (pxFilterWeather->wind_intensity + gust) * 0.3f;
+        PXF32 noise = PXAudioWaveGenerate(&pxAudioWaveGenerateInfo);
+        PXF32 wind = lowpass_filter(noise, &wind_prev, 0.01f);
+        PXF32 wind_sample = wind * (pxFilterWeather->wind_intensity + gust) * 0.3f;
 
         // Rain: random short sine bursts
-        if((rand() / (PXFAudio)RAND_MAX) < (pxFilterWeather->rain_density / pxAudioFilterBuffer->SampleRate))
+        if((rand() / (PXF32)RAND_MAX) < (pxFilterWeather->rain_density / pxAudioFilterBuffer->SampleRate))
         {
             int drop_len = 100 + rand() % 100;
-            PXFAudio freq = 600.0f + rand() % 800;
-            PXFAudio amp = pxFilterWeather->rain_loudness * (0.2f + ((PXFAudio)rand() / RAND_MAX) * 0.3f);
+            PXF32 freq = 600.0f + rand() % 800;
+            PXF32 amp = pxFilterWeather->rain_loudness * (0.2f + ((PXF32)rand() / RAND_MAX) * 0.3f);
             PXFilterWeatherRaindrop(pxAudioFilterBuffer, i, drop_len, freq, amp);
         }
 
@@ -40,7 +40,7 @@ void PXAPI PXFilterWeatherProcess(PXFilterWeather PXREF pxFilterWeather, PXAudio
         {
             thunder_timer = 0.0f;
             int thunder_len = pxAudioFilterBuffer->SampleRate * (1.0f + pxFilterWeather->thunder_rumble);
-            PXFAudio amp = pxFilterWeather->thunder_loudness * (0.5f + ((PXFAudio)rand() / RAND_MAX) * 0.5f);
+            PXF32 amp = pxFilterWeather->thunder_loudness * (0.5f + ((PXF32)rand() / RAND_MAX) * 0.5f);
             PXFilterWeatherThunder(pxAudioFilterBuffer, i, thunder_len, amp, 1.5f + pxFilterWeather->thunder_rumble);
         }
 
@@ -56,8 +56,8 @@ void PXAPI PXFilterWeatherRaindrop(PXAudioFilterBuffer PXREF pxAudioFilterBuffer
         if(pos + i >= pxAudioFilterBuffer->SampleRate * 10)
             break;
 
-        PXFAudio env = 1.0f - (PXFAudio)i / (PXFAudio)length;
-        PXFAudio sample = amp * env * sin(2.0 * PXMathPI * freq * i / pxAudioFilterBuffer->SampleRate);
+        PXF32 env = 1.0f - (PXF32)i / (PXF32)length;
+        PXF32 sample = amp * env * sin(2.0 * PXMathPI * freq * i / pxAudioFilterBuffer->SampleRate);
 
         pxAudioFilterBuffer->Buffer.F64[pos + i] += (PXI16U)(sample * 32767);
     }
@@ -70,8 +70,8 @@ void PXAPI PXFilterWeatherThunder(PXAudioFilterBuffer PXREF pxAudioFilterBuffer,
         if(pos + i >= pxAudioFilterBuffer->SampleRate * 10)
             break;
 
-        PXFAudio t = (PXFAudio)i / (PXFAudio)pxAudioFilterBuffer->SampleRate;
-        PXFAudio decay = exp(-t * rumble);
+        PXF32 t = (PXF32)i / (PXF32)pxAudioFilterBuffer->SampleRate;
+        PXF32 decay = exp(-t * rumble);
 
         PXAudioWaveGenerateInfo pxAudioWaveGenerateInfo;
         pxAudioWaveGenerateInfo.WaveType = PXAudioWaveTypeNoiseWhite;

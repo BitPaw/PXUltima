@@ -106,7 +106,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
                         PXCodeDocumentElement pxDocumentElement;
                         PXClear(PXCodeDocumentElement, &pxDocumentElement);
                         //  pxDocumentElement.Depth = pxDocument->Depth;
-                        pxDocumentElement.NameAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                        pxDocumentElement.NameAddress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
                         pxDocumentElement.NameSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                         // pxDocumentElement.Depth = pxDocument->Depth;
 
@@ -118,7 +118,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
                             PXCompilerSymbolEntryExtract(pxCompiler);
 
                             pxDocumentElement.ElementMember.ValueType = PXTypeString;
-                            pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                            pxDocumentElement.ElementMember.ValueAddress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
                             pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                         }
                         else
@@ -168,7 +168,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
                     PXCodeDocumentElement pxDocumentElement;
                     PXClear(PXCodeDocumentElement, &pxDocumentElement);
                     pxDocumentElement.Depth = 0;
-                    pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                    pxDocumentElement.ElementMember.ValueAddress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
                     pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                     pxDocumentElement.Type = PXDocumentElementTypeClassMember;
 
@@ -230,5 +230,5 @@ PXResult PXAPI PXXMLLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXXMLSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

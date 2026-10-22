@@ -140,12 +140,12 @@ PXELFSegmentType;
 
 typedef struct PXELFProgramHeader_
 {
-    PXAdress64 AdressOffsetRead;
-    PXAdress64 AdressTargetVirtual;
-    PXAdress64 AdressTargetPhysical;
-    PXAdress64 SizeOnFile;
-    PXAdress64 SizeInMemory;
-    PXAdress64 p_align;
+    PXAddress64 AddressOffsetRead;
+    PXAddress64 AddressTargetVirtual;
+    PXAddress64 AddressTargetPhysical;
+    PXAddress64 SizeOnFile;
+    PXAddress64 SizeInMemory;
+    PXAddress64 p_align;
 
     PXBool IsSegmentExecutable;
     PXBool IsSegmentWriteable;
@@ -168,13 +168,13 @@ typedef struct PXELFHeader_
 
 
     // Offset
-    PXAdress64 EntryPointOfCode;
+    PXAddress64 EntryPointOfCode;
 
-    PXAdress64 ProgrammHeaderOffset;
+    PXAddress64 ProgrammHeaderOffset;
     PXI16U ProgrammHeaderSize;
     PXI16U ProgrammHeaderAmount;
 
-    PXAdress64 SectionHeaderOffset;
+    PXAddress64 SectionHeaderOffset;
     PXI16U SectionHeaderSize;
     PXI16U SectionHeaderAmount;
 

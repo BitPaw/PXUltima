@@ -2,48 +2,50 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Engine/PXResource.h>
+#include "PXMaterial.hpp"
 
 const char PXMaterialText[] = "Material";
-
-PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXREF pxMaterialContainer, PXText PXREF pxMaterialName)
+const PXI8U PXMaterialTextLength = sizeof(PXMaterialText);
+const PXECSRegisterInfoStatic PXMaterialRegisterInfoStatic =
 {
-    if(!pxMaterialContainer)
-    {
-        return PXNull;
-    }
+    {sizeof(PXMaterialText), sizeof(PXMaterialText), PXMaterialText, TextFormatASCII},
+    sizeof(PXMaterial),
+    __alignof(PXMaterial),
+    PXECSTypeEntity,
+    PXMaterialCreate,
+    PXNull,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXMaterialRegisterInfoDynamic;
 
-    //for (PXSize materialContainerID = 0; materialContainerID < pxMaterialContainer->MaterialContaierListSize; ++materialContainerID)
-    //{
-    // const PXMaterialContainer PXREF pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];
-
-    for(PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
-    {
-        PXMaterial PXREF pxMaterial = &pxMaterialContainer->MaterialList[materialID];
-
-        PXECSProperty pxECSProperty;
-        PXClear(PXECSProperty, &pxECSProperty);
-
-        PXResourcePropertyIO(&pxMaterial->Info, &pxECSProperty, PXResourcePropertyName, PXResourcePropertyFetch);
-
-        const PXBool isMatch = PXTextCompare
-        (
-            pxMaterialName,
-            &pxECSProperty.Text
-            //PXTextCompareRequireSameLength
-        );
-
-        if(isMatch)
-        {
-            return pxMaterial;
-        }
-    }
-    // }
-
-    return PXNull;
+void PXAPI PXMaterialRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
+{
+    pxECSRegisterInfo->InfoStatic = &PXMaterialRegisterInfoStatic;
+    pxECSRegisterInfo->InfoDynamic = &PXMaterialRegisterInfoDynamic;
 }
 
-PXResult PXAPI PXMaterialCreate(PXMaterial PXREF pxMaterial, PXMaterialCreateInfo PXREF pxMaterialCreateInfo)
+PXResult PXAPI PXMaterialCreate(PXMaterial** pxMaterialREF, PXMaterialCreateInfo PXREF pxMaterialCreateInfo)
 {
+    PXMaterial* pxMaterial = PXNull;
+
+    if(!(pxMaterialREF && pxMaterialCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxMaterialCreateInfo->Info.Static = &PXMaterialRegisterInfoStatic;
+    pxMaterialCreateInfo->Info.Dynamic = &PXMaterialRegisterInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxMaterialREF, pxMaterialCreateInfo);
+
+    if(PXResultOK != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxMaterial = *pxMaterialREF;
+    PXCopy(PXMaterialData, &pxMaterialCreateInfo->Data, &pxMaterial->Data);
+
+#if 0
     PXSize objectAmount = pxMaterialCreateInfo->Info.ObjectAmount;
 
 #if PXLogEnable
@@ -68,6 +70,7 @@ PXResult PXAPI PXMaterialCreate(PXMaterial PXREF pxMaterial, PXMaterialCreateInf
 
         keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
     }
+#endif
 
     return PXResultOK;
 }

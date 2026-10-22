@@ -12,7 +12,6 @@ const PXECSRegisterInfoStatic PXAudioDeviceRegisterInfoStatic =
     PXAudioDeviceCreate,
     PXAudioDeviceRelase,
     PXNull
-
 };
 PXECSRegisterInfoDynamic PXAudioDeviceRegisterInfoDynamic;
 
@@ -41,11 +40,17 @@ PXResult PXAPI PXAudioDeviceCreate(PXAudioDevice** pxAudioDeviceREF, PXAudioDevi
     }
 
     pxAudioDevice = *pxAudioDeviceREF;
+    pxAudioDevice->Type = pxAudioDeviceCreateInfo->Type;
+
+#if OSUnix
+#elif OSWindows
+    pxAudioDevice->DeviceGUID = pxAudioDeviceCreateInfo->WindowsGUID;
+#endif
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXAudioDeviceRelase(PXAudioDevice PXREF pxAudioDevice)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

@@ -391,7 +391,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
-                {signature.Data4, PXTypeDatax4},
+                {signature.Data, PXTypeDatax4},
                 {&classID,PXTypeI08U},
                 {&dataID,PXTypeI08U},
                 {&versionID,PXTypeI08U},
@@ -405,7 +405,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
             {
                 const PXBool isValidSignature = PXMemoryCompare
                 (
-                    signature.Data4, 
+                    signature.Data, 
                     4u,
                     PXELFSignature, 
                     sizeof(PXELFSignature),
@@ -414,7 +414,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
 
                 if (!isValidSignature)
                 {
-                    return PXActionRefusedInvalidHeaderSignature;
+                    return PXResultRefusedInvalidHeaderSignature;
                 }
             }
 
@@ -440,9 +440,9 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
                 {&typeID, PXTypeI16U},
                 {&machineID, PXTypeI16U},
                 {&versionID,PXTypeI32U},
-                {&pxBinaryLinux->Header.EntryPointOfCode,PXTypeAdressFlex},
-                {&pxBinaryLinux->Header.ProgrammHeaderOffset,PXTypeAdressFlex},
-                {&pxBinaryLinux->Header.SectionHeaderOffset,PXTypeAdressFlex},
+                {&pxBinaryLinux->Header.EntryPointOfCode,PXTypeAddressFlex},
+                {&pxBinaryLinux->Header.ProgrammHeaderOffset,PXTypeAddressFlex},
+                {&pxBinaryLinux->Header.SectionHeaderOffset,PXTypeAddressFlex},
                 {&e_flags,PXTypeI32U},
                 {&sizeOfThisHeader, PXTypeI16U},
                 {&pxBinaryLinux->Header.ProgrammHeaderSize, PXTypeI16U},
@@ -476,13 +476,13 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
             {
                 {&typeID,PXTypeI32U},
                 {&flagsID, PXTypeI32ULEOnlyIf64B},
-                {&pxELFProgramHeader.AdressOffsetRead,PXTypeAdressFlex},
-                {&pxELFProgramHeader.AdressTargetVirtual,PXTypeAdressFlex},
-                {&pxELFProgramHeader.AdressTargetPhysical,PXTypeAdressFlex},
-                {&pxELFProgramHeader.SizeOnFile,PXTypeAdressFlex},
-                {&pxELFProgramHeader.SizeInMemory,PXTypeAdressFlex},
+                {&pxELFProgramHeader.AddressOffsetRead,PXTypeAddressFlex},
+                {&pxELFProgramHeader.AddressTargetVirtual,PXTypeAddressFlex},
+                {&pxELFProgramHeader.AddressTargetPhysical,PXTypeAddressFlex},
+                {&pxELFProgramHeader.SizeOnFile,PXTypeAddressFlex},
+                {&pxELFProgramHeader.SizeInMemory,PXTypeAddressFlex},
                 {&flagsID, PXTypeI32ULEOnlyIf32B},
-                {&pxELFProgramHeader.p_align,PXTypeAdressFlex}
+                {&pxELFProgramHeader.p_align,PXTypeAddressFlex}
             };
 
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -521,21 +521,21 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInf
             {
                 {&pxSectionHeader.sh_nameOffset,PXTypeI32U},
                 {&pxSectionHeader.sh_type,PXTypeI32U},
-                {&pxSectionHeader.sh_flags,PXTypeAdressFlex},
-                {&pxSectionHeader.sh_addr,PXTypeAdressFlex},
-                {&pxSectionHeader.FileImageOffset,PXTypeAdressFlex},
-                {&pxSectionHeader.FileImageSize,PXTypeAdressFlex},
+                {&pxSectionHeader.sh_flags,PXTypeAddressFlex},
+                {&pxSectionHeader.sh_addr,PXTypeAddressFlex},
+                {&pxSectionHeader.FileImageOffset,PXTypeAddressFlex},
+                {&pxSectionHeader.FileImageSize,PXTypeAddressFlex},
                 {&pxSectionHeader.sh_link,PXTypeI32U},
                 {&pxSectionHeader.sh_info,PXTypeI32U},
-                {&pxSectionHeader.sh_addralign,PXTypeAdressFlex},
-                {&pxSectionHeader.sh_entsize,PXTypeAdressFlex}
+                {&pxSectionHeader.sh_addralign,PXTypeAddressFlex},
+                {&pxSectionHeader.sh_entsize,PXTypeAddressFlex}
             };
 
             PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         }
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXBinaryLinuxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
@@ -545,5 +545,5 @@ PXResult PXAPI PXBinaryLinuxSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     //PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

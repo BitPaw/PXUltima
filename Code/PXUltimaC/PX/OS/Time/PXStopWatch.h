@@ -4,7 +4,7 @@
 #define PXStopWatchIncluded
 
 #include <PX/Type/PXType.h>
-#include <PX/OS/Time/PXTime.h>
+#include <PX/Type/PXTime.h>
 
 typedef struct PXStopWatch_
 {

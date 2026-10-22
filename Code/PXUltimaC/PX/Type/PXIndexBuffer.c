@@ -4,6 +4,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Math/PXMath.h>
 
 const char PXIndexBufferText[] = "IndexBuffer";
 const PXI8U PXIndexBufferTextLength = sizeof(PXIndexBufferText);
@@ -18,33 +19,6 @@ const PXECSRegisterInfoStatic PXIndexBufferRegisterInfo =
     PXNull
 };
 PXECSRegisterInfoDynamic PXIndexBufferRegisterInfoDynamic;
-
-
-void PXAPI PXIndexSegmentSET(PXIndexSegment PXREF pxIndexSegment, const PXSize amount)
-{
-    pxIndexSegment->SegmentListAmount = amount;
-
-    if(0 == amount || 1 == amount)
-    {
-        pxIndexSegment->SegmentListAmount = 1;
-        return;
-    }
-
-    pxIndexSegment->SegmentListAmount = amount;
-    pxIndexSegment->SegmentList = PXMemoryHeapCallocT(PXIndexSegmentEntry, amount);
-}
-
-PXIndexSegmentEntry* PXAPI PXIndexSegmentGET(PXIndexSegment PXREF pxIndexSegment)
-{
-    if(1 == pxIndexSegment->SegmentListAmount)
-    {
-        return &pxIndexSegment->SegmentPrime;
-    }
-    else
-    {
-        return pxIndexSegment->SegmentList;
-    }
-}
 
 void PXAPI PXIndexBufferRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
@@ -71,9 +45,93 @@ PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBufferREF, PXIndexBuff
         return pxResult;
     }
 
-    pxIndexBuffer = *pxIndexBufferREF;
-    pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+    pxIndexBuffer = *pxIndexBufferREF; 
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXIndexBufferText,
+        "Create",
+        "\n"
+        "%20s : %i\n"
+        "%20s : %p (IsConst:%s)\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i",
+        "PXID", pxIndexBuffer->Info.ID,
+        "IndexDataAddress", pxIndexBufferCreateInfo->IndexDataAddress, pxIndexBufferCreateInfo->IsConstData ? "YES" : " NO",
+        "IndexDataSize", pxIndexBufferCreateInfo->IndexAmount,
+        "Dimensions", pxIndexBufferCreateInfo->Dimensions,
+        "Bit per index", pxIndexBufferCreateInfo->BitPerIndex,
+        "Segments", pxIndexBufferCreateInfo->AmountSegments
+    );
+#endif
+
+
+    PXAssert(pxIndexBufferCreateInfo->Dimensions > 0, "Dimension is not set, should probably be 3");
+    PXAssert(pxIndexBufferCreateInfo->BitPerIndex > 0, "BitPerIndex is not set, needs to be 8, 16, 32, 64, ...");
+
+
+#if 0 // Debug
+    pxIndexBuffer->DrawModeID |= PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+#endif
+
+    switch(pxIndexBufferCreateInfo->Dimensions)
+    {
+        case 3:        
+        {
+            pxIndexBuffer->DrawModeID |= PXDrawModeIDTriangle;
+            break;
+        }
+        case 4:
+        {
+            pxIndexBuffer->DrawModeID |= PXDrawModeIDSquare;
+            break;
+        }
+        default:
+        {
+            break;
+        }          
+    }
+
+    PXSize indexBytesRequired =
+        pxIndexBufferCreateInfo->Dimensions *
+        pxIndexBufferCreateInfo->IndexAmount *
+        pxIndexBufferCreateInfo->BitPerIndex / 8u;
+    
+    pxResult = PXBufferStore
+    (
+        &pxIndexBuffer->Data,
+        pxIndexBufferCreateInfo->IndexDataAddress,
+        indexBytesRequired,
+        pxIndexBufferCreateInfo->IsConstData
+    );
+
+    pxIndexBuffer->BitPerIndex = pxIndexBufferCreateInfo->BitPerIndex;
+
+    if(PXResultOK != pxResult)
+    {
+        PXDebugBreak();
+        return pxResult;
+    }
+
+    // Setup segment
+    PXIndexSegmentPrepare(pxIndexBuffer, pxIndexBufferCreateInfo->AmountSegments);
+
+    const PXSize amount = PXIndexSegmentAmount(pxIndexBuffer);
+
+
+     PXIndexSegmentSetViaIndex
+     (
+         pxIndexBuffer, 
+         0,
+         pxIndexBufferCreateInfo->IndexAmount * pxIndexBufferCreateInfo->Dimensions
+     );   
+
+
+#if 0
     const PXSize amountVertex = pxIndexBufferCreateInfo->AmountVertex;
 
     // Index array data Type    
@@ -100,13 +158,6 @@ PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBufferREF, PXIndexBuff
 
     const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->DataType);
 
-    pxResult = PXBufferAllocate(&pxIndexBuffer->Data, amountVertex * dataSize * 3);
-
-    if(PXResultOK != pxResult)
-    {
-        DebugBreak();
-        return pxResult;
-    }
 
     PXSize indexAmount = 3;
 
@@ -137,27 +188,6 @@ PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBufferREF, PXIndexBuff
     pxBufferLayoutEntry[2].AmountOfElements = 1;
     pxBufferLayoutEntry[2].Type = PXVertexBufferLayoutTypeTexturePos;
 
-
-
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXIndexBufferText,
-        "Create",
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %i",
-        "PXID", pxIndexBuffer->Info.ID,
-        "TypeSize", dataSize,
-        "IndexAmount", indexAmount,
-        "VertexAmount", amountVertex,
-        "Segments", pxIndexBufferCreateInfo->AmountSegments
-    );
 #endif
 
     return PXResultOK;
@@ -165,12 +195,139 @@ PXResult PXAPI PXIndexBufferCreate(PXIndexBuffer** pxIndexBufferREF, PXIndexBuff
 
 PXResult PXAPI PXIndexBufferRelease(PXIndexBuffer PXREF pxIndexBuffer)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXSize PXAPI PXIndexBufferAmount(const PXIndexBuffer PXREF pxIndexBuffer)
 {
-    return (pxIndexBuffer->Data.CursorOffsetByte / PXTypeSizeGet(pxIndexBuffer->DataType)); // / 3
+    return 0;// (pxIndexBuffer->Data.CursorOffsetByte / PXTypeSizeGet(pxIndexBuffer->DataType)); // / 3
+}
+
+PXResult PXAPI PXIndexSegmentPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amount)
+{
+    if(0 == amount || 1 == amount)
+    {
+        pxIndexBuffer->SegmentAmount = 1;
+        return;
+    }
+
+    // only when we have more than a single segment we allocate.
+    // This safes us an allocation per object.
+    pxIndexBuffer->SegmentAmount = amount;
+    pxIndexBuffer->SegmentList = PXMemoryHeapCallocT(PXIndexSegment, amount);
+}
+
+PXIndexSegment* PXAPI PXIndexSegmentGetViaIndex(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize index)
+{
+    if(!pxIndexBuffer)
+    {
+        return PXNull;
+    }
+
+    PXAssert(0 != pxIndexBuffer->SegmentAmount, "This isn't a legal state, forgot to init correctly!");
+
+    if(1 == pxIndexBuffer->SegmentAmount)
+    {
+        return &pxIndexBuffer->SegmentPrime;
+    }
+
+    PXBool isInBounds = index < pxIndexBuffer->SegmentAmount;
+
+    if(!isInBounds)
+    {
+        return 0;
+    }
+
+    return &pxIndexBuffer->SegmentList[index];
+}
+
+PXResult PXAPI PXIndexSegmentSetViaIndex(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize range)
+{
+    PXIndexSegment PXREF pxIndexSegment = PXIndexSegmentGetViaIndex(pxIndexBuffer, index);
+
+    if(!pxIndexSegment)
+    {
+        return PXResultInvalid;
+    }
+
+    pxIndexSegment->Range = range;
+    //pxIndexSegment->Material = pxMaterial;
+}
+
+PXSize PXAPI PXIndexSegmentAmount(const PXIndexBuffer PXREF pxIndexBuffer)
+{
+    if(!pxIndexBuffer)
+    {
+        return 0;
+    }
+
+    return pxIndexBuffer->SegmentAmount;
+}
+
+PXIndexSegment* PXAPI PXIndexSegmentGetViaMaterial(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize materialID)
+{
+    const PXSize segmentAmount = PXIndexSegmentAmount(pxIndexBuffer);
+
+    for(PXSize i = 0; i < segmentAmount; i++)
+    {
+        PXIndexSegment PXREF pxIndexSegment = PXIndexSegmentGetViaIndex(pxIndexBuffer, i);
+        PXBool isMaterialTarget = pxIndexSegment->MaterialID == materialID;
+
+        if(isMaterialTarget)
+        {
+            return pxIndexSegment;
+        }
+    }
+
+    return PXNull;
+}
+
+void* PXAPI PXIndexSegmentDataGetViaMaterial(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize materialID)
+{
+    const PXSize segmentAmount = PXIndexSegmentAmount(pxIndexBuffer);
+
+    for(PXSize i = 0; i < segmentAmount; i++)
+    {
+        PXIndexSegment PXREF pxIndexSegment = PXIndexSegmentGetViaIndex(pxIndexBuffer, i);
+        PXBool isMaterialTarget = pxIndexSegment->MaterialID == materialID;
+
+        if(isMaterialTarget)
+        {
+            void* ind = PXIndexSegmentDataGet(pxIndexBuffer, i);
+
+            //ind = (PXSize)ind + (pxIndexBuffer->BitPerIndex / 8u) * ;
+
+            return ind;
+        }
+    }
+
+    return PXNull;
+}
+
+void* PXAPI PXIndexSegmentDataGet(const PXIndexBuffer PXREF pxIndexBuffer, const PXSize segmentID)
+{
+    PXSize segmentAmount = PXIndexSegmentAmount(pxIndexBuffer);
+    PXSize totalOffset = 0;
+
+    if(segmentID == 0)
+    {
+        return pxIndexBuffer->Data.Data;
+    }
+
+    segmentAmount = PXMathMinimumIU(segmentAmount, segmentID);
+
+    for(size_t i = 0; i < segmentAmount; i++)
+    {
+        PXIndexSegment PXREF pxIndexSegment = PXIndexSegmentGetViaIndex(pxIndexBuffer, i);
+
+        totalOffset += pxIndexSegment->Range;
+    }
+
+    void* data = 
+        pxIndexBuffer->Data.Data +
+        (pxIndexBuffer->BitPerIndex / 8) * totalOffset;
+
+    return data;
 }
 
 PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer)
@@ -207,23 +364,21 @@ PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer PXREF pxIndexBuffer, const PXI8
 
 PXIndexBufferIndexSET PXAPI PXIndexBufferIndexFunc(const PXIndexBuffer PXREF pxIndexBuffer)
 {
-    const PXI8U typeSize = PXTypeSizeGet(pxIndexBuffer->DataType);
-
-    switch(typeSize)
+    switch(pxIndexBuffer->BitPerIndex)
     {
-        case PXTypeSize08:
+        case 8:
         {
             return PXIndexBufferIndex08SET;
         }
-        case PXTypeSize16:
+        case 16:
         {
             return PXIndexBufferIndex16SET;
         }
-        case PXTypeSize32:
+        case 32:
         {
             return PXIndexBufferIndex32SET;
         }
-        case PXTypeSize64:
+        case 64:
         {
             return PXIndexBufferIndex64SET;
         }
@@ -236,7 +391,7 @@ PXIndexBufferIndexSET PXAPI PXIndexBufferIndexFunc(const PXIndexBuffer PXREF pxI
 
 void PXAPI PXIndexBufferIndex08SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData)
 {
-    PXI8U PXREF indexInsert = pxIndexBuffer->Data.Data4;
+    PXI8U PXREF indexInsert = pxIndexBuffer->Data.I8U;
 
     indexInsert[index * 3 + 0] = indexData[0];
     indexInsert[index * 3 + 1] = indexData[1];
@@ -245,7 +400,7 @@ void PXAPI PXIndexBufferIndex08SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSi
 
 void PXAPI PXIndexBufferIndex16SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData)
 {
-    PXI16U PXREF indexInsert = pxIndexBuffer->Data.Data4;
+    PXI16U PXREF indexInsert = pxIndexBuffer->Data.I16U;
 
     indexInsert[index * 3+0] = indexData[0];
     indexInsert[index * 3+1] = indexData[1];
@@ -254,7 +409,7 @@ void PXAPI PXIndexBufferIndex16SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSi
 
 void PXAPI PXIndexBufferIndex32SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData)
 {
-    PXI32U PXREF indexInsert = pxIndexBuffer->Data.Data4;
+    PXI32U PXREF indexInsert = pxIndexBuffer->Data.I32U;
 
     indexInsert[index * 3 + 0] = indexData[0];
     indexInsert[index * 3 + 1] = indexData[1];
@@ -263,7 +418,7 @@ void PXAPI PXIndexBufferIndex32SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSi
 
 void PXAPI PXIndexBufferIndex64SET(PXIndexBuffer PXREF pxIndexBuffer, const PXSize index, const PXSize amount, const PXI32U PXREF indexData)
 {
-    PXI64U PXREF indexInsert = pxIndexBuffer->Data.Data4;
+    PXI64U PXREF indexInsert = pxIndexBuffer->Data.I64U;
 
     indexInsert[index * 3 + 0] = indexData[0];
     indexInsert[index * 3 + 1] = indexData[1];

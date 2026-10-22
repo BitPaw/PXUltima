@@ -81,8 +81,6 @@ typedef struct PXDirectorySearchCache_
     HANDLE DirectoryHandleCurrent;
 #endif
 
-
-
     wchar_t* FolderPath;
     PXSize FolderPathSize;
 

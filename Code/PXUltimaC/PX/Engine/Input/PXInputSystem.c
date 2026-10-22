@@ -2,6 +2,7 @@
 #include "PXInputDevice.h"
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Type/PXWindow.h>
 #include <PX/OS/PXOS.h>
 
 
@@ -84,7 +85,7 @@ BOOL CALLBACK PXDirectInputDeviceListCallback(const DIDEVICEINSTANCEW* inst, PXI
 
         if(!isTarget)
         {
-            //DebugBreak();
+            //PXDebugBreak();
             continue;
         }
 
@@ -376,7 +377,7 @@ PXResult PXAPI PXInputSystemDevicesRefreshRawInput(PXInputSystem PXREF pxInputSy
 PXResult PXAPI PXInputSystemDevicesRefreshXInput(PXInputSystem PXREF pxInputSystem)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
     for(DWORD playerID = 0; playerID < 4; ++playerID) 
@@ -401,7 +402,7 @@ PXResult PXAPI PXInputSystemDevicesRefreshDirectInput(PXInputSystem PXREF pxInpu
 
 #if OSUnix
 
-    pxResult = PXActionRefusedNotImplemented;
+    pxResult = PXResultRefusedNotImplemented;
 
 #elif OSWindows
     HRESULT result;
@@ -596,7 +597,7 @@ PXResult PXAPI PXInputDevicePoll(PXInputDevice PXREF pxInputDevice)
     PXResult pxResult;
 
 #if OSUnix
-    pxResult = PXActionRefusedNotImplemented;
+    pxResult = PXResultRefusedNotImplemented;
 
 #elif OSWindows
     HRESULT result;
@@ -750,10 +751,12 @@ PXResult PXAPI PXInputDeviceOpen(PXInputDevice PXREF pxInputDevice, PXWindow PXR
         DIPROP_AUTOCENTER
     );*/
 
+    PXWindowHandle pxWindowHandle = PXWindowHandleGet(pxWindow);
+
     result = device->lpVtbl->SetCooperativeLevel
     (
         device,
-        PXWindowHandleGet(pxWindow),
+        pxWindowHandle.Data,
         DISCL_FOREGROUND | DISCL_EXCLUSIVE // DISCL_NONEXCLUSIVE
     );
     pxResult = PXErrorFromHRESULT(result);
@@ -864,28 +867,28 @@ PXResult PXAPI PXControllerSystemInitilize(PXMMJoystick PXREF pxControllerSystem
     // Library
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsMultiMedia, sizeof(PXWindowsMultiMediaLength), sizeof(PXWindowsMultiMediaLength));
+        PXTextFromAddressA(&pxText, PXWindowsMultiMedia, sizeof(PXWindowsMultiMediaLength), sizeof(PXWindowsMultiMediaLength));
 
         const PXResult loadLibResult = PXLibraryOpen(&pxControllerSystem->InputLibrary, &pxText);
 
         if(PXResultOK != loadLibResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch
     {
-        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        PXLibraryFunctionEntry PXLibraryFunctionEntryList[] =
         {
             { &pxControllerSystem->NumDevsGet, "joyGetNumDevs"},
             { &pxControllerSystem->DevCapsGetA,"joyGetDevCapsA"},
             { &pxControllerSystem->GetPosEx,"joyGetPosEx" }
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&pxControllerSystem->InputLibrary, pxLibraryFuntionEntryList, amount);
+        PXLibraryGetSymbolListA(&pxControllerSystem->InputLibrary, PXLibraryFunctionEntryList, amount);
     }
 
     return PXResultOK;
@@ -969,7 +972,7 @@ PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXInputSystem PXREF pxControl
         PXController PXREF pxController = &pxInputDevice->ControllerData;
 
 #if OSUnix
-        return PXActionRefusedNotImplemented;
+        return PXResultRefusedNotImplemented;
 
 #elif WindowsAtleastVista
 

@@ -99,7 +99,7 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         }
         else
         {
-            return PXActionRefusedInvalidHeaderSignature;
+            return PXResultRefusedInvalidHeaderSignature;
         }    
     }
 
@@ -160,7 +160,7 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         }
         void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
 
-       // n64.RAMEntryPointAdress = (char*)pxFile->Buffer.Data + 0x1000;
+       // n64.RAMEntryPointAddress = (char*)pxFile->Buffer.Data + 0x1000;
        // n64.RAMEntryPointLength = pxFile->Buffer.SizeAllowedToUse - 0x1000;
 
         // The lower most nybble of the ClockRate is not read.
@@ -271,7 +271,7 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
            // {0xB0000000,  0x0, pxFile->Buffer.CursorOffsetByte,      pxFile->Buffer.SizeAllowedToUse,         ".rom", "ROM image", 111}, // Read only
             
-           // {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
+           // {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAddress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
         };
 
 
@@ -311,14 +311,14 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         PXMIPSProcessor pxMIPSProcessor;
         PXClear(PXMIPSProcessor, &pxMIPSProcessor);
         pxMIPSProcessor.ROMOffsetVirtual = (void*)((PXSize)0x80000000 + (PXSize)0x400);
-        pxMIPSProcessor.RAMAdressVirtual = 0x00000000;
+        pxMIPSProcessor.RAMAddressVirtual = 0x00000000;
         pxMIPSProcessor.RAMSize = 0x03EFFFFF;
-        pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXNull, PXAccessModeReadAndWrite);
+        pxMIPSProcessor.RAMAddress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXNull, PXAccessModeReadAndWrite);
 
         pxMIPSProcessor.CoProcessor[0].Enabled = PXTrue;
         pxMIPSProcessor.CoProcessor[1].Enabled = PXTrue;
 
-        PXMIPSTranslate(&pxMIPSProcessor, n64.RAMEntryPointAdress, n64.RAMEntryPointLength);
+        PXMIPSTranslate(&pxMIPSProcessor, n64.RAMEntryPointAddress, n64.RAMEntryPointLength);
 
 
 
@@ -334,5 +334,5 @@ PXResult PXAPI PXN64LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
 PXResult PXAPI PXN64SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

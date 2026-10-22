@@ -171,7 +171,7 @@ void PXCSSerialize(PXFile PXREF inputSteam, PXFile PXREF outputStream, PXCTransl
             char doubleText[] = "double";
             char boolText[] = "bool";
 
-            if (pxCStructureVariable->IsAdressVolitile)
+            if (pxCStructureVariable->IsAddressVolitile)
             {
                 PXFileWriteB(outputStream, volatileText, sizeof(volatileText) - 1);
             }
@@ -266,7 +266,7 @@ void PXCSSerialize(PXFile PXREF inputSteam, PXFile PXREF outputStream, PXCTransl
 
                 PXFileWriteB(outputStream, keyText, sizeofKey);
 
-                if (pxCStructureVariable->IsAdress)
+                if (pxCStructureVariable->IsAddress)
                 {
                     PXFileWriteB(outputStream, "*", 1);
                 }
@@ -394,13 +394,13 @@ void PXAPI PXCSharpContainerWrite(PXCompiler PXREF pxCompiler)
 
     PXFileWriteC(pxFile, ' ');
 
-    if(symbol->NameShortAdress)
+    if(symbol->NameShortAddress)
     {
-        PXFileWriteA(pxFile, symbol->NameShortAdress, symbol->NameShortSize);
+        PXFileWriteA(pxFile, symbol->NameShortAddress, symbol->NameShortSize);
     }
     else
     {
-        PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
+        PXFileWriteA(pxFile, symbol->NameAddress, symbol->NameSize);
     }
 
     PXFileWriteNewLine(pxFile);
@@ -421,7 +421,7 @@ void PXAPI PXCSharpContainerWrite(PXCompiler PXREF pxCompiler)
         {
             /*
                 PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
-                PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
+                PXFileWriteA(pxFile, child->NameShortAddress, child->NameShortSize);
 
                 if(child->ElementSibling) // if not last
                 {
@@ -503,7 +503,7 @@ void PXAPI PXCSharpFunctionWrite(PXCompiler PXREF pxCompiler)
 
     //PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
     //PXFileWriteC(pxFile, ' ');
-    PXFileWriteA(pxFile, symbol->NameShortAdress, symbol->NameShortSize);
+    PXFileWriteA(pxFile, symbol->NameShortAddress, symbol->NameShortSize);
 
     pxCompiler->WriteInfo.WriteParameter(pxCompiler);
 
@@ -551,19 +551,19 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler PXREF pxCompiler)
     else
     {
         // Custom type
-        PXFileWriteA(pxFile, symbol->TypeNameAdress, symbol->TypeNameSize);
+        PXFileWriteA(pxFile, symbol->TypeNameAddress, symbol->TypeNameSize);
     }
 
-    // Adress?
+    // Address?
 
 
     PXFileWriteC(pxFile, ' ');
-    PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
+    PXFileWriteA(pxFile, symbol->NameAddress, symbol->NameSize);
 }
 
 PXResult PXAPI PXCSharpLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXCSharpSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
@@ -582,9 +582,9 @@ PXResult PXAPI PXCSharpSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    PXTextFromAdressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
-    PXTextFromAdressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
-    PXTextFromAdressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentSingleLine, "//", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentMultibleLineBegin, "/*", 2, 2);
+    PXTextFromAddressA(&pxCompiler.CommentMultibleLineEnd, "*/", 2, 2);
 
     pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->FileCurrent;
     pxCompiler.WriteInfo.FileOutput = pxFile;
@@ -595,5 +595,5 @@ PXResult PXAPI PXCSharpSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 
     PXCompilerWrite(&pxCompiler);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

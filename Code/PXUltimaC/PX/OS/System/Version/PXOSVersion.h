@@ -9,12 +9,6 @@
 #define OSForcePOSIXForWindows 0
 //---------------------------------------------------------
 
-// Device
-#define OSDeviceDestop 'D'
-#define OSDeviceConsole 'C'
-
-#define OSDeviceToUse OSDeviceDestop
-
 
 //---<Detect OS version>----------------------------------------------------
 #if defined(unix) || defined(__unix) || defined(__unix__)
@@ -55,7 +49,7 @@ defined(__WIN64__)
 #define OSWindows 0u
 #endif
 //-----------------------------------------------------------------------------
-#define PXNOOS !(OSAndroid || OSApple || OSLinux || PXWindows)
+#define PXNOOS !(OSAndroid || OSApple || OSLinux || OSWindows)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -353,5 +347,17 @@ typedef struct PXOSVersionInfo_
 
 }
 PXOSVersionInfo;
+
+
+
+// Special debug testing
+#if 0
+#ifdef OSWindows
+    #undef OSWindows
+    #undef OSUnix
+    #define OSWindows 0
+    #define OSUnix 1
+#endif
+#endif
 
 #endif

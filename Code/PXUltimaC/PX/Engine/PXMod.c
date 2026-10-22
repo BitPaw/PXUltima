@@ -1,123 +1,45 @@
 #include "PXMod.h"
 
-#include <PX/OS/File/PXDirectory.h>
-#include <PX/OS/Console/PXConsole.h>
-#include <PX/OS/Library/PXLibrary.h>
 
-PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF pxTextModFileDirectory)
+const char PXModText[] = "Mod-PX";
+const PXI8U PXModTextLength = sizeof(PXModText);
+const PXECSRegisterInfoStatic PXModInfoStatic =
 {
-#if 00000000000
+    {sizeof(PXModText), sizeof(PXModText), PXModText, TextFormatASCII},
+    sizeof(PXMod),
+    __alignof(PXMod),
+    PXECSTypeComponent,
+    PXModCreate,
+    PXNull,
+    PXNull
+};
+PXECSRegisterInfoDynamic PXModInfoDynamic;
 
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "ModLoader",
-        "Scan",
-        "Loading Mods..."
-    );
-#endif
 
-    PXDirectoryIterator pxDirectoryIterator;
+PXResult PXAPI PXModCreate(PXMod** pxModREF, PXModCreateInfo PXREF pxModCreateInfo)
+{
+    PXMod* pxMod = PXNull;
 
-    // Open
+    if(!(pxModREF && pxModCreateInfo))
     {
-        const PXResult directoryOpenResult = PXDirectoryOpen(&pxDirectoryIterator, pxTextModFileDirectory);
-
-        PXResultReturnOnError(directoryOpenResult);
+        return PXResultRefusedParameterNull;
     }
 
-    do
+    pxModCreateInfo->Info.Static = &PXModInfoStatic;
+    pxModCreateInfo->Info.Dynamic = &PXModInfoDynamic;
+    PXResult pxResult = PXECSCreate(pxModREF, pxModCreateInfo);
+
+    if(PXResultOK != pxResult)
     {
-        PXMod pxMod;
-        PXClear(PXMod, &pxMod);
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Mod",
-            "Load",
-            "Possible Mod file deteced <%s>",
-            pxDirectoryIterator.EntryCurrent.Name
-        );
-
-        PXText pyText;
-        PXTextConstructFromAddressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
-
-        const PXResult pxResult = PXLibraryOpen(&pxMod.Library, &pyText);
-
-        if (pxResult != PXResultOK)
-        {
-            PXLogPrint
-            (
-                PXLoggingError,
-                "Mod",
-                "Load",
-                "File is not a Mod and cannot be opened <%s>",
-                pxDirectoryIterator.EntryCurrent.FullPath
-            );
-
-            continue;
-        }
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Mod",
-            "Load",
-            "Library detected, try fetching functions in <%s>",
-            pxDirectoryIterator.EntryCurrent.FullPath
-        );
-
-        PXLibraryGetSymbolA(&pxMod.Library, &pxMod.Load, PXModLoadFunctionName);
-
-        if (!pxMod.Load)
-        {
-            PXLogPrint
-            (
-                PXLoggingError,
-                "Mod",
-                "Load",
-                "Library does not contain function <%s>. Cannot use mod <%s>",
-                PXModLoadFunctionName,
-                pxDirectoryIterator.EntryCurrent.FullPath
-            );
-
-            continue;
-        }
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Mod",
-            "Load",
-            "Function detected <%s>. Linking.. <%s>",
-            PXModLoadFunctionName,
-            pxDirectoryIterator.EntryCurrent.FullPath
-        );
-
-        PXModLoaderAdd(pxModLoader, &pxMod);
+        return pxResult;
     }
-    while (PXDirectoryNext(&pxDirectoryIterator));
 
-    PXDirectoryClose(&pxDirectoryIterator);
+    pxMod = *pxModREF;
 
-#endif
-
-    return PXResultOK;
+    return pxResult;
 }
 
-PXResult PXAPI PXModLoaderAdd(PXModLoader PXREF pxModLoader, PXMod PXREF pxMod)
+PXResult PXAPI PXModRelease(PXMod PXREF pxMod)
 {
-    pxMod->Load(PXNull, pxMod, 0);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Mod",
-        "Load",
-        "<%s>, <%s>",
-        pxMod->Name,
-        pxMod->BuildDate
-    );
+    return PXResultOK;
 }

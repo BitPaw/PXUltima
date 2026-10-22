@@ -373,7 +373,7 @@ PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXI8U pxKeyPressState
 PXPublic PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
 PXPublic const char* PXAPI PXKeyPressStateToString(const PXKeyPressState pxKeyPressState);
 
-#define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState;
+#define PXKeyBoardVirtualInputSet(address, pxVirtualKey, PXKeyPressState) (address)->VirtualKey = pxVirtualKey; (address)->KeyStrokeMode = PXKeyPressState;
 
 PXPublic PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput PXREF inputList, const PXSize inputListSize);
 

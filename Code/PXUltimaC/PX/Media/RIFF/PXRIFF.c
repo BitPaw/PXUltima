@@ -100,9 +100,9 @@ PXResult PXAPI PXRIFFLoadFromFile(PXRIFF PXREF riff, PXFile PXREF pxFile)
 
     const PXTypeEntry pxDataStreamElementList[] =
     {
-        {chunkID.Data4, PXTypeDatax4},
+        {chunkID.Data, PXTypeDatax4},
         {&riff->ChunkSize, PXTypeI32ULE},
-        {formatID.Data4, PXTypeDatax4}
+        {formatID.Data, PXTypeDatax4}
     };
 
     PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

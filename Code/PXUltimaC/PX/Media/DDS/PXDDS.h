@@ -5,8 +5,6 @@
 
 #include <PX/Engine/PXResource.h>
 
-
-
 typedef struct PXDDSHeader_
 {
     PXI32U Size;
@@ -54,7 +52,7 @@ PXDDSHeader;
 
 PXPublic PXColorFormat PXAPI PXDDSTypeDetect(const char* signature);
 
-PXPublic PXResult PXAPI PXDDSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXDDSSaveToFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXDDSLoadFromFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXDDSSaveToFile(PXTexture2D PXREF pxTexture2D, PXECSCreateInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -27,7 +27,7 @@ void PXAPI PXTabListRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
     pxECSRegisterInfo->InfoDynamic = &PXTabListRegisterInfoDynamic;
 }
 
-PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
     /*
     PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxWindow->ExtendedData;
@@ -101,7 +101,7 @@ PXResult PXAPI PXTabListDraw(PXTabList PXREF pxTabList, PXDrawInfo PXREF pxDrawI
             iconSize
         );
 
-        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
+        PXEngineUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
         pxWindow->Position.Form.X = left + iconSize + iconMargin + 1;
         pxWindow->Position.Form.Y = offsetY;

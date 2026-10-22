@@ -6,10 +6,9 @@
 #include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Type/PXMaterial.h>
-#include <PX/Type/PXMeshGeometry.h>
-#include "PXVertexBuffer.h"
-#include "PXBufferLayout.h"
-#include "PXIndexBuffer.h"
+#include <PX/Type/PXVertexBuffer.h>
+#include <PX/Type/PXIndexBuffer.h>
+#include <PX/Type/PXBufferLayout.h>
 
 /*
 // OLD SOLUTION!
@@ -55,87 +54,8 @@ typedef PXI32U PXVertexBufferFormat;
 
 
 
-//---------------------------------------------------------
-// Vertex
-//---------------------------------------------------------
-
-
-
-
-#if 0
-
-typedef enum PXVertexBufferFormat_
-{
-    PXVertexBufferFormatInvalid,
-
-    // Non inteleaved
-    PXVertexBufferFormatP2I8,   // XY - Int8 - Position 
-    PXVertexBufferFormatP3I8,   // XYX - Int8 - Position 
-
-    PXVertexBufferFormatP3F16,    // XYZ - PXF32 - Position
-    PXVertexBufferFormatN3F16,    // XYZ - PXF32 - Normals 
-    PXVertexBufferFormatT2F16,    // UV - PXF32 - Texture coordiantes
-
-    PXVertexBufferFormatP3F32,    // XYZ - PXF32 - Position
-    PXVertexBufferFormatN3F32,    // XYZ - PXF32 - Normals 
-    PXVertexBufferFormatT2F32,    // UV - PXF32 - Texture coordiantes
-
-
-    // OpenGL
-
-    PXVertexBufferFormatP2F32, // GL_V2F
-    PXVertexBufferFormatC4UBP2F32,
-    PXVertexBufferFormatC4UBP3F32,
-    PXVertexBufferFormatC3P3F32,
-    PXVertexBufferFormatN3P3F32, // NNN PPP
-    PXVertexBufferFormatC4N3P3F32,
-    PXVertexBufferFormatT2P3F32, // TT PPP
-    PXVertexBufferFormatT4P4,
-    PXVertexBufferFormatT2C4UBP3,
-    PXVertexBufferFormatT2C3P3,
-    PXVertexBufferFormatT2N3P3, // TT NNN PPP
-    PXVertexBufferFormatT2C4N3P3,
-    PXVertexBufferFormatT4C4N3P4,
-
-    // Direct X
-
-
-    PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
-
-    PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
-
-    PXVertexBufferFormatXYZHWC, // X, Y, Z, Tx, Ty, color-RGB as 32-int
-
-    PXVertexBufferFormatP3B1,
-    PXVertexBufferFormatP3B2,
-    PXVertexBufferFormatP3B3,
-    PXVertexBufferFormatP3B4,
-    PXVertexBufferFormatP3B5,
-    PXVertexBufferFormatP4,
-}
-PXVertexBufferFormat;
-#endif
-
-
-
 
 //PXPublic void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo PXREF pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat);
-
-
-
-
-#define PXVertexBufferLayoutTypeInvalid     0
-#define PXVertexBufferLayoutTypePosition    1
-#define PXVertexBufferLayoutTypeNormal      2
-#define PXVertexBufferLayoutTypeTexturePos  3
-#define PXVertexBufferLayoutTypeColor       4
-#define PXVertexBufferLayoutTypeCustom      5
-
-
-
-
-
-
 
 
 /*
@@ -161,11 +81,6 @@ PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer PXREF pxV
 #define PXDrawModeIDSquare                  (1 << 14)
 #define PXDrawModeIDPatches                 (1 << 15)
 
-
-
-
-
-
 typedef enum PXModelForm_
 {
     PXModelFormInvalid,
@@ -178,84 +93,35 @@ typedef enum PXModelForm_
 }
 PXModelForm;
 
-
-
-
-
-
-// A mesh is a structure that contains vertex and index data to render itself
-typedef struct PXMesh_ PXMesh;
-
+// Container for vertex and index data.
 typedef struct PXMesh_
 {
-    PXECSInfo Info; // Contains VAO
+    PXECSInfo Info;
 
     union
     {
         PXI32U VAO; // OpenGL
     };
 
-    PXMeshGeometry* Geometry;
-
-    PXSize MaterialContaierListAmount;
-    PXMaterialContainer* MaterialContaierList;
-
-
-    // TEST
-    PXVector3F32* Positions;
-    PXVector3F32* Normals;
-    PXVector2F32* UVs;
-
-    PXVector4F32 Position;
-
-    PXI16U* Index;
-    PXSize IndexAmount;
-
-    PXI32U TextureID;
-    PXTexture* Texture;
+    PXIndexBuffer* IndexBuffer; // IBO
+    PXVertexBuffer* VertexBuffer; // VBO
 }
 PXMesh;
-
-
 
 typedef struct PXMeshCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXVector3F32 Scaling;
-
-    PXSize VertexStride;
-    PXSize VertexAmount; // Assume we do 3x3x2
-
-    PXVector3F32* Positions;
-    PXVector3F32* Normals;
-    PXVector2F32* UVs;
+    PXIndexBuffer* IndexBuffer;
+    PXVertexBuffer* VertexBuffer;
 }
 PXMeshCreateInfo;
-
-
 
 PXPublic void PXAPI PXMeshRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXMeshCreate(PXMesh** pxMeshREF, PXMeshCreateInfo PXREF pxMeshCreateInfo);
 PXPublic PXResult PXAPI PXMeshRelease(PXMesh PXREF pxMesh);
-PXPublic PXResult PXAPI PXMeshDraw(PXMesh PXREF pxMesh, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXMeshDraw(PXMesh PXREF pxMesh, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 PXPublic PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh);
-PXPublic PXResult PXAPI PXMeshNormalDataGenerate(PXMesh PXREF pxMesh);
-PXPublic PXResult PXAPI PXMeshVertexArrayAdd
-(
-    PXMesh PXREF pxMesh,
-    void* data,
-    const PXSize dataLength,
-    PXBufferLayoutEntry PXREF pxVertexBufferLayoutList,
-    const PXSize pxVertexBufferLayoutListAmount
-);
-//---------------------------------------------------------
-
-
-PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh PXREF pxMesh);
-PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh PXREF pxMesh, const PXSize index);
-//PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh PXREF pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
-
 
 #endif

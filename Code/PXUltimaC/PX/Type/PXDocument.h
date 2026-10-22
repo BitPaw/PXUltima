@@ -135,7 +135,7 @@ PXDocumentElementClass;
 
 typedef struct PXDocumentElementMember_
 {
-    char* ValueAdress;
+    char* ValueAddress;
     PXSize ValueSize;
     PXI32U ValueType;
 }
@@ -146,36 +146,36 @@ PXDocumentElementMember;
 typedef struct PXCodeDocumentElement_
 {
     // General name of the enum, class, struct
-    char* NameAdress;
+    char* NameAddress;
     PXSize NameSize;
 
 
-    char* NameSpaceAdress;
+    char* NameSpaceAddress;
     PXSize NameSpaceSize;
-    char* NameClassAdress;
+    char* NameClassAddress;
     PXSize NameClassSize;
-    char* NameShortAdress;
+    char* NameShortAddress;
     PXSize NameShortSize;
 
 
     // Used in C for typedefs
-    char* AliasAdress;
+    char* AliasAddress;
     PXSize AliasSize;
 
-    char* CommentAdress;
+    char* CommentAddress;
     PXSize CommentSize;
 
     // Datatype
     PXBool IsArray;
     PXSize ArrayAmount;
 
-    PXBool DataTypeIsAdress;
+    PXBool DataTypeIsAddress;
     PXBool DataTypeIsBuildIn;
     PXSize DataType; // What type is the data representing, for functions this is the return type
     PXSize DataTypeSize;
 
     // only used if type is not build in
-    char* TypeNameAdress;
+    char* TypeNameAddress;
     PXSize TypeNameSize;
 
 

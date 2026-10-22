@@ -6,7 +6,7 @@
 #include <PX/Type/PXType.h>
 #include <PX/Type/PXText.h>
 #include <PX/OS/Error/PXResult.h>
-#include <PX/OS/Time/PXTime.h>
+#include <PX/Type/PXTime.h>
 
 #if OSUnix
 #include <unistd.h>
@@ -15,17 +15,66 @@
 #include <windows.h>
 #endif
 
+
+
+
+// More advanced interaction for processes, higher complexity.
+// Don't forget to release this!
+typedef struct PXProcessHandle_
+{
 #if OSUnix
-typedef unsigned int PXProcessHandle;
-typedef __pid_t PXProcessID;
-typedef unsigned int PXProcessThreadHandle;
-typedef pthread_t PXProcessThreadID;
+    int Data;
 #elif OSWindows
-typedef HANDLE PXProcessHandle;
-typedef DWORD PXProcessID;
-typedef HANDLE PXProcessThreadHandle;
-typedef DWORD PXProcessThreadID;
+    HANDLE Data;
 #endif
+}
+PXProcessHandle;
+
+// Default interaction to define processes.
+typedef struct PXProcessID_
+{
+#if OSUnix
+    pid_t Data;
+#elif OSWindows
+    DWORD Data;
+#endif
+}
+PXProcessID;
+
+
+typedef struct PXThreadHandle_
+{
+#if OSUnix
+    int Data;
+#elif OSWindows
+    HANDLE Data;
+#endif
+}
+PXThreadHandle;
+
+
+typedef struct PXThreadID_
+{
+#if OSUnix
+    pthread_t Data;
+#elif OSWindows
+    DWORD Data;
+#endif
+}
+PXThreadID;
+
+
+typedef struct PXThreadResult_
+{
+#if OSUnix
+    void* Data;
+#elif OSWindows
+    DWORD Data;
+#endif
+}
+PXThreadResult;
+
+
 
 typedef struct PXThread_ PXThread;
 typedef struct PXDebug_ PXDebug;
@@ -34,11 +83,12 @@ typedef struct PXProcess_
 {
     // Main Process
     PXProcessHandle ProcessHandle;
-    PXProcessID ProcessID; // Context
+    PXProcessID ProcessID;
 
     // Main Thread
-    PXProcessThreadHandle ThreadHandle;
-    PXProcessThreadID ThreadID;
+    PXThreadHandle ThreadHandle;
+    PXThreadID ThreadID;
+
     PXI32U ThreadsAtStart;
     PXI32U ThreadBasePriority;
 
@@ -106,6 +156,10 @@ PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HAND
 #endif
 
 PXPublic void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess);
+PXPublic PXProcessHandle PXAPI PXProcessCurrentHandle();
+PXPublic PXProcessID PXAPI PXProcessCurrentID();
+PXPublic PXProcessID PXAPI PXProcessHandleToID(const PXProcessHandle pxProcessHandle);
+
 PXPublic void PXAPI PXProcessParent(PXProcess PXREF pxProcess);
 
 PXPublic void PXAPI PXProcessExitCurrent(const PXI32U exitCode);

@@ -168,7 +168,7 @@
 //-----------------------------------------------------------------------------
 // Restrict keyword
 //-----------------------------------------------------------------------------
-#if 1 // Make pointers adress readonly but not the data behind it
+#if 1 // Make pointers address readonly but not the data behind it
 #define PXConst const
 #else   
 #define PXConst 
@@ -213,7 +213,7 @@
 //---------------------------------------------------------
 
 #define PXTypeReadOnlyMask          0b10000000000000000000000000000000
-#define PXTypeAdressMask            0b01000000000000000000000000000000 // Used if the type is
+#define PXTypeAddressMask            0b01000000000000000000000000000000 // Used if the type is
 #define PXTypeEndianMask            0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
 #define PXTypeUseFileModeMask       0b00000000000000000000000000000000
 #define PXTypeSignedMask            0b00001000000000000000000000000000 // Only useful in numeric values
@@ -274,15 +274,15 @@
 #define PXTypeReadOnly PXTypeReadOnlyMask
 
 //-------------------------------------------------
-// Adress, read as spesified but store it as (void*)
+// Address, read as spesified but store it as (void*)
 //-------------------------------------------------
-#define PXTypeAdress08      PXTypeAdressMask | PXTypeSize08
-#define PXTypeAdress16      PXTypeAdressMask | PXTypeSize16
-#define PXTypeAdress32      PXTypeAdressMask | PXTypeSize32
-#define PXTypeAdress64      PXTypeAdressMask | PXTypeSize64
-#define PXTypeAdressFlex    PXTypeAdressMask
-#define PXTypeAdress        PXTypeAdressMask | sizeof(void*)
-#define PXTypeString        PXTypeAdress
+#define PXTypeAddress08      PXTypeAddressMask | PXTypeSize08
+#define PXTypeAddress16      PXTypeAddressMask | PXTypeSize16
+#define PXTypeAddress32      PXTypeAddressMask | PXTypeSize32
+#define PXTypeAddress64      PXTypeAddressMask | PXTypeSize64
+#define PXTypeAddressFlex    PXTypeAddressMask
+#define PXTypeAddress        PXTypeAddressMask | sizeof(void*)
+#define PXTypeString        PXTypeAddress
 
 //-------------------------------------------------
 // Text - used to parse singatures
@@ -392,7 +392,7 @@ typedef bool PXBool;
 typedef unsigned char PXBool;
 #endif
 
-typedef unsigned char* PXAdress;
+typedef unsigned char* PXAddress;
 
 // Integer 8-Bit
 typedef char PXI8S;
@@ -434,11 +434,11 @@ PXI128U;
 #if OS32B
 typedef PXI32U PXSize;
 typedef PXI32S PXOffset;
-typedef PXI64U PXAdress64;
+typedef PXI64U PXAddress64;
 #elif OS64B
 typedef PXI64U PXSize;
 typedef PXI64S PXOffset;
-typedef void* PXAdress64;
+typedef void* PXAddress64;
 #else
 #error Invalid Bit Version
 #endif
@@ -507,10 +507,11 @@ typedef int PXF256;
 //typedef PXI32U PXType;
 
 
+
 #if 0
-typedef PXF32 PXFAudio;
+//typedef PXF32 PXF32;
 #else
-typedef PXF64 PXFAudio;
+//typedef PXF64 PXF32;
 #endif
 
 
@@ -535,16 +536,16 @@ typedef wchar_t PXREF PXTextUNICODE;
 
 typedef struct PXTypeEntry_
 {
-    void* Adress;
+    void* Address;
     PXI32U Type;
 }
 PXTypeEntry;
 
 
-// Object to bind a runtime member adress of a struct with a name with the type
+// Object to bind a runtime member address of a struct with a name with the type
 typedef struct PXTypeBinding_
 {
-    void* Adress;
+    void* Address;
     const char* Name;
     PXI32U Type;
 }
@@ -594,8 +595,8 @@ PXTypeBinding;
     ((PXI16U)a << 8u) | \
     ((PXI16U)b))
 
-#define PXI16FromAdressEndianLittle(list) PXI16MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1])
-#define PXI16FromAdressEndianBig(list) PXI16MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1])
+#define PXI16FromAddressEndianLittle(list) PXI16MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1])
+#define PXI16FromAddressEndianBig(list) PXI16MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -612,8 +613,8 @@ PXTypeBinding;
     ((PXI32U)a))
 
 
-#define PXI24FromAdressEndianLittle(list) PXI24MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
-#define PXI24FromAdressEndianBig(list) PXI24MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
+#define PXI24FromAddressEndianLittle(list) PXI24MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2])
+#define PXI24FromAddressEndianBig(list) PXI24MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -631,8 +632,8 @@ PXTypeBinding;
     ((PXI32U)c << 8u) | \
     ((PXI32U)d))
 
-#define PXI32FromAdressEndianLittle(list) PXI32MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
-#define PXI32FromAdressEndianBig(list) PXI32MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
+#define PXI32FromAddressEndianLittle(list) PXI32MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3])
+#define PXI32FromAddressEndianBig(list) PXI32MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -652,8 +653,8 @@ PXTypeBinding;
     ((PXI64U)d << 8u) | \
     ((PXI64U)e)))
 
-#define PXI40FromAdressEndianLittle(list) PXI40MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
-#define PXI40FromAdressEndianBig(list) PXI40MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
+#define PXI40FromAddressEndianLittle(list) PXI40MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4])
+#define PXI40FromAddressEndianBig(list) PXI40MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -675,8 +676,8 @@ PXTypeBinding;
     ((PXI64U)e << 8u) | \
     ((PXI64U)f)))
 
-#define PXI48FromAdressEndianLittle(list) PXI48MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
-#define PXI48FromAdressEndianBig(list) PXI48MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
+#define PXI48FromAddressEndianLittle(list) PXI48MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5])
+#define PXI48FromAddressEndianBig(list) PXI48MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -700,8 +701,8 @@ PXTypeBinding;
     ((PXI64U)f << 8u) | \
     ((PXI64U)g)))
 
-#define PXI56FromAdressEndianLittle(list) PXI56MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
-#define PXI56FromAdressEndianBig(list) PXI56MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
+#define PXI56FromAddressEndianLittle(list) PXI56MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5], ((PXAddress)list)[6])
+#define PXI56FromAddressEndianBig(list) PXI56MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5], ((PXAddress)list)[6])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -727,8 +728,8 @@ PXTypeBinding;
     ((PXI64U)g << 8u) | \
     ((PXI64U)h)))
 
-#define PXI64FromAdressEndianLittle(list) PXI64MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
-#define PXI64FromAdressEndianBig(list) PXI64MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
+#define PXI64FromAddressEndianLittle(list) PXI64MakeEndianLittle(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5], ((PXAddress)list)[6], ((PXAddress)list)[7])
+#define PXI64FromAddressEndianBig(list) PXI64MakeEndianBig(((PXAddress)list)[0], ((PXAddress)list)[1], ((PXAddress)list)[2], ((PXAddress)list)[3], ((PXAddress)list)[4], ((PXAddress)list)[5], ((PXAddress)list)[6], ((PXAddress)list)[7])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
@@ -743,13 +744,13 @@ PXTypeBinding;
 #define PXI56Make PXI56MakeEndianLittle
 #define PXI64Make PXI64MakeEndianLittle
 
-#define PXI16FromAdress PXI16FromAdressEndianLittle
-#define PXI24FromAdress PXI24FromAdressEndianLittle
-#define PXI32FromAdress PXI32FromAdressEndianLittle
-#define PXI40FromAdress PXI40FromAdressEndianLittle
-#define PXI48FromAdress PXI48FromAdressEndianLittle
-#define PXI56FromAdress PXI56FromAdressEndianLittle
-#define PXI64FromAdress PXI64FromAdressEndianLittle
+#define PXI16FromAddress PXI16FromAddressEndianLittle
+#define PXI24FromAddress PXI24FromAddressEndianLittle
+#define PXI32FromAddress PXI32FromAddressEndianLittle
+#define PXI40FromAddress PXI40FromAddressEndianLittle
+#define PXI48FromAddress PXI48FromAddressEndianLittle
+#define PXI56FromAddress PXI56FromAddressEndianLittle
+#define PXI64FromAddress PXI64FromAddressEndianLittle
 #elif OSEngianBig
 #define PXI16Make PXI16MakeEndianBig
 #define PXI24Make PXI24MakeEndianBig
@@ -759,13 +760,13 @@ PXTypeBinding;
 #define PXI56Make PXI56MakeEndianBig
 #define PXI64Make PXI64MakeEndianBig
 
-#define PXI16FromAdress PXI16FromAdressEndianBig
-#define PXI24FromAdress PXI24FromAdressEndianBig
-#define PXI32FromAdress PXI32FromAdressEndianBig
-#define PXI40FromAdress PXI40FromAdressEndianBig
-#define PXI48FromAdress PXI48FromAdressEndianBig
-#define PXI56FromAdress PXI56FromAdressEndianBig
-#define PXI64FromAdress PXI64FromAdressEndianBig
+#define PXI16FromAddress PXI16FromAddressEndianBig
+#define PXI24FromAddress PXI24FromAddressEndianBig
+#define PXI32FromAddress PXI32FromAddressEndianBig
+#define PXI40FromAddress PXI40FromAddressEndianBig
+#define PXI48FromAddress PXI48FromAddressEndianBig
+#define PXI56FromAddress PXI56FromAddressEndianBig
+#define PXI64FromAddress PXI64FromAddressEndianBig
 #else
 #endif
 //---------------------------------------------------------
@@ -987,31 +988,128 @@ PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const
 //-----------------------------------------------------------------------------
 
 
+
+typedef struct PXSize1D_
+{
+    PXSize Width;
+}
+PXSize1D;
+
+typedef struct PXSize2D_
+{
+    union
+    {
+        PXSize1D Data;
+
+        struct
+        {
+            PXSize Width;
+            PXSize Height;
+        };
+    };
+}
+PXSize2D;
+
+typedef struct PXSize3D_
+{
+    union
+    {
+        PXSize2D Data;
+
+        struct
+        {
+            PXSize Width;
+            PXSize Height;
+            PXSize Depth;
+        };
+    };
+}
+PXSize3D;
+
+typedef struct PXSize4D_
+{
+    union
+    {
+        PXSize3D Data;
+
+        struct
+        {
+            PXSize Width;
+            PXSize Height;
+            PXSize Depth;
+            PXSize HyperDepth;
+        };
+    };
+}
+PXSize4D;
+
+
+
+
+
+
+
+
+
+
+
+
 #define PXEmbeddedArraySize 4
 
 // ToDo: Remove this cheese
 typedef enum PXResult_ PXResult;
 
-typedef struct PXDrawInfo_ PXDrawInfo;
+typedef struct PXEngineRenderCreateInfo_ PXEngineRenderCreateInfo;
+typedef struct PXWindow_ PXWindow;
+typedef struct PXEngineUIDrawInfo_ PXEngineUIDrawInfo;
 typedef struct PXDictionary_ PXDictionary;
 typedef struct PXBuffer_ PXBuffer;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
-typedef struct PXGUIManager_ PXGUIManager;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;
-typedef struct PXHierarchicalNode_ PXHierarchicalNode;
+//typedef struct PXHierarchicalNode_ PXHierarchicalNode;
 typedef struct PXFileEntry_ PXFileEntry;
 typedef struct PXDebug_ PXDebug;
-typedef struct PXDisplay_ PXDisplay;
-typedef struct PXNativDraw_ PXNativDraw;
+
 typedef struct PXTask_ PXTask;
 typedef struct PXThread_ PXThread;
 typedef struct PXThreadPool_ PXThreadPool;
 //typedef struct PXGameCard_ PXGameCard;
 typedef struct PXGameCard_ PXGameCard;
+
+typedef struct PXBrush_ PXBrush;
+typedef struct PXFont_ PXFont;
+
+typedef struct PXEngine_ PXEngine;
+typedef struct PXEngineRender_ PXEngineRender;
+typedef struct PXScene_ PXScene;
+typedef struct PXCamera_ PXCamera;
+typedef struct PXEngineUITheme_ PXEngineUITheme;
+
+typedef struct PXDisplay_ PXDisplay;
+typedef struct PXMonitor_ PXMonitor;
+typedef struct PXSprite_ PXSprite;
+
+typedef struct PXShaderProgram_ PXShaderProgram;
+
+typedef struct PXTexture1D_ PXTexture1D;
+typedef struct PXTexture2D_ PXTexture2D;
+typedef struct PXTexture3D_ PXTexture3D;
+typedef struct PXTextureCube_ PXTextureCube;
+
+typedef struct PXEngineAudio_ PXEngineAudio;
+typedef struct PXAudioDevice_ PXAudioDevice;
+typedef struct PXAudioListener_ PXAudioListener;
+typedef struct PXAudioEmitter_ PXAudioEmitter;
+typedef struct PXEngineAudioCreateInfo_ PXEngineAudioCreateInfo;
+typedef struct PXSound_ PXSound;
+typedef struct PXAudioCursor_ PXAudioCursor;
+typedef struct PXAudioFilterBuffer_ PXAudioFilterBuffer;
+
+typedef struct PXEngineUpdateInfo_ PXEngineUpdateInfo;
 
 #endif

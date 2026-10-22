@@ -4,7 +4,12 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Async/PXLock.h>
 
+#define ZSTDLibUse 0
+
+#if ZSTDLibUse
 #include <ZSTD/zstd.h>
+#endif
+
 
 const char PXZSTDText[] = "ZSTD";
 
@@ -20,7 +25,7 @@ PXResult PXAPI PXZSTDCompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutpu
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
@@ -35,6 +40,7 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
     );
 #endif
 
+#if ZSTDLibUse
     PXBuffer* pxBufferIN = PXFileBufferGET(pxFileInput);
     PXBuffer* pxBufferOUT = PXFileBufferGET(pxFileOutput);
 
@@ -45,6 +51,7 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
         pxBufferIN->Data4,
         pxBufferIN->SizeAllocated
     );
+#endif
 
     return PXResultOK;
 }

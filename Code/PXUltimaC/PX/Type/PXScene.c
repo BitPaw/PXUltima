@@ -1,20 +1,6 @@
 #include "PXScene.h"
 
 #include <PX/Type/PXModel.h>
-#include <PX/Type/PXTexturePool.h>
-#include <PX/Type/PXModelPool.h>
-
-/*
-typedef struct PXScene_
-{
-    PXECSInfo Info;
-
-    PXTexturePool* TexturePool;
-    PXModelPool* ModelPool;
-
-    PXCamera* Camera;
-}
-PXScene;*/
 
 const char PXSceneName[] = "Scene";
 const PXI8U PXSceneNameLength = sizeof(PXSceneName);
@@ -26,7 +12,7 @@ const PXECSRegisterInfoStatic PXSceneRegisterInfoStatic =
     PXECSTypeContainer,
     PXSceneCreate,
     PXSceneRelease,
-    PXSceneDraw
+    PXNull
 };
 PXECSRegisterInfoDynamic PXSceneRegisterInfoDynamic;
 
@@ -36,13 +22,13 @@ void PXAPI PXSceneRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
     pxECSRegisterInfo->InfoDynamic = &PXSceneRegisterInfoDynamic;
 }
 
-PXResult PXAPI PXSceneCreate(PXScene** pxSceneREF, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXSceneCreate(PXScene** pxSceneREF, PXSceneCreateInfo PXREF pxSceneCreateInfo)
 {
     PXScene* pxScene = PXNull;
 
-    pxECSCreateInfo->Static = &PXSceneRegisterInfoStatic;
-    pxECSCreateInfo->Dynamic = &PXSceneRegisterInfoDynamic;
-    const PXResult pxResult = PXECSCreate(pxSceneREF, pxECSCreateInfo);
+    pxSceneCreateInfo->Info.Static = &PXSceneRegisterInfoStatic;
+    pxSceneCreateInfo->Info.Dynamic = &PXSceneRegisterInfoDynamic;
+    const PXResult pxResult = PXECSCreate(pxSceneREF, pxSceneCreateInfo);
 
     if(PXResultOK != pxResult)
     {
@@ -51,47 +37,122 @@ PXResult PXAPI PXSceneCreate(PXScene** pxSceneREF, PXECSCreateInfo PXREF pxECSCr
 
     pxScene = *pxSceneREF;
 
-    PXModelPoolCreate(&pxScene->ModelPool, pxECSCreateInfo);
-    PXTexturePoolCreate(&pxScene->TexturePool, pxECSCreateInfo);
+    PXDictionaryECSCreate(&pxScene->ModelLookup);
+    PXDictionaryECSCreate(&pxScene->CameraLookup);
 
     return PXResultOK;
 }
 
 PXResult PXAPI PXSceneRelease(PXScene PXREF pxScene)
 {
-    return PXActionRefusedNotImplemented;
-}
-
-PXResult PXAPI PXSceneDraw(PXScene PXREF pxScene, PXDrawInfo PXREF pxDrawInfo)
-{
-    if(!(pxScene && pxDrawInfo))
+    if(!pxScene)
     {
         return PXResultRefusedParameterNull;
     }
-    PXModelPool PXREF pxModelPool = pxScene->ModelPool;
 
-    PXSize amount = PXModelPoolModelAmount(pxModelPool);
+    return PXResultRefusedNotImplemented;
+}
 
-    for(PXSize i = 0; i < amount; i++)
+PXSize PXAPI PXSceneModelAmount(const PXScene PXREF pxScene)
+{
+    if(!pxScene)
     {
-        PXModel* pxModel = PXModelPoolModelGet(pxModelPool, i);
-
-        PXModelDraw(pxModel, pxDrawInfo);
+        return 0;
     }
 
+    return PXDictionaryECSAmount(&pxScene->ModelLookup);
+}
+
+PXModel* PXAPI PXSceneModelGet(const PXScene PXREF pxScene, const PXSize index)
+{
+    if(!pxScene)
+    {
+        return PXNull;
+    }
+
+    return (PXModel*)PXDictionaryECSGetViaIndex(&pxScene->ModelLookup, index);
+}
+
+PXResult PXAPI PXSceneModelAdd(PXScene PXREF pxScene, PXModel PXREF pxModel)
+{
+    if(!pxScene)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    return PXDictionaryECSAdd(&pxScene->ModelLookup, pxModel);
+}
+
+PXSkyBox* PXAPI PXSceneSkyBoxGet(const PXScene PXREF pxScene)
+{
+    if(!pxScene)
+    {
+        return PXNull;
+    }
+
+    return pxScene->SkyBox;
+}
+
+PXResult PXAPI PXSceneSkyBoxSet(PXScene PXREF pxScene, PXSkyBox PXREF pxSkyBox)
+{
+    if(!(pxScene && pxSkyBox))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxScene->SkyBox = pxSkyBox;
+
     return PXResultOK;
 }
 
-PXResult PXAPI PXSceneAddModel(PXScene PXREF pxScene, PXModel PXREF pxModel)
+PXSize PXAPI PXSceneCameraAmount(const PXScene PXREF pxScene)
 {
-    PXModelPoolModelSet(pxScene->ModelPool, pxModel);
+    if(!pxScene)
+    {
+        return 0;
+    }
+
+    return PXDictionaryECSAmount(&pxScene->CameraLookup);
+}
+
+PXCamera* PXAPI PXSceneCameraGet(const PXScene PXREF pxScene, const PXSize index)
+{
+    if(!pxScene)
+    {
+        return PXNull;
+    }
+
+    return PXDictionaryECSGetViaIndex(&pxScene->CameraLookup, index);
+}
+
+PXResult PXAPI PXSceneCameraAdd(PXScene PXREF pxScene, PXCamera PXREF pxCamera)
+{
+    if(!pxScene)
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    return PXDictionaryECSAdd(&pxScene->CameraLookup, pxCamera);
+}
+
+PXResult PXAPI PXSceneCameraSet(PXScene PXREF pxScene, PXCamera PXREF pxCamera)
+{
+    if(!(pxScene && pxCamera))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
+    pxScene->CameraCurrent = pxCamera;
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXSceneAddCamera(PXScene PXREF pxScene, PXCamera PXREF pxCamera)
+PXCamera* PXAPI PXSceneCameraCurrent(const PXScene PXREF pxScene)
 {
-    pxScene->Camera = pxCamera;
+    if(!pxScene)
+    {
+        return PXNull;
+    }
 
-    return PXResultOK;
+    return pxScene->CameraCurrent;
 }

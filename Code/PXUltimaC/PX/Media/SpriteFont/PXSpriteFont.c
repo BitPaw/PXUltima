@@ -267,7 +267,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXR
             case PXSpriteFontSymbolFilePath:
             {
                 PXText fileName;
-                PXTextFromAdressA(&fileName, pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+                PXTextFromAddressA(&fileName, pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
 
                 // Loading Image
                 {
@@ -288,7 +288,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXR
                         PXClear(PXECSCreateInfo, &pxResourceCreateInfoList);
 
                         pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
-                        pxResourceCreateInfoList.ObjectReference = (PXECSInfo**)&pxFontPage->Texture;
+                        //pxResourceCreateInfoList.ObjectReference = (PXECSInfo**)&pxFontPage->Texture;
                         pxResourceCreateInfoList.FilePath = resultFullPath;
 
                         //PXResourceManagerAdd(&pxResourceCreateInfoList);
@@ -484,7 +484,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXFont PXREF pxFont, PXECSCreateInfo PXR
         PXClear(PXCompiler, &pxCompiler);
         pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileCurrent;
         pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
-        PXTextFromAdressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
+        PXTextFromAddressA(&pxCompiler.CommentSingleLine, "#", 1, 1);
 
         PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
     }
@@ -547,7 +547,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXFont PXREF pxFont, PXECSCreateInfo PXR
 
 PXResult PXAPI PXSpriteFontSaveToFile(PXFont PXREF pxFont, PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDataSize)
@@ -579,7 +579,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
 
         case 2:
         {
-            const PXI16U id = PXI16FromAdress(line);
+            const PXI16U id = PXI16FromAddress(line);
 
             switch(id)
             {
@@ -597,7 +597,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
 
         case 4:
         {
-            const PXI32U id = PXI32FromAdress(line);
+            const PXI32U id = PXI32FromAddress(line);
 
             switch(id)
             {
@@ -628,7 +628,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
         }
         case 5:
         {
-            const PXI64U id = PXI40FromAdress(line);
+            const PXI64U id = PXI40FromAddress(line);
 
             switch(id)
             {
@@ -647,7 +647,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
         }
         case 6:
         {
-            const PXI64U id = PXI48FromAdress(line);
+            const PXI64U id = PXI48FromAddress(line);
 
             switch(id)
             {
@@ -672,7 +672,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
         }
         case 7:
         {
-            const PXI64U id = PXI56FromAdress(line);
+            const PXI64U id = PXI56FromAddress(line);
 
             switch(id)
             {
@@ -697,7 +697,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDa
 
         case 8:
         {
-            const PXI64U id = PXI64FromAdress(line);
+            const PXI64U id = PXI64FromAddress(line);
 
             switch(id)
             {

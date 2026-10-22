@@ -10,19 +10,23 @@
 #include <PX/Type/PXVertexBuffer.h>
 #include <PX/Type/PXDrawScript.h>
 #include <PX/Type/PXLight.h>
-#include <PX/Type/PXGraphicsCard.h>
-#include <PX/Engine/PXRenderingSystem.h>
+#include <PX/Type/PXGPU.h>
+#include <PX/Engine/PXEngineRender.h>
+#include <PX/Type/PXShaderPixelFragment.h>
+#include <PX/Type/PXShaderVertex.h>
 
+#if OSWindows
 
-PXPublic PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo);
 PXPublic PXResult PXAPI PXDirectX9Release(PXDirectX9 PXREF pxDirectX9);
 
 PXPublic void PXAPI PXDirectX9Select(PXDirectX9 PXREF pxDirectX9);
 PXPublic void PXAPI PXDirectX9Deselect(PXDirectX9 PXREF pxDirectX9);
 
-PXPublic PXResult PXAPI PXDirectX9TextureAction(PXDirectX9 PXREF pxDirectX9, PXTextureInfo PXREF pxGraphicTexturInfo);
+PXPublic PXResult PXAPI PXDirectX9ShaderProgramRegister(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram);
+PXPublic PXResult PXAPI PXDirectX9ShaderVertexRegister(PXDirectX9 PXREF pxDirectX9, PXShaderVertex PXREF pxShaderVertex);
+PXPublic PXResult PXAPI PXDirectX9ShaderPixelFragmentRegister(PXDirectX9 PXREF pxDirectX9, PXShaderPixelFragment PXREF pxShaderPixelFragment);
 
-PXPublic PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount);
 PXPublic PXResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram);
 PXPublic PXResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram);
 
@@ -49,13 +53,13 @@ PXPublic PXResult PXAPI PXDirectX9SwapIntervalGet(PXDirectX9 PXREF pxDirectX9, P
 
 PXPublic PXResult PXAPI PXDirectX9TextureMemoryAvailable(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF value);
 PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9 PXREF pxDirectX9, PXI32U PXREF amountOfAdapters);
-PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicsCard PXREF pxGraphicDevicePhysicalList);
+PXPublic PXResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9 PXREF pxDirectX9, const PXI32U pxGraphicDevicePhysicalListSize, PXGPU PXREF pxGraphicDevicePhysicalList);
 
 
 //-----------------------------------------------------
 // Direct X - Draw
 //-----------------------------------------------------
-PXPublic PXResult PXAPI PXDirectX9Clear(PXDirectX9 PXREF pxDirectX9, const PXColorRGBAF PXREF pxColorRGBAF);
+PXPublic PXResult PXAPI PXDirectX9Clear(PXDirectX9 PXREF pxDirectX9, const PXColorRGBA_F32 PXREF PXColorRGBA_F32);
 PXPublic PXResult PXAPI PXDirectX9SceneDeploy(PXDirectX9 PXREF pxDirectX9);
 PXPublic PXResult PXAPI PXDirectX9PrimitiveDraw(PXDirectX9 PXREF pxDirectX9, const PXDrawMode PXGraphicDrawMode, const PXI32U startVertex, const PXI32U primitiveCount);
 PXPublic PXResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9 PXREF pxDirectX9, const void* pxVertexBufferFormat);
@@ -95,5 +99,17 @@ PXPublic PXResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9 PXREF pxDirectX9,
 PXPublic PXResult PXAPI PXDirectX9RenderTargetCreate(PXDirectX9 PXREF pxDirectX9, PXRenderTarget PXREF pxRenderTarget);
 PXPublic PXResult PXAPI PXDirectX9DepthStencilSurfaceCreate(PXDirectX9 PXREF pxDirectX9, PXDepthStencilSurface PXREF pxDepthStencilSurface);
 PXPublic PXResult PXAPI PXDirectX9ModelRegister(PXDirectX9 PXREF pxDirectX9, PXModel PXREF pxModel);
+
+
+PXPublic PXResult PXAPI PXDirectX9VertexBufferUpload(PXDirectX9 PXREF pxDirectX9, PXVertexBuffer PXREF pxVertexBuffer);
+PXPublic PXResult PXAPI PXDirectX9IndexBufferUpload(PXDirectX9 PXREF pxDirectX9, PXIndexBuffer PXREF pxIndexBuffer);
+
+
+PXPublic PXResult PXAPI PXDirectX9Texture1DRegister(PXDirectX9 PXREF pxDirectX9, PXTexture1D PXREF pxTexture1D);
+PXPublic PXResult PXAPI PXDirectX9Texture2DRegister(PXDirectX9 PXREF pxDirectX9, PXTexture2D PXREF pxTexture2D);
+PXPublic PXResult PXAPI PXDirectX9Texture3DRegister(PXDirectX9 PXREF pxDirectX9, PXTexture3D PXREF pxTexture3D);
+PXPublic PXResult PXAPI PXDirectX9TextureCubeRegister(PXDirectX9 PXREF pxDirectX9, PXTextureCube PXREF pxTextureCube);
+
+#endif
 
 #endif

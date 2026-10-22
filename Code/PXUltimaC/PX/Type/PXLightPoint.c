@@ -45,10 +45,10 @@ PXResult PXAPI PXLightPointCreate(PXLightPoint** pxLightPointREF, PXLightPointCr
 
 PXResult PXAPI PXLightPointRelease(const PXLightPoint PXREF pxLightPoint)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXLightPointDraw(const PXLightPoint PXREF pxLightPoint, struct PXWindowDrawInfo_ PXREF pxDrawInfo)
+PXResult PXAPI PXLightPointDraw(const PXLightPoint PXREF pxLightPoint, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

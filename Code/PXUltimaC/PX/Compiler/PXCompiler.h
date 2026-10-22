@@ -96,7 +96,7 @@ typedef struct PXCompilerSymbolEntry_
         char Data8[8];
 #endif
 
-        char Data4[4]; // Can be used to embedd something
+        char Data[4]; // Can be used to embedd something
         char Data2[2];
 
         PXF32 F32;

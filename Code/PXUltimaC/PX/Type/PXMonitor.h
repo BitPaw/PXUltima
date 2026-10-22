@@ -5,26 +5,33 @@
 
 #define MonitorNameLength 32
 
-typedef struct PXMonitor_
+#include <PX/Type/PXRectangle.h>
+
+typedef struct PXMonitorHandle_
 {
 #if OSUnix
+    int Data;
+#elif OSWindows 
+    HMONITOR Data;
+#else
+    void* Data;
+#endif
+}
+PXMonitorHandle;
+
+typedef struct PXMonitor_
+{
+    PXMonitorHandle Handle;
+
+#if OSUnix
 #elif OSWindows
-    HMONITOR ID;
-    HDC DeciveContect;
+    HDC DeviceContext;
 #endif
 
     char Name[MonitorNameLength];
     char Driver[MonitorNameLength];
 
-    PXI32U Left;
-    PXI32U Top;
-    PXI32U Right;
-    PXI32U Bottom;
-
-    //PXI16U X;
-    //PXI16U Y;
-    //PXI16U Width;
-    //PXI16U Height;
+    PXRectangleXYWHI32 Form;
 }
 PXMonitor;
 

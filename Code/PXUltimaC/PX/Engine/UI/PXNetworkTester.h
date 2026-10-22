@@ -11,6 +11,6 @@ typedef struct PXNetworkTester_
 }
 PXNetworkTester;
 
-PXPublic PXResult PXAPI PXNetworkTesterDraw(PXWindow PXREF pxWindow, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXNetworkTesterDraw(PXWindow PXREF pxWindow, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

@@ -3,9 +3,9 @@
 #ifndef PXFrameBufferIncluded
 #define PXFrameBufferIncluded
 
-#include <PX/Type/PXType.h>
 #include <PX/OS/Error/PXResult.h>
 #include <PX/Engine/PXResource.h>
+#include <PX/OS/Graphic/PXGraphic.h>
 
 
 typedef struct PXFrameBufferGDI_
@@ -45,7 +45,7 @@ PXFrameBuffer;
 
 typedef struct PXFrameBufferCreateInfo_
 {
-    PXGraphicSystem System;
+    PXGraphicAPI System;
 
     PXI32S Width;
     PXI32S Height;
@@ -59,7 +59,7 @@ typedef struct PXFrameBufferCreateInfo_
 }
 PXFrameBufferCreateInfo;
 
-PXPublic void PXAPI PXFrameBuffeRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
+PXPublic void PXAPI PXFrameBufferRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 PXPublic PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer** pxFrameBufferREF, PXFrameBufferCreateInfo PXREF pxFrameBufferCreateInfo);
 

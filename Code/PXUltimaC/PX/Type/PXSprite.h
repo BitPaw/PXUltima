@@ -9,20 +9,23 @@
 #include <PX/Type/PXTexture.h>
 #include <PX/Type/PXMaterial.h>
 #include <PX/Type/PXShader.h>
-#include <PX/Type/PXModel.h>
+#include <PX/Type/PXQuad.h>
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/Type/PXFieldEffect.h>
 
 typedef struct PXSprite_
 {
-    PXECSInfo Info; // PX-Engine register info
+    PXECSInfo Info;
+
+    PXQuad* Quad;
+    PXMaterial* Material;
+
 
     PXVector2F32 TextureScalePositionOffset;
     PXVector2F32 TextureScalePointOffset;
 
-    PXModel* Model;
-    PXTexture* Texture;
-    PXMaterial* Material; // Use this instand of a texture, right?
+
+    PXTexture2D* Texture;
     PXFieldEffect* HitBox;
     PXShaderProgram* ShaderProgarm;
 }
@@ -32,7 +35,7 @@ typedef struct PXSpriteCreateInfo_
 {
     PXECSCreateInfo Info;
 
-    PXTexture* TextureCurrent;
+    PXTexture2D* TextureCurrent;
     PXShaderProgram* ShaderProgramCurrent;
 
     PXVector2F32 TextureScalingPoints[4];
@@ -56,6 +59,4 @@ PXSpriteCreateInfo;
 PXPublic void PXAPI PXSpriteRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXSpriteCreate(PXSprite** pxSpriteREF, PXSpriteCreateInfo PXREF pxSpriteCreateInfo);
 PXPublic PXResult PXAPI PXSpriteRelease(PXSprite PXREF pxSprite);
-PXPublic PXResult PXAPI PXSpriteDraw(PXSprite PXREF pxSprite, PXDrawInfo PXREF pxDrawInfo);
-
 #endif

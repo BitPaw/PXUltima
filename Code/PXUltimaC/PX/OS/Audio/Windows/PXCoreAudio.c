@@ -1,5 +1,9 @@
 #include "PXCoreAudio.h"
 
+
+#include <PX/OS/Library/PXLibrary.h>
+#include <PX/OS/PXOS.h>
+
 #if OSUnix
 #elif OSWindows
 
@@ -9,6 +13,7 @@
 #include <mmdeviceapi.h>
 #include <audioclient.h>    // Windows Vista (+UWP)
 #include <xaudio2.h> // minimum windows 8?
+
 
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "uuid.lib")
@@ -139,7 +144,7 @@ const AudioBackend* audio_backend_wasapi(void) {
 */
 
 
-PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
+PXResult PXAPI PXCoreAudioInitialize(PXEngineAudio PXREF pxAudio)
 {
 #if OSUnix
 #elif OSWindows
@@ -377,7 +382,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
 #endif
 
 
-        Sleep(10);
+        PXThreadSleep(PXNull,10);
     }
 
     // Cleanup (not reached in this loop)
@@ -397,7 +402,7 @@ PXResult PXAPI PXCoreAudioInitialize(PXAudioSystem PXREF pxAudio)
     return PXResultOK;
 
 #else
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #endif
 }
 
@@ -416,7 +421,7 @@ PXResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem PXREF pxAudioXSystem, PXAudio
 
     if(!pxAudioXSystem->XAudioInterface)
     {
-        return PXActionRefuedObjectNotInizialized;
+        return PXResultRefuedObjectNotInizialized;
     }
 
     const HRESULT getCountResult = pxAudioXSystem->XAudioInterface->lpVtbl->GetDeviceCount(pxAudioXSystem->XAudioInterface, &pxAudioDeviceAmountInfo->DeviceOutput);
@@ -443,7 +448,7 @@ PXResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDe
     );
     * /
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXXAudioDeviceClose(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
@@ -454,7 +459,7 @@ PXResult PXAPI PXXAudioDeviceClose(PXAudioXSystem PXREF pxAudioXSystem, PXAudioD
 
     pxAudioDevice->ResourceID.DirectXInterface = PXNull;
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXXAudioDeviceLoad(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
@@ -471,7 +476,7 @@ PXResult PXAPI PXXAudioDeviceLoad(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDe
         &xAudioBufferWMA
     );
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXXAudioDeviceStart(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
@@ -480,7 +485,7 @@ PXResult PXAPI PXXAudioDeviceStart(PXAudioXSystem PXREF pxAudioXSystem, PXAudioD
 
     const HRESULT result = audio2SourceVoice->lpVtbl->Start(audio2SourceVoice, 0, 0);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXXAudioDeviceStop(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
@@ -489,7 +494,7 @@ PXResult PXAPI PXXAudioDeviceStop(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDe
 
     const HRESULT result = audio2SourceVoice->lpVtbl->Stop(audio2SourceVoice, 0, 0);
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 */

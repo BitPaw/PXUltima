@@ -52,20 +52,18 @@ PXPublic PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const 
 
 PXPublic void PXAPI PXDebugLogMessage(PXText PXREF pxText);
 
-
-
 PXPublic PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug);
 
 PXPublic PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, PXThread* pxThread);
-PXPublic PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* adress);
+PXPublic PXResult PXAPI PXDebugFetchSymbolFromRougeAddress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* address);
 
-PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug);
+PXPrivate PXThreadResult PXOSAPI PXDebugLoop(PXDebug PXREF pxDebug);
 
 PXPublic PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug);
 
 
-// Adress to module HANDLE
-//PXPublic PXResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress);
+// Address to module HANDLE
+//PXPublic PXResult PXAPI PXDebugModuleHandleFromAddress(PXHandleModule PXREF pxHandleModule, const void PXREF address);
 
 
 

@@ -58,7 +58,7 @@ typedef struct PXD8GeometryMesh_
     PXI32U face_count;
     PXI16U* IndexList;
 
-    PXMatrix4x4F* MatrixListAdress;
+    PXMatrix4x4F* MatrixListAddress;
     PXI32U MatrixListSize;
 
     void* IndexListArray;

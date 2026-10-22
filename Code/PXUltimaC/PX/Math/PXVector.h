@@ -15,7 +15,7 @@ typedef struct PXVec2I8U_
             PXI8U Y;
         };
 
-        PXI8U Data4[2];
+        PXI8U Data[2];
     };
 }
 PXVec2I8U;
@@ -30,7 +30,7 @@ typedef struct PXVector2I8S_
             PXI8S Y;
         };
 
-        PXI8S Data4[2];
+        PXI8S Data[2];
     };
 }
 PXVector2I8S;
@@ -45,7 +45,7 @@ typedef struct PXVector2I16S_
             PXI16S Y;
         };
 
-        PXI16S Data4[2];
+        PXI16S Data[2];
     };
 }
 PXVector2I16S;
@@ -60,7 +60,7 @@ typedef struct PXVector2I16U_
             PXI16U Y;
         };
 
-        PXI16U Data4[2];
+        PXI16U Data[2];
     };
 }
 PXVector2I16U;
@@ -75,7 +75,7 @@ typedef struct PXVector2I32S_
             PXI32S Y;
         };
 
-        PXI32S Data4[2];
+        PXI32S Data[2];
     };
 }
 PXVector2I32S;
@@ -90,7 +90,7 @@ typedef struct PXVector2I32U_
             PXI32U Y;
         };
 
-        PXI32U Data4[2];
+        PXI32U Data[2];
     };
 }
 PXVector2I32U;
@@ -105,7 +105,7 @@ typedef struct PXVector2F32_
             PXF32 Y;
         };
 
-        PXF32 Data4[2];
+        PXF32 Data[2];
     };
 }
 PXVector2F32;
@@ -122,6 +122,22 @@ PXVector2F32;
 //---------------------------------------------------------
 // Vector 3D
 //---------------------------------------------------------
+typedef struct PXVector3I8U_
+{
+    union
+    {
+        struct
+        {
+            PXI8U X;
+            PXI8U Y;
+            PXI8U Z;
+        };
+
+        PXI8U Data[3];
+    };
+}
+PXVector3I8U;
+
 typedef struct PXVector3F16_
 {
     union
@@ -133,7 +149,7 @@ typedef struct PXVector3F16_
             PXF16 Z;
         };
 
-        PXF16 Data4[3];
+        PXF16 Data[3];
     };
 }
 PXVector3F16;
@@ -149,7 +165,7 @@ typedef struct PXVector3F32_
             PXF32 Z;
         };
 
-        PXF32 Data4[3];
+        PXF32 Data[3];
     };
 }
 PXVector3F32;
@@ -165,7 +181,7 @@ typedef struct PXVector3F64_
             PXF64 Z;
         };
 
-        PXF64 Data4[3];
+        PXF64 Data[3];
     };
 }
 PXVector3F64;
@@ -192,9 +208,40 @@ PXVector3F64;
 
 
 
+typedef struct PXVector4I64U_
+{
+    union
+    {
+        struct
+        {
+            PXI64U X;
+            PXI64U Y;
+            PXI64U Z;
+            PXI64U W;
+        };
+
+        PXI64U Data[4];
+    };
+}
+PXVector4I64U;
 
 
+typedef struct PXVector4I64S_
+{
+    union
+    {
+        struct
+        {
+            PXI64S X;
+            PXI64S Y;
+            PXI64S Z;
+            PXI64S W;
+        };
 
+        PXI64S Data[4];
+    };
+}
+PXVector4I64S;
 
 typedef struct PXVector4F32_
 {
@@ -208,7 +255,7 @@ typedef struct PXVector4F32_
             PXF32 W;
         };
 
-        PXF32 Data4[4];
+        PXF32 Data[4];
 
         PXVector3F32 V3;
     };

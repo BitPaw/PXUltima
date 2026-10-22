@@ -63,6 +63,6 @@ PXFieldEffectCreateInfo;
 PXPublic void PXAPI PXFieldEffectRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXFieldEffectCreate(PXFieldEffect** pxFieldEffectREF, PXFieldEffectCreateInfo PXREF pxFieldEffectCreateInfo);
 PXPublic PXResult PXAPI PXFieldEffectRelease(PXFieldEffect PXREF pxFieldEffect);
-PXPublic PXResult PXAPI PXFieldEffectDraw(PXFieldEffect PXREF pxFieldEffect, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXFieldEffectDraw(PXFieldEffect PXREF pxFieldEffect, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

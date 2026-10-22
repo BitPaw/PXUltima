@@ -823,7 +823,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
 
                 if (!validSignature)
                 {
-                    return PXActionRefusedInvalidHeaderSignature;
+                    return PXResultRefusedInvalidHeaderSignature;
                 }
             }
 
@@ -1137,10 +1137,10 @@ PXResult PXAPI PXMP3LoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
         }
     }
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXMP3SaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

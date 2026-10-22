@@ -159,7 +159,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             );
 #endif 
 
-            DebugBreak();  // How to handle???
+            PXDebugBreak();  // How to handle???
 
             break;
         }
@@ -228,7 +228,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
         );
 
         PXText pxText;
-        PXTextFromAdressA(&pxText, temp, amount, 260);
+        PXTextFromAddressA(&pxText, temp, amount, 260);
 
         PXFileNameSet(pxResourceMoveInfo.FileCurrent, &pxText);
 
@@ -288,13 +288,13 @@ PXResult PXAPI PXWADLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
             break;
         }
         default:
-            return PXActionFailedFormatNotAsExpected;
+            return PXResultFailedFormatNotAsExpected;
     }
 
     PXFileBinding
     (
         pxFile,
-        pxWAD.Data4,
+        pxWAD.Data,
         dataList,
         amount,
         PXFileBindingRead
@@ -414,10 +414,10 @@ PXResult PXAPI PXWADLoadFromFile(PXECSCreateInfo PXREF pxResourceLoadInfo)
     PXPerformanceInfoGet(&pxPerformanceInfo);
 
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXWADSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

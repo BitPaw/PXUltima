@@ -255,22 +255,25 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
 {
     PXClear(PXLDAPClient, pxLDAPClient);
 
+#if OSUnix
+#elif OSWindows
+
     // Library open
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXWindowsLDAPLibrary, PXWindowsLDAPLibraryLength, PXWindowsLDAPLibraryLength);
+        PXTextFromAddressA(&pxText, PXWindowsLDAPLibrary, PXWindowsLDAPLibraryLength, PXWindowsLDAPLibraryLength);
 
         const PXResult pxResult = PXLibraryOpen(&pxLDAPClient->LDAPLibrary, &pxText);
 
         if(PXResultOK != pxResult)
         {
-            return PXActionRefusedNotSupportedByOperatingSystem;
+            return PXResultRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch functions
     {
-        const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+        const PXLibraryFunctionEntry PXLibraryFunctionEntry[] =
         {
             { &pxLDAPClient->openW, "ldap_openW" },
             { &pxLDAPClient->openA,"ldap_openA" },
@@ -506,11 +509,11 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
             { &pxLDAPClient->conn_from_msg,"ldap_conn_from_msg" }
         };
 
-        const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(PXLibraryFunctionEntry) / sizeof(PXLibraryFunctionEntry);
 
-        PXLibraryGetSymbolListA(&pxLDAPClient->LDAPLibrary, pxLibraryFuntionEntry, amount);
-
+        PXLibraryGetSymbolListA(&pxLDAPClient->LDAPLibrary, PXLibraryFunctionEntry, amount);
     }
+#endif
 
 
     return PXResultOK;
@@ -535,7 +538,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
         case TextFormatUTF8:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
             if(pxLDAPInfo->ConnectionOriented)
@@ -560,13 +563,13 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
             break;
 #else
-            return PXActionNotSupportedByOperatingSystem;
+            return PXResultNotSupportedByOperatingSystem;
 #endif
         }
         case TextFormatUNICODE:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
             if(pxLDAPInfo->ConnectionOriented)
@@ -591,12 +594,12 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
             break;
 #else
-            return PXActionNotSupportedByOperatingSystem;
+            return PXResultNotSupportedByOperatingSystem;
 #endif
         }
 
         default:
-            return PXActionRefusedFormatNotSupported;
+            return PXResultRefusedFormatNotSupported;
     }
 
 #if OSUnix
@@ -659,7 +662,7 @@ PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPCon
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -667,11 +670,11 @@ PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient)
 {
     if(!pxLDAPClient->ID)
     {
-        return PXActionRefusedNotFound;
+        return PXResultRefusedNotFound;
     }
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
     const PXldap_unbind pxldap_unbind = (PXldap_unbind)pxLDAPClient->unbind;
     const ULONG result = pxldap_unbind(pxLDAPClient->ID);
@@ -688,7 +691,7 @@ PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient)
 
     return PXResultOK;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -696,11 +699,11 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 {
     if(!pxLDAPClient->ID)
     {
-        return PXActionRefusedNotFound;
+        return PXResultRefusedNotFound;
     }
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
     ULONG scope = 0;
@@ -728,7 +731,7 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
             break;
     }
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXResultNotSupportedByOperatingSystem;
 #endif
 
     switch(pxLDAPSearchInfo->EntryName.Format)
@@ -737,7 +740,7 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
         case TextFormatUTF8:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
             if(pxLDAPSearchInfo->Async)
@@ -790,13 +793,13 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
             return PXResultOK;
 #else
-            return PXActionNotSupportedByOperatingSystem;
+            return PXResultNotSupportedByOperatingSystem;
 #endif
         }
         case TextFormatUNICODE:
         {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+            return PXResultRefusedNotImplemented;
 #elif PXOSWindowsDestop
             const PXldap_searchW pxldap_searchW = (PXldap_searchW)pxLDAPClient->searchW;
 
@@ -820,12 +823,12 @@ PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchI
 
             return PXResultOK;
 #else
-            return PXActionNotSupportedByOperatingSystem;
+            return PXResultNotSupportedByOperatingSystem;
 #endif
         }
 
         default:
-            return PXActionRefusedFormatNotSupported;
+            return PXResultRefusedFormatNotSupported;
     }
 
     return PXResultOK;

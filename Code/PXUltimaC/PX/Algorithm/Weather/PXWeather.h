@@ -2,22 +2,22 @@
 
 #ifndef PXFilterWeatherIncluded
 #define PXFilterWeatherIncluded
-#include <PX/Engine//PXAudioSystem.h>
+#include <PX/Engine//PXEngineAudio.h>
 
 typedef struct PXFilterWeather_
 {
     // Wind
-    PXFAudio wind_intensity;     // 0.0 to 1.0
-    PXFAudio wind_variation;     // 0.0 to 1.0 (how gusty it is)
+    PXF32 wind_intensity;     // 0.0 to 1.0
+    PXF32 wind_variation;     // 0.0 to 1.0 (how gusty it is)
 
     // Rain
-    PXFAudio rain_density;       // drops per second
-    PXFAudio rain_loudness;      // 0.0 to 1.0
+    PXF32 rain_density;       // drops per second
+    PXF32 rain_loudness;      // 0.0 to 1.0
 
     // Thunder
-    PXFAudio thunder_freq;       // average rumbles per minute
-    PXFAudio thunder_loudness;   // 0.0 to 1.0
-    PXFAudio thunder_rumble;     // 0.0 to 1.0 (how long it rumbles)
+    PXF32 thunder_freq;       // average rumbles per minute
+    PXF32 thunder_loudness;   // 0.0 to 1.0
+    PXF32 thunder_rumble;     // 0.0 to 1.0 (how long it rumbles)
 }
 PXFilterWeather;
 

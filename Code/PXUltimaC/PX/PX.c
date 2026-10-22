@@ -3,36 +3,34 @@
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/OS/Console/PXConsole.h>
-#include <PX/Engine/PXGUI.h>
 #include <PX/Engine/ECS/PXECS.h>
 #include <PX/OS/PXOS.h>
 
+
+
+#if OSUnix
+#elif OSWindows
+#include <Windows.h>
+#include <crtdbg.h> // _CrtSetDbgFlag, _CRTDBG_ALLOC_MEM_DF, _CRTDBG_CHECK_ALWAYS_DF
+#include <Objbase.h>
+#endif
+
 const char PXSentinelText[] = "Sentinel-PX";
 
-void PXCDECL PXSentinelOnIllegalInstruction(const int signalID)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingFailure,
-        PXSentinelText,
-        "Signal-SIGILL",
-        "CPU tryed to exectue illegal instruction!"
-    );
-#endif
-}
 
-void PXCDECL PXSentinelOnMemoryViolation(const int signalID)
+void PXAPI PXSentinelSignalHandle(PXSignalInfo PXREF pxSignalInfo)
 {
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingFailure,
         PXSentinelText,
-        "Signal-SIGSEGV",
-        "Illegal memory access by CPU!"
+        "Signal",
+        "=================================================="
     );
 #endif
+
+    PXDebugStackTraceWithSignal(pxSignalInfo);
 }
 
 const char PXSentinelInitMessage[] = "PX-Sentinel - Initialization - START\n";
@@ -43,11 +41,21 @@ const PXI8U PXSentineEndMessageLength = sizeof(PXSentineEndMessage);
 
 void PXAPI PXInitialize()
 {
+#if PXDEBUG
+    // Force the CRT runtime to check every pointer on use.
+    // This slows down the program by ALOT, thats why its not doing this by default.
+    // But with this, we crash on illegal pointer use, not somewhere else.
+
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF);
+#endif
+
+    HRESULT resultID = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+    PXConsoleFetch(PXTrue);
     PXConsoleWrite(PXSentinelInitMessageLength, PXSentinelInitMessage);
 
     // register failure callbacks on fatal crashes
-    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXSentinelOnIllegalInstruction);
-    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXSentinelOnMemoryViolation);
+    PXSignalCallBackSet(PXSentinelSignalHandle);
 
     // Init´the core system
     PXSystemPrelude();
@@ -56,7 +64,7 @@ void PXAPI PXInitialize()
     // Name the current thread to the engine
     {
         PXText pxText;
-        PXTextFromAdressA(&pxText, PXSentinelText, sizeof(PXSentinelText), sizeof(PXSentinelText));        
+        PXTextFromAddressA(&pxText, PXSentinelText, sizeof(PXSentinelText), sizeof(PXSentinelText));        
 
         PXThreadNameSet(PXNull, &pxText);
     }
@@ -65,9 +73,9 @@ void PXAPI PXInitialize()
     // Important, to know 
     PXECSInit();
 
+
     // Stage B - System depended
     PXThreadPoolCreate(PXNull);
-    PXGUIInitialize();
 
 
     //host.CreateWorld();
@@ -77,6 +85,4 @@ void PXAPI PXInitialize()
     //host.Shutdown();
 
     PXConsoleWrite(PXSentineEndMessageLength, PXSentineEndMessage);
-
-    return PXResultOK;
 }

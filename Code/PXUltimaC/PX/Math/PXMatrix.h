@@ -6,69 +6,68 @@
 #include <PX/Type/PXType.h>
 #include <PX/Math/PXVector.h>
 
-#define XAxisX 0
-#define XAxisY 4
-#define XAxisZ 8
-#define XAxisW 12
+#define ScaleX   0 
+#define ScaleY   5 
+#define ScaleZ   10
+#define ScaleW   15
 
-#define YAxisX 1
-#define YAxisY 5
-#define YAxisZ 9
-#define YAxisW 13
-
-#define ZAxisX 2
-#define ZAxisY 6
-#define ZAxisZ 10
-#define ZAxisW 14
-
-#define WAxisX 3
-#define WAxisY 7
-#define WAxisZ 11
-#define WAxisW 15
-
-#define ScaleX 0
-#define ScaleY 5
-#define ScaleZ 10
-#define ScaleW 15
-
-#define TransformX 12
-#define TransformY 13
-#define TransformZ 14
-#define TransformW 15
-
-/*
-    +----+----+----+----+
-    | XA | YA | ZA | Or |
-    +----+----+----+----+
-    |  0 |  1 |  2 |  3 |
-    |  4 |  5 |  6 |  7 |
-    |  8 |  9 | 10 | 11 |
-    | 12 | 13 | 14 | 15 |
-    +----+----+----+----+
-*/
-typedef struct PXMatrix4x4F_
+typedef struct PXMatrix4x4FColumn_
 {
     union
     {
         struct
         {
-            PXF32 XX;
-            PXF32 XY;
-            PXF32 XZ;
-            PXF32 XW;
-            PXF32 YX;
-            PXF32 YY;
-            PXF32 YZ;
-            PXF32 YW;
-            PXF32 ZX;
-            PXF32 ZY;
-            PXF32 ZZ;
-            PXF32 ZW;
-            PXF32 WX;
-            PXF32 WY;
-            PXF32 WZ;
-            PXF32 WW;
+            PXF32 Right;
+            PXF32 Up;
+            PXF32 Forward;
+            PXF32 Translation;
         };
+
+        struct
+        {
+            PXF32 A;
+            PXF32 B;
+            PXF32 C;
+            PXF32 D;
+        };
+    };   
+}
+PXMatrix4x4FColumn;
+
+typedef struct PXMatrix4x4F_
+{
+    union
+    {
+        // Only DirectX uses this format.
+        // OpenGL and Vulcan do use the coloum major format.
+        // Axis are oriented horizontally in a row.
+        // [Index  0,  1,  2,  3] Row 0 : Right.X,  Right.Y     Right.Z     0.0
+        // [Index  4,  5,  6,  7] Row 1 : Up.X      Up.Y        Up.Z        0.0
+        // [Index  8,  9, 10, 11] Row 2 : Forward.X Forward.Y   Forward.Z   0.0
+        // [Index 12, 13, 14, 15] Row 3 : Trans.X   Trans.Y     Trans.Z     1.0
+        struct
+        {
+            PXVector4F32 Right;
+            PXVector4F32 Up;
+            PXVector4F32 Forward;
+            PXVector4F32 Translation;
+        }
+        Row;
+
+        // Column Major Format: Used by OpenGL and Vulcan.
+        // Axis are stacked vertically.
+        // [Index  0, 4,  8, 12] Col 0 : Right.X    Up.X    Forward.X   Trans.X
+        // [Index  1, 5,  9, 13] Col 1 : Right.Y    Up.Y    Forward.Y   Trans.Y
+        // [Index  2, 6, 10, 14] Col 2 : Right.Z    Up.Z    Forward.Z   Trans.Z
+        // [Index  3, 7, 11, 15] Col 3 : Right.W    Up.W    Forward.W   Trans.W
+        struct
+        {
+            PXMatrix4x4FColumn X;
+            PXMatrix4x4FColumn Y;
+            PXMatrix4x4FColumn Z;
+            PXMatrix4x4FColumn W;
+        }
+        Column;
 
         PXF32 Data[16];
 
@@ -99,7 +98,8 @@ PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F PXREF matrix4x4F, const PXVe
 
 PXPublic void PXAPI PXMatrix4x4FCopy(PXMatrix4x4F PXREF pxMatrix, const PXMatrix4x4F PXREF matrixSource);
 
-PXPublic void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F PXREF matrixData, const PXVector3F32 PXREF vector3F);
+PXPublic void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F PXREF matrixData, const PXVector3F32 PXREF vector);
+PXPublic void PXAPI PXMatrix4x4FMove4F(PXMatrix4x4F PXREF matrixData, const PXVector4F32 PXREF vector);
 PXPublic void PXAPI PXMatrix4x4FMoveXY(PXMatrix4x4F PXREF matrixData, const PXF32 x, const PXF32 y);
 PXPublic void PXAPI PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F PXREF matrixData, const PXF32 x, const PXF32 y);
 PXPublic void PXAPI PXMatrix4x4FMoveXYZ(PXMatrix4x4F PXREF matrixData, const PXF32 x, const PXF32 y, const PXF32 z);

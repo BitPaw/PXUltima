@@ -7,5 +7,5 @@ PXResult PXAPI PXRedshiftSkeletonLoadFromFile(PXECSCreateInfo PXREF pxResourceLo
 
 PXResult PXAPI PXRedshiftSkeletonSaveToFile(PXECSCreateInfo PXREF pxResourceSaveInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

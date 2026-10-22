@@ -1,5 +1,9 @@
 #include "PXDirectX12.h"
 
+
+#include <PX/OS/Console/PXConsole.h>
+
+
 #if PXDX12Enable
 #include <d3d12.h>
 #include <d3d12sdklayers.h>
@@ -14,17 +18,25 @@
 
 #endif
 
-#include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/Engine/PXGUI.h>
-#include <PX/OS/Console/PXConsole.h>
 
-PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
+
+const char PXDirectX12Name[] = "DirectX 12";
+
+PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXEngineRenderCreateInfo PXREF pxEngineRenderCreateInfo)
 {
+    PXResult pxResult = PXResultInvalid;
+    HRESULT resultID = 0;
+
+    if(!(pxDirectX12 && pxEngineRenderCreateInfo))
+    {
+        return PXResultRefusedParameterNull;
+    }
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "DirectX12",
+        PXDirectX12Name,
         "Initialize",
         "Start..."
     );
@@ -35,48 +47,49 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
     {
         ID3D12Debug* debugController = PXNull;
         // IID_PPV_ARGS()
-        const HRESULT xx = D3D12GetDebugInterface // D3D12.dll, d3d12.h
-                           (
-                               &CLSID_D3D12Debug,
-                               &debugController
-                           );
+        resultID = D3D12GetDebugInterface // D3D12.dll, d3d12.h
+        (
+            &CLSID_D3D12Debug,
+            &debugController
+        );
+        pxResult = PXErrorFromHRESULT(resultID);
 
+#if PXLanguageCPP
+        debugController->EnableDebugLayer();
+#else
         debugController->lpVtbl->EnableDebugLayer(debugController);
+#endif
+
 
 
 #if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX12",
+            PXDirectX12Name,
             "Initialize",
             "Debug"
         );
 #endif
     }
 
-    // Factory
-    {
-        const HRESULT resultID = CreateDXGIFactory(&IID_IDXGIFactory, &pxDirectX12->GIFactory);
-    }
-
-    // IDXGIFactory1::EnumAdapters.
 
     // Create the device.
     {
-        const HRESULT createDeviceResultID = D3D12CreateDevice // D3D12.dll, d3d12.h
-                                             (
-                                                     PXNull, // VideoAdapter
-                                                     D3D_FEATURE_LEVEL_12_0,
-                                                     &IID_ID3D12Device,
-                                                     &pxDirectX12->Device
-                                             );
+        resultID = D3D12CreateDevice // D3D12.dll, d3d12.h
+        (
+            PXNull, // VideoAdapter
+            D3D_FEATURE_LEVEL_12_0,
+            &IID_ID3D12Device,
+            &pxDirectX12->Device
+        );
+        pxResult = PXErrorFromHRESULT(resultID);
 
 #if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX12",
+            PXDirectX12Name,
             "Initialize",
             "Device"
         );
@@ -90,19 +103,30 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         D3D12CommandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         D3D12CommandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-        const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateCommandQueue // D3D12.dll, d3d12.h
-                                 (
-                                     pxDirectX12->Device,
-                                     &D3D12CommandQueueDesc,
-                                     &IID_ID3D12CommandQueue,
-                                     &pxDirectX12->CommandQueue
-                                 );
+#if PXLanguageCPP
+        resultID = pxDirectX12->Device->CreateCommandQueue // D3D12.dll, d3d12.h
+        (
+            &D3D12CommandQueueDesc,
+            &IID_ID3D12CommandQueue,
+            &pxDirectX12->CommandQueue
+        );
+#else
+        resultID = pxDirectX12->Device->lpVtbl->CreateCommandQueue // D3D12.dll, d3d12.h
+        (
+            pxDirectX12->Device,
+            &D3D12CommandQueueDesc,
+            &IID_ID3D12CommandQueue,
+            &pxDirectX12->CommandQueue
+        );
+#endif
+
+        pxResult = PXErrorFromHRESULT(resultID);
 
 #if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX12",
+            PXDirectX12Name,
             "Initialize",
             "Command Queue"
         );
@@ -123,12 +147,12 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         dxGISwapChainDescription.Windowed = TRUE;
 
         const HRESULT resultID = pxDirectX12->GIFactory->lpVtbl->CreateSwapChain // Windows 10, Dxgi.lib, dxgi1_4.h
-                                 (
-                                     pxDirectX12->GIFactory,
-                                     pxDirectX12->Device,
-                                     &dxGISwapChainDescription,
-                                     &pxDirectX12->SwapChain
-                                 );
+        (
+            pxDirectX12->GIFactory,
+            pxDirectX12->Device,
+            &dxGISwapChainDescription,
+            &pxDirectX12->SwapChain
+        );
 
         //const UINT index = GetCurrentBackBufferIndex();
 
@@ -136,7 +160,7 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX12",
+            PXDirectX12Name,
             "Initialize",
             "SwapChain"
         );
@@ -154,12 +178,12 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         descriptiorHeapDescription.NodeMask = 0;
 
         const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateDescriptorHeap
-                                 (
-                                     pxDirectX12->Device,
-                                     &descriptiorHeapDescription,
-                                     &IID_ID3D12DescriptorHeap,
-                                     &pxDirectX12->HeapDescriptor
-                                 );
+        (
+            pxDirectX12->Device,
+            &descriptiorHeapDescription,
+            &IID_ID3D12DescriptorHeap,
+            &pxDirectX12->HeapDescriptor
+        );
 
         // const UINT number = GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
@@ -168,7 +192,7 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX12",
+            PXDirectX12Name,
             "Initialize",
             "HeapDescriptor"
         );
@@ -192,18 +216,18 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
         // Create a command allocator.
         {
             const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateCommandAllocator
-                                     (
-                                         pxDirectX12->Device,
-                                         D3D12_COMMAND_LIST_TYPE_DIRECT,
-                                         &IID_ID3D12CommandAllocator,
-                                         &pxDirectX12->CommandAllocator
-                                     );
+            (
+                pxDirectX12->Device,
+                D3D12_COMMAND_LIST_TYPE_DIRECT,
+                &IID_ID3D12CommandAllocator,
+                &pxDirectX12->CommandAllocator
+            );
 
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
-                "DirectX12",
+                PXDirectX12Name,
                 "Initialize",
                 "Command allocator"
             );
@@ -212,27 +236,24 @@ PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicIni
     }
 
 
-
-
-
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "DirectX12",
+        PXDirectX12Name,
         "Initialize",
         "Done...\n"
     );
 #endif
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
 PXResult PXAPI PXDirectX12Release(PXDirectX12 PXREF pxDirectX12)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12 PXREF pxDirectX12, PXI32U PXREF amountOfAdapters)

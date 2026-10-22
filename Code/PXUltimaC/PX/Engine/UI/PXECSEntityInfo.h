@@ -21,6 +21,6 @@ PXECSEntityInfoCreateInfo;
 
 PXPublic void PXAPI PXECSEntityInfoRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXECSEntityInfoCreate(PXECSEntityInfo** pxECSEntityInfo, PXECSEntityInfoCreateInfo PXREF pxECSEntityInfoCreateInfo);
-PXPublic PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXECSEntityInfoDraw(PXECSEntityInfo PXREF pxECSEntityInfo, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

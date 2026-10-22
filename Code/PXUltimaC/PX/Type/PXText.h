@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef PXTextINLCUDE
-#define PXTextINLCUDE
+#ifndef PXTextIncluded
+#define PXTextIncluded
 
 //#include <PX/Type/PXType.h>
 #include <stdarg.h>
@@ -46,7 +46,7 @@ typedef struct PXText_
 
     union
     {
-        void* Data4;
+        void* Data;
         PXASCII* A; // [8 Byte, Offset 24]
         const PXASCII* AC; // [8 Byte, Offset 24]
         PXUNICODE* W; // [8 Byte, Offset 24]
@@ -85,9 +85,9 @@ PXPublic PXResult PXAPI PXTextCreatePath(PXText PXREF pxText);
 
 #define PXTextLengthUnkown -1
 
-PXPublic PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat);
-PXPublic PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated);
-PXPublic PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+PXPublic PXResult PXAPI PXTextFromAddress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat);
+PXPublic PXResult PXAPI PXTextFromAddressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+PXPublic PXResult PXAPI PXTextFromAddressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated);
 
 
 #define PXTextMakeFixedC(pxText, c)\
@@ -162,6 +162,7 @@ PXPublic PXASCII PXAPI PXTextUnicodeToASCII(const PXASCII wc);
 PXPublic PXASCII PXAPI PXTextMakePrintable(const PXASCII c);
 
 
+PXPublic PXBool PXAPI PXTextHasData(const PXText PXREF pxText);
 
 
 PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
@@ -221,6 +222,8 @@ PXPublic PXSize PXAPI PXTextLengthUntilW(const wchar_t* string, const PXSize str
 
 PXPublic PXSize PXAPI PXTextCopy(PXText PXREF pxText, const PXText PXREF pxTextsource);
 
+PXPublic PXSize PXAPI PXTextCopyFromA(PXText PXREF pxText, const char* text, const PXSize textLength);
+
 PXPublic PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
 PXPublic PXSize PXAPI PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
 PXPublic PXSize PXAPI PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
@@ -238,12 +241,14 @@ PXPublic PXSize PXAPI PXTextPascalCaseCleave(const char* pxText, const PXSize PX
 PXPublic PXSize PXAPI PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
 PXPublic PXSize PXAPI PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);
 
-PXPublic PXBool PXAPI PXTextCompare(const PXText PXREF A, const PXText PXREF textB);
+PXPublic PXBool PXAPI PXTextCompare(const PXText PXREF textA, const PXText PXREF textB, const PXI8U flags);
 
 PXPublic PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char* PXREF stringList, const PXI8U* stringListSize, const PXI8U amount);
 
 
-#define PXTextCompareRequireSameLength (1<<0)
+// Text compare flags
+#define PXTextCompareRequireSameLength  (1<<0)
+#define PXTextCompareIgnoreCase         (1<<1)
 
 PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize, const PXI8U flags);
 PXPublic PXBool PXAPI PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);

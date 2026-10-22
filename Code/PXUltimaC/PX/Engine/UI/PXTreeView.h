@@ -18,7 +18,7 @@ typedef struct sdfsdfsdfsdf
 PXTreeViewCreateInfo;
 
 
-typedef struct PXUIElementTreeViewItemInfo_
+typedef struct PXEngineUIElementTreeViewItemInfo_
 {
     char* TextDataOverride;
     PXSize TextSizeOverride;
@@ -26,16 +26,16 @@ typedef struct PXUIElementTreeViewItemInfo_
     struct PXWindow_* ItemParent;
     struct PXWindow_* TreeView;
 
-    //struct PXUIElement_* ElementSource;
+    //struct PXEngineUIElement_* ElementSource;
     void* OwningObject;
     PXI32U OwningObjectType;
 
-    PXUIElementTreeViewItemInsertMode InsertMode;
+    PXEngineUIElementTreeViewItemInsertMode InsertMode;
 
     // Result
     struct _TREEITEM* ItemHandle;
 }
-PXUIElementTreeViewItemInfo;
+PXEngineUIElementTreeViewItemInfo;
 
 
 

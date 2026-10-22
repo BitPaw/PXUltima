@@ -308,7 +308,7 @@ PXResult PXAPI PXLZ4DecompressChunk(PXFile PXREF pxFileInput, PXFile PXREF pxFil
 
 PXResult PXAPI PXLZ4Compress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)

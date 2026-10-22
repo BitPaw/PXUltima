@@ -18,7 +18,7 @@ PXResult PXAPI PXDirectX10x1Initialize(PXDirectX10x1 PXREF pxDirectX10x1)
     );
 #endif
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #if 0
     D3D10_FEATURE_LEVEL1 featureLevel = 0;
@@ -59,7 +59,7 @@ PXResult PXAPI PXDirectX10x1Initialize(PXDirectX10x1 PXREF pxDirectX10x1)
         break;
 
     default:
-        return PXActionRefuedInputInvalid;
+        return PXResultRefuedInputInvalid;
     }
 
     const HRESULT result = D3D10CreateDevice1
@@ -77,5 +77,5 @@ PXResult PXAPI PXDirectX10x1Initialize(PXDirectX10x1 PXREF pxDirectX10x1)
 
 PXResult PXAPI PXDirectX10x1Release(PXDirectX10x1 PXREF pxDirectX10x1)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

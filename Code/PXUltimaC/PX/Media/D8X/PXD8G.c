@@ -41,7 +41,7 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
 
     PXModelCreateInfo pxModelCreateInfo;
     PXClear(PXModelCreateInfo, &pxModelCreateInfo);
-    pxModelCreateInfo.MeshAmount = pxD8Geometry->Header.MeshAmount;
+    //pxModelCreateInfo.MeshAmount = pxD8Geometry->Header.MeshAmount;
 
     PXModelCreate(pxModelREF, &pxModelCreateInfo);
 
@@ -66,7 +66,7 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
         //-------------------------------------------------
         // Header
         PXFileReadI32U(pxFile, &mesh->TextureID);
-        PXFileReadB(pxFile, mesh->Position.Data4, sizeof(float) * 4);
+        PXFileReadB(pxFile, mesh->Position.Data, sizeof(float) * 4);
         PXFileReadI32U(pxFile, &mesh->RadiusBoundingSphere);
         PXFileReadI32U(pxFile, &mesh->DistanceLevelOfDetailMin);
         PXFileReadI32U(pxFile, &mesh->DistanceLevelOfDetailMax);
@@ -136,8 +136,8 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
         // Alloc?
         PXMeshCreateInfo pxMeshCreateInfo;
         PXClear(PXMeshCreateInfo, &pxMeshCreateInfo);
-        pxMeshCreateInfo.VertexStride = mesh->VertexBlock.BytesBetweenVertices;
-        pxMeshCreateInfo.VertexAmount = mesh->VertexBlock.NumberOfVertices;
+        //pxMeshCreateInfo.VertexStride = mesh->VertexBlock.BytesBetweenVertices;
+        //pxMeshCreateInfo.VertexAmount = mesh->VertexBlock.NumberOfVertices;
 
         PXMesh** pxMeshREF = PXModelMeshGet(*pxModelREF, meshIndex);
 
@@ -146,12 +146,12 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
 
         PXMesh* pxMesh = *pxMeshREF;
 
-        pxMesh->Position = mesh->Position;
-        pxMesh->TextureID = mesh->TextureID;
+        //pxMesh->Position = mesh->Position;
+        //pxMesh->TextureID = mesh->TextureID;
 
-        PXVector3F32* positions = pxMeshCreateInfo.Positions;
-        PXVector3F32* normals = pxMeshCreateInfo.Normals;
-        PXVector2F32* uVs = pxMeshCreateInfo.UVs;
+        PXVector3F32* positions = 0;//pxMeshCreateInfo.Positions;
+        PXVector3F32* normals = 0;//pxMeshCreateInfo.Normals;
+        PXVector2F32* uVs = 0;// pxMeshCreateInfo.UVs;
 
         // Read vertex data
         for(PXI32U v = 0; v < mesh->VertexBlock.NumberOfVertices; v++)
@@ -229,12 +229,12 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
         mesh->IndexListArray = PXFileDataPosition(pxFile);
         mesh->IndexListSize = sizeof(PXI16U) * mesh->face_count;
 
-        pxMesh->IndexAmount = mesh->face_count;
-        pxMesh->Index = PXMemoryHeapCallocT(PXI16U, pxMesh->IndexAmount);
+       // pxMesh->IndexAmount = mesh->face_count;
+       // pxMesh->Index = PXMemoryHeapCallocT(PXI16U, pxMesh->IndexAmount);
 
         //pxMesh->IndexAmount = mesh->face_count;
 
-        PXFileReadB(pxFile, pxMesh->Index, mesh->IndexListSize);
+       // PXFileReadB(pxFile, pxMesh->Index, mesh->IndexListSize);
 
        // PXFileCursorAdvance(pxFile, mesh->IndexListSize);
         //-------------------------------------------------
@@ -242,8 +242,8 @@ PXResult PXAPI PXD8GLoadFromFile(PXModel** pxModelREF, PXECSCreateInfo PXREF pxR
 
 
         PXFileReadI32U(pxFile, &mesh->MatrixListSize);
-        mesh->MatrixListAdress = PXMemoryHeapCallocT(PXMatrix4x4F, mesh->MatrixListSize);
-        PXFileReadB(pxFile, mesh->MatrixListAdress, sizeof(PXMatrix4x4F) * mesh->MatrixListSize);
+        mesh->MatrixListAddress = PXMemoryHeapCallocT(PXMatrix4x4F, mesh->MatrixListSize);
+        PXFileReadB(pxFile, mesh->MatrixListAddress, sizeof(PXMatrix4x4F) * mesh->MatrixListSize);
 
 
 

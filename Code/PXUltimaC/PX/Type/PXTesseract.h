@@ -20,6 +20,6 @@ PXTesseractCreateInfo;
 PXPublic void PXAPI PXTesseractRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 PXPublic PXResult PXAPI PXTesseractCreate(PXTesseract** pxTesseractREF, PXTesseractCreateInfo PXREF pxTesseractCreateInfo);
 PXPublic PXResult PXAPI PXTesseractRelease(PXTesseract PXREF pxTesseract);
-PXPublic PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXDrawInfo PXREF pxDrawInfo);
+PXPublic PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 #endif

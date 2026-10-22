@@ -27,7 +27,7 @@ PXResult PXAPI PXBashExecute(const PXText PXREF programPath, const PXBool syncro
     free(data);
     */
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXBashExecuteA

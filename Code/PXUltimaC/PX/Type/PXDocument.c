@@ -9,7 +9,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     {
     case 2:
     {
-        const PXI16U key = PXI16FromAdress(name);
+        const PXI16U key = PXI16FromAddress(name);
 
         switch(key)
         {
@@ -24,7 +24,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 3:
     {
-        const PXI32U key = PXI24FromAdress(name);
+        const PXI32U key = PXI24FromAddress(name);
 
         switch(key)
         {
@@ -39,7 +39,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 4:
     {
-        const PXI32U key = PXI32FromAdress(name);
+        const PXI32U key = PXI32FromAddress(name);
 
         switch(key)
         {
@@ -69,7 +69,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 5u:
     {
-        const PXI64U key = PXI40FromAdress(name);
+        const PXI64U key = PXI40FromAddress(name);
 
         switch(key)
         {
@@ -99,7 +99,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 6u:
     {
-        const PXI64U key = PXI48FromAdress(name);
+        const PXI64U key = PXI48FromAddress(name);
 
         switch(key)
         {
@@ -131,7 +131,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 7u:
     {
-        const PXI64U key = PXI56FromAdress(name);
+        const PXI64U key = PXI56FromAddress(name);
 
         switch(key)
         {
@@ -147,7 +147,7 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 8u:
     {
-        const PXI64U key = PXI64FromAdress(name);
+        const PXI64U key = PXI64FromAddress(name);
 
         switch(key)
         {
@@ -262,9 +262,9 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDoc
 
             pxDocumentElement->Type = PXDocumentElementTypeClassAttribute;
 
-            if (!pxDocumentElement->NameAdress)
+            if (!pxDocumentElement->NameAddress)
             {
-                pxDocumentElement->NameAdress = pxDocumentElementMemberName.NameAdress;
+                pxDocumentElement->NameAddress = pxDocumentElementMemberName.NameAddress;
                 pxDocumentElement->NameSize = pxDocumentElementMemberName.NameSize;
                 pxDocumentElement->Type = PXDocumentElementTypeClassMember;
             }
@@ -279,7 +279,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDoc
             const PXSize readBytes = PXDocumentElementIO(pxDocument, &pxDocumentElementClass, PXFileReadMultible); // Read parent entry
             PXFileCursorRewind(&pxDocument->Data, readBytes);
 
-            if (pxDocumentElement->NameAdress != 0)
+            if (pxDocumentElement->NameAddress != 0)
             {
                 ++(pxDocumentElementClass.AttribtesAmount);
             }
@@ -297,7 +297,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDoc
     #if 1
             {
                 char buffer[64];
-                PXTextCopyA(pxDocumentElementClass.NameAdress, pxDocumentElementClass.NameSize, buffer, 64);
+                PXTextCopyA(pxDocumentElementClass.NameAddress, pxDocumentElementClass.NameSize, buffer, 64);
 
     #if PXLogEnable
                 PXLogPrint
@@ -384,11 +384,11 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument PXREF pxDocument, PXC
 
     char commentBuffer[128];
     PXMemoryClear(commentBuffer, 128);
-    PXTextCopyA(pxDocumentElement->CommentAdress, pxDocumentElement->CommentSize, commentBuffer, 128);
+    PXTextCopyA(pxDocumentElement->CommentAddress, pxDocumentElement->CommentSize, commentBuffer, 128);
 
     char nameBuffer[64];
     PXMemoryClear(nameBuffer, 64);
-    PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+    PXTextCopyA(pxDocumentElement->NameAddress, pxDocumentElement->NameSize, nameBuffer, 64);
 
 
     char nameSpaceBuffer[64];
@@ -396,15 +396,15 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument PXREF pxDocument, PXC
     {
         char AAAAAAAAAAAAAAA[64];
         PXMemoryClear(AAAAAAAAAAAAAAA, 64);
-        PXTextCopyA(pxDocumentElement->NameSpaceAdress, pxDocumentElement->NameSpaceSize, AAAAAAAAAAAAAAA, 64);
+        PXTextCopyA(pxDocumentElement->NameSpaceAddress, pxDocumentElement->NameSpaceSize, AAAAAAAAAAAAAAA, 64);
 
         char BBBBBBBBBB[64];
         PXMemoryClear(BBBBBBBBBB, 64);
-        PXTextCopyA(pxDocumentElement->NameClassAdress, pxDocumentElement->NameClassSize, BBBBBBBBBB, 64);
+        PXTextCopyA(pxDocumentElement->NameClassAddress, pxDocumentElement->NameClassSize, BBBBBBBBBB, 64);
 
         char CCCCCCCCCCCC[64];
         PXMemoryClear(CCCCCCCCCCCC, 64);
-        PXTextCopyA(pxDocumentElement->NameShortAdress, pxDocumentElement->NameShortSize, CCCCCCCCCCCC, 64);
+        PXTextCopyA(pxDocumentElement->NameShortAddress, pxDocumentElement->NameShortSize, CCCCCCCCCCCC, 64);
 
         PXTextPrintA(nameSpaceBuffer, 64, "S:%s, C:%s, N:%s", AAAAAAAAAAAAAAA, BBBBBBBBBB, CCCCCCCCCCCC);
     }
@@ -466,7 +466,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument PXREF pxDocument, PXC
     {
         char aliasBuffer[64];
         PXMemoryClear(aliasBuffer, 64);
-        PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
+        PXTextCopyA(pxDocumentElement->AliasAddress, pxDocumentElement->AliasSize, aliasBuffer, 64);
 
         PXLogPrint
         (
@@ -573,7 +573,7 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument PXREF pxDocument, PXCodeDocument
         //&pxDocumentElement->ID, PXTypeSize,
         &pxDocumentElement->Depth, PXTypeSize,
         &pxDocumentElement->NameSize, PXTypeSize,
-        &pxDocumentElement->NameAdress, PXTypeAdress,
+        &pxDocumentElement->NameAddress, PXTypeAddress,
         &pxDocumentElement->AttribtesAmount, PXTypeSize,
         &pxDocumentElement->MemberAmount, PXTypeSize,
         &pxDocumentElement->ElementChildrenAmount, PXTypeSize,
@@ -621,7 +621,7 @@ PXResult PXAPI PXDocumentElementWrite(PXCodeDocument PXREF pxDocument, PXCodeDoc
 #if PXLogEnable
         {
             char buffer[64];
-            PXTextCopyA(pxDocumentElementTemp.NameAdress, pxDocumentElementTemp.NameSize, buffer, 64);
+            PXTextCopyA(pxDocumentElementTemp.NameAddress, pxDocumentElementTemp.NameSize, buffer, 64);
 
             PXLogPrint
             (
@@ -645,7 +645,7 @@ PXResult PXAPI PXDocumentElementWrite(PXCodeDocument PXREF pxDocument, PXCodeDoc
 #if PXLogEnable
     {
         char buffer[64];
-        PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, buffer, 64);
+        PXTextCopyA(pxDocumentElement->NameAddress, pxDocumentElement->NameSize, buffer, 64);
 
         PXLogPrint
         (
@@ -719,7 +719,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
     char elementType[64];
     PXMemoryClear(elementType, 64);
     char nameBuffer[64];
-    PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+    PXTextCopyA(pxDocumentElement->NameAddress, pxDocumentElement->NameSize, nameBuffer, 64);
     char typeBuffer[64];
     PXMemoryClear(typeBuffer, 64);
     char valueBuffer[64];
@@ -730,7 +730,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
     case PXTypeBool:
     {
         PXBool value;
-        PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAdress, &value);
+        PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAddress, &value);
 
         PXTextPrintA(typeBuffer, 64, "bool");
         PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
@@ -739,7 +739,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
     case PXTypeF32:
     {
         PXF32 value;
-        PXCopy(PXF32, &pxDocumentElement->ElementMember.ValueAdress, &value);
+        PXCopy(PXF32, &pxDocumentElement->ElementMember.ValueAddress, &value);
 
         PXTextPrintA(typeBuffer, 64, "PXF32");
         PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
@@ -748,7 +748,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
     case PXTypeIS:
     {
         int value;
-        PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);
+        PXCopy(int, &pxDocumentElement->ElementMember.ValueAddress, &value);
 
         PXTextPrintA(typeBuffer, 64, "int");
         PXTextPrintA(valueBuffer, 64, "%i", value);
@@ -757,7 +757,7 @@ PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement
     case PXTypeString:
     {
         PXTextPrintA(typeBuffer, 64, "string");
-        PXTextCopyA(pxDocumentElement->ElementMember.ValueAdress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);
+        PXTextCopyA(pxDocumentElement->ElementMember.ValueAddress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);
         break;
     }
     default:

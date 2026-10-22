@@ -2,10 +2,10 @@
 
 PXResult PXAPI PXHTTPServerStart(PXHTTPServer PXREF pxHTTPServer)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXHTTPServerStop(PXHTTPServer PXREF pxHTTPServer)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

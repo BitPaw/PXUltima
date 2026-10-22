@@ -8,14 +8,14 @@
 typedef struct PXTimelinePath_
 {
     PXECSInfo Info;
-    PXColorRGBAI8 Color;
+    PXColorRGBA_U8 Color;
 }
 PXTimelinePath;
 
 typedef struct PXTimelineEvent_
 {
     PXECSInfo Info;
-    PXColorRGBAI8 Color;
+    PXColorRGBA_U8 Color;
     PXTexture2D* Texture;
 }
 PXTimelineEvent;

@@ -40,10 +40,10 @@ PXResult PXAPI PXAudioListenerCreate(PXAudioListener** pxAudioListenerREF, PXAud
 
 PXResult PXAPI PXAudioListenerRelease(const PXAudioListener PXREF pxAudioListener)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXAudioListenerDraw(const PXAudioListener PXREF pxAudioListener, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXAudioListenerDraw(const PXAudioListener PXREF pxAudioListener, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }

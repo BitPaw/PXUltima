@@ -14,7 +14,7 @@ typedef struct PXECSRegisterInfo_ PXECSRegisterInfo;
 typedef void(PXAPI* PXECSRegisterFunction)(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 typedef PXResult(PXAPI* PXECSCreateFunction)(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
 typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo PXREF pxECSInfo, PXECSCreateInfo PXREF pxECSCreateInfo);
-typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxECSInfo, PXDrawInfo PXREF pxDrawInfo);
+typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxECSInfo, PXEngineUIDrawInfo PXREF pxDrawInfo);
 
 
 typedef enum PXECSType_

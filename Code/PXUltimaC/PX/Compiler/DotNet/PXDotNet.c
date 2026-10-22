@@ -408,7 +408,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 {
 #if OSUnix
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
     // Open lib
@@ -417,7 +417,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
         char versionString[64];
 
         PXText pxTextRuntimeDLLPath;
-        PXTextFromAdressA(&pxTextRuntimeDLLPath, runtimeDLLPathBuffer, 0, sizeof(runtimeDLLPathBuffer));
+        PXTextFromAddressA(&pxTextRuntimeDLLPath, runtimeDLLPathBuffer, 0, sizeof(runtimeDLLPathBuffer));
 
         PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
 
@@ -429,7 +429,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 
     // Functionpointers
     {
-        PXLibraryFuntionEntry pxFunctionEntryList[] =
+        PXLibraryFunctionEntry pxFunctionEntryList[] =
         {
             { &pxDotNetCoreCLR->CLRJitAttachState, "CLRJitAttachState"},
             { &pxDotNetCoreCLR->GetCLRRuntimeHost , "GetCLRRuntimeHost"},
@@ -443,7 +443,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
             { &pxDotNetCoreCLR->g_CLREngineMetrics , "g_CLREngineMetrics"},
             { &pxDotNetCoreCLR->g_dacTable, "g_dacTable"}
         };
-        const PXI8U amount = sizeof(pxFunctionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXI8U amount = sizeof(pxFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
         PXLibraryGetSymbolListA(&pxDotNetCoreCLR->LibraryCoreCLR, pxFunctionEntryList, amount);
     }
@@ -484,7 +484,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
         PXFileCreate(&asseblyList, &pxFileOpenInfo);
 
         PXText pxTextExtension;
-        PXTextFromAdressA(&pxTextExtension, ".dll", 4, 4);
+        PXTextFromAddressA(&pxTextExtension, ".dll", 4, 4);
 
         // Add core DLLs from runtime folder
         {
@@ -650,7 +650,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 
 #else
 // ???
-return PXActionRefusedNotImplemented;
+return PXResultRefusedNotImplemented;
 #endif
 }
 
@@ -658,13 +658,13 @@ PXResult PXAPI PXGetloc(char* buffer)
 {
 #if OSUnix
 
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 
 #elif OSWindows
     // C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll"
 
 #if OSWindowsDotNETAviable
-	char hostfxrPathW[MAX_PATH];
+    char hostfxrPathW[MAX_PATH];
 
     PXLibrary pxLibrary;
 
@@ -700,7 +700,7 @@ PXResult PXAPI PXGetloc(char* buffer)
 #endif
 
 #else
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #endif
 }
 
@@ -733,7 +733,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 
     // Load symbols
     {
-        PXLibraryFuntionEntry pxFunctionEntryList[] =
+        PXLibraryFunctionEntry pxFunctionEntryList[] =
         {
             { &pxDotNetHostFX->AvailableSDKsGet, "hostfxr_get_available_sdks"},
             { &pxDotNetHostFX->EnvironmentInfoGet,  "hostfxr_get_dotnet_environment_info" },
@@ -752,7 +752,7 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
             { &pxDotNetHostFX->ErrorWriterSet,  "hostfxr_set_error_writer"},
             { &pxDotNetHostFX->RuntimePropertyValueSet, "hostfxr_set_runtime_property_value"}
         };
-        const PXSize size = sizeof(pxFunctionEntryList) / sizeof(PXLibraryFuntionEntry);
+        const PXSize size = sizeof(pxFunctionEntryList) / sizeof(PXLibraryFunctionEntry);
 
         PXLibraryGetSymbolListA(&pxDotNetHostFX->LibraryHostFX, pxFunctionEntryList, size);
     }
@@ -1029,7 +1029,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
     // entryPointAssemblyName : No path, bare name of the DLL but without the extension!!
     // entryPointTypeName     : Format: "NameSpace.ClassName"
     // entryPointMethodName   : Normal ANSI name of the function
-    // delegate               : Adress for storage
+    // delegate               : Address for storage
     const coreclr_create_delegate_ptr delegateCreate = (coreclr_create_delegate_ptr)pxDotNetCoreCLR->DelegateCreate;
     const HRESULT crteateResultID = delegateCreate
     (
@@ -1038,7 +1038,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
         fileNameBuffer,
         typeNameRef,
         pxDelegate->NameFunction,
-        &pxDelegate->FunctionAdress
+        &pxDelegate->FunctionAddress
     );
     const PXResult crteateResult = PXErrorFromHRESULT(crteateResultID);
 
@@ -1056,7 +1056,7 @@ PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCL
         "DLL", pxDelegate->NameLibrary,
         "Class", typeNameRef,
         "Function", pxDelegate->NameFunction,
-        "Adress", pxDelegate->FunctionAdress
+        "Address", pxDelegate->FunctionAddress
     );
 #endif
 
@@ -1149,7 +1149,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
             delegateSignatureRef,
             PXNull,
             PXNull,
-            &pxDelegate->FunctionAdress
+            &pxDelegate->FunctionAddress
         );
         const PXResult fetchResult = PXErrorFromHRESULT(fetchResultID);
 
@@ -1167,7 +1167,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
             functionNameW,  // Function name
             delegateSignatureRef,         // L"YourNamespace.YourClass+YourMethodDelegate, YourAssembly", UNMANAGEDCALLERSONLY_METHOD
             PXNull,
-            &pxDelegate->FunctionAdress
+            &pxDelegate->FunctionAddress
         );
         const PXResult loadResult = PXErrorFromHRESULT(loadResultID);
 
@@ -1196,7 +1196,7 @@ PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, 
         "Class", classNameW,
         "Function", functionNameW,
         "Expected format", delegateSignatureText,
-        "Adress", pxDelegate->FunctionAdress
+        "Address", pxDelegate->FunctionAddress
     );
 #endif
 

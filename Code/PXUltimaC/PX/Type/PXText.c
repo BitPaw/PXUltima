@@ -4,7 +4,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/PXOS.h>
-
+#include <PX/Type/PXTime.h>
 #include <stdio.h>
 
 
@@ -273,7 +273,7 @@ PXSize PXAPI PXTextPrintA(char PXREF text, const PXSize size, const char* style,
     va_start(args, style);
 
     PXText pxText;
-    PXTextFromAdressA(&pxText, text, 0, size);
+    PXTextFromAddressA(&pxText, text, 0, size);
 
     PXSize xx = PXTextPrintV(&pxText, style, args);
 
@@ -512,6 +512,18 @@ PXSize PXAPI PXTextCopy(PXText PXREF pxText, const PXText PXREF pxTextsource)
     }
 
     return 0;
+}
+
+PXSize PXAPI PXTextCopyFromA(PXText PXREF pxText, const char* text, const PXSize textLength)
+{
+    if(!pxText)
+    {
+        return 0;
+    }
+
+    pxText->SizeUsed = PXTextCopyA(text, textLength, pxText->A, pxText->SizeAllocated);
+
+    return pxText->SizeUsed;
 }
 
 PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
@@ -769,9 +781,31 @@ PXSize PXAPI PXTextCountUntilW(const wchar_t* pxText, const PXSize textSize, con
     return samecounter;
 }
 
-PXBool PXAPI PXTextCompare(const PXText PXREF A, const PXText PXREF textB)
+PXBool PXAPI PXTextCompare(const PXText PXREF textA, const PXText PXREF textB, const PXI8U flags)
 {
-    return PXTrue;
+    PXBool sameTextFormat = textA->Format && textB->Format;
+
+    if(sameTextFormat)
+    {
+        switch(textA->Format)
+        {
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                return PXTextCompareA(textA->A, textA->SizeUsed, textB->A, textB->SizeUsed, flags);
+            }
+            case TextFormatUNICODE:
+            {
+                return PXTextCompareW(textA->A, textA->SizeUsed, textB->A, textB->SizeUsed);
+            }
+        }
+    }
+    else
+    {
+
+    }
+
+    return PXFalse;
 }
 
 PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char* PXREF stringList, const PXI8U* stringListSize, const PXI8U amount)
@@ -819,7 +853,17 @@ PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize b
 
     if((PXTextCompareRequireSameLength & flags) && (aSize != bSize)) // Should be correct but can make errors?
     {
-        return PXFalse;
+        // There are cases, where the \0 is counted as a length, that would be an error.
+        aSize = PXTextLengthA(a, aSize);
+        bSize = PXTextLengthA(b, bSize);
+
+        // If we still have different sized, they are different.
+        if(aSize != bSize)
+        {
+            return PXFalse;
+        }
+
+        // Seems we were correct.
     }
 
     const PXSize textSize = PXMathMinimumIU(aSize, bSize);
@@ -827,8 +871,25 @@ PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize b
     PXSize index = 0;
     PXSize samecounter = 0;
 
-    for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
-        samecounter += a[index] == b[index];
+    PXBool doIgnoreCase = (PXTextCompareIgnoreCase & flags) > 0;
+
+    if(doIgnoreCase)
+    {
+        for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+        {
+            const char aU = PXTextMakeCaseUpper(a[index]);
+            const char bU = PXTextMakeCaseUpper(b[index]);
+
+            samecounter += aU == bU;
+        }   
+    }
+    else
+    {
+        for(; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
+        {
+            samecounter += a[index] == b[index];
+        }
+    }
 
     if(PXTextCompareRequireSameLength & flags)
     {
@@ -1003,14 +1064,14 @@ PXSize PXAPI PXTextFindLastCharacterA(const char PXREF text, const PXSize textSi
         return -1;
     }
 
-    const void* foundAdress = PXMemoryLocateLast(text, character, textSize);
+    const void* foundAddress = PXMemoryLocateLast(text, character, textSize);
 
-    if(!foundAdress)
+    if(!foundAddress)
     {
         return -1;
     }
 
-    PXSize offset = (PXSize)foundAdress - (PXSize)text;
+    PXSize offset = (PXSize)foundAddress - (PXSize)text;
 
 
     return offset;
@@ -1282,7 +1343,7 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
                 int PXREF i = va_arg(args, int*);
 
                 PXText pxTextInt;
-                PXTextFromAdressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
+                PXTextFromAddressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
 
                 const PXSize readBytes = PXTextToInt(&pxTextInt, i);
 
@@ -1298,7 +1359,7 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
             {
                 PXF32* number = va_arg(args, PXF32*);
                 PXText pxTextPXF32;
-                PXTextFromAdressA(&pxTextPXF32, buffer + offsetData, offsetLength, offsetLength);
+                PXTextFromAddressA(&pxTextPXF32, buffer + offsetData, offsetLength, offsetLength);
 
                 const PXSize readBytes = PXTextToF32(&pxTextPXF32, number);
 
@@ -1461,30 +1522,30 @@ PXSize PXAPI PXTextReplace(PXText PXREF pxText, char target, char value)
 PXSize PXAPI PXTextReplaceA(char PXREF text, PXSize textSize, const char PXREF target, const PXSize targetSize, const char value)
 {
     PXSize cursorSize = textSize;
-    char* cursorAdress = text;
+    char* cursorAddress = text;
 
     for(;;)
     {
-        const PXSize indexStart = PXTextFindFirstCharacterA(cursorAdress, cursorSize, target[0]);
+        const PXSize indexStart = PXTextFindFirstCharacterA(cursorAddress, cursorSize, target[0]);
 
         if(indexStart == -1)
         {
             break;
         }
 
-        char* indexAdress = &text[indexStart];
+        char* indexAddress = &text[indexStart];
         const PXSize indexSize = PXMathMinimumIU(textSize - indexStart, targetSize);
 
-        const PXBool doesMatch = PXTextCompareA(indexAdress, indexSize, target, targetSize, 0);
+        const PXBool doesMatch = PXTextCompareA(indexAddress, indexSize, target, targetSize, 0);
 
         if(!doesMatch)
         {
             break;
         }
 
-        PXMemorySet(indexAdress, value, indexSize);
+        PXMemorySet(indexAddress, value, indexSize);
 
-        cursorAdress = indexAdress + targetSize;
+        cursorAddress = indexAddress + targetSize;
     }
 
     return textSize;
@@ -1519,7 +1580,7 @@ PXSize PXAPI PXTextReplaceByte(char PXREF text, PXSize textSize, char target, ch
     return counter;
 }
 
-PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat)
+PXResult PXAPI PXTextFromAddress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat)
 {
     PXBool isLenghKnown = (PXSize)PXTextLengthUnkown != sizeUsed;
 
@@ -1555,28 +1616,28 @@ PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize
        // pxText->NumberOfCharacters = sizeUsed;
     }
     pxText->Format = pxTextFormat;
-    pxText->Data4 = address;
+    pxText->Data = address;
 
 
 
     return PXResultOK;
 }
 
-PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+PXResult PXAPI PXTextFromAddressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated)
 {
-    return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatASCII);
+    return PXTextFromAddress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatASCII);
 }
 
-PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+PXResult PXAPI PXTextFromAddressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated)
 {
-    return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE);
+    return PXTextFromAddress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE);
 }
 
 PXResult PXAPI PXTextCreateCopy(PXText PXREF pxText, const PXText PXREF pxTextSource)
 {
     *pxText = *pxTextSource;
 
-    pxText->Data4 = PXMemoryHeapCallocT(PXByte, pxTextSource->SizeUsed+1);
+    pxText->Data = PXMemoryHeapCallocT(PXByte, pxTextSource->SizeUsed+1);
     PXTextCopy(pxTextSource, pxText);
 
     return PXResultOK;
@@ -1817,6 +1878,11 @@ PXASCII PXAPI PXTextMakePrintable(const PXASCII c)
     return (0x20 <= c && c <= 0x7E) ? c : '.';
 }
 
+PXBool PXAPI PXTextHasData(const PXText PXREF pxText)
+{
+    return pxText->Data > 0 && pxText->SizeUsed > 0;
+}
+
 PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize)
 {
     const PXSize length = PXMathMinimumIU(dataSize, stringSize);
@@ -1829,7 +1895,7 @@ PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char
 
     for(PXSize dataIndex = 0; dataIndex < length; ++dataIndex)
     {
-        const PXByte dataElement = ((PXAdress)data)[dataIndex];
+        const PXByte dataElement = ((PXAddress)data)[dataIndex];
 
         for(unsigned char bitIndex = 0; bitIndex < 8u; ++bitIndex)
         {
@@ -2072,7 +2138,7 @@ PXSize PXAPI PXTextToF64A(const PXText PXREF pxText, PXF64 PXREF number)
 #define PXSizePB 1000000000000000
 #define PXSizeEB 1000000000000000000
 
-#include <PX/OS/Time/PXTime.h>
+
 
 PXSize PXAPI PXTextFormatDateTime(PXText PXREF pxText, const PXTime PXREF pxTime)
 {

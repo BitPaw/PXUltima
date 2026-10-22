@@ -33,11 +33,11 @@ void PXAPI PXIconRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 PXResult PXAPI PXGUIIconLoad(PXIcon PXREF pxIcon)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
     pxIcon->IconHandle = LoadIcon(NULL, IDI_EXCLAMATION);
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -49,7 +49,7 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
     }
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
     SHSTOCKICONINFO stockIconInfo;
     PXClear(SHSTOCKICONINFO, &stockIconInfo);
@@ -57,14 +57,14 @@ PXResult PXAPI PXIconGetSystem(PXIcon PXREF pxIcon, const int iconID)
 
     /*
     
-Folder up	SIID_UP
-Back	SIID_BACK
-Forward	SIID_FORWARD
-Refresh	SIID_REFRESH
-Folder	SIID_FOLDER
-Open folder	SIID_FOLDEROPEN
-Drive	SIID_DRIVEFIXED
-Desktop	SIID_DESKTOPPC
+Folder up    SIID_UP
+Back    SIID_BACK
+Forward    SIID_FORWARD
+Refresh    SIID_REFRESH
+Folder    SIID_FOLDER
+Open folder    SIID_FOLDEROPEN
+Drive    SIID_DRIVEFIXED
+Desktop    SIID_DESKTOPPC
     */
     const HRESULT resultFile = SHGetStockIconInfo
     (
@@ -102,7 +102,7 @@ Desktop	SIID_DESKTOPPC
 
     return pxResult;
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -121,7 +121,7 @@ PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon)
 #endif
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
     HINSTANCE instanceHandle = NULL; // predefined system icon if NULL
 
@@ -153,40 +153,43 @@ PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon)
 
     return PXResultOK;
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
-PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
+PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture2D PXREF pxTexture2D)
 {
-    if(!(pxIcon && pxTexture))
+    if(!(pxIcon && pxTexture2D))
     {
         return PXResultRefusedParameterNull;
     }
 
-    if(!pxTexture->PixelData.Adress)
+    if(!pxTexture2D->Data.Address)
     {
-        return PXActionRefusedObjectInternalDataMissing;
+        return PXResultRefusedObjectInternalDataMissing;
     }
 
 #if OSUnix
 
 #elif OSWindows
+    LONG width = pxTexture2D->Width;
+    LONG height = pxTexture2D->Height;
+
     BYTE* bitmapData[2];
     HBITMAP bitmapHandle[2];
 
     BITMAPINFO bitmapInfo[2];
     PXClearList(BITMAPINFO, bitmapInfo, 2);
     bitmapInfo[0].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bitmapInfo[0].bmiHeader.biWidth = pxTexture->Width;
-    bitmapInfo[0].bmiHeader.biHeight = -pxTexture->Height; // Top-down DIB 
+    bitmapInfo[0].bmiHeader.biWidth = width;
+    bitmapInfo[0].bmiHeader.biHeight = -height; // Top-down DIB 
     bitmapInfo[0].bmiHeader.biPlanes = 1;
     bitmapInfo[0].bmiHeader.biBitCount = 24;// PXColorFormatBitsPerPixel(pxIconCreateInfo->IconImage->Format);
     bitmapInfo[0].bmiHeader.biCompression = BI_RGB;
 
     bitmapInfo[1].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bitmapInfo[1].bmiHeader.biWidth = pxTexture->Width;
-    bitmapInfo[1].bmiHeader.biHeight = -pxTexture->Height; // Top-down DIB
+    bitmapInfo[1].bmiHeader.biWidth = width;
+    bitmapInfo[1].bmiHeader.biHeight = -height; // Top-down DIB
     bitmapInfo[1].bmiHeader.biPlanes = 1;
     bitmapInfo[1].bmiHeader.biBitCount = 1; // Monochrome bitmap 
     bitmapInfo[1].bmiHeader.biCompression = BI_RGB;
@@ -198,30 +201,27 @@ PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
 
     BYTE* pixelDataBGR = (BYTE*)bitmapData[0];
     BYTE* pxMaskAND = (BYTE*)bitmapData[1];
-    BYTE* pxMaskXOR = &bitmapData[(pxTexture->Width * pxTexture->Height) / 8];
+    BYTE* pxMaskXOR = &bitmapData[(width * height) / 8];
 
-    const PXSize maskXOROffset = (pxTexture->Height - 1) * ((pxTexture->Width + 7) / 8) + ((pxTexture->Width - 1) / 8) + 1;
+    const PXSize maskXOROffset = (height - 1) * ((width + 7) / 8) + ((width - 1) / 8) + 1;
 
-    for(PXSize y = 0; y < pxTexture->Height; y++)
+    for(LONG y = 0; y < height; ++y)
     {
-        for(PXSize x = 0; x < pxTexture->Width; x++)
+        for(LONG x = 0; x < width; ++x)
         {
-            const PXSize indexInsret = (x + y * pxTexture->Width) * 3;
+            const PXSize indexInsret = (x + y * width) * 3;
 
             const PXSize sourceX = x;// +pxIconCreateInfo->OffsetX;
             const PXSize sourceY = y;// + pxIconCreateInfo->OffsetY;
-            const PXSize indexSource = PXTexturePixelPosition(pxTexture, sourceX, sourceY);
-            PXByte* pixelDataSource = pxTexture->PixelData.Data4;
-            const PXColorRGBAI8 PXREF source = (PXColorRGBAI8*)&pixelDataSource[indexSource];
+            const PXColorRGBA_U8 PXREF source = PXTexture2DPixelPosition(pxTexture2D, sourceX, sourceY);
 
             BYTE PXREF insert = &pixelDataBGR[indexInsret];
-
 
             insert[0] = source->Blue;
             insert[1] = source->Green;
             insert[2] = source->Red;
             // There is a *2 because the mask index is only used every 2nd line??
-            const PXSize maskIndex = (y * ((pxTexture->Width + 7) / 8) * 2) + (x / 8);
+            const PXSize maskIndex = (y * ((width + 7) / 8) * 2) + (x / 8);
             const PXBool isTransparent = source->Alpha == 0;
             const PXI8U bitData = 1 << (7 - (x % 8));
 
@@ -244,8 +244,8 @@ PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
         pxIcon->IconHandle = CreateIcon
         (
             PXNull,
-            pxTexture->Width,
-            pxTexture->Height,
+            width,
+            height,
             1,
             1,
             pxMaskAND,
@@ -274,19 +274,7 @@ PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture PXREF pxTexture)
 
 PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreateInfo)
 {
-    // Check if texture is present
-    if(!pxIconCreateInfo->IconImage)
-    {
-        PXECSCreateInfo pxResourceCreateInfoSub;
-
-        PXClear(PXECSCreateInfo, &pxResourceCreateInfoSub);
-        pxResourceCreateInfoSub.ObjectReference = (PXECSInfo**)&pxIconCreateInfo->IconImage;
-        pxResourceCreateInfoSub.ObjectAmount = 1;
-        pxResourceCreateInfoSub.FilePath = pxIconCreateInfo->Info.FilePath;
-      //  pxResourceCreateInfoSub.Type = PXResourceTypeTexture;
-
-     //   //PXResourceManagerAdd(&pxResourceCreateInfoSub);
-    }
+    return;
 
 #if PXLogEnable
     PXLogPrint
@@ -316,7 +304,7 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
     }
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 #elif OSWindows
 
     union
@@ -413,19 +401,17 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
 
         // COPY
         {
-            PXTextureCreateInfo pxTextureCreateInfo;
-            PXClear(PXTextureCreateInfo, &pxTextureCreateInfo);
-            pxTextureCreateInfo.Type = PXTextureType2D;
-            pxTextureCreateInfo.Format = PXColorFormatRGBAI8;
-            pxTextureCreateInfo.Payload = pixels;
-            pxTextureCreateInfo.PayloadSize = totalSize;
-            pxTextureCreateInfo.T2D.Width = iconWidth;
-            pxTextureCreateInfo.T2D.Height = iconHeight;
+            PXTexture2DCreateInfo pxTextureCreateInfo;
+            PXClear(PXTexture2DCreateInfo, &pxTextureCreateInfo);
+           // pxTextureCreateInfo.Type = PXTextureType2D;
+           // pxTextureCreateInfo.Format = PXColorFormatRGBAI8;
+           // pxTextureCreateInfo.Payload = pixels;
+          //  pxTextureCreateInfo.PayloadSize = totalSize;
+            pxTextureCreateInfo.Width = iconWidth;
+            pxTextureCreateInfo.Height = iconHeight;
 
-            PXTextureCreate(&pxIcon->Texture, &pxTextureCreateInfo);
+            PXTexture2DCreate(&pxIcon->Texture, &pxTextureCreateInfo);
         }
-
-        PXTextureRegisterGL(pxIcon->Texture);
     }
 
     return PXResultOK;
@@ -542,6 +528,6 @@ PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF file
 
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXResultRefusedNotSupportedByOperatingSystem;
 #endif
 }

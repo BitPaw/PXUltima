@@ -187,7 +187,7 @@ typedef struct PXN64_
 {
     PXEndian Endian;
     PXN64CICType CICType;
-    void* RAMEntryPointAdress;
+    void* RAMEntryPointAddress;
 
     PXI8U EndiannessID;
     PXI8U initialPI_BSB_DOM1_LAT_REG;

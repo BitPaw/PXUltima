@@ -3,20 +3,20 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 
-
+#if OSUnix
+#elif OSWindows
 #include <windows.h>
 #include <setupapi.h>
-
-#include <stdio.h>
-
 #pragma comment(lib, "setupapi.lib")
+#endif
 
+#if OSWindows
 PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSize, char PXREF textResol, PXSize PXREF textSizeResol)
 {
     *textSizeResol = PXTextCopyA("*No device name*", 17, textResol, *textSizeResol);
 
     HDEVINFO hDevInfo = SetupDiGetClassDevsA(NULL, NULL, NULL, DIGCF_PRESENT | DIGCF_ALLCLASSES);
-    if(hDevInfo == INVALID_HANDLE_VALUE) 
+    if(hDevInfo == INVALID_HANDLE_VALUE)
         return 0;
 
     SP_DEVINFO_DATA devInfoData;
@@ -30,21 +30,21 @@ PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSiz
                 // Try friendly name
                 if(SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_FRIENDLYNAME, NULL,
                    (BYTE*)textResol, *textSizeResol, NULL)) {
-                    
+
                     break;
                 }
 
                 // Try device description
                 if(SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_DEVICEDESC, NULL,
                    (BYTE*)textResol, *textSizeResol, NULL)) {
-                    
+
                     break;
                 }
 
                 // Try manufacturer
                 if(SetupDiGetDeviceRegistryPropertyA(hDevInfo, &devInfoData, SPDRP_MFG, NULL,
                    (BYTE*)textResol, *textSizeResol, NULL)) {
-          
+
                     break;
                 }
 
@@ -94,10 +94,10 @@ void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHa
             RID_DEVICE_INFO_MOUSE PXREF deviceInfoMouse = &deviceInfo.mouse;
             pxDeviceInput->Type = PXDeviceInputTypeMouse;
 
-            pxDeviceInput->Mouse.dwId = deviceInfoMouse->dwId;
-            pxDeviceInput->Mouse.dwNumberOfButtons = deviceInfoMouse->dwNumberOfButtons;
-            pxDeviceInput->Mouse.dwSampleRate = deviceInfoMouse->dwSampleRate;
-            pxDeviceInput->Mouse.fHasHorizontalWheel = deviceInfoMouse->fHasHorizontalWheel;
+            pxDeviceInput->Mouse.ID = deviceInfoMouse->dwId;
+            pxDeviceInput->Mouse.NumberOfButtons = deviceInfoMouse->dwNumberOfButtons;
+            pxDeviceInput->Mouse.SampleRate = deviceInfoMouse->dwSampleRate;
+            pxDeviceInput->Mouse.HasHorizontalWheel = deviceInfoMouse->fHasHorizontalWheel;
 
             break;
         }
@@ -120,14 +120,15 @@ void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHa
         }
     }
 }
+#endif
 
 PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo PXREF pxDeviceInputUpdateInfo)
 {
-
-
     PXDeviceInput pxDeviceInput;
 
+#if OSWindows
     PXDeviceFill(&pxDeviceInput, pxDeviceInputUpdateInfo->DeviceHandle);
+#endif
 
 #if PXLogEnable
 
@@ -171,6 +172,9 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
         return PXResultRefusedParameterNull;
     }
 
+#if OSUnix
+#elif OSWindows
+
     UINT numDevices = 0;
 
     // Count the amount of devices
@@ -195,9 +199,9 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
 
     PXDeviceInput* pxDeviceInputList = PXMemoryHeapCallocT(PXDeviceInput, numDevices);
     RAWINPUTDEVICELIST* deviceList = PXMemoryHeapCallocT(RAWINPUTDEVICELIST, numDevices);
-   
-    if(!deviceList) 
-        return PXActionFailedMemoryAllocation;
+
+    if(!deviceList)
+        return PXResultFailedMemoryAllocation;
 
     *pxDeviceInput = pxDeviceInputList;
 
@@ -210,13 +214,13 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
         return PXResultInvalid;
     }
 
-    for(UINT i = 0; i < numDevices; ++i) 
+    for(UINT i = 0; i < numDevices; ++i)
     {
         PXDeviceInput PXREF pxDeviceInput = &pxDeviceInputList[i];
         RAWINPUTDEVICELIST PXREF rawINPUTDEVICELIST = &deviceList[i];
 
         PXDeviceFill(pxDeviceInput, rawINPUTDEVICELIST->hDevice);
-      
+
         // Get name
         {
             UINT deviceNameSize = 0;
@@ -239,10 +243,11 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXR
             PXSize siii = 260;
 
             PXDeviceNameResolveA(xxxxxxxxx, deviceNameSize, pxDeviceInput->Name, &siii);
-        }    
+        }
     }
 
-    free(deviceList);
+    PXMemoryHeapFree(PXNull, deviceList);
+#endif
 
     return PXResultOK;
 }

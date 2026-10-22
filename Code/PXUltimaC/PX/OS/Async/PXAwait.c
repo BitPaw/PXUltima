@@ -9,7 +9,7 @@
 #endif
 
 /*
-PXBool PXAPI PXAwaitChange(volatile void PXREF dataAdress, const PXSize dataSize)
+PXBool PXAPI PXAwaitChange(volatile void PXREF dataAddress, const PXSize dataSize)
 {
 #if OSUnix
 
@@ -34,18 +34,18 @@ PXBool PXAPI PXAwaitChange(volatile void PXREF dataAdress, const PXSize dataSize
 
     unsigned char compareValue[8];
 
-    PXMemoryCopy(dataAdress, dataSize, compareValue, 8u);
+    PXMemoryCopy(dataAddress, dataSize, compareValue, 8u);
 
 #if WindowsAtleast8 && 0
     const DWORD timeoutMilliseconds = INFINITE;
-    const PXBool sucessfull = WaitOnAddress(dataAdress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h
+    const PXBool sucessfull = WaitOnAddress(dataAddress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h
 
     return sucessfull;
 #else // Under windows 8
 
     for(;;)
     {
-        const PXBool didChange = !PXMemoryCompare(compareValue, 8u, dataAdress, dataSize);
+        const PXBool didChange = !PXMemoryCompare(compareValue, 8u, dataAddress, dataSize);
 
         if (didChange)
         {

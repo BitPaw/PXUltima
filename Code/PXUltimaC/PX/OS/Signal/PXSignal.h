@@ -4,9 +4,18 @@
 #define OSSignalIncluded
 
 #include <PX/Engine/PXResource.h>
+#include <PX/OS/Async/PXProcess.h>
 
 #include <setjmp.h>
+#include <PX/OS/Async/PXThread.h>
 //#include <csetjmp> C++ lib
+
+#if OSUnix
+#define _GNU_SOURCE        // Linux: enables REG_RIP, REG_RSP, etc.
+#define _XOPEN_SOURCE 700  // POSIX: enables siginfo_t
+#include <signal.h>
+#elif OSWindows
+#endif // OSUnix
 
 /*
 
@@ -16,21 +25,40 @@
 //void __CRTDECL OSSystemSignalCallBack(const int signalID);
 #endif*/
 
-typedef enum PXSignalToken_
+
+typedef struct PXSignalInfo_
 {
-    PXSignalTokenInvalid,
-    PXSignalTokenAbort, // Abnormal termination
-    PXSignalTokenPXF32MathError, // PXF32ing-point errorc
-    PXSignalTokenIllegalInstruction, // Illegal instruction
-    PXSignalTokenINT, // CTRL+C signal
-    PXSignalTokenMemoryViolation, // Illegal storage access
-    PXSignalTokenTerminationRequest // Termination request
+    int ID;
+    PXResult Result;
+
+    PXThreadID ThreadID;
+    PXProcessID ProcessID;
+
+    void* FaultAddress; // Memory address that caused fault
+
+    PXSize ParameterAmount;
+
+    PXThreadContext Context;
 }
-PXSignalToken;
+PXSignalInfo;
 
-typedef void (PXCDECL* PXSignalCallBack)(const int signalID);
 
-PXPublic PXResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
+#if OSUnix
+PXPrivate PXResult PXAPI PXSignalIDToResult(const int signalID);
+PXPrivate void PXCDECL PXSignalCallBack_Sigaction(int sig, siginfo_t* info, void* ucontext);
+PXPrivate void PXCDECL PXSignalCallBack_Signal(const int signalID);
+#elif OSWindows
+PXPrivate LONG WINAPI PXSignalCallBack_Exception(EXCEPTION_POINTERS* exceptionInfo);
+#endif
+
+
+typedef void (PXAPI* PXSignalCallBackFunction)(PXSignalInfo PXREF pxSignalInfo);
+
+PXPrivate void PXAPI PXSignalDeploy(PXSignalInfo PXREF pxSignalInfo);
+
+
+PXPublic void PXAPI PXSignalCallBackSet(PXSignalCallBackFunction pxSignalCallBackFunction);
+
 
 // Current state of the processor.
 // Is used to restore a point in execution

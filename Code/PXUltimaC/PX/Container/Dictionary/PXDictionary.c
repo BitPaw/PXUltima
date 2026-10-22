@@ -145,7 +145,7 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const vo
     {
         PXResult pxResult = PXDictionaryIndex(pxDictionary, i, &target);
 
-        if(PXActionRefusedIndexOutOfBounce == pxResult)
+        if(PXResultRefusedIndexOutOfBounce == pxResult)
         {
             PXDictionaryIndexUnsafe(pxDictionary, i, &target);
 
@@ -164,7 +164,7 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const vo
 
     if(!found)
     {
-        return PXActionRefusedNotFound;
+        return PXResultRefusedNotFound;
     }
 
     // Copy Key
@@ -191,11 +191,11 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
         return PXResultRefusedParameterNull;
     }
 
-    const void* valueSourceAdress = 0;
-    void* valueTargetAdress = 0;
+    const void* valueSourceAddress = 0;
+    void* valueTargetAddress = 0;
     PXSize valueSize = 0;
 
-    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAdress);
+    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAddress);
 
     if(PXResultOK != pxResult)
     {
@@ -211,19 +211,19 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
         }
         case PXDictionaryValueLocalityInternalEmbedded:
         {
-            valueSourceAdress = value;
+            valueSourceAddress = value;
             valueSize = pxDictionary->List.ValueTypeSize;
             break;
         }
         case PXDictionaryValueLocalityExternalReference:
         {
-            valueSourceAdress = &value;
+            valueSourceAddress = &value;
             valueSize = sizeof(void*);
             break;
         }
     }
 
-    PXSize amount = PXMemoryCopy(valueSourceAdress, valueTargetAdress, valueSize);
+    PXSize amount = PXMemoryCopy(valueSourceAddress, valueTargetAddress, valueSize);
 
     PXAssert(amount == valueSize, "Copy failed!");
 
@@ -255,7 +255,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
         "Key:%s Value:0x%p (%3i%%) Size:%i/%i",
         keyText,
         //valueSourceSize,
-        valueTargetAdress,
+        valueTargetAddress,
         //valueTargetSize,
         (PXI32S)((dictionary->EntryAmountCurrent / (PXF32)dictionary->EntryAmountMaximal) * 100.0f),
         dictionary->EntryAmountCurrent,
@@ -279,10 +279,10 @@ PXResult PXAPI PXDictionaryEntryAddRange
         return PXResultRefusedParameterNull;
     }
 
-    const void* valueSourceAdress = 0;
-    void* valueTargetAdress = 0;
+    const void* valueSourceAddress = 0;
+    void* valueTargetAddress = 0;
 
-    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAdress);
+    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAddress);
 
     if(PXResultOK != pxResult)
     {
@@ -298,17 +298,17 @@ PXResult PXAPI PXDictionaryEntryAddRange
         }
         case PXDictionaryValueLocalityInternalEmbedded:
         {
-            valueSourceAdress = value;
+            valueSourceAddress = value;
             break;
         }
         case PXDictionaryValueLocalityExternalReference:
         {
-            valueSourceAdress = &value;
+            valueSourceAddress = &value;
             break;
         }
     }
 
-    PXMemoryCopy(valueSourceAdress, valueTargetAdress, valueSize);
+    PXMemoryCopy(valueSourceAddress, valueTargetAddress, valueSize);
 
     ++pxDictionary->List.EntryAmountUsed;
 }
@@ -350,12 +350,12 @@ PXBool PXAPI PXDictionaryRemoveFound(PXDictionary PXREF dictionary, const void* 
 
 PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF key, void PXREF value)
 {
-    void* valteAdress = 0;
+    void* valteAddress = 0;
 
     PXDictionaryEntry pxDictionaryEntry;
     pxDictionaryEntry.KeyAddress = key;
     pxDictionaryEntry.KeySize = dictionary->KeyTypeSize;
-    pxDictionaryEntry.ValueAddress = &valteAdress;
+    pxDictionaryEntry.ValueAddress = &valteAddress;
     pxDictionaryEntry.ValueSize = dictionary->List.ValueTypeSize;
 
     const PXBool found = PXDictionaryEntryFind(dictionary, &pxDictionaryEntry);
@@ -366,7 +366,7 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF
         return PXFalse;
     }
 
-    void* data = (char*)valteAdress + dictionary->KeyTypeSize;
+    void* data = (char*)valteAddress + dictionary->KeyTypeSize;
 
     switch(dictionary->ValueLocality)
     {
@@ -387,7 +387,7 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF
         }
     }
 
-    PXDictionaryRemoveFound(dictionary, valteAdress, data);
+    PXDictionaryRemoveFound(dictionary, valteAddress, data);
 
     return PXTrue;
 }
@@ -426,7 +426,7 @@ PXResult PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSi
 
         if(!is)
         {
-            return PXActionRefusedIndexOutOfBounce;
+            return PXResultRefusedIndexOutOfBounce;
         }
     }
 
@@ -490,5 +490,5 @@ PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, PXDictiona
 
     pxDictionaryEntrya->ValueAddress = PXNull;
 
-    return PXActionRefusedNotFound;
+    return PXResultRefusedNotFound;
 }

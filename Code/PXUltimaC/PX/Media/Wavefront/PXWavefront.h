@@ -5,6 +5,8 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/Media/MTL/PXMTL.h>
+#include <PX/Engine/ECS/PXECS.h>
+#include <PX/Type/PXMesh.h>
 
 #define PXWavefrontNameSize 64u
 #define PXWavefrontElementNameLength 50u

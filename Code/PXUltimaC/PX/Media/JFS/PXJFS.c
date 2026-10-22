@@ -1,13 +1,14 @@
 #include "PXJFS.h"
 
 #include <PX/Media/ZLIB/PXZLIB.h>
+#include <PX/OS/File/PXFile.h>
 
 PXResult PXAPI PXJFSRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 {
     return PXResultOK;
 }
 
-PXResult PXAPI PXJFSLoadFromFile(PXTexture PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
+PXResult PXAPI PXJFSLoadFromFile(void PXREF pxTexture, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
     PXFile* pxFile = pxECSCreateInfo->FileCurrent;
 

@@ -8,7 +8,7 @@ PXSize PXAPI PXAdler32Check(const void PXREF data, const PXSize length)
 
     for (PXSize index = 0; index < length; ++index)
     {
-        a = (a + ((PXAdress)data)[index]) % adlerModolo;
+        a = (a + ((PXAddress)data)[index]) % adlerModolo;
         b = (b + a) % adlerModolo;
     }
 

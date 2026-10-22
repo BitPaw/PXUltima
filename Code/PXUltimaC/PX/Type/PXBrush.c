@@ -27,7 +27,7 @@ void PXAPI PXBrushRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 
 PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBrushCreateInfo)
 {
-    PXColorRGBI8* pxColorRGBI8 = &pxBrushCreateInfo->Color;
+    PXColorRGB_U8* PXColorRGB_U8 = &pxBrushCreateInfo->Color;
     PXBrush* pxBrush = PXNull;
 
     pxBrushCreateInfo->Info.Static = &PXBrushRegisterInfo;
@@ -41,12 +41,12 @@ PXResult PXAPI PXBrushCreate(PXBrush** pxBrushRef, PXBrushCreateInfo PXREF pxBru
 
     pxBrush = *pxBrushRef;
 
-    PXBrushColorSet(pxBrush, pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+    PXBrushColorSet(pxBrush, PXColorRGB_U8->Red, PXColorRGB_U8->Green, PXColorRGB_U8->Blue);
 
 #if OSUnix
     // X11 does not have a brush, right?
 #elif OSWindows   
-    const COLORREF brushColor = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+    const COLORREF brushColor = RGB(PXColorRGB_U8->Red, PXColorRGB_U8->Green, PXColorRGB_U8->Blue);
 
     pxBrush->BrushHandle = CreateSolidBrush(brushColor);
 

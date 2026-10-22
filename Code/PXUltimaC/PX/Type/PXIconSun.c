@@ -1,6 +1,6 @@
 #include "PXIconSun.h"
-#include <gl/GL.h>
 
+#include <GL/gl.h>
 
 const char PXIconSunName[] = "IconSun";
 const PXI8U PXIconSunNameLength = sizeof(PXIconSunName);
@@ -24,15 +24,15 @@ void PXAPI PXIconSunRegisterToECS(PXECSRegisterInfo PXREF pxECSRegisterInfo)
 
 PXResult PXAPI PXIconSunCreate(PXIconSun** pxIconSunREF, PXIconSunCreateInfo PXREF pxIconSunCreateInfo)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
 PXResult PXAPI PXIconSunRelease(PXIconSun PXREF pxIconSun)
 {
-    return PXActionRefusedNotImplemented;
+    return PXResultRefusedNotImplemented;
 }
 
-PXResult PXAPI PXIconSunDraw(PXIconSun PXREF pxIconSun, PXDrawInfo PXREF pxDrawInfo)
+PXResult PXAPI PXIconSunDraw(PXIconSun PXREF pxIconSun, PXEngineUIDrawInfo PXREF pxDrawInfo)
 {
 #if 0
     PXVector3F32 center;
@@ -47,7 +47,7 @@ PXResult PXAPI PXIconSunDraw(PXIconSun PXREF pxIconSun, PXDrawInfo PXREF pxDrawI
     if(circleSegments < 12) circleSegments = 12;
     if(rayCount < 4) rayCount = 4;
 
-    PXVector3F32 camRight, camUp;       
+    PXVector3F32 camRight, camUp;
 
     //get_camera_axes_from_modelview(&camRight, &camUp);
 

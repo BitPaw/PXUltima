@@ -60,7 +60,7 @@ PXResult PXAPI PXUserNameGetAA(PXText PXREF name)
         }
     }
 
-    return PXActionRefusedFormatNotSupported;
+    return PXResultRefusedFormatNotSupported;
 }
 
 PXBool PXAPI PXUserEnviromentFolderGet(PXText PXREF name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)

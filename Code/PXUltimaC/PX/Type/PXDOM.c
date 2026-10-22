@@ -184,7 +184,7 @@ PXDOMIndex PXAPI PXDOMObjectAdd(PXDOM PXREF pxDOM, PXDOMPrefixStack PXREF pxDOMP
 #if PXLogEnable && PXDOMLogDebug
     char buffer[128];
     PXText pxText;
-    PXTextFromAdressA(&pxText, buffer, 0, sizeof(buffer));
+    PXTextFromAddressA(&pxText, buffer, 0, sizeof(buffer));
 
     PXDOMObjectToString(pxDOM, pxDOMClass, &pxText);
 
@@ -371,7 +371,7 @@ void PXAPI PXDOMStackStore
 #if PXLogEnable && PXDOMLogDebug
         char bufferValue[128];
         PXText pxTextValue;
-        PXTextFromAdressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
+        PXTextFromAddressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
 
         PXTextAppendA(&pxTextValue, pxDOMKey->Symbol.Source, pxDOMKey->Symbol.Size);
 
@@ -445,7 +445,7 @@ void PXAPI PXDOMPropertyAdd
 
         char textBuffer[128];
         PXText pxText;
-        PXTextFromAdressA(&pxText, textBuffer, 0, sizeof(textBuffer));
+        PXTextFromAddressA(&pxText, textBuffer, 0, sizeof(textBuffer));
 
         PXDOMObjectToString(pxDOM, parent, &pxText);
 
@@ -467,8 +467,8 @@ void PXAPI PXDOMPropertyAdd
     PXText pxTextKey;
     char bufferValue[128];
     PXText pxTextValue;
-    PXTextFromAdressA(&pxTextKey, bufferKey, 0, sizeof(bufferKey));
-    PXTextFromAdressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
+    PXTextFromAddressA(&pxTextKey, bufferKey, 0, sizeof(bufferKey));
+    PXTextFromAddressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
 
     PXDOMPropertyToString(pxDOM, pxDOMProperty, &pxTextKey, &pxTextValue);
 
@@ -657,6 +657,11 @@ PXSize PXAPI PXDOMKeyAmount(const PXDOM PXREF pxDOM)
 
 PXDOMKey* PXAPI PXDOMKeyGet(const PXDOM PXREF pxDOM, const PXDOMIndex index)
 {
+    if(!pxDOM)
+    {
+        return PXNull;
+    }
+
     PXDOMKey* pxDOMKey = (PXDOMKey*)PXListItemAtIndexGet(&pxDOM->ListKey, index);
 
     return pxDOMKey;
@@ -664,6 +669,11 @@ PXDOMKey* PXAPI PXDOMKeyGet(const PXDOM PXREF pxDOM, const PXDOMIndex index)
 
 PXResult PXAPI PXDOMKeyToString(PXDOM PXREF pxDOM, PXText PXREF pxText, const PXSize index)
 {
+    if(!(pxDOM && pxText))
+    {
+        return PXNull;
+    }
+
     const PXDOMKey PXREF key = PXDOMKeyGet(pxDOM, index);
 
     PXTextAppendA(pxText, key->Symbol.Source, key->Symbol.Size);
@@ -673,11 +683,21 @@ PXResult PXAPI PXDOMKeyToString(PXDOM PXREF pxDOM, PXText PXREF pxText, const PX
 
 void PXAPI PXDOMCursorStart(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
 {
+    if(!(pxDOM && pxDOMCursor))
+    {
+        return;
+    }
+
     PXClear(PXDOMCursor, pxDOMCursor);
 }
 
-void PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
+PXBool PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
 {
+    if(!(pxDOM && pxDOMCursor))
+    {
+        return PXFalse;
+    }
+
     pxDOMCursor->k = 0;
 
     // Go deeper if possible
@@ -685,7 +705,7 @@ void PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
     {
         pxDOMCursor->current = pxDOMCursor->obj->ObjectIndexChild;
         pxDOMCursor->indent++;
-        return;
+        return PXTrue;
     }
 
     // Otherwise go sideways or up
@@ -704,10 +724,17 @@ void PXAPI PXDOMCursorNext(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
     {
         pxDOMCursor->current = pxDOMCursor->obj->ObjectIndexSibling;
     }
+
+    return PXTrue;
 }
 
 PXBool PXAPI PXDOMCursorUpdate(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
 {
+    if(!(pxDOM && pxDOMCursor))
+    {
+        return PXFalse;
+    }
+
     if(pxDOMCursor->current == PXDOMIndexInvalid)
     {
         return PXFalse;
@@ -746,11 +773,26 @@ PXSize PXAPI PXDOMCursorKeyCompare
     const PXSize keyAmount
 )
 {
-    PXDOMClass* obj = pxDOMCursor->cls;
+    if(!(pxDOM && pxDOMCursor && keyList))
+    {
+        return PXDOMIndexInvalid;
+    }
 
-    PXDOMKey* pxDOMKey = PXDOMKeyGet(pxDOM, obj->KeyStack.PartIndexFirst + obj->KeyStack.PartIndexCount -1);
+    PXDOMClass PXREF obj = pxDOMCursor->cls;
 
-    for(size_t i = 0; i < keyAmount; i++)
+    if(!obj)
+    {
+        return PXDOMIndexInvalid;
+    }
+
+    PXDOMKey PXREF pxDOMKey = PXDOMKeyGet(pxDOM, obj->KeyStack.PartIndexFirst + obj->KeyStack.PartIndexCount -1);
+
+    if(!pxDOMKey)
+    {
+        return PXDOMIndexInvalid;
+    }
+
+    for(PXSize i = 0; i < keyAmount; i++)
     {
         const char* key = keyList[i];
 
@@ -769,16 +811,21 @@ PXSize PXAPI PXDOMCursorKeyCompare
         }
     }    
 
-    return -1;
+    return PXDOMIndexInvalid;
 }
 
 PXSize PXAPI PXDOMCursorPropertyCompare(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor, const char** keyList, const PXSize keyAmount)
 {
+    if(!(pxDOM && pxDOMCursor && keyList && keyAmount > 0))
+    {
+        return PXDOMIndexInvalid;
+    }
+
     PXDOMProperty* pxDOMProperty = pxDOMCursor->prop;
 
     PXDOMKey* pxDOMKey = PXDOMKeyGet(pxDOM, pxDOMProperty->KeyStack.PartIndexFirst + pxDOMProperty->KeyStack.PartIndexCount - 1);
 
-    for(size_t i = 0; i < keyAmount; i++)
+    for(PXSize i = 0; i < keyAmount; i++)
     {
         const char* key = keyList[i];
 
@@ -797,12 +844,17 @@ PXSize PXAPI PXDOMCursorPropertyCompare(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxD
         }
     }
 
-    return -1;
+    return PXDOMIndexInvalid;
 }
 
 PXBool PXAPI PXDOMCursorPropertyUpdate(PXDOM PXREF pxDOM, PXDOMCursor PXREF pxDOMCursor)
 {
-    PXDOMCursorUpdate(pxDOM, pxDOMCursor);
+    PXBool isOK = PXDOMCursorUpdate(pxDOM, pxDOMCursor);
+
+    if(!isOK)
+    {
+        return isOK;
+    }
 
     PXBool invalidIndex =
         pxDOMCursor->k == PXDOMIndexInvalid ||
@@ -844,11 +896,11 @@ void PXAPI PXDOMPrintTreeIterative(PXDOM PXREF pxDOM)
     // Print class name
     char bufferKey[128];
     PXText pxTextKey;
-    PXTextFromAdressA(&pxTextKey, bufferKey, 0, sizeof(bufferKey));
+    PXTextFromAddressA(&pxTextKey, bufferKey, 0, sizeof(bufferKey));
 
     char bufferValue[128];
     PXText pxTextValue;
-    PXTextFromAdressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
+    PXTextFromAddressA(&pxTextValue, bufferValue, 0, sizeof(bufferValue));
 
     while(PXDOMCursorUpdate(pxDOM, &pxDOMCursor))
     {
