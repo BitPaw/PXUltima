@@ -28,7 +28,7 @@ PXECSRegisterInfoDynamic PXTesseractRegisterInfoDynamic;
 
 
 #define NUM_VERTICES 16
-const PXVector4F32 PXTesseractVertices[] =
+const PXVector4_F32 PXTesseractVertices[] =
 {
     {-1,-1,-1,-1},
     {1,-1,-1,-1},
@@ -129,9 +129,9 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
     angle += 0.005f;
 
     // Create rotation matrices
-    PXMatrix4x4F rotXY;
-    PXMatrix4x4F rotXW;
-    PXMatrix4x4F rotYZ;
+    PXMatrixR4C4_F32 rotXY;
+    PXMatrixR4C4_F32 rotXW;
+    PXMatrixR4C4_F32 rotYZ;
 
     //y22 += angle*0.02;
 
@@ -147,15 +147,15 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
 
 
-    PXMatrix4x4F combined;
+    PXMatrixR4C4_F32 combined;
 
     PXMatrix4x4FIdentity(&combined);
     PXMatrix4x4FMultiply(&combined, &rotXY);
     PXMatrix4x4FMultiply(&combined, &rotYZ);
     PXMatrix4x4FMultiply(&combined, &rotXW);
 
-    PXVector4F32 lineColor = { 0.15f,0.15f,0.15f,0 };
-    PXVector4F32 dotColor = { 1.0f,0,0,0 };
+    PXVector4_F32 lineColor = { 0.15f,0.15f,0.15f,0 };
+    PXVector4_F32 dotColor = { 1.0f,0,0,0 };
 
 
     glEnable(GL_BLEND);
@@ -189,27 +189,27 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
     for(int i = 0; i < trianglesToRender; ++i)
     {
-        PXVector4F32 vA = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][0]];
-        PXVector4F32 vB = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][1]];
-        PXVector4F32 vC = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][2]];
+        PXVector4_F32 vA = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][0]];
+        PXVector4_F32 vB = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][1]];
+        PXVector4_F32 vC = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][2]];
 
-        PXVector3F32 n;
+        PXVector3_F32 n;
 
-        PXVector4FNormal(&n, &vA, &vB, &vC, distance);
+        PXVector4Normal_F32(&n, &vA, &vB, &vC, distance);
 
         glNormal3f(n.X, n.Y, n.Z);
 
         for(int j = 0; j < 3; ++j)
         {
 
-            PXVector4F32 vOrg = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][j]];
+            PXVector4_F32 vOrg = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][j]];
 
-            PXVector4F32 v = vOrg;
-            PXVector3F32 p;
+            PXVector4_F32 v = vOrg;
+            PXVector3_F32 p;
 
 
             PXMatrix4x4FMultiplyV4F(&combined, &v);
-            PXVector4Demote(&v, &p, distance);
+            PXVector4Demote_F32(&v, &p, distance);
 
             // Color based on w (depth cue)
             float color = (v.W + 1.0f) / 2.0f;
@@ -218,7 +218,7 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
 
 
-            PXVector4F32 ccolor = (vOrg);
+            PXVector4_F32 ccolor = (vOrg);
             ccolor.X = 1 - (ccolor.X + color) / 2.0f;
             ccolor.Y = 1 - (ccolor.Y + color) / 2.0f;
             ccolor.Z = 1 - (ccolor.Z + color) / 2.0f;
@@ -320,15 +320,15 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
     {
         for(int j = 0; j < 3; ++j)
         {
-            PXVector4F32 vOrg = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][j]];
+            PXVector4_F32 vOrg = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][j]];
 
-            PXVector4F32 v;
-            PXVector3F32 p;
+            PXVector4_F32 v;
+            PXVector3_F32 p;
 
             v = vOrg;
 
             PXMatrix4x4FMultiplyV4F(&combined, &v);
-            PXVector4Demote(&v, &p, distance);
+            PXVector4Demote_F32(&v, &p, distance);
 
             glVertex3f(p.X, p.Y, p.Z);
         }
