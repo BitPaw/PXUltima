@@ -1534,7 +1534,7 @@ void PXAPI PXEngineUpdateMouse(PXEngine PXREF pxEngine, PXWindowEventMouseMoveDa
 
     //pxWindowEventInputMouseMove
 
-    PXVector3F32 mouseInput;
+    PXVector3_F32 mouseInput;
     mouseInput.X = pxWindowEventInputMouseMove->Delta.X;
     mouseInput.Y = pxWindowEventInputMouseMove->Delta.Y;
     mouseInput.Z = 0.0f; // No roll/Z rotation input from a standard mouse
@@ -1555,12 +1555,12 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
 
 
     // 1. Initialize a unified 4D movement accumulator vector
-    PXVector4F32 move = { 0.0f, 0.0f, 0.0f, 0.0f };
+    PXVector4_F32 move = { 0.0f, 0.0f, 0.0f, 0.0f };
 
     // 2. Fetch the current directional vectors from the 4D camera rotor
-    PXVector3F32 forward;
-    PXVector3F32 right;
-    PXVector3F32 up = {0,1,0};
+    PXVector3_F32 forward;
+    PXVector3_F32 right;
+    PXVector3_F32 up = {0,1,0};
     PXCameraForward(pxCamera, &forward);
     PXCameraRight(pxCamera, &right);
     //PXCameraUp(pxCamera, &up);
@@ -1569,8 +1569,8 @@ void PXAPI PXEngineUpdateKeyBoard(PXEngine PXREF pxEngine, PXWindowEventKeyboard
     right.Y = 0;
     forward.Y = 0;
 
-    PXVector3F32Normalize(&right);
-    PXVector3F32Normalize(&forward);
+    PXVector3Normalize_F32(&right);
+    PXVector3Normalize_F32(&forward);
 
 
     // 3. Accumulate directional inputs into the 4D vector
@@ -3309,10 +3309,10 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine)
 void PXAPI PXEngineHitBoxHandleAvsB(PXEngine PXREF pxEngine, PXFieldEffect PXREF hitBoxA, PXFieldEffect PXREF hitBoxB)
 {
     /*
-    PXVector3F32 positionA;
-    PXVector3F32 positionB;
-    PXVector3F32 positionSizeA;
-    PXVector3F32 positionSizeB;
+    pxVector3 positionA;
+    pxVector3 positionB;
+    pxVector3 positionSizeA;
+    pxVector3 positionSizeB;
 
     PXF32 boundingBox[8] =
     {
