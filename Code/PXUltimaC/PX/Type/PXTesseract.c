@@ -135,24 +135,24 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
     //y22 += angle*0.02;
 
-    PXMatrix4x4FIdentity(&rotXY);
-    PXMatrix4x4FIdentity(&rotXW);
-    PXMatrix4x4FIdentity(&rotYZ);
+    PXMatrixR4C4Identity_F32(&rotXY);
+    PXMatrixR4C4Identity_F32(&rotXW);
+    PXMatrixR4C4Identity_F32(&rotYZ);
     //  Matrix4x4RotationSet4D(&rotXW, 0, 2, angle);
     // Matrix4x4RotationSet4D(&rotXW, 0, 3, angle);
      // Matrix4x4RotationSet4D(&rotXY, 0, 1, angle);
 
-    PXMatrix4x4FRotationAxisSet(&rotXW, 1, 3, angle);
-    PXMatrix4x4FRotationAxisSet(&rotYZ, 0, 2, angle);
+    PXMatrixR4C4FRotationAxisSet(&rotXW, 1, 3, angle);
+    PXMatrixR4C4FRotationAxisSet(&rotYZ, 0, 2, angle);
 
 
 
     PXMatrixR4C4_F32 combined;
 
-    PXMatrix4x4FIdentity(&combined);
-    PXMatrix4x4FMultiply(&combined, &rotXY);
-    PXMatrix4x4FMultiply(&combined, &rotYZ);
-    PXMatrix4x4FMultiply(&combined, &rotXW);
+    PXMatrixR4C4Identity_F32(&combined);
+    PXMatrixR4C4Multiply_F32(&combined, &rotXY);
+    PXMatrixR4C4Multiply_F32(&combined, &rotYZ);
+    PXMatrixR4C4Multiply_F32(&combined, &rotXW);
 
     PXVector4_F32 lineColor = { 0.15f,0.15f,0.15f,0 };
     PXVector4_F32 dotColor = { 1.0f,0,0,0 };
@@ -204,11 +204,9 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
             PXVector4_F32 vOrg = PXTesseractVertices[PXTesseractIndexTriangleFaces[i][j]];
 
-            PXVector4_F32 v = vOrg;
+            PXVector4_F32 v;
             PXVector3_F32 p;
-
-
-            PXMatrix4x4FMultiplyV4F(&combined, &v);
+            PXMatrixR4C4MulVec4_F32(&combined, &vOrg, &v);
             PXVector4Demote_F32(&v, &p, distance);
 
             // Color based on w (depth cue)
@@ -324,10 +322,8 @@ PXResult PXAPI PXTesseractDraw(PXTesseract PXREF pxTesseract, PXEngineUIDrawInfo
 
             PXVector4_F32 v;
             PXVector3_F32 p;
-
-            v = vOrg;
-
-            PXMatrix4x4FMultiplyV4F(&combined, &v);
+            
+            PXMatrixR4C4MulVec4_F32(&combined, &vOrg, &v);
             PXVector4Demote_F32(&v, &p, distance);
 
             glVertex3f(p.X, p.Y, p.Z);
