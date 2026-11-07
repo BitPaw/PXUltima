@@ -4,6 +4,11 @@
 #include <PX/Container/Buffer/PXBuffer.h>
 #include <PX/Type/PXColor.h>
 
+#if OSUnix
+#elif OSWindows
+#include <windef.h> // HBITMAP
+#endif
+
 typedef struct PXTexture2D_
 {
     PXECSInfo Info;
