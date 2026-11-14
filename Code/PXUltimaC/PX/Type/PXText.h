@@ -40,9 +40,8 @@ typedef char PXUTF8; // Varraiable size 1-4 Bytes per character
 
 typedef struct PXText_
 {
-    PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
-    PXSize SizeUsed; // [8 Byte, Offset 8]
-    //PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
+    PXSize SizeInBytesAllocated; // Size that the buffer poited to has
+    PXSize SizeInBytesUsed; 
 
     union
     {
@@ -64,11 +63,11 @@ PXText;
 
 #define PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, format)\
         char bufferCacheName[bufferCacheSize];\
-        (pxText)->SizeAllocated = sizeof(bufferCacheName);\
-        (pxText)->SizeUsed = 0;\
+        (pxText)->SizeInBytesAllocated = sizeof(bufferCacheName);\
+        (pxText)->SizeInBytesUsed = 0;\
         (pxText)->Format = format;\
         (pxText)->A = bufferCacheName;\
-        PXMemorySet((pxText)->A, '\0', (pxText)->SizeAllocated);
+        PXMemorySet((pxText)->A, '\0', (pxText)->SizeInBytesAllocated);
 
 
 #define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
@@ -88,33 +87,38 @@ PXPublic PXResult PXAPI PXTextCreatePath(PXText PXREF pxText);
 PXPublic PXResult PXAPI PXTextFromAddress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat);
 PXPublic PXResult PXAPI PXTextFromAddressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated);
 PXPublic PXResult PXAPI PXTextFromAddressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+PXPublic PXResult PXAPI PXTextFromAddressU(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+
+PXPublic PXResult PXAPI PXTextFromAddressAC(PXText PXREF pxText, const char* textAddress, const PXSize textLength);
+PXPublic PXResult PXAPI PXTextFromAddressWC(PXText PXREF pxText, const wchar_t* textAddress, const PXSize textLength);
+PXPublic PXResult PXAPI PXTextFromAddressUC(PXText PXREF pxText, const char* textAddress, const PXSize textLength);
 
 
 #define PXTextMakeFixedC(pxText, c)\
         char character = c; \
-        (pxText)->SizeAllocated = sizeof(character);\
-        (pxText)->SizeUsed = sizeof(character);\
+        (pxText)->SizeInBytesAllocated = sizeof(character);\
+        (pxText)->SizeInBytesUsed = sizeof(character);\
         (pxText)->Format = TextFormatASCII;\
         (pxText)->A = &character;
 
 #define PXTextMakeFixedA(pxText, s)\
         char text[] = s;\
-        (pxText)->SizeAllocated = sizeof(text);\
-        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->SizeInBytesAllocated = sizeof(text);\
+        (pxText)->SizeInBytesUsed = (pxText)->SizeInBytesAllocated;\
         (pxText)->Format = TextFormatASCII;\
         (pxText)->A = text;
 
 #define PXTextMakeFixedGlobalA(pxText, s) \
         (pxText)->A = s; \
-        (pxText)->SizeAllocated = PXTextLengthA((pxText)->A, PXTextLengthUnkown);\
-        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->SizeInBytesAllocated = PXTextLengthA((pxText)->A, PXTextLengthUnkown);\
+        (pxText)->SizeInBytesUsed = (pxText)->SizeInBytesAllocated;\
         (pxText)->Format = TextFormatASCII;\
 
 
 #define PXTextMakeFixedNamed(pxText, name, s, format)\
         char name[] = s;\
-        (pxText)->SizeAllocated = sizeof(name) - 1u;\
-        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->SizeInBytesAllocated = sizeof(name) - 1u;\
+        (pxText)->SizeInBytesUsed = (pxText)->SizeInBytesAllocated;\
         (pxText)->NumberOfCharacters = 0;\
         (pxText)->Format = format;\
         (pxText)->A = name;
@@ -136,12 +140,18 @@ PXPublic PXResult PXAPI PXTextDestroy(PXText PXREF pxText);
 
 PXPublic PXSize PXAPI PXTextFromInt(PXText PXREF pxText, int number);
 PXPublic PXSize PXAPI PXTextFromBool(PXText PXREF pxText, const PXBool number);
-PXPublic PXSize PXAPI PXTextFromPXF32(PXText PXREF pxText, const PXF32 number);
+PXPublic PXSize PXAPI PXTextFromFloat(PXText PXREF pxText, const PXF32 number);
 
+
+PXPublic PXSize PXAPI PXTextLength(const PXText PXREF pxText);
+
+
+PXPublic PXBool PXAPI PXTextDemotePossible(const PXText PXREF pxText);
 
 // If a text is fetched with UNICODE, check if we can demote this to ASCII.
 // This shall reduce memory use. Questionable if useful.
 PXPublic PXBool PXAPI PXTextDemote(PXText PXREF pxText);
+
 
 
 PXPublic PXBool PXAPI PXTextIsPrintableA(const PXASCII c);
@@ -168,7 +178,11 @@ PXPublic PXBool PXAPI PXTextHasData(const PXText PXREF pxText);
 PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
 PXPublic PXSize PXAPI PXTextToInt(const PXText PXREF pxText, int PXREF number);
+PXPublic PXSize PXAPI PXTextToIntOffset(const PXText PXREF pxText, const PXSize offset, int PXREF number);
+
 PXPublic PXSize PXAPI PXTextToIntA(const char PXREF text, const PXSize textSize, int PXREF number);
+PXPublic PXSize PXAPI PXTextToIntW(const wchar_t PXREF text, const PXSize textSize, int PXREF number);
+
 PXPublic PXSize PXAPI PXTextToBool(const PXText PXREF pxText, PXBool PXREF number);
 PXPublic PXSize PXAPI PXTextToF32(const PXText PXREF pxText, PXF32 PXREF number);
 PXPublic PXSize PXAPI PXTextToF64A(const PXText PXREF pxText, PXF64 PXREF number);
@@ -197,8 +211,11 @@ PXPublic PXSize PXAPI PXTextTrimA(char PXREF text, const PXSize textSize);
 
 PXPublic PXSize PXAPI PXTextAppend(PXText PXREF currentString, const PXText PXREF appendingString);
 PXPublic PXSize PXAPI PXTextAppendC(PXText PXREF currentString, const char character);
-PXPublic PXSize PXAPI PXTextAppendA(PXText PXREF currentString, const char PXREF appaendString, const char appaendStringSize);
-PXPublic PXSize PXAPI PXTextAppendW(wchar_t PXREF dataString, const PXSize dataStringSize, const wchar_t PXREF appaendString, const PXSize appaendStringSize);
+PXPublic PXSize PXAPI PXTextAppendW(PXText PXREF currentString, const wchar_t character);
+PXPublic PXSize PXAPI PXTextAppendU(PXText PXREF currentString, const char PXREF characterBlock, const PXI8U amoutOfBytes);
+
+PXPublic PXSize PXAPI PXTextAppendAV(PXText PXREF currentString, const char PXREF appaendString, const char appaendStringSize);
+PXPublic PXSize PXAPI PXTextAppendWV(wchar_t PXREF dataString, const PXSize dataStringSize, const wchar_t PXREF appaendString, const PXSize appaendStringSize);
 PXPublic PXSize PXAPI PXTextAppendF(PXText PXREF pxText, const char PXREF fomat, ...);
 
 PXPublic PXSize PXAPI PXTextPrint(PXText PXREF pxText, const char* style, ...);
