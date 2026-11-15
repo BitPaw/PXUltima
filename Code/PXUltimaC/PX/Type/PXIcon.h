@@ -46,6 +46,8 @@ typedef struct PXIconCreateInfo_
     PXSize Height;
     PXSize RowSize;
     PXSize BitPerPixel;
+
+    PXText FilePath;
 }
 PXIconCreateInfo;
 
@@ -56,6 +58,6 @@ PXPublic PXResult PXAPI PXIconGetEmbedded(PXIcon PXREF pxIcon);
 PXPublic PXResult PXAPI PXIconGetViaFilePath(PXIcon PXREF pxIcon, const PXText PXREF filePath);
 PXPublic PXResult PXAPI PXIconFromTexture(PXIcon PXREF pxIcon, PXTexture2D PXREF pxTexture2D);
 
-PXPublic PXResult PXAPI PXIconCreate(PXIcon** pxIcon, PXIconCreateInfo PXREF pxIconCreateInfo);
+PXPublic PXResult PXAPI PXIconCreate(PXIcon** pxIconREF, PXIconCreateInfo PXREF pxIconCreateInfo);
 
 #endif
