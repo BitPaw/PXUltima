@@ -475,21 +475,21 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
     {
         case TextFormatASCII:
         {
-            pxTextLibraryName->SizeUsed = GetModuleFileNameA
+            pxTextLibraryName->SizeInBytesUsed = GetModuleFileNameA
             (
                 pxLibrary->Handle.Data,
                 pxTextLibraryName->A,
-                pxTextLibraryName->SizeAllocated
+                pxTextLibraryName->SizeInBytesAllocated
             );
             break;
         }
         case TextFormatUNICODE:
         {
-            pxTextLibraryName->SizeUsed = GetModuleFileNameW
+            pxTextLibraryName->SizeInBytesUsed = GetModuleFileNameW
             (
                 pxLibrary->Handle.Data,
                 pxTextLibraryName->W,
-                pxTextLibraryName->SizeAllocated
+                pxTextLibraryName->SizeInBytesAllocated
             );
             break;
         }
@@ -497,7 +497,7 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
             return PXResultRefusedParameterInvalid;
     }
 
-    PXResult pxResult = PXErrorCurrent(0 < pxTextLibraryName->SizeUsed);
+    PXResult pxResult = PXErrorCurrent(0 < pxTextLibraryName->SizeInBytesUsed);
 
     if(PXResultOK != pxResult)
     {
@@ -510,9 +510,9 @@ PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibra
     if(-1 != index)
     {
         char* source = &pxTextLibraryName->A[index + 1];
-        DWORD sourceSize = pxTextLibraryName->SizeUsed - index - 1;
+        DWORD sourceSize = pxTextLibraryName->SizeInBytesUsed - index - 1;
 
-        pxTextLibraryName->SizeUsed = PXTextCopyA(source, sourceSize, pxTextLibraryName->A, sourceSize);
+        pxTextLibraryName->SizeInBytesUsed = PXTextCopyA(source, sourceSize, pxTextLibraryName->A, sourceSize);
     }
 
     return PXResultOK;
