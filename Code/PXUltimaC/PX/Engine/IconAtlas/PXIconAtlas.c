@@ -7,7 +7,7 @@ const char PXIconAtlasText[] = "IconAtlas";
 
 PXResult PXAPI PXIconAtlasCreate(PXIconAtlas PXREF pxIconAtlas, PXIconAtlasCreateInfo PXREF pxIconAtlasCreateInfo)
 {
-    return;
+    return PXResultOK;
 
 #if PXLogEnable
     PXLogPrint
