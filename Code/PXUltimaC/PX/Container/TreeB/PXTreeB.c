@@ -166,8 +166,8 @@ PXResult PXAPI PXTreeBNodeInsert(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTree
         void PXREF keyEntry = (PXAddress)pxTreeBNode->KeyList + pxTreeBNode->KeyListAmount * pxTreeB->KeySize;
         void PXREF valueEntry = (PXAddress)pxTreeBNode->NodeList + pxTreeBNode->NodeListAmount * pxTreeB->ValueSize;
 
-        PXMemoryCopy(key, keyEntry, pxTreeB->KeySize);
-        PXMemoryCopy(value, valueEntry, pxTreeB->ValueSize);
+        PXMemoryCopyEE(key, keyEntry, pxTreeB->KeySize);
+        PXMemoryCopyEE(value, valueEntry, pxTreeB->ValueSize);
     }  
 
     // Sort node
