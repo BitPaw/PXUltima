@@ -12,8 +12,8 @@ typedef struct PXInputPlayer_
 {
     PXECSInfo Info;
 
-    PXVector2F32 MovementWalk;
-    PXVector2F32 MovementView;
+    PXVector2_F32 MovementWalk;
+    PXVector2_F32 MovementView;
 }
 PXInputPlayer;
 
